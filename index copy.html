@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DECOREVA Wall Art</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<header>
+    <div class="logo-box">
+
+    <div class="brand-logo">
+        <img src="images/Logo_01.jpeg" alt="DECOREVA Logo">
+    </div>
+
+    <div class="brand-text">
+        <h1>DECOREVA</h1>
+        <p>Premium Wall Art For Beautiful Homes</p>
+    </div>
+
+</div>
+</header>
+
+<nav>
+
+<a href="#home">Home</a>
+
+<a href="#collection">Collection</a>
+
+<a href="#contact">Contact</a>
+
+</nav>
+
+<section class="hero" id="home">
+
+    <img
+        src="images/Banner_01.jpeg"
+        alt="DECOREVA Premium Wall Art"
+        class="hero-banner"
+    >
+
+    <div class="hero-content">
+
+        <h2>Decorate Your Dream Wall</h2>
+
+        <p>Premium Wall Art Collection</p>
+
+        <a href="#collection" class="button">
+            Explore Collection
+        </a>
+
+    </div>
+
+</section>
+
+<section id="collection">
+
+<h2>Our Collection</h2>
+
+<div class="products">
+
+<div class="card">
+
+    <div class="image-slider"
+         data-index="0"
+         data-images='[
+         "images/Live,Love,Laugh_01.jpeg",
+         "images/Live,Love,Laugh_02.jpeg",
+         "images/Live,Love,Laugh_03.jpeg",
+         "images/Live,Love,Laugh_04.jpeg"
+         ]'>
+
+        <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
+
+        <img class="slider-image"
+             src="images/Live,Love,Laugh_01.jpeg"
+             alt="Live Love Laugh">
+
+        <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
+
+        <div class="slider-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+    </div>
+
+    <h3>Live Love Laugh</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547"
+       target="_blank">
+        Order on WhatsApp
+    </a>
+
+</div>
+
+<div class="card">
+
+    <div class="image-slider"
+         data-index="0"
+         data-images='[
+         "images/GaneshaAcrylic_01.jpeg",
+         "images/GaneshaAcrylic_02.jpeg",
+         "images/GaneshaAcrylic_03.jpeg",
+         "images/GaneshaAcrylic_04.jpeg"
+         ]'>
+
+        <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
+
+        <img class="slider-image"
+             src="images/GaneshaAcrylic_01.jpeg"
+             alt="Wall Art 2">
+
+        <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
+
+        <div class="slider-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+    </div>
+
+    <h3>Ganesha Acrylic</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%202"
+       target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        Order on WhatsApp
+    </a>
+
+</div>
+
+<div class="card">
+    
+<div class="image-slider"
+     data-index="0"
+     data-images='[
+     "images/KhatushayamTemple_01.jpeg",
+     "images/KhatushayamTemple_02.jpeg",
+     "images/KhatushayamTemple_03.jpeg",
+     "images/KhatushayamTemple_04.jpeg"
+     ]'>
+
+    <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
+
+    <img class="slider-image"
+         src="images/KhatushayamTemple_01.jpeg"
+         alt="Wall Art 3">
+
+    <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
+
+    <div class="slider-dots"></div>
+
+</div>
+
+<h3>Khatushayam Temple</h3>
+
+<p class="price">₹199</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%203"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+<div class="image-slider"
+     data-index="0"
+     data-images='[
+     "images/Om_01.jpeg",
+     "images/Om_02.jpeg",
+     "images/Om_03.jpeg",
+     "images/Om_04.jpeg",
+     "images/Om_05.jpeg"
+     ]'>
+
+    <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
+
+    <img class="slider-image"
+         src="images/Om_01.jpeg"
+         alt="Wall Art 4">
+
+    <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
+
+    <div class="slider-dots"></div>
+
+</div>
+
+<h3>OM DarkBrown</h3>
+
+<p class="price">₹499</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%204"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+    <div class="image-slider"
+         data-index="0"
+         data-images='[
+         "images/WelcomeKeyholder_01.jpeg",
+         "images/WelcomeKeyholder_02.jpeg",
+         "images/WelcomeKeyholder_03.jpeg",
+         "images/WelcomeKeyholder_04.jpeg"
+         ]'>
+
+        <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
+
+        <img class="slider-image"
+             src="images/WelcomeKeyholder_01.jpeg"
+             alt="Welcome Keyholder">
+
+        <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
+
+        <div class="slider-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+    </div>
+
+    <h3>Welcome Keyholder</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Welcome%20Keyholder"
+       target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        Order on WhatsApp
+    </a>
+
+</div>
+
+<div class="card">
+
+<img src="images/wall6.jpeg" alt="Wall Art 6">
+
+<h3>Wall Art 6</h3>
+
+<p class="price">₹499</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%206"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+<img src="images/wall7.jpeg" alt="Wall Art 7">
+
+<h3>Wall Art 7</h3>
+
+<p class="price">₹499</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%207"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+<img src="images/wall8.jpeg" alt="Wall Art 8">
+
+<h3>Wall Art 8</h3>
+
+<p class="price">₹499</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%208"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+<img src="images/wall9.jpeg" alt="Wall Art 9">
+
+<h3>Wall Art 9</h3>
+
+<p class="price">₹499</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%209"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+<img src="images/wall10.jpeg" alt="Wall Art 10">
+
+<h3>Wall Art 10</h3>
+
+<p class="price">₹499</p>
+
+<p class="size">Size : 4 × 4 inch</p>
+
+<a class="button"
+href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2010"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+Order on WhatsApp
+
+</a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall11.jpeg" alt="Wall Art 11">
+
+    <h3>Wall Art 11</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2011"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall12.jpeg" alt="Wall Art 12" class="wall12">
+    
+    <h3>Wall Art 12</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2012"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall13.jpeg" alt="Wall Art 13">
+
+    <h3>Wall Art 13</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2013"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall14.jpeg" alt="Wall Art 14">
+
+    <h3>Wall Art 14</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2014"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall15.jpeg" alt="Wall Art 15">
+
+    <h3>Wall Art 15</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2015"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall16.jpeg" alt="Wall Art 16">
+
+    <h3>Wall Art 16</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2016"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall17.jpeg" alt="Wall Art 17">
+
+    <h3>Wall Art 17</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2017"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+<div class="card">
+
+    <img src="images/wall18.jpeg" alt="Wall Art 18">
+
+    <h3>Wall Art 18</h3>
+
+    <p class="price">₹499</p>
+
+    <p class="size">Size : 4 × 4 inch</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%2018"
+       target="_blank">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Order on WhatsApp
+
+    </a>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="contact">
+
+    <h2>Contact Us</h2>
+
+    <p>For orders, contact us on WhatsApp or Instagram.</p>
+
+    <a class="button"
+       href="https://wa.me/919582899547"
+       target="_blank">
+
+       <i class="fab fa-whatsapp"></i>
+
+       Chat on WhatsApp
+
+    </a>
+
+    <br><br>
+
+    <a class="button"
+       href="https://www.instagram.com/decoreva.wallart/"
+       target="_blank">
+
+       <i class="fab fa-instagram"></i>
+
+       Follow on Instagram
+
+    </a>
+
+</section>
+
+<footer>
+
+    <p>© 2026 DECOREVA Wall Art. All Rights Reserved.</p>
+
+</footer>
+
+<a href="https://wa.me/919582899547"
+class="floating-whatsapp"
+target="_blank">
+
+    <i class="fab fa-whatsapp"></i>
+
+</a>
+
+<div id="lightbox" class="lightbox">
+
+    <span class="close">&times;</span>
+
+    <button class="lightbox-prev">‹</button>
+<button class="lightbox-next">›</button>
+
+    <img id="lightbox-img" src="" alt="Preview">
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
