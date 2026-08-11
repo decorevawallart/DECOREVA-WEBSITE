@@ -1,793 +1,1679 @@
 /* =========================================================
-   DECOREVA WALL ART — CLEAN PROFESSIONAL CSS
-   Banner-safe version
+   DECOREVA WALL ART
+   CLEAN PROFESSIONAL CSS
+   VERSION 1
    ========================================================= */
 
-/* RESET */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial,Helvetica,sans-serif;
+
+/* =========================
+   RESET
+   ========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-html{scroll-behavior:smooth;}
-
-body{
-  background:#f7f5f1;
-  color:#333;
-  line-height:1.6;
-  overflow-x:hidden;
+html {
+    scroll-behavior: smooth;
 }
 
-img{max-width:100%;}
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #f7f5f1;
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+}
 
 
 /* =========================
    HEADER
    ========================= */
-header{
-  width:100%;
-  height:92px;
-  min-height:92px;
-  padding:0 42px;
-  background:linear-gradient(135deg,#0b0b0b,#151515);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  text-align:left;
-  border-bottom:1px solid rgba(212,175,55,.30);
-  box-shadow:0 3px 15px rgba(0,0,0,.25);
-  position:relative;
-  z-index:1001;
+
+header {
+    width: 100%;
+    height: 115px;
+    min-height: 115px;
+
+    margin: 0;
+    padding: 0 40px;
+
+    display: flex;
+    align-items: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #080808 0%,
+            #151515 50%,
+            #090909 100%
+        );
+
+    color: #fff;
+
+    border-bottom: 1px solid rgba(212,175,55,0.45);
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.30);
+
+    position: relative;
+    z-index: 100;
 }
 
-header .logo{
-  width:58px;
-  height:58px;
-  flex:0 0 58px;
-  margin-right:17px;
-  object-fit:contain;
-  display:block;
-  filter:drop-shadow(0 3px 7px rgba(0,0,0,.35));
+
+/* Brand container */
+
+.logo-box {
+    width: auto;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 20px;
+
+    flex-shrink: 0;
 }
 
-header h1{
-  margin:0;
-  padding:0;
-  color:#fff;
-  font-size:27px;
-  font-weight:700;
-  line-height:1;
-  letter-spacing:3px;
-  white-space:nowrap;
-  text-transform:uppercase;
+
+/* Logo */
+
+.brand-logo {
+    width: 145px;
+    height: 82px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #fff;
+
+    border-radius: 5px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.35);
 }
 
-header h1::after{
-  content:"";
-  display:block;
-  width:42px;
-  height:2px;
-  margin-top:7px;
-  background:#d4af37;
-  border-radius:2px;
+.brand-logo img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
 }
 
-header p{
-  margin:5px 0 0;
-  padding:0;
-  color:#bdbdbd;
-  font-size:12px;
-  font-weight:400;
-  line-height:1;
-  letter-spacing:.5px;
-  white-space:nowrap;
+
+/* Brand text */
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-text h1 {
+    margin: 0;
+
+    color: #f5f5f5;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 32px;
+    font-weight: 600;
+
+    letter-spacing: 4px;
+
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+
+/* Gold accent */
+
+.brand-text h1::after {
+    content: "";
+
+    display: block;
+
+    width: 85px;
+    height: 2px;
+
+    margin-top: 9px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #9b6b20,
+            #d4af37,
+            #f5d77a,
+            #d4af37,
+            #9b6b20
+        );
+
+    border-radius: 5px;
+
+    box-shadow:
+        0 0 7px rgba(212,175,55,0.35);
+}
+
+
+/* Tagline */
+
+.brand-text p {
+    margin: 7px 0 0;
+
+    color: #cfcfcf;
+
+    font-size: 12px;
+
+    letter-spacing: 0.7px;
+
+    white-space: nowrap;
 }
 
 
 /* =========================
    NAVIGATION
    ========================= */
-nav{
-  width:100%;
-  height:54px;
-  min-height:54px;
-  padding:0 20px;
-  background:#171717;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:48px;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  border-bottom:1px solid rgba(212,175,55,.18);
-  box-shadow:0 3px 12px rgba(0,0,0,.18);
+
+nav {
+    width: 100%;
+    height: 58px;
+    min-height: 58px;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 60px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #181818,
+            #101010
+        );
+
+    border-bottom: 1px solid rgba(212,175,55,0.25);
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.22);
+
+    position: sticky;
+top: 0;position: relative;
+    z-index: 99;
 }
 
-nav a{
-  position:relative;
-  display:inline-block;
-  color:#fff;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:600;
-  letter-spacing:.4px;
-  padding:7px 0;
-  transition:color .25s ease,transform .25s ease;
+nav a {
+    position: relative;
+
+    display: inline-block;
+
+    padding: 8px 2px;
+
+    color: #f5f5f5;
+
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    letter-spacing: 0.7px;
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
 }
 
-nav a:hover{
-  color:#d4af37;
-  transform:translateY(-1px);
+nav a:hover {
+    color: #d4af37;
+
+    transform: translateY(-1px);
 }
 
-nav a::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  bottom:0;
-  width:0;
-  height:2px;
-  background:#d4af37;
-  transform:translateX(-50%);
-  transition:width .25s ease;
+nav a::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 0;
+
+    width: 0;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #9b6b20,
+            #d4af37,
+            #f5d77a,
+            #d4af37,
+            #9b6b20
+        );
+
+    transform: translateX(-50%);
+
+    transition: width 0.25s ease;
 }
 
-nav a:hover::after{width:100%;}
+nav a:hover::after {
+    width: 100%;
+}
 
 
 /* =========================
    HERO / BANNER
-   IMPORTANT:
-   Banner image keeps natural ratio.
-   No crop / no stretch / no fixed height.
    ========================= */
-.hero{
-  width:100%;
-  margin:0;
-  padding:0;
-  position:relative;
-  background:#fff;
-  overflow:hidden;
-  text-align:center;
-  line-height:0;
+
+.hero {
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    display: block;
+
+    position: relative;
+
+    background: #fff;
+
+    overflow: hidden;
+
+    text-align: center;
+
+    line-height: 0;
 }
 
-.hero .hero-banner{
-  display:block !important;
-  width:100% !important;
-  height:auto !important;
-  max-width:100% !important;
-  object-fit:contain !important;
-  object-position:center center !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
+
+/* Main banner */
+
+.hero .hero-banner {
+    display: block !important;
+
+    width: 100% !important;
+
+    height: auto !important;
+
+    max-width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    object-fit: contain !important;
+
+    object-position: center center !important;
 }
 
-/* Fallback only if the HTML does not contain .hero-banner */
-.hero:not(:has(.hero-banner)){
-  min-height:0;
-  background:url("images/Banner_01.jpeg") center center/100% auto no-repeat;
+
+/* Existing text is already inside banner */
+
+.hero-content {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    pointer-events: none;
 }
 
-/* Banner already contains its own text */
-.hero h2,
-.hero p{display:none !important;}
-
-
-/* =========================
-   EXPLORE BUTTON
-   ========================= */
-.hero .button{
-  position:absolute;
-  left:50%;
-  bottom:5%;
-  transform:translateX(-50%);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:13px 28px;
-  background:#25d366;
-  color:#fff;
-  border-radius:7px;
-  text-decoration:none;
-  font-size:15px;
-  font-weight:600;
-  line-height:normal;
-  white-space:nowrap;
-  box-shadow:0 7px 20px rgba(0,0,0,.28);
-  z-index:20;
-  transition:background .25s ease,transform .25s ease,box-shadow .25s ease;
+.hero-content h2,
+.hero-content p {
+    display: none !important;
 }
 
-.hero .button:hover{
-  background:#20bd5a;
-  transform:translateX(-50%) translateY(-2px);
-  box-shadow:0 10px 25px rgba(0,0,0,.32);
+
+/* Explore button */
+
+.hero .button {
+    position: absolute;
+
+    left: 50%;
+    bottom: 5%;
+
+    transform: translateX(-50%);
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 13px 28px;
+
+    background: #25d366;
+
+    color: #fff;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    line-height: normal;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,0.28);
+
+    pointer-events: auto;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+    z-index: 20;
+}
+
+.hero .button:hover {
+    background: #1ebe5d;
+
+    transform:
+        translateX(-50%)
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.32);
 }
 
 
 /* =========================
    COLLECTION
    ========================= */
-#collection{
-  width:100%;
-  padding:75px 20px;
-  background:linear-gradient(180deg,#faf9f6,#f4f1eb);
+
+#collection {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 75px 20px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #faf9f6,
+            #f4f1eb
+        );
 }
 
-#collection h2{
-  text-align:center;
-  color:#222;
-  font-size:38px;
-  font-weight:600;
-  letter-spacing:1px;
-  margin-bottom:12px;
+#collection > h2 {
+    margin: 0 0 12px;
+
+    text-align: center;
+
+    color: #222;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 38px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
 }
 
-#collection h2::after{
-  content:"";
-  display:block;
-  width:55px;
-  height:3px;
-  background:#d4af37;
-  margin:15px auto 40px;
-  border-radius:2px;
+#collection > h2::after {
+    content: "";
+
+    display: block;
+
+    width: 55px;
+    height: 3px;
+
+    margin: 15px auto 40px;
+
+    background: #d4af37;
+
+    border-radius: 3px;
 }
 
 
 /* =========================
-   PRODUCTS
+   PRODUCT GRID
    ========================= */
-.products{
-  width:100%;
-  max-width:1250px;
-  margin:0 auto;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:28px;
+
+.products {
+    width: 100%;
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 28px;
 }
 
-.card{
-  background:#fff;
-  border-radius:14px;
-  overflow:hidden;
-  text-align:center;
-  border:1px solid #eee;
-  box-shadow:0 5px 18px rgba(0,0,0,.08);
-  transition:transform .3s ease,box-shadow .3s ease;
+
+/* =========================
+   PRODUCT CARD
+   ========================= */
+
+.card {
+    width: 100%;
+
+    background: #fff;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    text-align: center;
+
+    border: 1px solid #eee;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.08);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-.card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 14px 30px rgba(0,0,0,.15);
+.card:hover {
+    transform: translateY(-6px);
+
+    border-color: #d4af37;
+
+    box-shadow:
+        0 18px 38px rgba(0,0,0,0.18),
+        0 0 18px rgba(212,175,55,0.18);
 }
 
 
 /* =========================
    PRODUCT SLIDER
    ========================= */
-.image-slider{
-  position:relative;
-  width:100%;
-  overflow:hidden;
-  background:#fff;
-  text-align:center;
-  line-height:normal;
+
+.image-slider {
+    position: relative;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    text-align: center;
+
+    line-height: normal;
 }
 
-.slider-image-wrapper{
-  width:100%;
-  background:#fff;
+.slider-image-wrapper {
+    width: 100%;
+
+    background: #fff;
 }
 
-.slider-image{
-  width:100%;
-  height:285px;
-  object-fit:contain;
-  background:#fff;
-  padding:12px;
-  display:block;
-  cursor:pointer;
-  transition:transform .35s ease;
+.slider-image {
+    width: 100%;
+
+    height: 285px;
+
+    padding: 12px;
+
+    display: block;
+
+    object-fit: contain;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.35s ease;
 }
 
-.card:hover .slider-image{transform:scale(1.02);}
+.card:hover .slider-image {
+    transform: scale(1.06);
+}
+/* PREMIUM IMAGE SHINE EFFECT */
 
-.slider-btn{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:44px;
-  height:44px;
-  border:0;
-  border-radius:50%;
-  background:rgba(0,0,0,.68);
-  color:#fff;
-  font-size:30px;
-  line-height:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  z-index:10;
-  transition:background .25s ease,transform .25s ease,box-shadow .25s ease;
+.image-slider {
+    position: relative;
+    overflow: hidden;
 }
 
-.slider-btn:hover{
-  background:#111;
-  transform:translateY(-50%) scale(1.1);
-  box-shadow:0 5px 15px rgba(0,0,0,.25);
+.image-slider::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.45),
+        transparent
+    );
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+    pointer-events: none;
+    z-index: 2;
 }
 
-.slider-btn.prev{left:12px;}
-.slider-btn.next{right:12px;}
-
-
-/* SLIDER DOTS */
-.image-slider .slider-dots{
-  position:static !important;
-  width:100% !important;
-  height:auto !important;
-  display:flex !important;
-  flex-direction:row !important;
-  justify-content:center !important;
-  align-items:center !important;
-  gap:7px !important;
-  margin:10px auto 12px !important;
-  padding:0 !important;
+.image-slider:hover::after {
+    left: 150%;
 }
 
-.image-slider .slider-dot{
-  position:static !important;
-  display:block !important;
-  width:8px !important;
-  height:8px !important;
-  min-width:8px !important;
-  min-height:8px !important;
-  padding:0 !important;
-  margin:0 !important;
-  border-radius:50%;
-  background:#c9c9c9;
-  flex:0 0 8px;
-  cursor:pointer;
-  transition:background .3s ease,transform .3s ease;
+/* Keep slider buttons above shine */
+
+.slider-btn {
+    z-index: 5;
 }
 
-.image-slider .slider-dot.active{
-  background:#111;
-  transform:scale(1.35);
+/* Slider buttons */
+
+.slider-btn {
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 44px;
+    height: 44px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: rgba(0,0,0,0.68);
+
+    color: #fff;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    z-index: 10;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.slider-btn.prev {
+    left: 12px;
+}
+
+.slider-btn.next {
+    right: 12px;
+}
+
+.slider-btn:hover {
+    background: #111;
+
+    transform:
+        translateY(-50%)
+        scale(1.1);
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.25);
+}
+
+
+/* =========================
+   SLIDER DOTS
+   ========================= */
+
+.image-slider .slider-dots {
+    position: static !important;
+
+    width: 100% !important;
+
+    height: auto !important;
+
+    margin: 10px auto 12px !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 7px !important;
+}
+
+.image-slider .slider-dot,
+.image-slider .dot {
+    position: static !important;
+
+    width: 8px !important;
+    height: 8px !important;
+
+    min-width: 8px !important;
+    min-height: 8px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    display: block !important;
+
+    border-radius: 50%;
+
+    background: #c9c9c9;
+
+    cursor: pointer;
+
+    flex: 0 0 8px;
+
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.image-slider .slider-dot.active,
+.image-slider .dot.active {
+    background: #111;
+
+    transform: scale(1.35);
 }
 
 
 /* =========================
    PRODUCT DETAILS
    ========================= */
-.card h3{
-  font-size:20px;
-  color:#222;
-  margin:14px 10px 5px;
-  font-weight:600;
+
+.card h3 {
+    margin: 14px 10px 5px;
+
+    color: #222;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 20px;
+
+    font-weight: 600;
 }
 
-.price{
-  color:#b28a16;
-  font-size:22px;
-  font-weight:700;
-  margin:7px 0 3px;
+.price {
+    margin: 7px 0 3px;
+
+    color: #b28a16;
+
+    font-size: 22px;
+
+    font-weight: 700;
 }
 
-.size{
-  color:#777;
-  font-size:14px;
-  margin-bottom:14px;
-}
+.size {
+    margin-bottom: 14px;
 
-.card .button{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  background:#25d366;
-  color:#fff;
-  padding:11px 18px;
-  border-radius:7px;
-  font-size:14px;
-  font-weight:600;
-  text-decoration:none;
-  margin-bottom:20px;
-  box-shadow:0 4px 10px rgba(37,211,102,.18);
-  transition:background .25s ease,transform .25s ease,box-shadow .25s ease;
-}
+    color: #777;
 
-.card .button:hover{
-  background:#1ebe5d;
-  transform:translateY(-2px);
-  box-shadow:0 7px 15px rgba(37,211,102,.25);
+    font-size: 14px;
 }
 
 
-/* WALL 12 */
-.wall12{
-  object-fit:cover;
-  object-position:-50px center;
+/* Order button */
+
+.card .button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    margin-bottom: 20px;
+
+    padding: 11px 18px;
+
+    background: #25d366;
+
+    color: #fff;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 4px 10px rgba(37,211,102,0.18);
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.card .button:hover {
+    background: #1ebe5d;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 15px rgba(37,211,102,0.25);
+}
+
+
+/* =========================
+   SPECIAL IMAGE
+   ========================= */
+
+.wall12 {
+    object-fit: cover;
+
+    object-position: -50px center;
 }
 
 
 /* =========================
    CONTACT
    ========================= */
-#contact{
-  background:#fff;
-  text-align:center;
-  padding:70px 20px;
+
+#contact {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 70px 20px;
+
+    background: #fff;
+
+    text-align: center;
 }
 
-#contact h2{
-  font-size:36px;
-  color:#222;
-  margin-bottom:15px;
+#contact h2 {
+    margin-bottom: 15px;
+
+    color: #222;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 36px;
 }
 
-#contact p{
-  color:#666;
-  margin-bottom:25px;
+#contact p {
+    margin-bottom: 25px;
+
+    color: #666;
 }
 
 
 /* =========================
    FOOTER
    ========================= */
-footer{
-  background:linear-gradient(135deg,#0d0d0d,#181818);
-  color:#fff;
-  text-align:center;
-  padding:25px 20px;
-  font-size:14px;
-  border-top:1px solid rgba(212,175,55,.20);
+
+footer {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 25px 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d0d0d,
+            #181818
+        );
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    border-top:
+        1px solid rgba(212,175,55,0.20);
 }
 
 
 /* =========================
    FLOATING WHATSAPP
    ========================= */
-.floating-whatsapp{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:60px;
-  height:60px;
-  background:#25d366;
-  color:#fff;
-  border-radius:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:30px;
-  text-decoration:none;
-  box-shadow:0 5px 18px rgba(0,0,0,.28);
-  z-index:999;
-  transition:transform .3s ease,box-shadow .3s ease;
+
+.floating-whatsapp {
+    position: fixed;
+
+    right: 20px;
+    bottom: 20px;
+
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #25d366;
+
+    color: #fff;
+
+    border-radius: 50%;
+
+    font-size: 30px;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.28);
+
+    z-index: 999;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-.floating-whatsapp:hover{
-  transform:scale(1.1);
-  box-shadow:0 8px 22px rgba(0,0,0,.35);
+.floating-whatsapp:hover {
+    transform: scale(1.1);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.35);
 }
 
 
 /* =========================
    LIGHTBOX
    ========================= */
-.lightbox{
-  display:none;
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.94);
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
+
+.lightbox {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.94);
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
 }
 
-.lightbox img{
-  max-width:85%;
-  max-height:85%;
-  border-radius:12px;
-  object-fit:contain;
-  box-shadow:0 10px 40px rgba(0,0,0,.5);
+.lightbox img {
+    max-width: 85%;
+    max-height: 85%;
+
+    border-radius: 12px;
+
+    object-fit: contain;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.5);
 }
 
-.close{
-  position:absolute;
-  top:20px;
-  right:35px;
-  color:#fff;
-  font-size:45px;
-  cursor:pointer;
-  z-index:10002;
-  transition:color .2s ease,transform .2s ease;
+.close {
+    position: absolute;
+
+    top: 20px;
+    right: 35px;
+
+    color: #fff;
+
+    font-size: 45px;
+
+    cursor: pointer;
+
+    z-index: 10002;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
-.close:hover{
-  color:#d4af37;
-  transform:scale(1.08);
+.close:hover {
+    color: #d4af37;
+
+    transform: scale(1.08);
 }
+
+
+/* Lightbox buttons */
 
 .lightbox-prev,
-.lightbox-next{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:55px;
-  height:55px;
-  border:0;
-  border-radius:50%;
-  background:rgba(255,255,255,.92);
-  color:#111;
-  font-size:38px;
-  font-weight:300;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  z-index:10001;
-  box-shadow:0 4px 15px rgba(0,0,0,.30);
-  transition:background .25s ease,color .25s ease,transform .25s ease;
+.lightbox-next {
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 55px;
+    height: 55px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.92);
+
+    color: #111;
+
+    font-size: 38px;
+
+    font-weight: 300;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    z-index: 10001;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.30);
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
 }
 
-.lightbox-prev{left:25px;}
-.lightbox-next{right:25px;}
+.lightbox-prev {
+    left: 25px;
+}
+
+.lightbox-next {
+    right: 25px;
+}
 
 .lightbox-prev:hover,
-.lightbox-next:hover{
-  background:#111;
-  color:#fff;
-  transform:translateY(-50%) scale(1.1);
+.lightbox-next:hover {
+    background: #111;
+
+    color: #fff;
+
+    transform:
+        translateY(-50%)
+        scale(1.1);
 }
 
 
 /* =========================
    TABLET
    ========================= */
-@media (max-width:1000px){
-  .products{grid-template-columns:repeat(3,1fr);}
+
+@media (max-width: 1000px) {
+
+    .products {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
 }
 
 
 /* =========================
    MOBILE
    ========================= */
-@media (max-width:700px){
 
-  header{
-    height:78px;
-    min-height:78px;
-    padding:0 15px;
-  }
+@media (max-width: 700px) {
 
-  header .logo{
-    width:48px;
-    height:48px;
-    flex-basis:48px;
-    margin-right:12px;
-  }
+    header {
+        height: 92px;
+        min-height: 92px;
 
-  header h1{
-    font-size:22px;
-    letter-spacing:2px;
-  }
+        padding: 0 15px;
+    }
 
-  header h1::after{
-    width:30px;
-    height:1px;
-    margin-top:5px;
-  }
+    .logo-box {
+        gap: 12px;
+    }
 
-  header p{
-    font-size:9px;
-    margin-top:4px;
-  }
+    .brand-logo {
+        width: 95px;
+        height: 65px;
+    }
 
-  nav{
-    height:50px;
-    min-height:50px;
-    gap:28px;
-  }
+    .brand-text h1 {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
 
-  nav a{font-size:13px;}
+    .brand-text h1::after {
+        width: 55px;
+        height: 2px;
+    }
 
-  /* BANNER: natural ratio, never crop */
-  .hero .hero-banner{
-    width:100% !important;
-    height:auto !important;
-    object-fit:contain !important;
-  }
+    .brand-text p {
+        font-size: 9px;
+        letter-spacing: 0.4px;
+    }
 
-  .hero .button{
-    bottom:5%;
-    padding:11px 20px;
-    font-size:14px;
-  }
+    nav {
+        height: 50px;
+        min-height: 50px;
 
-  #collection{padding:55px 15px;}
+        gap: 28px;
+    }
 
-  #collection h2{font-size:30px;}
+    nav a {
+        font-size: 13px;
+    }
 
-  .products{
-    grid-template-columns:repeat(2,1fr);
-    gap:18px;
-  }
+    .hero .hero-banner {
+        width: 100% !important;
+        height: auto !important;
 
-  .slider-image{height:240px;}
+        object-fit: contain !important;
+    }
 
-  .slider-btn{
-    width:40px;
-    height:40px;
-    font-size:27px;
-  }
+    .hero .button {
+        bottom: 5%;
 
-  .lightbox img{
-    max-width:90%;
-    max-height:80%;
-  }
+        padding: 11px 20px;
 
-  .lightbox-prev,
-  .lightbox-next{
-    width:45px;
-    height:45px;
-    font-size:30px;
-  }
+        font-size: 14px;
+    }
 
-  .lightbox-prev{left:10px;}
-  .lightbox-next{right:10px;}
+    #collection {
+        padding: 55px 15px;
+    }
 
-  .floating-whatsapp{
-    width:55px;
-    height:55px;
-    right:15px;
-    bottom:15px;
-    font-size:27px;
-  }
+    #collection > h2 {
+        font-size: 30px;
+    }
+
+    .products {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 18px;
+    }
+
+    .slider-image {
+        height: 240px;
+    }
+
+    .slider-btn {
+        width: 40px;
+        height: 40px;
+
+        font-size: 27px;
+    }
+
+    .lightbox img {
+        max-width: 90%;
+        max-height: 80%;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+        width: 45px;
+        height: 45px;
+
+        font-size: 30px;
+    }
+
+    .lightbox-prev {
+        left: 10px;
+    }
+
+    .lightbox-next {
+        right: 10px;
+    }
+
+    .floating-whatsapp {
+        width: 55px;
+        height: 55px;
+
+        right: 15px;
+        bottom: 15px;
+
+        font-size: 27px;
+    }
 }
 
 
 /* =========================
    SMALL MOBILE
    ========================= */
-@media (max-width:480px){
 
-  header{
-    height:72px;
-    min-height:72px;
-    padding:0 12px;
-  }
+@media (max-width: 480px) {
 
-  header .logo{
-    width:46px;
-    height:46px;
-    flex-basis:46px;
-    margin-right:10px;
-  }
+    header {
+        height: 78px;
+        min-height: 78px;
 
-  header h1{
-    font-size:19px;
-    letter-spacing:1.5px;
-  }
+        padding: 0 10px;
+    }
 
-  header h1::after{
-    width:25px;
-    height:1px;
-    margin-top:4px;
-  }
+    .logo-box {
+        gap: 9px;
+    }
 
-  header p{
-    font-size:8px;
-  }
+    .brand-logo {
+        width: 75px;
+        height: 52px;
+    }
 
-  nav{
-    height:48px;
-    min-height:48px;
-    gap:19px;
-  }
+    .brand-text h1 {
+        font-size: 19px;
+        letter-spacing: 1.5px;
+    }
 
-  nav a{font-size:12px;}
+    .brand-text h1::after {
+        width: 42px;
+        height: 1px;
 
-  .hero .hero-banner{
-    width:100% !important;
-    height:auto !important;
-    max-width:100% !important;
-    object-fit:contain !important;
-  }
+        margin-top: 5px;
+    }
 
-  .hero .button{
-    padding:10px 18px;
-    font-size:13px;
-  }
+    .brand-text p {
+        font-size: 7px;
 
-  .products{grid-template-columns:1fr;}
+        margin-top: 4px;
+    }
 
-  .slider-image{height:270px;}
+    nav {
+        height: 48px;
+        min-height: 48px;
 
-  #collection h2{font-size:28px;}
+        gap: 19px;
+    }
+
+    nav a {
+        font-size: 12px;
+    }
+
+    .hero .hero-banner {
+        width: 100% !important;
+
+        height: auto !important;
+
+        max-width: 100% !important;
+
+        object-fit: contain !important;
+    }
+
+    .hero .button {
+        padding: 10px 18px;
+
+        font-size: 13px;
+    }
+
+    .products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+    .slider-image {
+        height: 270px;
+    }
+
+    #collection > h2 {
+        font-size: 28px;
+    }
+}
+/* =================================
+   PREMIUM PRODUCT CARD EFFECT
+   ================================= */
+
+.card {
+    transition: transform 0.35s ease,
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+}
+
+/* Card hover */
+.card:hover {
+    transform: translateY(-8px);
+    border-color: #c9a227;
+    box-shadow:
+        0 18px 35px rgba(0, 0, 0, 0.12),
+        0 4px 12px rgba(201, 162, 39, 0.18);
+}
+
+/* Product image zoom */
+.card .slider-image {
+    transition: transform 0.5s ease;
+}
+
+.card:hover .slider-image {
+    transform: scale(1.045);
+}
+
+/* Premium gold line on card */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #c9a227,
+        #f1d477,
+        #c9a227,
+        transparent
+    );
+    transform: translateX(-50%);
+    transition: width 0.4s ease;
+}
+
+.card:hover::before {
+    width: 75%;
+}
+/* =================================
+   PREMIUM LIGHTBOX
+   ================================= */
+
+#lightbox {
+    background: rgba(8, 8, 8, 0.94) !important;
+    backdrop-filter: blur(8px);
+    animation: lightboxFade 0.3s ease;
+}
+
+/* Product image */
+#lightbox-img {
+    max-width: 88%;
+    max-height: 86vh;
+    object-fit: contain;
+    border: 2px solid #c9a227;
+    box-shadow:
+        0 0 25px rgba(201, 162, 39, 0.25),
+        0 20px 60px rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    animation: lightboxZoom 0.35s ease;
+}
+
+/* Close button */
+#lightbox .close {
+    color: #d4af37 !important;
+    font-size: 42px !important;
+    font-weight: 300;
+    transition: 0.3s ease;
+}
+
+#lightbox .close:hover {
+    color: #ffffff !important;
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Previous / Next buttons */
+#lightbox .lightbox-prev,
+#lightbox .lightbox-next {
+    background: rgba(201, 162, 39, 0.85) !important;
+    color: #111 !important;
+    border: 1px solid #f1d477;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 28px;
+    transition: all 0.3s ease;
+}
+
+#lightbox .lightbox-prev:hover,
+#lightbox .lightbox-next:hover {
+    background: #f1d477 !important;
+    transform: scale(1.12);
+    box-shadow: 0 0 20px rgba(201, 162, 39, 0.45);
+}
+
+/* Animations */
+@keyframes lightboxFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes lightboxZoom {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ===============================
+   MOBILE HERO FIX
+================================ */
+
+@media (max-width: 480px) {
+
+    .hero {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .hero-content {
+        position: relative !important;
+        min-height: 0 !important;
+        padding: 15px 10px 20px !important;
+    }
+
+    .hero .button {
+        margin-top: 10px !important;
+    }
+
 }
 /* =========================================
-   DECOREVA FINAL HEADER
-   LOGO ONLY — BANNER NOT TOUCHED
+   DECOREVA PREMIUM MOBILE HEADER
 ========================================= */
+
+@media (max-width: 480px) {
+
+    header {
+        height: 86px !important;
+        min-height: 86px !important;
+        padding: 8px 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    .logo-box {
+        width: 100% !important;
+        height: 70px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+
+    .brand-logo {
+        width: 58px !important;
+        height: 58px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .brand-logo img {
+        width: 58px !important;
+        height: 58px !important;
+        object-fit: contain !important;
+    }
+
+    .brand-text {
+        min-width: 0 !important;
+    }
+
+    .brand-text h1 {
+        font-size: 23px !important;
+        letter-spacing: 2px !important;
+        line-height: 1.1 !important;
+        padding-bottom: 6px !important;
+        white-space: nowrap !important;
+    }
+
+    .brand-text h1::after {
+        width: 34px !important;
+        height: 2px !important;
+        bottom: 0 !important;
+    }
+
+    .brand-text p {
+        font-size: 9px !important;
+        letter-spacing: 0.2px !important;
+        margin-top: 5px !important;
+        white-space: nowrap !important;
+    }
+
+    nav {
+        height: 48px !important;
+        min-height: 48px !important;
+        gap: 24px !important;
+        padding: 0 10px !important;
+    }
+
+    nav a {
+        font-size: 13px !important;
+        padding: 6px 2px !important;
+    }
+
+}
+/* =========================================
+   PREMIUM PRODUCT SEARCH
+========================================= */
+
+.product-search {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto 35px;
+}
+
+#productSearch {
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    background: #fff;
+    color: #222;
+    font-size: 15px;
+    outline: none;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+    transition: 0.25s ease;
+}
+
+#productSearch:focus {
+    border-color: #d4af37;
+    box-shadow: 0 6px 22px rgba(212,175,55,0.20);
+}
+
+#productSearch::placeholder {
+    color: #888;
+}
+
+@media (max-width: 480px) {
+
+    .product-search {
+        max-width: 100%;
+        margin: 0 auto 25px;
+    }
+
+    #productSearch {
+        padding: 13px 16px;
+        font-size: 14px;
+    }
+
+}
+/* =========================
+   MOBILE PRODUCT GRID
+   ========================= */
+
+@media (max-width: 600px) {
+
+    .products {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+        padding: 0 14px !important;
+    }
+
+    .card {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .card h3 {
+        font-size: 16px !important;
+    }
+
+    .price {
+        font-size: 18px !important;
+    }
+
+    .size {
+        font-size: 12px !important;
+    }
+
+    .card .button {
+        font-size: 12px !important;
+        padding: 10px 8px !important;
+        width: 100% !important;
+    }
+}
+/* =====================================================
+   DECOREVA — FINAL PREMIUM HEADER
+   HEADER ONLY — DO NOT TOUCH HERO / PRODUCTS
+   ===================================================== */
 
 header {
     width: 100%;
-    height: 125px;
-    background: #111111;
-    padding: 12px 34px;
+    min-height: 105px;
+    background: linear-gradient(135deg, #0b0b0b, #191919);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    border-bottom: 1px solid #b08a32;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.55);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.30);
+    position: relative;
+    z-index: 1001;
 }
 
-/* Logo container */
+/* Logo + brand area */
 .logo-box {
-    width: 300px;
-    height: 100px;
     display: flex;
     align-items: center;
-    overflow: hidden;
-    flex-shrink: 0;
+    height: 80px;
 }
 
-/* ===== DECOREVA PREMIUM LOGO ===== */
-
+/* Logo */
 .brand-logo {
-    width: 90px !important;
-    height: 90px !important;
-    flex-shrink: 0 !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    width: 76px !important;
+    height: 76px !important;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 18px;
+    overflow: hidden;
 }
 
 .brand-logo img {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    object-position: center !important;
-    display: block !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
+    display: block;
 }
+
+/* Brand name */
+.brand-text h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 31px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    line-height: 1.1;
+}
+
+/* Gold line */
+.brand-text h1::after {
+    content: "";
+    display: block;
+    width: 220px;
+    height: 2px;
+    background: #d4af37;
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+/* Tagline */
+.brand-text p {
+    margin: 6px 0 0;
+    color: #cfcfcf;
+    font-size: 13px;
+    letter-spacing: 0.7px;
+}
+
+/* =====================================================
+   PREMIUM NAVIGATION
+   ===================================================== */
 
 nav {
     width: 100%;
     height: 58px;
-    background: #171717;
+    background: #151515;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 48px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #2a2a2a;
+    gap: 52px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 nav a {
+    position: relative;
     color: #ffffff;
     text-decoration: none;
     font-size: 15px;
     font-weight: 600;
+    letter-spacing: 0.6px;
     padding: 8px 4px;
-    position: relative;
-    transition: 0.25s ease;
+    transition: all 0.25s ease;
 }
 
 nav a:hover {
     color: #d4af37;
+    transform: translateY(-1px);
 }
 
 nav a::after {
@@ -806,36 +1692,47 @@ nav a:hover::after {
     width: 100%;
 }
 
-
-/* =========================================
-   MOBILE
-========================================= */
+/* =====================================================
+   MOBILE HEADER
+   ===================================================== */
 
 @media (max-width: 700px) {
 
     header {
-        height: 95px;
-        padding: 10px 15px;
+        min-height: 88px;
+        height: 88px;
+        padding: 8px 14px;
     }
 
     .logo-box {
-        width: 270px;
-        height: 75px;
+        height: 70px;
     }
 
     .brand-logo {
-        width: 270px;
-        height: 75px;
+        width: 58px !important;
+        height: 58px !important;
+        margin-right: 12px;
     }
 
-    .brand-logo img {
-        width: 270px !important;
-        height: 75px !important;
+    .brand-text h1 {
+        font-size: 23px;
+        letter-spacing: 2.5px;
+    }
+
+    .brand-text h1::after {
+        width: 60px;
+        height: 1px;
+        margin-top: 5px;
+    }
+
+    .brand-text p {
+        font-size: 9px;
+        letter-spacing: 0.3px;
     }
 
     nav {
         height: 50px;
-        gap: 28px;
+        gap: 27px;
     }
 
     nav a {
@@ -843,31 +1740,31 @@ nav a:hover::after {
     }
 }
 
-
-/* =========================================
+/* =====================================================
    SMALL MOBILE
-========================================= */
+   ===================================================== */
 
 @media (max-width: 480px) {
 
     header {
+        min-height: 82px;
         height: 82px;
-        padding: 8px 10px;
-    }
-
-    .logo-box {
-        width: 240px;
-        height: 65px;
+        padding: 7px 10px;
     }
 
     .brand-logo {
-        width: 240px;
-        height: 65px;
+        width: 52px !important;
+        height: 52px !important;
+        margin-right: 10px;
     }
 
-    .brand-logo img {
-        width: 240px !important;
-        height: 65px !important;
+    .brand-text h1 {
+        font-size: 20px;
+        letter-spacing: 2px;
+    }
+
+    .brand-text p {
+        font-size: 8px;
     }
 
     nav {
@@ -879,1065 +1776,93 @@ nav a:hover::after {
         font-size: 12px;
     }
 }
-/* ===== PREMIUM DECOREVA HEADER ===== */
+/* =====================================================
+   DECOREVA PREMIUM HEADER — LUXURY FINISH
+   ===================================================== */
 
-header {
-    background: #111111;
-    height: 116px;
-    padding: 0 34px;
-    box-sizing: border-box;
-}
-
-.logo-box {
-    height: 116px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.brand-logo {
-    width: 90px;
-    height: 90px;
-    flex-shrink: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.brand-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-}
-
-.brand-text h1 {
-    margin: 0;
-    color: #ffffff;
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    line-height: 1.1;
-    position: relative;
-    padding-bottom: 9px;
-}
-
-.brand-text h1::after {
+/* Header subtle gold glow */
+header::after {
     content: "";
     position: absolute;
     left: 0;
-    bottom: 0;
-    width: 48px;
-    height: 2px;
-    background: #c99a3d;
-}
-
-.brand-text p {
-    margin: 7px 0 0;
-    color: #d8d8d8;
-    font-size: 13px;
-    letter-spacing: 0.3px;
-}
-/* ===== FINAL DECOREVA LOGO FIX ===== */
-
-header {
-    height: 125px !important;
-    padding: 12px 34px !important;
-    overflow: hidden !important;
-}
-
-.logo-box {
-    width: 330px !important;
-    height: 100px !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 20px !important;
-    overflow: visible !important;
-    flex-shrink: 0 !important;
-}
-
-.brand-logo {
-    width: 170px !important;
-    height: 90px !important;
-    flex-shrink: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-}
-
-.brand-logo img {
-    width: 170px !important;
-    height: 90px !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    display: block !important;
-}
-
-.brand-text h1 {
-    margin: 0 !important;
-    color: #fff !important;
-    font-size: 30px !important;
-    font-weight: 700 !important;
-    letter-spacing: 2px !important;
-    line-height: 1.1 !important;
-    padding-bottom: 9px !important;
-    position: relative !important;
-}
-
-.brand-text h1::after {
-    content: "" !important;
-    position: absolute !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    width: 48px !important;
-    height: 2px !important;
-    background: #c99a3d !important;
-}
-
-.brand-text p {
-    margin: 7px 0 0 !important;
-    color: #d8d8d8 !important;
-    font-size: 13px !important;
-    letter-spacing: .3px !important;
-}
-/* ===== EXTRA PREMIUM HEADER FINISH ===== */
-
-header {
-    height: 125px !important;
-    background: linear-gradient(135deg, #0a0a0a 0%, #151515 55%, #0b0b0b 100%) !important;
-    padding: 12px 34px !important;
-    border-bottom: 1px solid rgba(201,154,61,.65) !important;
-    box-shadow: 0 5px 25px rgba(0,0,0,.35) !important;
-}
-
-/* Logo */
-.brand-logo {
-    width: 170px !important;
-    height: 90px !important;
-    background: #fff !important;
-    border-radius: 3px !important;
-    box-shadow: 0 4px 18px rgba(0,0,0,.35) !important;
-}
-
-/* Space between logo and brand name */
-.logo-box {
-    gap: 20px !important;
-}
-
-/* Brand name */
-.brand-text h1 {
-    font-family: Georgia, "Times New Roman", serif !important;
-    font-size: 31px !important;
-    font-weight: 600 !important;
-    letter-spacing: 3px !important;
-    color: #f5f5f5 !important;
-    text-shadow: 0 2px 8px rgba(0,0,0,.4) !important;
-    padding-bottom: 10px !important;
-}
-
-/* Gold line */
-.brand-text h1::after {
-    width: 58px !important;
-    height: 2px !important;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
     background: linear-gradient(
         90deg,
-        #b8862c,
-        #f1d27a,
-        #b8862c
-    ) !important;
-    box-shadow: 0 0 6px rgba(212,175,55,.35) !important;
-}
-
-/* Tagline */
-.brand-text p {
-    font-size: 13px !important;
-    color: #cfcfcf !important;
-    letter-spacing: .7px !important;
-    margin-top: 8px !important;
-}
-
-/* Navigation premium touch */
-nav {
-    background: linear-gradient(180deg,#181818,#111111) !important;
-    border-bottom: 1px solid rgba(201,154,61,.22) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,.25) !important;
-}
-
-nav a {
-    letter-spacing: .7px !important;
-    transition: all .25s ease !important;
-}
-
-nav a:hover {
-    color: #d4af37 !important;
-    text-shadow: 0 0 8px rgba(212,175,55,.35) !important;
-}
-/* ===== DECOREVA PREMIUM GOLD ACCENT ===== */
-
-.logo-box h1::after {
-    content: "";
-    display: block;
-    width: 120px !important;
-    height: 3px !important;
-    margin-top: 8px !important;
-
-    background: linear-gradient(
-        90deg,
-        #9b6b20,
+        transparent,
         #d4af37,
         #f5d77a,
         #d4af37,
-        #9b6b20
-    ) !important;
-
-    border-radius: 10px !important;
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.35) !important;
-}
-/* ===== FINAL GOLD LUXURY LINE ===== */
-
-.logo-box h1::after {
-    content: "" !important;
-    display: block !important;
-
-    width: 150px !important;
-    height: 3px !important;
-
-    margin-top: 9px !important;
-
-    background: linear-gradient(
-        90deg,
-        #8c641f 0%,
-        #d4af37 25%,
-        #ffe08a 50%,
-        #d4af37 75%,
-        #8c641f 100%
-    ) !important;
-
-    border-radius: 5px !important;
-
-    box-shadow:
-        0 0 5px rgba(212,175,55,.45),
-        0 0 12px rgba(212,175,55,.18) !important;
-}
-/* BIG PREMIUM GOLD LINE */
-
-.logo-box h1::after {
-    content: "" !important;
-    display: block !important;
-    width: 240px !important;
-    height: 4px !important;
-    margin-top: 10px !important;
-
-    background: linear-gradient(
-        90deg,
-        #8c641f,
-        #d4af37,
-        #ffe08a,
-        #d4af37,
-        #8c641f
-    ) !important;
-
-    border-radius: 6px !important;
-
-    box-shadow:
-        0 0 8px rgba(212,175,55,.55),
-        0 0 18px rgba(212,175,55,.25) !important;
-}
-/* =========================================
-   PREMIUM PRODUCT CARDS - STEP 1
-   ========================================= */
-
-.card {
-    background: #ffffff;
-    border: 1px solid rgba(212, 175, 55, 0.35);
-    border-radius: 16px;
-    overflow: hidden;
-
-    box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.08),
-        0 1px 3px rgba(212, 175, 55, 0.12);
-
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease,
-        border-color 0.35s ease;
-}
-
-.card:hover {
-    transform: translateY(-8px);
-
-    border-color: rgba(212, 175, 55, 0.75);
-
-    box-shadow:
-        0 16px 35px rgba(0, 0, 0, 0.14),
-        0 4px 12px rgba(212, 175, 55, 0.18);
-}
-
-
-/* PRODUCT NAME */
-
-.card h3 {
-    color: #171717;
-    font-size: 21px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    margin: 16px 10px 6px;
-}
-
-
-/* PREMIUM PRICE */
-
-.card .price {
-    color: #b8860b;
-    font-size: 23px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    margin: 7px 0 4px;
-}
-
-
-/* SIZE */
-
-.card .size {
-    color: #777;
-    font-size: 14px;
-    letter-spacing: 0.3px;
-    margin-bottom: 15px;
-}
-
-
-/* PREMIUM WHATSAPP BUTTON */
-
-.card .button {
-    background: linear-gradient(
-        135deg,
-        #168f45,
-        #25d366,
-        #168f45
-    );
-
-    border: 1px solid rgba(255,255,255,0.25);
-
-    border-radius: 8px;
-
-    padding: 12px 22px;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    letter-spacing: 0.2px;
-
-    box-shadow:
-        0 5px 14px rgba(37, 211, 102, 0.22);
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        filter 0.3s ease;
-}
-
-.card .button:hover {
-    transform: translateY(-3px);
-
-    filter: brightness(1.05);
-
-    box-shadow:
-        0 9px 20px rgba(37, 211, 102, 0.30);
-}
-/* =================================
-   PREMIUM PRODUCT CARD HOVER EFFECT
-   ================================= */
-
-.product-card {
-    transition: transform 0.35s ease,
-                box-shadow 0.35s ease,
-                border-color 0.35s ease;
-}
-
-.product-card:hover {
-    transform: translateY(-8px);
-    border-color: #c9a227;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16),
-                0 0 18px rgba(201, 162, 39, 0.18);
-}
-
-/* Product image smooth zoom */
-
-.product-card .slider-image {
-    transition: transform 0.5s ease;
-}
-
-.product-card:hover .slider-image {
-    transform: scale(1.04);
-}
-
-/* Premium WhatsApp button */
-
-.product-card .whatsapp-btn {
-    transition: transform 0.3s ease,
-                box-shadow 0.3s ease;
-}
-
-.product-card:hover .whatsapp-btn {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 18px rgba(37, 211, 102, 0.30);
-}
-/* =========================================
-   DECOREVA PREMIUM PRODUCT CARDS
-   ========================================= */
-
-.card {
-    background: #ffffff;
-    border: 1px solid rgba(201, 162, 39, 0.35);
-    border-radius: 18px;
-    overflow: hidden;
-
-    box-shadow:
-        0 8px 22px rgba(0, 0, 0, 0.08),
-        0 2px 6px rgba(201, 162, 39, 0.08);
-
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease,
-        border-color 0.35s ease;
-}
-
-/* Premium hover */
-
-.card:hover {
-    transform: translateY(-8px);
-
-    border-color: #c9a227;
-
-    box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.14),
-        0 0 22px rgba(201, 162, 39, 0.18);
-}
-
-/* Product name */
-
-.card h3 {
-    font-weight: 600;
-    letter-spacing: 0.3px;
-}
-
-/* Premium price */
-
-.card .price {
-    color: #b8860b;
-    font-weight: 700;
-}
-
-/* Image area */
-
-.card .image-slider {
-    border-radius: 14px;
-}
-
-/* Smooth image */
-
-.card .slider-image {
-    transition: transform 0.5s ease;
-}
-
-.card:hover .slider-image {
-    transform: scale(1.03);
-}
-/* ===============================
-   PREMIUM PRICE
-   =============================== */
-
-.card .price {
-    font-size: 24px;
-    font-weight: 800;
-    color: #b28a16;
-    letter-spacing: 0.5px;
-    margin: 8px 0 4px;
-    text-shadow: 0 1px 1px rgba(176, 138, 32, 0.15);
-}
-
-/* Premium size text */
-
-.card .size {
-    color: #777;
-    font-size: 14px;
-    letter-spacing: 0.3px;
-}
-/* =================================
-   DECOREVA LUXURY PRODUCT CARD
-   ================================= */
-
-.card {
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
-}
-
-.card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-}
-
-.card .slider-image {
-    transition: transform 0.4s ease;
-}
-
-.card:hover .slider-image {
-    transform: scale(1.03);
-}
-
-.card h3 {
-    transition: color 0.3s ease;
-}
-
-.card:hover h3 {
-    color: #b8860b;
-}
-/* =================================
-   DECOREVA PREMIUM WHATSAPP BUTTON
-   ================================= */
-
-.card a[href*="wa.me"] {
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.card a[href*="wa.me"]:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 22px rgba(37, 211, 102, 0.40);
-}
-
-.card a[href*="wa.me"]::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 70%;
-    height: 100%;
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255, 255, 255, 0.35),
         transparent
     );
-    transition: left 0.6s ease;
+    opacity: 0.8;
 }
 
-.card a[href*="wa.me"]:hover::before {
-    left: 130%;
+/* Brand name luxury effect */
+.brand-text h1 {
+    text-shadow:
+        0 1px 2px rgba(255,255,255,0.15),
+        0 4px 12px rgba(0,0,0,0.5);
 }
 
-.card a[href*="wa.me"]:active {
-    transform: scale(0.97);
-}
-/* =================================
-   DECOREVA PREMIUM IMAGE ZOOM
-   ================================= */
-
-.image-slider {
-    overflow: hidden;
-    border-radius: 6px;
-}
-
-.image-slider .slider-image {
-    transition: transform 0.5s ease;
-}
-
-.image-slider:hover .slider-image {
-    transform: scale(1.06);
-}
-/* =================================
-   DECOREVA PREMIUM COLLECTION
-   ================================= */
-
-#collection {
-    padding-top: 75px;
-    padding-bottom: 80px;
-    background: #fafafa;
-}
-
-#collection > h2 {
-    position: relative;
-    display: table;
-    margin: 0 auto 45px;
-
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 38px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    color: #222;
-}
-
-#collection > h2::after {
-    content: "";
-    display: block;
-
-    width: 90px;
-    height: 3px;
-
-    margin: 12px auto 0;
-
-    background: linear-gradient(
-        90deg,
-        #9b6b20,
-        #d4af37,
-        #f5d77a,
-        #d4af37,
-        #9b6b20
-    );
-
+/* Logo premium frame */
+.brand-logo {
+    background: #ffffff;
     border-radius: 5px;
-}
-/* =================================
-   DECOREVA PREMIUM FOOTER
-   ================================= */
-
-footer {
-    position: relative;
-
-    background:
-        linear-gradient(
-            135deg,
-            #080808 0%,
-            #151515 50%,
-            #080808 100%
-        ) !important;
-
-    color: #ffffff !important;
-
-    text-align: center;
-
-    padding: 42px 20px 28px !important;
-
-    border-top: 1px solid rgba(212, 175, 55, 0.45) !important;
-
+    padding: 4px;
     box-shadow:
-        0 -8px 25px rgba(0, 0, 0, 0.18);
-
-    font-size: 14px;
+        0 0 0 1px rgba(212,175,55,0.7),
+        0 6px 18px rgba(0,0,0,0.35);
 }
 
-/* Gold luxury line above footer content */
-
-footer::before {
-    content: "";
-
-    display: block;
-
-    width: 90px;
-    height: 2px;
-
-    margin: 0 auto 22px;
-
-    background: linear-gradient(
-        90deg,
-        #9b6b20,
-        #d4af37,
-        #f5d77a,
-        #d4af37,
-        #9b6b20
-    );
-
-    border-radius: 5px;
-}
-
-/* Footer text */
-
-footer p {
-    margin: 0;
-
-    color: #d0d0d0;
-
-    letter-spacing: 0.4px;
-
-    line-height: 1.7;
-}
-
-/* DECOREVA brand highlight */
-
-footer strong {
-    color: #d4af37;
-
-    font-weight: 600;
-
-    letter-spacing: 1px;
-}
-/* =================================
-   DECOREVA PREMIUM CONTACT SECTION
-   ================================= */
-
-#contact {
-    position: relative;
-    padding: 85px 20px 90px !important;
-    text-align: center;
-    background: linear-gradient(
-        180deg,
-        #ffffff 0%,
-        #faf8f2 100%
-    ) !important;
-}
-
-/* Contact heading */
-
-#contact h2 {
-    position: relative;
-    display: table;
-    margin: 0 auto 18px;
-
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 38px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: #222;
-}
-
-/* Gold luxury line */
-
-#contact h2::after {
-    content: "";
-    display: block;
-
-    width: 85px;
-    height: 3px;
-
-    margin: 14px auto 28px;
-
-    background: linear-gradient(
-        90deg,
-        #9b6b20,
-        #d4af37,
-        #f5d77a,
-        #d4af37,
-        #9b6b20
-    );
-
-    border-radius: 5px;
-}
-
-/* Description */
-
-#contact p {
-    margin-bottom: 28px;
-    color: #666;
-    font-size: 16px;
-}
-
-/* Contact links */
-
-#contact a {
-    display: inline-block;
-
-    margin: 8px 6px;
-    padding: 13px 26px;
-
-    border-radius: 6px;
-
-    text-decoration: none;
-
-    font-weight: 600;
-    letter-spacing: 0.2px;
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        background 0.3s ease;
-}
-
-/* WhatsApp */
-
-#contact a[href*="wa.me"] {
-    background: #19b957;
-    color: #ffffff;
-    box-shadow: 0 6px 18px rgba(25, 185, 87, 0.22);
-}
-
-/* Instagram */
-
-#contact a[href*="instagram"] {
-    background: #222;
-    color: #ffffff;
-    border: 1px solid #d4af37;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-/* Hover */
-
-#contact a:hover {
-    transform: translateY(-4px);
-}
-
-#contact a[href*="wa.me"]:hover {
-    box-shadow: 0 10px 25px rgba(25, 185, 87, 0.35);
-}
-
-#contact a[href*="instagram"]:hover {
-    background: #111;
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.25);
-}
-/* =================================
-   DECOREVA PREMIUM NAVIGATION
-   ================================= */
-
-html {
-    scroll-behavior: smooth;
-}
-
-/* Sticky navigation */
-
-nav {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-
-    border-bottom: 1px solid rgba(212, 175, 55, 0.35);
-
-    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
-}
-
-/* Navigation links */
-
+/* Navigation luxury spacing */
 nav a {
-    position: relative;
-    transition: color 0.3s ease;
-}
-
-/* Gold luxury underline */
-
-nav a::after {
-    content: "";
-
-    position: absolute;
-    left: 50%;
-    bottom: -8px;
-
-    width: 0;
-    height: 2px;
-
-    background: linear-gradient(
-        90deg,
-        #9b6b20,
-        #d4af37,
-        #f5d77a,
-        #d4af37,
-        #9b6b20
-    );
-
-    transform: translateX(-50%);
-    transition: width 0.3s ease;
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease,
+        letter-spacing 0.25s ease;
 }
 
 nav a:hover {
-    color: #d4af37;
+    letter-spacing: 1px;
 }
 
-nav a:hover::after {
-    width: 70%;
+/* Active-looking gold underline on hover */
+nav a::after {
+    background: linear-gradient(
+        90deg,
+        #b8860b,
+        #f5d77a,
+        #b8860b
+    );
 }
-/* =========================================
-   DECOREVA MOBILE RESPONSIVE DESIGN
-   ========================================= */
 
-@media (max-width: 768px) {
+/* Mobile adjustments */
+@media (max-width: 700px) {
 
-    /* ---------- HEADER ---------- */
-
-    header {
-        padding: 15px 15px !important;
-        min-height: auto !important;
-    }
-
-    .logo-box {
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
+    header::after {
+        height: 1px;
     }
 
     .brand-logo {
-        width: 95px !important;
-        height: auto !important;
-        flex-shrink: 0 !important;
+        box-shadow:
+            0 0 0 1px rgba(212,175,55,0.65),
+            0 4px 12px rgba(0,0,0,0.3);
     }
-
-    .brand-logo img {
-        width: 100% !important;
-        height: auto !important;
-        max-height: 70px !important;
-        object-fit: contain !important;
-    }
-
-    .logo-box h1 {
-        font-size: 25px !important;
-        margin: 0 !important;
-    }
-
-    .logo-box p {
-        font-size: 12px !important;
+}
+/* MOBILE DECOREVA GOLD LINE FIX */
+@media (max-width: 700px) {
+    .brand-text h1::after {
+        width: 160px !important;
+        height: 2px !important;
         margin-top: 5px !important;
     }
-
-
-    /* ---------- NAVIGATION ---------- */
-
-    nav {
-        padding: 13px 10px !important;
-        gap: 25px !important;
-    }
-
-    nav a {
-        font-size: 14px !important;
-    }
-
-
-    /* ---------- HERO ---------- */
-
-    .hero {
-        min-height: 520px !important;
-        background-position: center center !important;
-        background-size: cover !important;
-    }
-
-    .hero-content {
-        padding: 25px 18px !important;
-    }
-
-    .hero h2 {
-        font-size: 32px !important;
-        line-height: 1.15 !important;
-    }
-
-    .hero p {
-        font-size: 16px !important;
-    }
-
-
-    /* ---------- COLLECTION ---------- */
-
-    #collection {
-        padding: 55px 15px 60px !important;
-    }
-
-    #collection > h2 {
-        font-size: 30px !important;
-        margin-bottom: 35px !important;
-    }
-
-
-    /* ---------- PRODUCT GRID ---------- */
-
-    .products {
-        grid-template-columns: 1fr !important;
-        gap: 25px !important;
-        width: 100% !important;
-    }
-
-    .card {
-        width: 100% !important;
-        max-width: 420px !important;
-        margin: 0 auto !important;
-    }
-
-
-    /* ---------- PRODUCT IMAGE ---------- */
-
-    .image-slider {
-        width: 100% !important;
-    }
-
-    .slider-image {
-        max-width: 100% !important;
-        height: auto !important;
-        object-fit: contain !important;
-    }
-
-
-    /* ---------- PRODUCT BUTTON ---------- */
-
-    .card a[href*="wa.me"] {
-        width: calc(100% - 40px) !important;
-        box-sizing: border-box !important;
-    }
-
-
-    /* ---------- CONTACT ---------- */
-
-    #contact {
-        padding: 65px 18px 70px !important;
-    }
-
-    #contact h2 {
-        font-size: 31px !important;
-    }
-
-    #contact p {
-        font-size: 15px !important;
-        line-height: 1.6 !important;
-    }
-
-    #contact a {
-        display: block !important;
-        width: 90% !important;
-        max-width: 300px !important;
-        margin: 12px auto !important;
-        box-sizing: border-box !important;
-    }
-
-
-    /* ---------- FOOTER ---------- */
-
-    footer {
-        padding: 35px 15px 25px !important;
-    }
-
 }
 
-
-/* =========================================
-   SMALL PHONES
-   ========================================= */
-
 @media (max-width: 480px) {
-
-    .logo-box {
-        gap: 9px !important;
+    .brand-text h1::after {
+        width: 160px !important;
+        height: 2px !important;
     }
-
-    .brand-logo {
-        width: 82px !important;
-    }
-
-    .logo-box h1 {
-        font-size: 21px !important;
-    }
-
-    .logo-box p {
-        font-size: 10px !important;
-    }
-
-    nav {
-        gap: 18px !important;
-    }
-
-    nav a {
-        font-size: 13px !important;
-    }
-
-    .hero {
-        min-height: 470px !important;
-    }
-
-    .hero h2 {
-        font-size: 27px !important;
-    }
-
-    .hero p {
-        font-size: 14px !important;
-    }
-
-    #collection > h2 {
-        font-size: 27px !important;
-    }
-
 }

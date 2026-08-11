@@ -295,5 +295,38 @@ document.addEventListener("keydown", function (e) {
         lightbox.style.display = "none";
 
     }
+// =========================================
+// PRODUCT SEARCH
+// =========================================
 
-});
+const productSearch = document.getElementById("productSearch");
+
+if (productSearch) {
+
+    productSearch.addEventListener("input", function () {
+
+        const searchText = this.value.toLowerCase().trim();
+
+        const products = document.querySelectorAll(".products .card");
+
+        products.forEach(function (card) {
+
+            const productName =
+                card.querySelector("h3");
+
+            if (!productName) return;
+
+            const name =
+                productName.textContent.toLowerCase();
+
+            if (name.includes(searchText)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+
+        });
+
+    });
+
+}
