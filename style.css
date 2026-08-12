@@ -1866,3 +1866,69 @@ nav a::after {
         height: 2px !important;
     }
 }
+/* =========================================
+   DECOREVA PREMIUM HEADER
+   ========================================= */
+
+header {
+    background: linear-gradient(135deg, #0b0b0b, #181818) !important;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.45) !important;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25) !important;
+}
+
+.brand-text h1 {
+    letter-spacing: 4px !important;
+    font-weight: 700 !important;
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.18) !important;
+}
+
+.brand-text p {
+    letter-spacing: 0.8px !important;
+    opacity: 0.9 !important;
+}
+
+.brand-text h1::after {
+    width: 220px !important;
+    height: 3px !important;
+    margin-top: 7px !important;
+    background: linear-gradient(
+        90deg,
+        #b8860b,
+        #d4af37,
+        #f1d77a,
+        #d4af37,
+        #b8860b
+    ) !important;
+    box-shadow: 0 1px 5px rgba(212, 175, 55, 0.35) !important;
+}
+
+nav {
+    background: linear-gradient(180deg, #171717, #101010) !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.18) !important;
+}
+
+nav a {
+    position: relative;
+    transition: all 0.3s ease !important;
+}
+
+nav a:hover {
+    color: #d4af37 !important;
+    transform: translateY(-1px);
+}
+
+nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 0;
+    height: 2px;
+    background: #d4af37;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+    width: 70%;
+}
