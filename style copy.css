@@ -1567,3 +1567,302 @@ footer {
         width: 100% !important;
     }
 }
+/* =====================================================
+   DECOREVA — FINAL PREMIUM HEADER
+   HEADER ONLY — DO NOT TOUCH HERO / PRODUCTS
+   ===================================================== */
+
+header {
+    width: 100%;
+    min-height: 105px;
+    background: linear-gradient(135deg, #0b0b0b, #191919);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.55);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.30);
+    position: relative;
+    z-index: 1001;
+}
+
+/* Logo + brand area */
+.logo-box {
+    display: flex;
+    align-items: center;
+    height: 80px;
+}
+
+/* Logo */
+.brand-logo {
+    width: 76px !important;
+    height: 76px !important;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 18px;
+    overflow: hidden;
+}
+
+.brand-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block;
+}
+
+/* Brand name */
+.brand-text h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 31px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    line-height: 1.1;
+}
+
+/* Gold line */
+.brand-text h1::after {
+    content: "";
+    display: block;
+    width: 220px;
+    height: 2px;
+    background: #d4af37;
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+/* Tagline */
+.brand-text p {
+    margin: 6px 0 0;
+    color: #cfcfcf;
+    font-size: 13px;
+    letter-spacing: 0.7px;
+}
+
+/* =====================================================
+   PREMIUM NAVIGATION
+   ===================================================== */
+
+nav {
+    width: 100%;
+    height: 58px;
+    background: #151515;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 52px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav a {
+    position: relative;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    padding: 8px 4px;
+    transition: all 0.25s ease;
+}
+
+nav a:hover {
+    color: #d4af37;
+    transform: translateY(-1px);
+}
+
+nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background: #d4af37;
+    transform: translateX(-50%);
+    transition: width 0.25s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* =====================================================
+   MOBILE HEADER
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    header {
+        min-height: 88px;
+        height: 88px;
+        padding: 8px 14px;
+    }
+
+    .logo-box {
+        height: 70px;
+    }
+
+    .brand-logo {
+        width: 58px !important;
+        height: 58px !important;
+        margin-right: 12px;
+    }
+
+    .brand-text h1 {
+        font-size: 23px;
+        letter-spacing: 2.5px;
+    }
+
+    .brand-text h1::after {
+        width: 60px;
+        height: 1px;
+        margin-top: 5px;
+    }
+
+    .brand-text p {
+        font-size: 9px;
+        letter-spacing: 0.3px;
+    }
+
+    nav {
+        height: 50px;
+        gap: 27px;
+    }
+
+    nav a {
+        font-size: 13px;
+    }
+}
+
+/* =====================================================
+   SMALL MOBILE
+   ===================================================== */
+
+@media (max-width: 480px) {
+
+    header {
+        min-height: 82px;
+        height: 82px;
+        padding: 7px 10px;
+    }
+
+    .brand-logo {
+        width: 52px !important;
+        height: 52px !important;
+        margin-right: 10px;
+    }
+
+    .brand-text h1 {
+        font-size: 20px;
+        letter-spacing: 2px;
+    }
+
+    .brand-text p {
+        font-size: 8px;
+    }
+
+    nav {
+        height: 48px;
+        gap: 20px;
+    }
+
+    nav a {
+        font-size: 12px;
+    }
+}
+/* =====================================================
+   DECOREVA PREMIUM HEADER — LUXURY FINISH
+   ===================================================== */
+
+/* Header subtle gold glow */
+header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #d4af37,
+        #f5d77a,
+        #d4af37,
+        transparent
+    );
+    opacity: 0.8;
+}
+
+/* Brand name luxury effect */
+.brand-text h1 {
+    text-shadow:
+        0 1px 2px rgba(255,255,255,0.15),
+        0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Logo premium frame */
+.brand-logo {
+    background: #ffffff;
+    border-radius: 5px;
+    padding: 4px;
+    box-shadow:
+        0 0 0 1px rgba(212,175,55,0.7),
+        0 6px 18px rgba(0,0,0,0.35);
+}
+
+/* Navigation luxury spacing */
+nav a {
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease,
+        letter-spacing 0.25s ease;
+}
+
+nav a:hover {
+    letter-spacing: 1px;
+}
+
+/* Active-looking gold underline on hover */
+nav a::after {
+    background: linear-gradient(
+        90deg,
+        #b8860b,
+        #f5d77a,
+        #b8860b
+    );
+}
+
+/* Mobile adjustments */
+@media (max-width: 700px) {
+
+    header::after {
+        height: 1px;
+    }
+
+    .brand-logo {
+        box-shadow:
+            0 0 0 1px rgba(212,175,55,0.65),
+            0 4px 12px rgba(0,0,0,0.3);
+    }
+}
+/* MOBILE DECOREVA GOLD LINE FIX */
+@media (max-width: 700px) {
+    .brand-text h1::after {
+        width: 160px !important;
+        height: 2px !important;
+        margin-top: 5px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-text h1::after {
+        width: 160px !important;
+        height: 2px !important;
+    }
+}
