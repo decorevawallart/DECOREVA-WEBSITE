@@ -2303,7 +2303,7 @@ nav a::before {
     }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
     header {
         height: 92px;
         min-height: 92px;
@@ -2520,7 +2520,7 @@ nav a::before {
     width: 100% !important;
     height: 205px !important;
     padding: 0 !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
     background: #fff !important;
 }
 
