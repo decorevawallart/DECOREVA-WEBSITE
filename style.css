@@ -2384,9 +2384,10 @@ nav a::before {
     }
 
     .products .slider-image {
-        height: 205px;
-        padding: 14px;
-    }
+    height: 205px !important;
+    padding: 4px !important;
+    object-fit: contain !important;
+}
 
     .products .slider-btn {
         width: 33px;
@@ -2516,9 +2517,12 @@ nav a::before {
     }
 
     .products .slider-image {
-        height: 205px !important;
-        padding: 14px !important;
-    }
+    width: 100% !important;
+    height: 205px !important;
+    padding: 0 !important;
+    object-fit: cover !important;
+    background: #fff !important;
+}
 
     .products .slider-btn {
         width: 33px !important;
@@ -2591,8 +2595,10 @@ nav a::before {
     }
 
     .products .slider-image {
-        height: 195px !important;
-    }
+    height: 195px !important;
+    padding: 4px !important;
+    object-fit: contain !important;
+}
 }
 /* =========================================
    PREMIUM LUXURY SLIDER ARROWS
