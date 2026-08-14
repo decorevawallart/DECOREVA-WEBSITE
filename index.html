@@ -55,8 +55,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     <a href="#collection">Collection</a>
 
-    <a href="#contact">Contact</a>
-
+<a href="#contact" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'}); return false;">Contact</a>
 </nav>
 <section class="hero" id="home">
 
@@ -84,13 +83,51 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <h2>Our Collection</h2>
 <div class="product-sort">
-    <select id="productSort">
+
+    <div class="custom-sort">
+
+        <button type="button" class="custom-sort-button">
+            <span>Sort Products</span>
+            <span class="custom-sort-arrow">⌄</span>
+        </button>
+
+        <div class="custom-sort-menu">
+
+            <button type="button" data-value="default">
+                Sort Products
+            </button>
+
+            <button type="button" data-value="low-high">
+                Price: Low to High
+            </button>
+
+            <button type="button" data-value="high-low">
+                Price: High to Low
+            </button>
+
+            <button type="button" data-value="az">
+                Name: A to Z
+            </button>
+
+            <button type="button" data-value="za">
+                Name: Z to A
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Hidden original select - keeps existing sorting working -->
+    <select id="productSort" class="native-sort">
+
         <option value="default">Sort Products</option>
         <option value="low-high">Price: Low to High</option>
         <option value="high-low">Price: High to Low</option>
         <option value="az">Name: A to Z</option>
         <option value="za">Name: Z to A</option>
+
     </select>
+
 </div>
 
 <div class="product-search">
@@ -726,12 +763,198 @@ if (productSort) {
             );
         }
 
-        cards.forEach(card => {
+         cards.forEach(card => {
             productsContainer.appendChild(card);
         });
     });
 }
 </script>
+
+
+<!-- CUSTOM SORT DROPDOWN SCRIPT - START -->
+
+<script>
+
+const customSort =
+    document.querySelector(".custom-sort");
+
+const customSortButton =
+    document.querySelector(".custom-sort-button");
+
+const customSortMenu =
+    document.querySelector(".custom-sort-menu");
+
+
+if (
+    customSort &&
+    customSortButton &&
+    customSortMenu
+) {
+
+    const options =
+        customSortMenu.querySelectorAll("button");
+
+
+    customSortButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            customSort.classList.toggle("open");
+
+        }
+    );
+
+
+    options.forEach(function(option) {
+
+        option.addEventListener(
+            "click",
+            function() {
+
+                const value =
+                    this.getAttribute("data-value");
+
+                const text =
+                    this.textContent.trim();
+
+
+                const productsContainer =
+                    document.querySelector(".products");
+
+
+                if (!productsContainer) return;
+
+
+                const cards =
+                    Array.from(
+                        productsContainer.querySelectorAll(".card")
+                    );
+
+
+                function getPrice(card) {
+
+                    const price =
+                        card.querySelector(".price");
+
+                    if (!price) return 0;
+
+                    return parseInt(
+                        price.textContent.replace(/[^\d]/g, ""),
+                        10
+                    ) || 0;
+
+                }
+
+
+                function getName(card) {
+
+                    const name =
+                        card.querySelector("h3");
+
+                    if (!name) return "";
+
+                    return name.textContent
+                        .trim()
+                        .toLowerCase();
+
+                }
+
+
+                if (value === "low-high") {
+
+                    cards.sort(
+                        (a, b) =>
+                            getPrice(a) - getPrice(b)
+                    );
+
+                }
+
+
+                else if (value === "high-low") {
+
+                    cards.sort(
+                        (a, b) =>
+                            getPrice(b) - getPrice(a)
+                    );
+
+                }
+
+
+                else if (value === "az") {
+
+                    cards.sort(
+                        (a, b) =>
+                            getName(a).localeCompare(
+                                getName(b)
+                            )
+                    );
+
+                }
+
+
+                else if (value === "za") {
+
+                    cards.sort(
+                        (a, b) =>
+                            getName(b).localeCompare(
+                                getName(a)
+                            )
+                    );
+
+                }
+
+
+                cards.forEach(function(card) {
+
+                    productsContainer.appendChild(card);
+
+                });
+
+
+                customSortButton
+                    .querySelector("span:first-child")
+                    .textContent = text;
+
+
+                options.forEach(function(item) {
+
+                    item.classList.remove("active");
+
+                });
+
+
+                this.classList.add("active");
+
+
+                customSort.classList.remove("open");
+
+            }
+        );
+
+    });
+
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (!customSort.contains(event.target)) {
+
+                customSort.classList.remove("open");
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+<!-- CUSTOM SORT DROPDOWN SCRIPT - END -->
+
 
 </body>
 
