@@ -1,17 +1,17 @@
 // ========================================
 // DECOREVA WALL ART
-// COMPLETE PRODUCT SCRIPT
+// CLEAN PRODUCT SCRIPT
+// Slider + Clickable Dots + Lightbox + Search + Sorting
 // ========================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
     // ========================================
-    // LIGHTBOX ELEMENTS
+    // LIGHTBOX
     // ========================================
 
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
-
     const closeBtn = document.querySelector(".close");
     const lightboxPrev = document.querySelector(".lightbox-prev");
     const lightboxNext = document.querySelector(".lightbox-next");
@@ -21,133 +21,182 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================
-    // CREATE / UPDATE SLIDER DOTS
+    // SLIDER HELPERS
     // ========================================
 
-    function updateDots(slider, images, currentIndex) {
+    function getSliderImages(slider) {
+        if (!slider) return [];
 
-    const dotsContainer =
-        slider.querySelector(".slider-dots");
-
-    if (!dotsContainer) return;
-
-    dotsContainer.innerHTML = "";
-
-    images.forEach(function (image, index) {
-
-        const dot =
-            document.createElement("span");
-
-        dot.className = "slider-dot";
-
-        if (index === currentIndex) {
-            dot.classList.add("active");
+        try {
+            return JSON.parse(slider.dataset.images || "[]");
+        } catch (error) {
+            return [];
         }
+    }
 
-        // Make dot clickable
-        dot.addEventListener(
-            "click",
-            function (event) {
 
-                event.stopPropagation();
+    function getSliderIndex(slider) {
+        const index = parseInt(slider?.dataset.index || "0", 10);
 
-                const img =
-                    slider.querySelector(
-                        ".slider-image"
-                    );
+        return Number.isNaN(index) ? 0 : index;
+    }
 
-                if (!img) return;
 
-                img.src = images[index];
+    function showSliderImage(slider, index) {
 
-                slider.dataset.index =
-                    index;
+        if (!slider) return;
 
-                // Update active dot
-                updateDots(
-                    slider,
-                    images,
-                    index
-                );
+        const images = getSliderImages(slider);
+        const img = slider.querySelector(".slider-image");
 
-            }
+        if (!images.length || !img) return;
+
+        index = Math.max(
+            0,
+            Math.min(index, images.length - 1)
         );
 
-        dotsContainer.appendChild(dot);
+        img.src = images[index];
 
-    });
+        slider.dataset.index = index;
 
-}
+        updateDots(
+            slider,
+            images,
+            index
+        );
+    }
+
+
+    // ========================================
+    // CLICKABLE SLIDER DOTS
+    // ========================================
+
+    function updateDots(
+        slider,
+        images,
+        currentIndex
+    ) {
+
+        const dotsContainer =
+            slider.querySelector(".slider-dots");
+
+        if (!dotsContainer) return;
+
+        dotsContainer.innerHTML = "";
+
+        images.forEach(function (image, index) {
+
+            const dot =
+                document.createElement("span");
+
+            dot.className = "slider-dot";
+
+            if (index === currentIndex) {
+                dot.classList.add("active");
+            }
+
+            dot.setAttribute(
+                "role",
+                "button"
+            );
+
+            dot.setAttribute(
+                "aria-label",
+                "View image " + (index + 1)
+            );
+
+            dot.tabIndex = 0;
+
+
+            // DOT CLICK
+            dot.addEventListener(
+                "click",
+                function (event) {
+
+                    event.stopPropagation();
+
+                    showSliderImage(
+                        slider,
+                        index
+                    );
+                }
+            );
+
+
+            // DOT KEYBOARD
+            dot.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Enter" ||
+                        event.key === " "
+                    ) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        showSliderImage(
+                            slider,
+                            index
+                        );
+                    }
+                }
+            );
+
+
+            dotsContainer.appendChild(dot);
+        });
+    }
+
 
     // ========================================
     // PRODUCT SLIDER
     // ========================================
 
-    window.changeImage = function (button, direction) {
+    window.changeImage =
+        function (button, direction) {
 
-        const slider =
-            button.closest(".image-slider");
+            const slider =
+                button.closest(".image-slider");
 
-        if (!slider) return;
+            if (!slider) return;
 
-        const img =
-            slider.querySelector(".slider-image");
+            const images =
+                getSliderImages(slider);
 
-        if (!img) return;
+            if (!images.length) return;
 
-        let images = [];
+            let currentIndex =
+                getSliderIndex(slider);
 
-        try {
+            currentIndex +=
+                Number(direction) || 0;
 
-            images =
-                JSON.parse(
-                    slider.dataset.images || "[]"
-                );
 
-        } catch (error) {
+            if (currentIndex < 0) {
 
-            console.error(
-                "Slider image error:",
-                error
+                currentIndex =
+                    images.length - 1;
+            }
+
+
+            if (
+                currentIndex >=
+                images.length
+            ) {
+
+                currentIndex = 0;
+            }
+
+
+            showSliderImage(
+                slider,
+                currentIndex
             );
-
-            return;
-        }
-
-        if (!images.length) return;
-
-        let currentIndex =
-            parseInt(
-                slider.dataset.index || "0",
-                10
-            );
-
-        if (isNaN(currentIndex)) {
-            currentIndex = 0;
-        }
-
-        currentIndex += direction;
-
-        if (currentIndex < 0) {
-            currentIndex = images.length - 1;
-        }
-
-        if (currentIndex >= images.length) {
-            currentIndex = 0;
-        }
-
-        img.src = images[currentIndex];
-
-        slider.dataset.index =
-            currentIndex;
-
-        updateDots(
-            slider,
-            images,
-            currentIndex
-        );
-
-    };
+        };
 
 
     // ========================================
@@ -158,45 +207,28 @@ document.addEventListener("DOMContentLoaded", function () {
         .querySelectorAll(".image-slider")
         .forEach(function (slider) {
 
-            let images = [];
-
-            try {
-
-                images =
-                    JSON.parse(
-                        slider.dataset.images || "[]"
-                    );
-
-            } catch (error) {
-
-                return;
-            }
+            const images =
+                getSliderImages(slider);
 
             if (!images.length) return;
 
             let currentIndex =
-                parseInt(
-                    slider.dataset.index || "0",
-                    10
-                );
+                getSliderIndex(slider);
 
-            if (isNaN(currentIndex)) {
+
+            if (
+                currentIndex < 0 ||
+                currentIndex >= images.length
+            ) {
+
                 currentIndex = 0;
             }
 
-            const img =
-                slider.querySelector(".slider-image");
 
-            if (img && images[currentIndex]) {
-                img.src = images[currentIndex];
-            }
-
-            updateDots(
+            showSliderImage(
                 slider,
-                images,
                 currentIndex
             );
-
         });
 
 
@@ -210,41 +242,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
             img.addEventListener(
                 "click",
-                function () {
+                function (event) {
 
-                    if (!lightbox || !lightboxImg) {
+                    event.stopPropagation();
+
+                    if (
+                        !lightbox ||
+                        !lightboxImg
+                    ) {
                         return;
                     }
+
 
                     const slider =
                         img.closest(".image-slider");
 
-                    if (
-                        slider &&
-                        slider.dataset.images
-                    ) {
 
-                        try {
+                    if (slider) {
 
-                            lightboxImages =
-                                JSON.parse(
-                                    slider.dataset.images
-                                );
+                        lightboxImages =
+                            getSliderImages(
+                                slider
+                            );
 
-                        } catch (error) {
+
+                        if (
+                            !lightboxImages.length
+                        ) {
 
                             lightboxImages =
                                 [img.src];
-
                         }
 
+
                         lightboxIndex =
-                            parseInt(
-                                slider.dataset.index || "0",
-                                10
+                            getSliderIndex(
+                                slider
                             );
 
-                        if (isNaN(lightboxIndex)) {
+
+                        if (
+                            lightboxIndex < 0 ||
+                            lightboxIndex >=
+                            lightboxImages.length
+                        ) {
+
                             lightboxIndex = 0;
                         }
 
@@ -254,29 +296,59 @@ document.addEventListener("DOMContentLoaded", function () {
                             [img.src];
 
                         lightboxIndex = 0;
-
                     }
 
-                    if (
+
+                    lightboxImg.src =
                         lightboxImages[
                             lightboxIndex
-                        ]
-                    ) {
+                        ];
 
-                        lightboxImg.src =
-                            lightboxImages[
-                                lightboxIndex
-                            ];
-
-                    }
 
                     lightbox.style.display =
                         "flex";
-
                 }
             );
-
         });
+
+
+    // ========================================
+    // SHOW LIGHTBOX IMAGE
+    // ========================================
+
+    function showLightboxImage(index) {
+
+        if (
+            !lightboxImages.length ||
+            !lightboxImg
+        ) {
+            return;
+        }
+
+
+        if (index < 0) {
+
+            index =
+                lightboxImages.length - 1;
+        }
+
+
+        if (
+            index >=
+            lightboxImages.length
+        ) {
+
+            index = 0;
+        }
+
+
+        lightboxIndex = index;
+
+        lightboxImg.src =
+            lightboxImages[
+                lightboxIndex
+            ];
+    }
 
 
     // ========================================
@@ -291,29 +363,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 event.stopPropagation();
 
-                if (!lightboxImages.length) {
+                if (
+                    !lightboxImages.length
+                ) {
                     return;
                 }
 
-                lightboxIndex++;
 
-                if (
-                    lightboxIndex >=
-                    lightboxImages.length
-                ) {
-
-                    lightboxIndex = 0;
-
-                }
-
-                lightboxImg.src =
-                    lightboxImages[
-                        lightboxIndex
-                    ];
-
+                showLightboxImage(
+                    lightboxIndex + 1
+                );
             }
         );
-
     }
 
 
@@ -329,27 +390,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 event.stopPropagation();
 
-                if (!lightboxImages.length) {
+                if (
+                    !lightboxImages.length
+                ) {
                     return;
                 }
 
-                lightboxIndex--;
 
-                if (lightboxIndex < 0) {
-
-                    lightboxIndex =
-                        lightboxImages.length - 1;
-
-                }
-
-                lightboxImg.src =
-                    lightboxImages[
-                        lightboxIndex
-                    ];
-
+                showLightboxImage(
+                    lightboxIndex - 1
+                );
             }
         );
-
     }
 
 
@@ -357,20 +409,27 @@ document.addEventListener("DOMContentLoaded", function () {
     // CLOSE LIGHTBOX
     // ========================================
 
+    function closeLightbox() {
+
+        if (lightbox) {
+
+            lightbox.style.display =
+                "none";
+        }
+    }
+
+
     if (closeBtn) {
 
         closeBtn.addEventListener(
             "click",
-            function () {
+            function (event) {
 
-                if (lightbox) {
-                    lightbox.style.display =
-                        "none";
-                }
+                event.stopPropagation();
 
+                closeLightbox();
             }
         );
-
     }
 
 
@@ -389,59 +448,38 @@ document.addEventListener("DOMContentLoaded", function () {
                     lightbox
                 ) {
 
-                    lightbox.style.display =
-                        "none";
-
+                    closeLightbox();
                 }
-
             }
         );
-
     }
 
 
     // ========================================
-    // KEYBOARD CONTROLS
+    // LIGHTBOX KEYBOARD CONTROLS
     // ========================================
 
     document.addEventListener(
         "keydown",
         function (event) {
 
-            if (!lightbox) return;
-
             if (
+                !lightbox ||
                 lightbox.style.display !==
                 "flex"
             ) {
                 return;
             }
 
+
             if (
                 event.key ===
                 "ArrowRight"
             ) {
 
-                if (!lightboxImages.length) {
-                    return;
-                }
-
-                lightboxIndex++;
-
-                if (
-                    lightboxIndex >=
-                    lightboxImages.length
-                ) {
-
-                    lightboxIndex = 0;
-
-                }
-
-                lightboxImg.src =
-                    lightboxImages[
-                        lightboxIndex
-                    ];
-
+                showLightboxImage(
+                    lightboxIndex + 1
+                );
             }
 
 
@@ -450,24 +488,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 "ArrowLeft"
             ) {
 
-                if (!lightboxImages.length) {
-                    return;
-                }
-
-                lightboxIndex--;
-
-                if (lightboxIndex < 0) {
-
-                    lightboxIndex =
-                        lightboxImages.length - 1;
-
-                }
-
-                lightboxImg.src =
-                    lightboxImages[
-                        lightboxIndex
-                    ];
-
+                showLightboxImage(
+                    lightboxIndex - 1
+                );
             }
 
 
@@ -476,18 +499,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Escape"
             ) {
 
-                lightbox.style.display =
-                    "none";
-
+                closeLightbox();
             }
-
         }
     );
 
 
     // ========================================
     // PRODUCT SEARCH
-    // MOBILE + DESKTOP
     // ========================================
 
     const productSearch =
@@ -495,47 +514,43 @@ document.addEventListener("DOMContentLoaded", function () {
             "productSearch"
         );
 
+
     function filterProducts() {
 
         if (!productSearch) return;
+
 
         const searchText =
             productSearch.value
                 .toLowerCase()
                 .trim();
 
-        const cards =
-            document.querySelectorAll(
+
+        document
+            .querySelectorAll(
                 ".products .card"
-            );
+            )
+            .forEach(function (card) {
 
-        cards.forEach(function (card) {
+                const productName =
+                    card.querySelector("h3");
 
-            const productName =
-                card.querySelector("h3");
 
-            if (!productName) return;
+                if (!productName) return;
 
-            const name =
-                productName.textContent
-                    .toLowerCase()
-                    .trim();
 
-            if (
-                searchText === "" ||
-                name.includes(searchText)
-            ) {
+                const name =
+                    productName.textContent
+                        .toLowerCase()
+                        .trim();
 
-                card.style.display = "";
 
-            } else {
-
-                card.style.display = "none";
-
-            }
-
-        });
-
+                card.style.display =
+                    !searchText ||
+                    name.includes(searchText)
+                        ? ""
+                        : "none";
+            });
     }
 
 
@@ -545,357 +560,70 @@ document.addEventListener("DOMContentLoaded", function () {
             "input",
             filterProducts
         );
-
-        productSearch.addEventListener(
-            "keyup",
-            filterProducts
-        );
-
-        productSearch.addEventListener(
-            "change",
-            filterProducts
-        );
-
-    }
-// ========================================
-// PRODUCT SORTING
-// CUSTOM DROPDOWN + NATIVE SELECT
-// ========================================
-
-const productsContainer =
-    document.querySelector(".products");
-
-const customSort =
-    document.querySelector(".custom-sort");
-
-const customSortButton =
-    document.querySelector(".custom-sort-button");
-
-const customSortMenu =
-    document.querySelector(".custom-sort-menu");
-
-const sortSelect =
-    document.getElementById("productSort");
-
-
-// Save original product order ONCE
-const originalCards =
-    productsContainer
-        ? Array.from(
-            productsContainer.querySelectorAll(".card")
-        )
-        : [];
-
-
-// ========================================
-// GET PRODUCT NAME
-// ========================================
-
-function getProductName(card) {
-
-    const name =
-        card.querySelector("h3");
-
-    return name
-        ? name.textContent
-            .trim()
-            .toLowerCase()
-        : "";
-}
-
-
-// ========================================
-// SORT PRODUCTS
-// ========================================
-
-function sortProducts(sortValue) {
-
-    if (!productsContainer) {
-        return;
-    }
-
-    // DEFAULT
-    if (sortValue === "default") {
-
-        originalCards.forEach(function(card) {
-
-            productsContainer.appendChild(card);
-
-        });
-
-        return;
     }
 
 
-    const cards =
-        Array.from(
-            productsContainer.querySelectorAll(".card")
+    // ========================================
+    // PRODUCT SORTING
+    // ========================================
+
+    const productsContainer =
+        document.querySelector(
+            ".products"
         );
 
 
-    // PRICE: LOW TO HIGH
-    if (sortValue === "low-high") {
-
-        cards.sort(function(a, b) {
-
-            return getPrice(a) - getPrice(b);
-
-        });
-    }
-
-
-    // PRICE: HIGH TO LOW
-    else if (sortValue === "high-low") {
-
-        cards.sort(function(a, b) {
-
-            return getPrice(b) - getPrice(a);
-
-        });
-    }
-
-
-    // NAME: A TO Z
-    else if (sortValue === "az") {
-
-        cards.sort(function(a, b) {
-
-            return getProductName(a)
-                .localeCompare(
-                    getProductName(b)
-                );
-
-        });
-    }
-
-
-    // NAME: Z TO A
-    else if (sortValue === "za") {
-
-        cards.sort(function(a, b) {
-
-            return getProductName(b)
-                .localeCompare(
-                    getProductName(a)
-                );
-
-        });
-    }
-
-
-    // Put sorted cards back
-    cards.forEach(function(card) {
-
-        productsContainer.appendChild(card);
-
-    });
-}
-
-
-// ========================================
-// CUSTOM DROPDOWN
-// ========================================
-
-if (
-    customSort &&
-    customSortButton &&
-    customSortMenu
-) {
-
-    const options =
-        customSortMenu.querySelectorAll(
-            "button[data-value]"
+    const customSort =
+        document.querySelector(
+            ".custom-sort"
         );
 
 
-    // OPEN / CLOSE DROPDOWN
-    customSortButton.addEventListener(
-        "click",
-        function(event) {
-
-            event.stopPropagation();
-
-            customSort.classList.toggle("open");
-
-        }
-    );
-
-
-    // SORT OPTION CLICK
-    options.forEach(function(option) {
-
-        option.addEventListener(
-            "click",
-            function(event) {
-
-                event.stopPropagation();
-
-
-                const value =
-                    this.getAttribute(
-                        "data-value"
-                    );
-
-
-                const text =
-                    this.textContent.trim();
-
-
-                if (!value) {
-                    return;
-                }
-
-
-                // Sort products
-                sortProducts(value);
-
-
-                // Update button text
-                const buttonText =
-                    customSortButton.querySelector(
-                        "span:first-child"
-                    );
-
-                if (buttonText) {
-
-                    buttonText.textContent =
-                        text;
-
-                }
-
-
-                // Remove active from all options
-                options.forEach(function(item) {
-
-                    item.classList.remove(
-                        "active"
-                    );
-
-                });
-
-
-                // Add active to selected option
-                this.classList.add("active");
-
-
-                // Sync hidden native select
-                if (sortSelect) {
-
-                    sortSelect.value =
-                        value;
-
-                }
-
-
-                // Close dropdown
-                customSort.classList.remove(
-                    "open"
-                );
-
-            }
+    const customSortButton =
+        document.querySelector(
+            ".custom-sort-button"
         );
 
-    });
+
+    const customSortMenu =
+        document.querySelector(
+            ".custom-sort-menu"
+        );
 
 
-    // CLOSE WHEN CLICKING OUTSIDE
-    document.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                !customSort.contains(
-                    event.target
-                )
-            ) {
-
-                customSort.classList.remove(
-                    "open"
-                );
-
-            }
-
-        }
-    );
-
-}
+    const sortSelect =
+        document.getElementById(
+            "productSort"
+        );
 
 
-// ========================================
-// NATIVE SELECT SUPPORT
-// ========================================
-
-if (sortSelect) {
-
-    sortSelect.addEventListener(
-        "change",
-        function() {
-
-            const value =
-                this.value;
+    const originalCards =
+        productsContainer
+            ? Array.from(
+                productsContainer
+                    .querySelectorAll(".card")
+            )
+            : [];
 
 
-            // Sort products
-            sortProducts(value);
+    // ========================================
+    // GET PRODUCT NAME
+    // ========================================
+
+    function getProductName(card) {
+
+        const name =
+            card.querySelector("h3");
 
 
-            // Update custom dropdown
-            if (
-                customSort &&
-                customSortButton &&
-                customSortMenu
-            ) {
-
-                const option =
-                    customSortMenu.querySelector(
-                        'button[data-value="' +
-                        value +
-                        '"]'
-                    );
+        return name
+            ? name.textContent
+                .trim()
+                .toLowerCase()
+            : "";
+    }
 
 
-                if (option) {
-
-                    const buttonText =
-                        customSortButton.querySelector(
-                            "span:first-child"
-                        );
-
-                    if (buttonText) {
-
-                        buttonText.textContent =
-                            option.textContent.trim();
-
-                    }
-
-
-                    customSortMenu
-                        .querySelectorAll(
-                            "button[data-value]"
-                        )
-                        .forEach(
-                            function(item) {
-
-                                item.classList.remove(
-                                    "active"
-                                );
-
-                            }
-                        );
-
-
-                    option.classList.add(
-                        "active"
-                    );
-
-                }
-
-            }
-
-        }
-    );
-
-}
     // ========================================
     // GET PRODUCT PRICE
     // ========================================
@@ -903,41 +631,329 @@ if (sortSelect) {
     function getPrice(card) {
 
         const priceElement =
-            card.querySelector(".price");
+            card.querySelector(
+                ".price"
+            );
 
-        if (!priceElement) {
 
-            const text =
-                card.textContent || "";
+        if (priceElement) {
 
-            const match =
-                text.match(
+            return (
+                parseFloat(
+                    priceElement.textContent
+                        .replace(/[^\d.]/g, "")
+                ) || 0
+            );
+        }
+
+
+        const match =
+            (card.textContent || "")
+                .match(
                     /₹\s*([0-9,]+)/
                 );
 
-            if (!match) return 0;
 
-            return parseFloat(
-                match[1]
-                    .replace(/,/g, "")
-            );
+        if (!match) return 0;
 
-        }
 
         return parseFloat(
-            priceElement.textContent
-                .replace(/[^\d.]/g, "")
+            match[1].replace(/,/g, "")
         ) || 0;
-
     }
 
 
     // ========================================
-    // DEBUG MESSAGE
+    // SORT PRODUCTS
     // ========================================
 
-    console.log(
-        "DECOREVA script loaded successfully"
-    );
+    function sortProducts(sortValue) {
+
+        if (!productsContainer) {
+            return;
+        }
+
+
+        // DEFAULT ORDER
+        if (
+            sortValue === "default" ||
+            !sortValue
+        ) {
+
+            originalCards.forEach(
+                function (card) {
+
+                    productsContainer
+                        .appendChild(card);
+                }
+            );
+
+            return;
+        }
+
+
+        const cards =
+            Array.from(
+                productsContainer
+                    .querySelectorAll(".card")
+            );
+
+
+        // LOW TO HIGH
+        if (
+            sortValue ===
+            "low-high"
+        ) {
+
+            cards.sort(
+                function (a, b) {
+
+                    return (
+                        getPrice(a) -
+                        getPrice(b)
+                    );
+                }
+            );
+        }
+
+
+        // HIGH TO LOW
+        else if (
+            sortValue ===
+            "high-low"
+        ) {
+
+            cards.sort(
+                function (a, b) {
+
+                    return (
+                        getPrice(b) -
+                        getPrice(a)
+                    );
+                }
+            );
+        }
+
+
+        // A TO Z
+        else if (
+            sortValue === "az"
+        ) {
+
+            cards.sort(
+                function (a, b) {
+
+                    return getProductName(a)
+                        .localeCompare(
+                            getProductName(b)
+                        );
+                }
+            );
+        }
+
+
+        // Z TO A
+        else if (
+            sortValue === "za"
+        ) {
+
+            cards.sort(
+                function (a, b) {
+
+                    return getProductName(b)
+                        .localeCompare(
+                            getProductName(a)
+                        );
+                }
+            );
+        }
+
+
+        cards.forEach(
+            function (card) {
+
+                productsContainer
+                    .appendChild(card);
+            }
+        );
+    }
+
+
+    // ========================================
+    // UPDATE CUSTOM SORT UI
+    // ========================================
+
+    function updateCustomSortUI(value) {
+
+        if (
+            !customSortMenu ||
+            !customSortButton
+        ) {
+            return;
+        }
+
+
+        const options =
+            customSortMenu
+                .querySelectorAll(
+                    "button[data-value]"
+                );
+
+
+        let selectedOption = null;
+
+
+        options.forEach(
+            function (option) {
+
+                const isActive =
+                    option.getAttribute(
+                        "data-value"
+                    ) === value;
+
+
+                option.classList.toggle(
+                    "active",
+                    isActive
+                );
+
+
+                if (isActive) {
+
+                    selectedOption =
+                        option;
+                }
+            }
+        );
+
+
+        const buttonText =
+            customSortButton
+                .querySelector(
+                    "span:first-child"
+                );
+
+
+        if (
+            buttonText &&
+            selectedOption
+        ) {
+
+            buttonText.textContent =
+                selectedOption
+                    .textContent
+                    .trim();
+        }
+    }
+
+
+    // ========================================
+    // CUSTOM SORT DROPDOWN
+    // ========================================
+
+    if (
+        customSort &&
+        customSortButton &&
+        customSortMenu
+    ) {
+
+        const options =
+            customSortMenu
+                .querySelectorAll(
+                    "button[data-value]"
+                );
+
+
+        // OPEN / CLOSE
+        customSortButton
+            .addEventListener(
+                "click",
+                function (event) {
+
+                    event.stopPropagation();
+
+                    customSort.classList.toggle(
+                        "open"
+                    );
+                }
+            );
+
+
+        // SORT OPTION
+        options.forEach(
+            function (option) {
+
+                option.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        const value =
+                            this.getAttribute(
+                                "data-value"
+                            );
+
+
+                        if (!value) return;
+
+
+                        sortProducts(value);
+
+                        updateCustomSortUI(
+                            value
+                        );
+
+
+                        if (sortSelect) {
+
+                            sortSelect.value =
+                                value;
+                        }
+
+
+                        customSort.classList.remove(
+                            "open"
+                        );
+                    }
+                );
+            }
+        );
+
+
+        // CLOSE OUTSIDE
+        document.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    !customSort.contains(
+                        event.target
+                    )
+                ) {
+
+                    customSort.classList.remove(
+                        "open"
+                    );
+                }
+            }
+        );
+    }
+
+
+  
+
+    // ========================================
+    // INITIAL SORT UI
+    // ========================================
+
+    if (sortSelect) {
+
+        updateCustomSortUI(
+            sortSelect.value ||
+            "default"
+        );
+    }
 
 });

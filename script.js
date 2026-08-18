@@ -942,29 +942,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ========================================
-    // NATIVE SELECT SUPPORT
-    // ========================================
-
-    if (sortSelect) {
-
-        sortSelect.addEventListener(
-            "change",
-            function () {
-
-                const value =
-                    this.value;
-
-
-                sortProducts(value);
-
-                updateCustomSortUI(
-                    value
-                );
-            }
-        );
-    }
-
+  
 
     // ========================================
     // INITIAL SORT UI
