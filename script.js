@@ -957,3 +957,143 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+/* =========================================================
+   FEATURED PRODUCTS AUTO SLIDESHOW
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const featuredSlides =
+        document.querySelectorAll(".featured-slide");
+
+    const featuredDots =
+        document.querySelectorAll(".featured-dot");
+
+    const featuredPrev =
+        document.querySelector(".featured-prev");
+
+    const featuredNext =
+        document.querySelector(".featured-next");
+
+    if (!featuredSlides.length) return;
+
+    let featuredIndex = 0;
+
+    let featuredTimer;
+
+
+    function showFeaturedSlide(index) {
+
+        if (index < 0) {
+            index = featuredSlides.length - 1;
+        }
+
+        if (index >= featuredSlides.length) {
+            index = 0;
+        }
+
+        featuredSlides.forEach(function (slide, i) {
+            slide.classList.toggle(
+                "active",
+                i === index
+            );
+        });
+
+
+        featuredDots.forEach(function (dot, i) {
+            dot.classList.toggle(
+                "active",
+                i === index
+            );
+        });
+
+
+        featuredIndex = index;
+    }
+
+
+    function nextFeaturedSlide() {
+
+        showFeaturedSlide(
+            featuredIndex + 1
+        );
+
+    }
+
+
+    function startFeaturedSlideshow() {
+
+        clearInterval(featuredTimer);
+
+        featuredTimer = setInterval(
+            nextFeaturedSlide,
+            4000
+        );
+
+    }
+
+
+    function restartFeaturedSlideshow() {
+
+        startFeaturedSlideshow();
+
+    }
+
+
+    if (featuredNext) {
+
+        featuredNext.addEventListener(
+            "click",
+            function () {
+
+                nextFeaturedSlide();
+
+                restartFeaturedSlideshow();
+
+            }
+        );
+
+    }
+
+
+    if (featuredPrev) {
+
+        featuredPrev.addEventListener(
+            "click",
+            function () {
+
+                showFeaturedSlide(
+                    featuredIndex - 1
+                );
+
+                restartFeaturedSlideshow();
+
+            }
+        );
+
+    }
+
+
+    featuredDots.forEach(
+        function (dot, index) {
+
+            dot.addEventListener(
+                "click",
+                function () {
+
+                    showFeaturedSlide(index);
+
+                    restartFeaturedSlideshow();
+
+                }
+            );
+
+        }
+    );
+
+
+    showFeaturedSlide(0);
+
+    startFeaturedSlideshow();
+
+});
