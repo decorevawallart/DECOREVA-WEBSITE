@@ -26,29 +26,58 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateDots(slider, images, currentIndex) {
 
-        const dotsContainer =
-            slider.querySelector(".slider-dots");
+    const dotsContainer =
+        slider.querySelector(".slider-dots");
 
-        if (!dotsContainer) return;
+    if (!dotsContainer) return;
 
-        dotsContainer.innerHTML = "";
+    dotsContainer.innerHTML = "";
 
-        images.forEach(function (image, index) {
+    images.forEach(function (image, index) {
 
-            const dot = document.createElement("span");
+        const dot =
+            document.createElement("span");
 
-            dot.className = "slider-dot";
+        dot.className = "slider-dot";
 
-            if (index === currentIndex) {
-                dot.classList.add("active");
+        if (index === currentIndex) {
+            dot.classList.add("active");
+        }
+
+        // Make dot clickable
+        dot.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+                const img =
+                    slider.querySelector(
+                        ".slider-image"
+                    );
+
+                if (!img) return;
+
+                img.src = images[index];
+
+                slider.dataset.index =
+                    index;
+
+                // Update active dot
+                updateDots(
+                    slider,
+                    images,
+                    index
+                );
+
             }
+        );
 
-            dotsContainer.appendChild(dot);
+        dotsContainer.appendChild(dot);
 
-        });
+    });
 
-    }
-
+}
 
     // ========================================
     // PRODUCT SLIDER
@@ -528,149 +557,345 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
+// ========================================
+// PRODUCT SORTING
+// CUSTOM DROPDOWN + NATIVE SELECT
+// ========================================
+
+const productsContainer =
+    document.querySelector(".products");
+
+const customSort =
+    document.querySelector(".custom-sort");
+
+const customSortButton =
+    document.querySelector(".custom-sort-button");
+
+const customSortMenu =
+    document.querySelector(".custom-sort-menu");
+
+const sortSelect =
+    document.getElementById("productSort");
 
 
-    // ========================================
-    // PRODUCT SORTING
-    // ========================================
+// Save original product order ONCE
+const originalCards =
+    productsContainer
+        ? Array.from(
+            productsContainer.querySelectorAll(".card")
+        )
+        : [];
 
-    const sortSelect =
-        document.getElementById(
-            "sortProducts"
-        ) ||
-        document.getElementById(
-            "productSort"
-        ) ||
-        document.querySelector(
-            ".sort-products"
+
+// ========================================
+// GET PRODUCT NAME
+// ========================================
+
+function getProductName(card) {
+
+    const name =
+        card.querySelector("h3");
+
+    return name
+        ? name.textContent
+            .trim()
+            .toLowerCase()
+        : "";
+}
+
+
+// ========================================
+// SORT PRODUCTS
+// ========================================
+
+function sortProducts(sortValue) {
+
+    if (!productsContainer) {
+        return;
+    }
+
+    // DEFAULT
+    if (sortValue === "default") {
+
+        originalCards.forEach(function(card) {
+
+            productsContainer.appendChild(card);
+
+        });
+
+        return;
+    }
+
+
+    const cards =
+        Array.from(
+            productsContainer.querySelectorAll(".card")
         );
 
 
-    if (sortSelect) {
+    // PRICE: LOW TO HIGH
+    if (sortValue === "low-high") {
 
-        sortSelect.addEventListener(
-            "change",
-            function () {
+        cards.sort(function(a, b) {
 
-                const productsContainer =
-                    document.querySelector(
-                        ".products"
+            return getPrice(a) - getPrice(b);
+
+        });
+    }
+
+
+    // PRICE: HIGH TO LOW
+    else if (sortValue === "high-low") {
+
+        cards.sort(function(a, b) {
+
+            return getPrice(b) - getPrice(a);
+
+        });
+    }
+
+
+    // NAME: A TO Z
+    else if (sortValue === "az") {
+
+        cards.sort(function(a, b) {
+
+            return getProductName(a)
+                .localeCompare(
+                    getProductName(b)
+                );
+
+        });
+    }
+
+
+    // NAME: Z TO A
+    else if (sortValue === "za") {
+
+        cards.sort(function(a, b) {
+
+            return getProductName(b)
+                .localeCompare(
+                    getProductName(a)
+                );
+
+        });
+    }
+
+
+    // Put sorted cards back
+    cards.forEach(function(card) {
+
+        productsContainer.appendChild(card);
+
+    });
+}
+
+
+// ========================================
+// CUSTOM DROPDOWN
+// ========================================
+
+if (
+    customSort &&
+    customSortButton &&
+    customSortMenu
+) {
+
+    const options =
+        customSortMenu.querySelectorAll(
+            "button[data-value]"
+        );
+
+
+    // OPEN / CLOSE DROPDOWN
+    customSortButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            customSort.classList.toggle("open");
+
+        }
+    );
+
+
+    // SORT OPTION CLICK
+    options.forEach(function(option) {
+
+        option.addEventListener(
+            "click",
+            function(event) {
+
+                event.stopPropagation();
+
+
+                const value =
+                    this.getAttribute(
+                        "data-value"
                     );
 
-                if (!productsContainer) {
+
+                const text =
+                    this.textContent.trim();
+
+
+                if (!value) {
                     return;
                 }
 
-                const cards =
-                    Array.from(
-                        productsContainer.querySelectorAll(
-                            ".card"
-                        )
+
+                // Sort products
+                sortProducts(value);
+
+
+                // Update button text
+                const buttonText =
+                    customSortButton.querySelector(
+                        "span:first-child"
                     );
 
-                const value =
-                    sortSelect.value;
+                if (buttonText) {
 
-                cards.sort(
-                    function (a, b) {
+                    buttonText.textContent =
+                        text;
 
-                        const nameA =
-                            (
-                                a.querySelector("h3")
-                                    ?.textContent || ""
-                            )
-                            .trim()
-                            .toLowerCase();
-
-                        const nameB =
-                            (
-                                b.querySelector("h3")
-                                    ?.textContent || ""
-                            )
-                            .trim()
-                            .toLowerCase();
+                }
 
 
-                        const priceA =
-                            getPrice(a);
+                // Remove active from all options
+                options.forEach(function(item) {
 
-                        const priceB =
-                            getPrice(b);
+                    item.classList.remove(
+                        "active"
+                    );
 
-
-                        if (
-                            value ===
-                            "price-low"
-                        ) {
-
-                            return (
-                                priceA -
-                                priceB
-                            );
-
-                        }
+                });
 
 
-                        if (
-                            value ===
-                            "price-high"
-                        ) {
-
-                            return (
-                                priceB -
-                                priceA
-                            );
-
-                        }
+                // Add active to selected option
+                this.classList.add("active");
 
 
-                        if (
-                            value ===
-                            "name-a"
-                        ) {
+                // Sync hidden native select
+                if (sortSelect) {
 
-                            return nameA
-                                .localeCompare(
-                                    nameB
-                                );
+                    sortSelect.value =
+                        value;
 
-                        }
+                }
 
 
-                        if (
-                            value ===
-                            "name-z"
-                        ) {
-
-                            return nameB
-                                .localeCompare(
-                                    nameA
-                                );
-
-                        }
-
-
-                        return 0;
-
-                    }
-                );
-
-
-                cards.forEach(
-                    function (card) {
-
-                        productsContainer
-                            .appendChild(card);
-
-                    }
+                // Close dropdown
+                customSort.classList.remove(
+                    "open"
                 );
 
             }
         );
 
-    }
+    });
 
 
+    // CLOSE WHEN CLICKING OUTSIDE
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !customSort.contains(
+                    event.target
+                )
+            ) {
+
+                customSort.classList.remove(
+                    "open"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+// ========================================
+// NATIVE SELECT SUPPORT
+// ========================================
+
+if (sortSelect) {
+
+    sortSelect.addEventListener(
+        "change",
+        function() {
+
+            const value =
+                this.value;
+
+
+            // Sort products
+            sortProducts(value);
+
+
+            // Update custom dropdown
+            if (
+                customSort &&
+                customSortButton &&
+                customSortMenu
+            ) {
+
+                const option =
+                    customSortMenu.querySelector(
+                        'button[data-value="' +
+                        value +
+                        '"]'
+                    );
+
+
+                if (option) {
+
+                    const buttonText =
+                        customSortButton.querySelector(
+                            "span:first-child"
+                        );
+
+                    if (buttonText) {
+
+                        buttonText.textContent =
+                            option.textContent.trim();
+
+                    }
+
+
+                    customSortMenu
+                        .querySelectorAll(
+                            "button[data-value]"
+                        )
+                        .forEach(
+                            function(item) {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                    option.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
     // ========================================
     // GET PRODUCT PRICE
     // ========================================

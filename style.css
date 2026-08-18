@@ -370,7 +370,7 @@ nav a:hover::before {
 .hero {
     width: 100%;
 
-    margin: 0 0 58px;
+    margin: 0 0 20px;
     padding: 0;
 
     display: block;
@@ -733,6 +733,7 @@ nav a:hover::before {
 
 #collection .product-sort select {
     position: absolute;
+    display: none !important;
 
     top: 0;
     right: 0;
@@ -1015,18 +1016,7 @@ nav a:hover::before {
 }
 
 
-/* HIDE NATIVE SORT */
-
-.native-sort {
-    position: absolute !important;
-
-    width: 1px !important;
-    height: 1px !important;
-
-    opacity: 0 !important;
-
-    pointer-events: none !important;
-}
+/* Native select is hidden visually; sorting is controlled by .custom-sort. */
 
 
 /* =========================================================
@@ -2150,10 +2140,6 @@ nav a::before {
 }
 
 /* ---------- Final spacing ---------- */
-.hero {
-    margin-bottom: 20px !important;
-    overflow: hidden;
-}
 
 #collection {
     padding-top: 40px !important;

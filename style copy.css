@@ -2152,7 +2152,7 @@ nav a::before {
 /* ---------- Final spacing ---------- */
 .hero {
     margin-bottom: 20px !important;
-    overflow: hidden;
+    overflow: visible;
 }
 
 #collection {
