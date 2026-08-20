@@ -1,28 +1,13 @@
-// ========================================
-// DECOREVA WALL ART
-// CLEAN PRODUCT SCRIPT
-// Slider + Clickable Dots + Lightbox + Search + Sorting
-// ========================================
+/* =========================================================
+   DECOREVA WALL ART
+   FINAL CLEAN SCRIPT.JS
+   ========================================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ========================================
-    // LIGHTBOX
-    // ========================================
-
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    const closeBtn = document.querySelector(".close");
-    const lightboxPrev = document.querySelector(".lightbox-prev");
-    const lightboxNext = document.querySelector(".lightbox-next");
-
-    let lightboxImages = [];
-    let lightboxIndex = 0;
-
-
-    // ========================================
-    // SLIDER HELPERS
-    // ========================================
+    /* =====================================================
+       1. PRODUCT IMAGE SLIDER
+       ===================================================== */
 
     function getSliderImages(slider) {
         if (!slider) return [];
@@ -30,53 +15,25 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             return JSON.parse(slider.dataset.images || "[]");
         } catch (error) {
+            console.error("Slider image data error:", error);
             return [];
         }
     }
 
-
     function getSliderIndex(slider) {
-        const index = parseInt(slider?.dataset.index || "0", 10);
+        if (!slider) return 0;
+
+        const index = parseInt(
+            slider.dataset.index || "0",
+            10
+        );
 
         return Number.isNaN(index) ? 0 : index;
     }
 
-
-    function showSliderImage(slider, index) {
+    function updateDots(slider, images, currentIndex) {
 
         if (!slider) return;
-
-        const images = getSliderImages(slider);
-        const img = slider.querySelector(".slider-image");
-
-        if (!images.length || !img) return;
-
-        index = Math.max(
-            0,
-            Math.min(index, images.length - 1)
-        );
-
-        img.src = images[index];
-
-        slider.dataset.index = index;
-
-        updateDots(
-            slider,
-            images,
-            index
-        );
-    }
-
-
-    // ========================================
-    // CLICKABLE SLIDER DOTS
-    // ========================================
-
-    function updateDots(
-        slider,
-        images,
-        currentIndex
-    ) {
 
         const dotsContainer =
             slider.querySelector(".slider-dots");
@@ -87,8 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         images.forEach(function (image, index) {
 
-            const dot =
-                document.createElement("span");
+            const dot = document.createElement("span");
 
             dot.className = "slider-dot";
 
@@ -96,10 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 dot.classList.add("active");
             }
 
-            dot.setAttribute(
-                "role",
-                "button"
-            );
+            dot.setAttribute("role", "button");
 
             dot.setAttribute(
                 "aria-label",
@@ -108,8 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             dot.tabIndex = 0;
 
-
-            // DOT CLICK
             dot.addEventListener(
                 "click",
                 function (event) {
@@ -123,8 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             );
 
-
-            // DOT KEYBOARD
             dot.addEventListener(
                 "keydown",
                 function (event) {
@@ -135,7 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     ) {
 
                         event.preventDefault();
-
                         event.stopPropagation();
 
                         showSliderImage(
@@ -146,62 +94,80 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             );
 
-
             dotsContainer.appendChild(dot);
         });
     }
 
 
-    // ========================================
-    // PRODUCT SLIDER
-    // ========================================
+    function showSliderImage(slider, index) {
 
-    window.changeImage =
-        function (button, direction) {
+        if (!slider) return;
 
-            const slider =
-                button.closest(".image-slider");
+        const images = getSliderImages(slider);
 
-            if (!slider) return;
+        if (!images.length) return;
 
-            const images =
-                getSliderImages(slider);
+        if (index < 0) {
+            index = images.length - 1;
+        }
 
-            if (!images.length) return;
+        if (index >= images.length) {
+            index = 0;
+        }
 
-            let currentIndex =
-                getSliderIndex(slider);
+        const image =
+            slider.querySelector(".slider-image");
 
-            currentIndex +=
-                Number(direction) || 0;
+        if (!image) return;
 
+        slider.dataset.index = index;
 
-            if (currentIndex < 0) {
+        image.src = images[index];
 
-                currentIndex =
-                    images.length - 1;
-            }
-
-
-            if (
-                currentIndex >=
-                images.length
-            ) {
-
-                currentIndex = 0;
-            }
+        updateDots(
+            slider,
+            images,
+            index
+        );
+    }
 
 
-            showSliderImage(
-                slider,
-                currentIndex
-            );
-        };
+    window.changeImage = function (
+        button,
+        direction
+    ) {
 
+        if (!button) return;
 
-    // ========================================
-    // INITIALIZE ALL SLIDERS
-    // ========================================
+        const slider =
+            button.closest(".image-slider");
+
+        if (!slider) return;
+
+        const images =
+            getSliderImages(slider);
+
+        if (!images.length) return;
+
+        let index =
+            getSliderIndex(slider);
+
+        index += direction;
+
+        if (index < 0) {
+            index = images.length - 1;
+        }
+
+        if (index >= images.length) {
+            index = 0;
+        }
+
+        showSliderImage(
+            slider,
+            index
+        );
+    };
+
 
     document
         .querySelectorAll(".image-slider")
@@ -210,111 +176,96 @@ document.addEventListener("DOMContentLoaded", function () {
             const images =
                 getSliderImages(slider);
 
-            if (!images.length) return;
-
-            let currentIndex =
+            const index =
                 getSliderIndex(slider);
 
+            if (images.length) {
 
-            if (
-                currentIndex < 0 ||
-                currentIndex >= images.length
-            ) {
-
-                currentIndex = 0;
+                showSliderImage(
+                    slider,
+                    index
+                );
             }
-
-
-            showSliderImage(
-                slider,
-                currentIndex
-            );
         });
 
 
-    // ========================================
-    // OPEN LIGHTBOX
-    // ========================================
+    /* =====================================================
+       2. LIGHTBOX
+       ===================================================== */
 
-    document
-        .querySelectorAll(".card img")
-        .forEach(function (img) {
+    const lightbox =
+        document.querySelector(".lightbox");
 
-            img.addEventListener(
-                "click",
-                function (event) {
+    const lightboxImg =
+        document.querySelector("#lightbox-img");
 
-                    event.stopPropagation();
+    const lightboxClose =
+        document.querySelector(
+            ".lightbox .close"
+        );
 
-                    if (
-                        !lightbox ||
-                        !lightboxImg
-                    ) {
-                        return;
-                    }
+    const lightboxPrev =
+        document.querySelector(
+            ".lightbox-prev"
+        );
 
+    const lightboxNext =
+        document.querySelector(
+            ".lightbox-next"
+        );
 
-                    const slider =
-                        img.closest(".image-slider");
+    let lightboxImages = [];
 
-
-                    if (slider) {
-
-                        lightboxImages =
-                            getSliderImages(
-                                slider
-                            );
+    let lightboxIndex = 0;
 
 
-                        if (
-                            !lightboxImages.length
-                        ) {
+    function openLightbox(
+        images,
+        index = 0
+    ) {
 
-                            lightboxImages =
-                                [img.src];
-                        }
+        if (
+            !lightbox ||
+            !lightboxImg ||
+            !images ||
+            !images.length
+        ) {
+            return;
+        }
 
+        lightboxImages = images;
 
-                        lightboxIndex =
-                            getSliderIndex(
-                                slider
-                            );
+        lightboxIndex = index;
 
+        if (
+            lightboxIndex < 0 ||
+            lightboxIndex >= lightboxImages.length
+        ) {
+            lightboxIndex = 0;
+        }
 
-                        if (
-                            lightboxIndex < 0 ||
-                            lightboxIndex >=
-                            lightboxImages.length
-                        ) {
+        lightboxImg.src =
+            lightboxImages[lightboxIndex];
 
-                            lightboxIndex = 0;
-                        }
+        lightbox.classList.add("active");
 
-                    } else {
-
-                        lightboxImages =
-                            [img.src];
-
-                        lightboxIndex = 0;
-                    }
-
-
-                    lightboxImg.src =
-                        lightboxImages[
-                            lightboxIndex
-                        ];
+        document.body.classList.add(
+            "lightbox-open"
+        );
+    }
 
 
-                    lightbox.style.display =
-                        "flex";
-                }
-            );
-        });
+    function closeLightbox() {
 
+        if (!lightbox) return;
 
-    // ========================================
-    // SHOW LIGHTBOX IMAGE
-    // ========================================
+        lightbox.classList.remove("active");
+
+        document.body.classList.remove(
+            "lightbox-open"
+        );
+    }
+
 
     function showLightboxImage(index) {
 
@@ -325,22 +276,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         if (index < 0) {
-
             index =
                 lightboxImages.length - 1;
         }
 
-
         if (
-            index >=
-            lightboxImages.length
+            index >= lightboxImages.length
         ) {
-
             index = 0;
         }
-
 
         lightboxIndex = index;
 
@@ -351,9 +296,52 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ========================================
-    // LIGHTBOX NEXT
-    // ========================================
+    document
+        .querySelectorAll(
+            ".products .slider-image"
+        )
+        .forEach(function (image) {
+
+            image.addEventListener(
+                "click",
+                function () {
+
+                    const slider =
+                        image.closest(
+                            ".image-slider"
+                        );
+
+                    if (!slider) return;
+
+                    const images =
+                        getSliderImages(slider);
+
+                    const index =
+                        getSliderIndex(slider);
+
+                    openLightbox(
+                        images,
+                        index
+                    );
+                }
+            );
+        });
+
+
+    if (lightboxClose) {
+
+        lightboxClose.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                closeLightbox();
+            }
+        );
+    }
+
 
     if (lightboxNext) {
 
@@ -361,14 +349,8 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function (event) {
 
+                event.preventDefault();
                 event.stopPropagation();
-
-                if (
-                    !lightboxImages.length
-                ) {
-                    return;
-                }
-
 
                 showLightboxImage(
                     lightboxIndex + 1
@@ -378,24 +360,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ========================================
-    // LIGHTBOX PREVIOUS
-    // ========================================
-
     if (lightboxPrev) {
 
         lightboxPrev.addEventListener(
             "click",
             function (event) {
 
+                event.preventDefault();
                 event.stopPropagation();
-
-                if (
-                    !lightboxImages.length
-                ) {
-                    return;
-                }
-
 
                 showLightboxImage(
                     lightboxIndex - 1
@@ -404,38 +376,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-
-    // ========================================
-    // CLOSE LIGHTBOX
-    // ========================================
-
-    function closeLightbox() {
-
-        if (lightbox) {
-
-            lightbox.style.display =
-                "none";
-        }
-    }
-
-
-    if (closeBtn) {
-
-        closeBtn.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                closeLightbox();
-            }
-        );
-    }
-
-
-    // ========================================
-    // CLICK OUTSIDE LIGHTBOX
-    // ========================================
 
     if (lightbox) {
 
@@ -444,10 +384,8 @@ document.addEventListener("DOMContentLoaded", function () {
             function (event) {
 
                 if (
-                    event.target ===
-                    lightbox
+                    event.target === lightbox
                 ) {
-
                     closeLightbox();
                 }
             }
@@ -455,76 +393,55 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ========================================
-    // LIGHTBOX KEYBOARD CONTROLS
-    // ========================================
-
     document.addEventListener(
         "keydown",
         function (event) {
 
             if (
                 !lightbox ||
-                lightbox.style.display !==
-                "flex"
+                !lightbox.classList.contains(
+                    "active"
+                )
             ) {
                 return;
             }
 
+            if (event.key === "Escape") {
+                closeLightbox();
+            }
 
-            if (
-                event.key ===
-                "ArrowRight"
-            ) {
-
+            if (event.key === "ArrowRight") {
                 showLightboxImage(
                     lightboxIndex + 1
                 );
             }
 
-
-            if (
-                event.key ===
-                "ArrowLeft"
-            ) {
-
+            if (event.key === "ArrowLeft") {
                 showLightboxImage(
                     lightboxIndex - 1
                 );
-            }
-
-
-            if (
-                event.key ===
-                "Escape"
-            ) {
-
-                closeLightbox();
             }
         }
     );
 
 
-    // ========================================
-    // PRODUCT SEARCH
-    // ========================================
+    /* =====================================================
+       3. SEARCH
+       ===================================================== */
 
     const productSearch =
-        document.getElementById(
-            "productSearch"
+        document.querySelector(
+            "#productSearch"
         );
-
 
     function filterProducts() {
 
         if (!productSearch) return;
 
-
         const searchText =
             productSearch.value
                 .toLowerCase()
                 .trim();
-
 
         document
             .querySelectorAll(
@@ -535,21 +452,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 const productName =
                     card.querySelector("h3");
 
-
                 if (!productName) return;
-
 
                 const name =
                     productName.textContent
-                        .toLowerCase()
-                        .trim();
+                        .toLowerCase();
 
+                const match =
+                    !searchText ||
+                    name.includes(searchText);
 
                 card.style.display =
-                    !searchText ||
-                    name.includes(searchText)
-                        ? ""
-                        : "none";
+                    match ? "" : "none";
             });
     }
 
@@ -563,355 +477,219 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ========================================
-    // PRODUCT SORTING
-    // ========================================
+    /* =====================================================
+       4. SORTING
+       ===================================================== */
 
     const productsContainer =
         document.querySelector(
             ".products"
         );
 
+    const sortSelect =
+        document.querySelector(
+            "#productSort"
+        );
 
     const customSort =
         document.querySelector(
             ".custom-sort"
         );
 
-
     const customSortButton =
         document.querySelector(
             ".custom-sort-button"
         );
 
-
-    const customSortMenu =
+    const customSortArrow =
         document.querySelector(
-            ".custom-sort-menu"
+            ".custom-sort-arrow"
         );
 
-
-    const sortSelect =
-        document.getElementById(
-            "productSort"
-        );
-
-
-    const originalCards =
-        productsContainer
-            ? Array.from(
-                productsContainer
-                    .querySelectorAll(".card")
+    const sortOptions =
+        customSort
+            ? customSort.querySelectorAll(
+                "[data-value]"
             )
             : [];
 
 
-    // ========================================
-    // GET PRODUCT NAME
-    // ========================================
+    function getCards() {
 
-    function getProductName(card) {
+        if (!productsContainer) {
+            return [];
+        }
 
-        const name =
+        return Array.from(
+            productsContainer.querySelectorAll(
+                ".card"
+            )
+        );
+    }
+
+
+    function getPrice(card) {
+
+        const priceElement =
+            card.querySelector(".price");
+
+        if (!priceElement) return 0;
+
+        const value =
+            priceElement.textContent
+                .replace(/[^\d.]/g, "");
+
+        return parseFloat(value) || 0;
+    }
+
+
+    function getName(card) {
+
+        const nameElement =
             card.querySelector("h3");
 
-
-        return name
-            ? name.textContent
+        return nameElement
+            ? nameElement.textContent
                 .trim()
                 .toLowerCase()
             : "";
     }
 
 
-    // ========================================
-    // GET PRODUCT PRICE
-    // ========================================
-
-    function getPrice(card) {
-
-        const priceElement =
-            card.querySelector(
-                ".price"
-            );
-
-
-        if (priceElement) {
-
-            return (
-                parseFloat(
-                    priceElement.textContent
-                        .replace(/[^\d.]/g, "")
-                ) || 0
-            );
-        }
-
-
-        const match =
-            (card.textContent || "")
-                .match(
-                    /₹\s*([0-9,]+)/
-                );
-
-
-        if (!match) return 0;
-
-
-        return parseFloat(
-            match[1].replace(/,/g, "")
-        ) || 0;
-    }
-
-
-    // ========================================
-    // SORT PRODUCTS
-    // ========================================
-
-    function sortProducts(sortValue) {
+    function sortProducts(value) {
 
         if (!productsContainer) {
             return;
         }
 
+        const cards = getCards();
 
-        // DEFAULT ORDER
-        if (
-            sortValue === "default" ||
-            !sortValue
-        ) {
+        cards.sort(function (a, b) {
 
-            originalCards.forEach(
-                function (card) {
-
-                    productsContainer
-                        .appendChild(card);
-                }
-            );
-
-            return;
-        }
-
-
-        const cards =
-            Array.from(
-                productsContainer
-                    .querySelectorAll(".card")
-            );
-
-
-        // LOW TO HIGH
-        if (
-            sortValue ===
-            "low-high"
-        ) {
-
-            cards.sort(
-                function (a, b) {
-
-                    return (
-                        getPrice(a) -
-                        getPrice(b)
-                    );
-                }
-            );
-        }
-
-
-        // HIGH TO LOW
-        else if (
-            sortValue ===
-            "high-low"
-        ) {
-
-            cards.sort(
-                function (a, b) {
-
-                    return (
-                        getPrice(b) -
-                        getPrice(a)
-                    );
-                }
-            );
-        }
-
-
-        // A TO Z
-        else if (
-            sortValue === "az"
-        ) {
-
-            cards.sort(
-                function (a, b) {
-
-                    return getProductName(a)
-                        .localeCompare(
-                            getProductName(b)
-                        );
-                }
-            );
-        }
-
-
-        // Z TO A
-        else if (
-            sortValue === "za"
-        ) {
-
-            cards.sort(
-                function (a, b) {
-
-                    return getProductName(b)
-                        .localeCompare(
-                            getProductName(a)
-                        );
-                }
-            );
-        }
-
-
-        cards.forEach(
-            function (card) {
-
-                productsContainer
-                    .appendChild(card);
+            if (value === "price-low") {
+                return getPrice(a) -
+                    getPrice(b);
             }
-        );
+
+            if (value === "price-high") {
+                return getPrice(b) -
+                    getPrice(a);
+            }
+
+            if (value === "name-az") {
+                return getName(a)
+                    .localeCompare(
+                        getName(b)
+                    );
+            }
+
+            if (value === "name-za") {
+                return getName(b)
+                    .localeCompare(
+                        getName(a)
+                    );
+            }
+
+            return 0;
+        });
+
+
+        cards.forEach(function (card) {
+
+            productsContainer.appendChild(
+                card
+            );
+        });
     }
 
 
-    // ========================================
-    // UPDATE CUSTOM SORT UI
-    // ========================================
+    function updateSortUI(value) {
 
-    function updateCustomSortUI(value) {
-
-        if (
-            !customSortMenu ||
-            !customSortButton
-        ) {
-            return;
-        }
-
-
-        const options =
-            customSortMenu
-                .querySelectorAll(
-                    "button[data-value]"
-                );
-
-
-        let selectedOption = null;
-
-
-        options.forEach(
+        sortOptions.forEach(
             function (option) {
-
-                const isActive =
-                    option.getAttribute(
-                        "data-value"
-                    ) === value;
-
 
                 option.classList.toggle(
                     "active",
-                    isActive
+                    option.dataset.value ===
+                    value
                 );
-
-
-                if (isActive) {
-
-                    selectedOption =
-                        option;
-                }
             }
         );
 
+        if (!customSortButton) return;
 
-        const buttonText =
-            customSortButton
-                .querySelector(
-                    "span:first-child"
-                );
+        const active =
+            Array.from(sortOptions)
+                .find(function (option) {
 
+                    return (
+                        option.dataset.value ===
+                        value
+                    );
+                });
 
-        if (
-            buttonText &&
-            selectedOption
-        ) {
+        const label =
+            active
+                ? active.textContent.trim()
+                : "Sort Products";
 
-            buttonText.textContent =
-                selectedOption
-                    .textContent
-                    .trim();
+        const text =
+            customSortButton.querySelector(
+                ".sort-label"
+            );
+
+        if (text) {
+            text.textContent = label;
         }
     }
 
 
-    // ========================================
-    // CUSTOM SORT DROPDOWN
-    // ========================================
-
     if (
         customSort &&
-        customSortButton &&
-        customSortMenu
+        customSortButton
     ) {
 
-        const options =
-            customSortMenu
-                .querySelectorAll(
-                    "button[data-value]"
+        customSortButton.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                customSort.classList.toggle(
+                    "open"
                 );
+            }
+        );
 
 
-        // OPEN / CLOSE
-        customSortButton
-            .addEventListener(
-                "click",
-                function (event) {
-
-                    event.stopPropagation();
-
-                    customSort.classList.toggle(
-                        "open"
-                    );
-                }
-            );
-
-
-        // SORT OPTION
-        options.forEach(
+        sortOptions.forEach(
             function (option) {
 
                 option.addEventListener(
                     "click",
                     function (event) {
 
+                        event.preventDefault();
                         event.stopPropagation();
 
-
                         const value =
-                            this.getAttribute(
-                                "data-value"
-                            );
-
+                            option.dataset.value;
 
                         if (!value) return;
 
-
-                        sortProducts(value);
-
-                        updateCustomSortUI(
+                        sortProducts(
                             value
                         );
 
+                        updateSortUI(
+                            value
+                        );
 
                         if (sortSelect) {
-
                             sortSelect.value =
                                 value;
                         }
-
 
                         customSort.classList.remove(
                             "open"
@@ -922,7 +700,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        // CLOSE OUTSIDE
         document.addEventListener(
             "click",
             function (event) {
@@ -942,149 +719,761 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-  
-
-    // ========================================
-    // INITIAL SORT UI
-    // ========================================
-
     if (sortSelect) {
 
-        updateCustomSortUI(
+        updateSortUI(
             sortSelect.value ||
             "default"
         );
     }
 
-});
-/* =========================================================
-   FEATURED PRODUCTS AUTO SLIDESHOW
-   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+    /* =====================================================
+       5. FEATURED PRODUCTS
+       EXACTLY 4 CARDS DESKTOP
+       1 CARD MOBILE
+       ===================================================== */
+
+    const featuredSlider =
+        document.querySelector(
+            ".featured-slider"
+        );
 
     const featuredSlides =
-        document.querySelectorAll(".featured-slide");
+        Array.from(
+            document.querySelectorAll(
+                ".featured-slide"
+            )
+        );
 
     const featuredDots =
-        document.querySelectorAll(".featured-dot");
+        Array.from(
+            document.querySelectorAll(
+                ".featured-dot"
+            )
+        );
 
     const featuredPrev =
-        document.querySelector(".featured-prev");
+        document.querySelector(
+            ".featured-prev"
+        );
 
     const featuredNext =
-        document.querySelector(".featured-next");
-
-    if (!featuredSlides.length) return;
-
-    let featuredIndex = 0;
-
-    let featuredTimer;
-
-
-    function showFeaturedSlide(index) {
-
-        if (index < 0) {
-            index = featuredSlides.length - 1;
-        }
-
-        if (index >= featuredSlides.length) {
-            index = 0;
-        }
-
-        featuredSlides.forEach(function (slide, i) {
-            slide.classList.toggle(
-                "active",
-                i === index
-            );
-        });
-
-
-        featuredDots.forEach(function (dot, i) {
-            dot.classList.toggle(
-                "active",
-                i === index
-            );
-        });
-
-
-        featuredIndex = index;
-    }
-
-
-    function nextFeaturedSlide() {
-
-        showFeaturedSlide(
-            featuredIndex + 1
+        document.querySelector(
+            ".featured-next"
         );
 
-    }
+
+    let featuredTimer = null;
 
 
-    function startFeaturedSlideshow() {
+    if (
+        featuredSlider &&
+        featuredSlides.length
+    ) {
 
-        clearInterval(featuredTimer);
+        let featuredTrack = null;
 
-        featuredTimer = setInterval(
-            nextFeaturedSlide,
-            4000
-        );
+        let featuredPosition = 0;
 
-    }
+        let featuredAnimating = false;
 
+        let featuredCloneCount = 0;
 
-    function restartFeaturedSlideshow() {
+        let featuredRealIndex = 0;
 
-        startFeaturedSlideshow();
-
-    }
+        let featuredResizeTimer = null;
 
 
-    if (featuredNext) {
+        function getFeaturedVisibleCount() {
 
-        featuredNext.addEventListener(
-            "click",
-            function () {
+            return window.innerWidth <= 760
+                ? 1
+                : 4;
+        }
 
-                nextFeaturedSlide();
 
-                restartFeaturedSlideshow();
+        function getFeaturedGap() {
 
+            if (!featuredTrack) {
+                return 18;
             }
-        );
 
-    }
-
-
-    if (featuredPrev) {
-
-        featuredPrev.addEventListener(
-            "click",
-            function () {
-
-                showFeaturedSlide(
-                    featuredIndex - 1
+            const styles =
+                window.getComputedStyle(
+                    featuredTrack
                 );
 
-                restartFeaturedSlideshow();
+            return (
+                parseFloat(
+                    styles.columnGap ||
+                    styles.gap ||
+                    "18"
+                ) || 18
+            );
+        }
 
+
+        function getFeaturedStep() {
+
+            if (!featuredTrack) {
+                return 0;
+            }
+
+            const card =
+                featuredTrack.querySelector(
+                    ".featured-slide"
+                );
+
+            if (!card) {
+                return 0;
+            }
+
+            return (
+                card.getBoundingClientRect()
+                    .width +
+                getFeaturedGap()
+            );
+        }
+
+
+        function setFeaturedPosition(
+            animate
+        ) {
+
+            if (!featuredTrack) {
+                return;
+            }
+
+            featuredTrack.style.transition =
+                animate
+                    ? "transform .68s cubic-bezier(.22,.61,.36,1)"
+                    : "none";
+
+
+            featuredTrack.style.transform =
+                "translate3d(" +
+                (
+                    -featuredPosition *
+                    getFeaturedStep()
+                ) +
+                "px,0,0)";
+        }
+
+
+        function updateFeaturedDots() {
+
+            const total =
+                featuredSlides.length;
+
+            if (!total) {
+                return;
+            }
+
+            featuredRealIndex =
+                (
+                    (
+                        featuredPosition -
+                        featuredCloneCount
+                    ) %
+                    total +
+                    total
+                ) %
+                total;
+
+
+            featuredDots.forEach(
+                function (
+                    dot,
+                    index
+                ) {
+
+                    dot.classList.toggle(
+                        "active",
+                        index ===
+                        featuredRealIndex
+                    );
+                }
+            );
+        }
+
+
+        function clearFeaturedClones() {
+
+            if (!featuredTrack) {
+                return;
+            }
+
+            featuredTrack
+                .querySelectorAll(
+                    ".featured-clone"
+                )
+                .forEach(
+                    function (clone) {
+                        clone.remove();
+                    }
+                );
+        }
+
+
+        function buildFeaturedLoop() {
+
+            const visibleCount =
+                getFeaturedVisibleCount();
+
+
+            if (!featuredTrack) {
+
+                featuredTrack =
+                    document.createElement(
+                        "div"
+                    );
+
+                featuredTrack.className =
+                    "featured-track";
+
+
+                featuredSlides.forEach(
+                    function (slide) {
+
+                        featuredTrack.appendChild(
+                            slide
+                        );
+                    }
+                );
+
+
+                featuredSlider.insertBefore(
+                    featuredTrack,
+                    featuredPrev || null
+                );
+
+            } else {
+
+                clearFeaturedClones();
+            }
+
+
+            featuredCloneCount =
+                Math.min(
+                    visibleCount,
+                    featuredSlides.length
+                );
+
+
+            const prependClones =
+                featuredSlides
+                    .slice(
+                        -featuredCloneCount
+                    )
+                    .map(
+                        function (slide) {
+
+                            const clone =
+                                slide.cloneNode(
+                                    true
+                                );
+
+                            clone.classList.add(
+                                "featured-clone"
+                            );
+
+                            return clone;
+                        }
+                    );
+
+
+            const appendClones =
+                featuredSlides
+                    .slice(
+                        0,
+                        featuredCloneCount
+                    )
+                    .map(
+                        function (slide) {
+
+                            const clone =
+                                slide.cloneNode(
+                                    true
+                                );
+
+                            clone.classList.add(
+                                "featured-clone"
+                            );
+
+                            return clone;
+                        }
+                    );
+
+
+            prependClones
+                .reverse()
+                .forEach(
+                    function (clone) {
+
+                        featuredTrack.insertBefore(
+                            clone,
+                            featuredTrack.firstChild
+                        );
+                    }
+                );
+
+
+            appendClones.forEach(
+                function (clone) {
+
+                    featuredTrack.appendChild(
+                        clone
+                    );
+                }
+            );
+
+
+            featuredPosition =
+                featuredCloneCount +
+                featuredRealIndex;
+
+            featuredAnimating = false;
+
+
+            requestAnimationFrame(
+                function () {
+
+                    setFeaturedPosition(
+                        false
+                    );
+
+                    updateFeaturedDots();
+                }
+            );
+        }
+
+
+        function nextFeaturedSlide() {
+
+            if (featuredAnimating) {
+                return;
+            }
+
+            featuredAnimating = true;
+
+            featuredPosition += 1;
+
+            setFeaturedPosition(
+                true
+            );
+
+            updateFeaturedDots();
+        }
+
+
+        function previousFeaturedSlide() {
+
+            if (featuredAnimating) {
+                return;
+            }
+
+            featuredAnimating = true;
+
+            featuredPosition -= 1;
+
+            setFeaturedPosition(
+                true
+            );
+
+            updateFeaturedDots();
+        }
+
+
+        function goToFeatured(
+            index
+        ) {
+
+            const total =
+                featuredSlides.length;
+
+            if (
+                !total ||
+                featuredAnimating
+            ) {
+                return;
+            }
+
+
+            index =
+                (
+                    index %
+                    total +
+                    total
+                ) %
+                total;
+
+
+            featuredAnimating = true;
+
+            featuredPosition =
+                featuredCloneCount +
+                index;
+
+
+            setFeaturedPosition(
+                true
+            );
+
+            updateFeaturedDots();
+        }
+
+
+        function startFeaturedAutoPlay() {
+
+            clearInterval(
+                featuredTimer
+            );
+
+
+            if (
+                featuredSlides.length <=
+                getFeaturedVisibleCount()
+            ) {
+                return;
+            }
+
+
+            featuredTimer =
+                setInterval(
+                    function () {
+
+                        nextFeaturedSlide();
+
+                    },
+                    4500
+                );
+        }
+
+
+        function restartFeaturedAutoPlay() {
+
+            startFeaturedAutoPlay();
+        }
+
+
+        if (featuredNext) {
+
+            featuredNext.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    nextFeaturedSlide();
+
+                    restartFeaturedAutoPlay();
+                }
+            );
+        }
+
+
+        if (featuredPrev) {
+
+            featuredPrev.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    previousFeaturedSlide();
+
+                    restartFeaturedAutoPlay();
+                }
+            );
+        }
+
+
+        featuredDots.forEach(
+            function (
+                dot,
+                index
+            ) {
+
+                dot.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        goToFeatured(
+                            index
+                        );
+
+                        restartFeaturedAutoPlay();
+                    }
+                );
             }
         );
 
+
+        featuredSlider.addEventListener(
+            "mouseenter",
+            function () {
+
+                clearInterval(
+                    featuredTimer
+                );
+            }
+        );
+
+
+        featuredSlider.addEventListener(
+            "mouseleave",
+            function () {
+
+                startFeaturedAutoPlay();
+            }
+        );
+
+
+        buildFeaturedLoop();
+
+
+        featuredTrack.addEventListener(
+            "transitionend",
+            function (event) {
+
+                if (
+                    event.propertyName !==
+                    "transform"
+                ) {
+                    return;
+                }
+
+
+                featuredAnimating =
+                    false;
+
+
+                const total =
+                    featuredSlides.length;
+
+
+                const firstReal =
+                    featuredCloneCount;
+
+
+                const lastReal =
+                    featuredCloneCount +
+                    total -
+                    1;
+
+
+                if (
+                    featuredPosition >
+                    lastReal
+                ) {
+
+                    featuredRealIndex = 0;
+
+                    featuredPosition =
+                        firstReal;
+
+                    setFeaturedPosition(
+                        false
+                    );
+
+                } else if (
+                    featuredPosition <
+                    firstReal
+                ) {
+
+                    featuredRealIndex =
+                        total - 1;
+
+                    featuredPosition =
+                        firstReal +
+                        total -
+                        1;
+
+                    setFeaturedPosition(
+                        false
+                    );
+                }
+
+
+                updateFeaturedDots();
+            }
+        );
+
+
+        let touchStartX = 0;
+
+        let touchStartY = 0;
+
+
+        featuredSlider.addEventListener(
+            "touchstart",
+            function (event) {
+
+                const touch =
+                    event.changedTouches[0];
+
+                touchStartX =
+                    touch.screenX;
+
+                touchStartY =
+                    touch.screenY;
+
+                clearInterval(
+                    featuredTimer
+                );
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        featuredSlider.addEventListener(
+            "touchend",
+            function (event) {
+
+                const touch =
+                    event.changedTouches[0];
+
+                const dx =
+                    touchStartX -
+                    touch.screenX;
+
+                const dy =
+                    touchStartY -
+                    touch.screenY;
+
+
+                if (
+                    Math.abs(dx) > 45 &&
+                    Math.abs(dx) >
+                    Math.abs(dy)
+                ) {
+
+                    if (dx > 0) {
+
+                        nextFeaturedSlide();
+
+                    } else {
+
+                        previousFeaturedSlide();
+                    }
+                }
+
+
+                restartFeaturedAutoPlay();
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+                clearTimeout(
+                    featuredResizeTimer
+                );
+
+
+                featuredResizeTimer =
+                    setTimeout(
+                        function () {
+
+                            const oldIndex =
+                                featuredRealIndex;
+
+
+                            clearInterval(
+                                featuredTimer
+                            );
+
+
+                            if (featuredTrack) {
+
+                                featuredTrack.style.transition =
+                                    "none";
+
+                                clearFeaturedClones();
+                            }
+
+
+                            featuredAnimating =
+                                false;
+
+                            featuredRealIndex =
+                                oldIndex;
+
+
+                            buildFeaturedLoop();
+
+                            startFeaturedAutoPlay();
+
+                        },
+                        180
+                    );
+            }
+        );
+
+
+        startFeaturedAutoPlay();
     }
 
 
-    featuredDots.forEach(
-        function (dot, index) {
+    /* =====================================================
+   6. FEATURED IMAGE → LIGHTBOX
+   NEXT / PREVIOUS FEATURED PRODUCTS
+   ===================================================== */
 
-            dot.addEventListener(
+const featuredLightboxImages = featuredSlides
+    .map(function (slide) {
+        const image =
+            slide.querySelector(
+                ".featured-image-box img"
+            );
+
+        return image
+            ? image.src
+            : null;
+    })
+    .filter(Boolean);
+
+
+document
+    .querySelectorAll(
+        ".featured-image-box img"
+    )
+    .forEach(
+        function (image) {
+
+            image.addEventListener(
                 "click",
-                function () {
+                function (event) {
 
-                    showFeaturedSlide(index);
+                    event.preventDefault();
+                    event.stopPropagation();
 
-                    restartFeaturedSlideshow();
+                    let index =
+                        featuredLightboxImages.indexOf(
+                            image.src
+                        );
 
+                    if (index < 0) {
+                        index = 0;
+                    }
+
+                    openLightbox(
+                        featuredLightboxImages,
+                        index
+                    );
                 }
             );
 
@@ -1092,8 +1481,210 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    showFeaturedSlide(0);
+    /* =====================================================
+       7. PREVENT IMAGE DRAG
+       ===================================================== */
 
-    startFeaturedSlideshow();
+    document
+        .querySelectorAll("img")
+        .forEach(
+            function (image) {
+
+                image.setAttribute(
+                    "draggable",
+                    "false"
+                );
+            }
+        );
+
+
+    /* =====================================================
+       8. HOME → ABSOLUTE TOP
+       ===================================================== */
+
+    document
+        .querySelectorAll(
+            'a[href="#home"]'
+        )
+        .forEach(
+            function (link) {
+
+                link.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth"
+                        });
+                    }
+                );
+            }
+        );
+
+
+    /* =====================================================
+       9. CLEANUP
+       ===================================================== */
+
+    window.addEventListener(
+        "beforeunload",
+        function () {
+
+            clearInterval(
+                featuredTimer
+            );
+        }
+    );
 
 });
+/* =========================================================
+   DECOREVA — FESTIVAL COLLECTION FILTER
+   ========================================================= */
+
+window.showFestivalProducts = function (festival) {
+
+    const products = document.querySelectorAll(
+        "#collection .products .card"
+    );
+
+    const collection = document.querySelector("#collection");
+
+    if (!products.length) {
+        console.warn("DECOREVA: Collection products not found.");
+        return;
+    }
+
+    /*
+    =========================================================
+    FESTIVAL PRODUCT LIST
+    Product name must match the <h3> in Collection card.
+    =========================================================
+    */
+
+    const festivalProducts = {
+
+        /* 🪔 ONAM */
+        onam: [
+            "Welcome Keyholder",
+            "Happy Home Keyholder"
+        ],
+
+        /* 🎀 RAKSHA BANDHAN */
+        raksha: [
+            "Give Me a Hug Keyholder",
+            "My Room My Rules Keyholder"
+        ],
+
+        /* 🦚 JANMASHTAMI */
+        janmashtami: [
+            "Khatushyam Temple"
+        ],
+
+        /* 🐘 GANESH CHATURTHI */
+        ganesh: [
+            "Ganesha Wallart"
+        ]
+
+    };
+
+
+    const selected =
+        festivalProducts[festival] || [];
+
+
+    /* =====================================================
+       SHOW / HIDE PRODUCTS
+       ===================================================== */
+
+    products.forEach(function (card) {
+
+        const title = card.querySelector("h3");
+
+        if (!title) {
+            return;
+        }
+
+        const productName =
+            title.textContent
+                .trim()
+                .toLowerCase();
+
+
+        const matched =
+            selected.some(function (name) {
+
+                return productName.includes(
+                    name.toLowerCase()
+                );
+
+            });
+
+
+        card.style.display =
+            matched ? "" : "none";
+
+    });
+
+
+    /* =====================================================
+       CHANGE COLLECTION HEADING
+       ===================================================== */
+
+    const heading =
+        document.querySelector("#collection > h2");
+
+
+    const headings = {
+
+        onam:
+            "Onam Collection",
+
+        raksha:
+            "Raksha Bandhan Collection",
+
+        janmashtami:
+            "Janmashtami Collection",
+
+        ganesh:
+            "Ganesh Chaturthi Collection"
+
+    };
+
+
+    if (heading) {
+
+        heading.textContent =
+            headings[festival] ||
+            "Our Collection";
+
+    }
+
+
+  /* =====================================================
+   SMOOTH SCROLL TO FESTIVAL PRODUCTS
+   ===================================================== */
+
+const productsSection = document.querySelector("#collection .products");
+
+if (productsSection) {
+    setTimeout(function () {
+
+        const navHeight = 65;
+
+        const targetPosition =
+            productsSection.getBoundingClientRect().top +
+            window.pageYOffset -
+            navHeight;
+
+        window.scrollTo({
+            top: targetPosition,
+            behavior: "smooth"
+        });
+
+    }, 150);
+}
+
+};
