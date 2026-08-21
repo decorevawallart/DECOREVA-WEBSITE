@@ -3,71 +3,330 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<meta name="description"
-      content="DECOREVA Wall Art - Premium wall art and home decor for beautiful homes. Explore our collection and order easily on WhatsApp.">
+    <meta name="description"
+          content="DECOREVA Wall Art - Premium wall art and home decor for beautiful homes. Explore our collection and order easily on WhatsApp.">
 
-<meta name="keywords"
-      content="wall art, home decor, decorative wall art, DECOREVA, wall decor India">
+    <meta name="keywords"
+          content="wall art, home decor, decorative wall art, DECOREVA, wall decor India">
 
-<meta name="author"
-      content="DECOREVA Wall Art">
+    <meta name="author"
+          content="DECOREVA Wall Art">
 
-<meta name="theme-color"
-      content="#111111">
+    <meta name="theme-color"
+          content="#2b1b0f">
 
-<title>DECOREVA Wall Art</title>
+    <title>DECOREVA Wall Art</title>
 
-<link rel="icon" type="image/jpeg" href="images/Logo_01.jpeg">
+    <link rel="icon"
+          type="image/jpeg"
+          href="images/Logo_01.jpeg">
 
-<link rel="stylesheet" href="style.css?v=20260820">
+    <link rel="stylesheet"
+          href="style.css?v=20260821-premium">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+           <style>
+/* =========================================================
+   DECOREVA COLLECTION PAGINATION
+   20 PRODUCTS PER PAGE
+   ========================================================= */
+
+.collection-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 30px auto 10px;
+    flex-wrap: wrap;
+}
+
+.collection-pagination a,
+.collection-pagination span {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+
+    border: 1px solid #c99a3d;
+    border-radius: 10px;
+
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #8b5b16;
+    background: #fff8eb;
+
+    transition: all .25s ease;
+}
+
+.collection-pagination .page-current {
+    background: #c99a3d;
+    color: white;
+}
+
+.collection-pagination a:hover {
+    background: #c99a3d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.collection-pagination .page-prev,
+.collection-pagination .page-next {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+@media (max-width: 760px) {
+
+    .collection-pagination {
+        gap: 7px;
+        margin: 24px auto 10px;
+    }
+
+    .collection-pagination a,
+    .collection-pagination span {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}
+
+/* COLLECTION AREA - COMPACT SPACING */
+
+#collection-products {
+    padding-top: 25px !important;
+    padding-bottom: 35px !important;
+}
+
+#collection-products h2,
+#collection-products .section-title {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+#collection-products .collection-header {
+    margin-bottom: 18px !important;
+}
+
+#collection-products .collection-controls {
+    margin-top: 10px !important;
+    margin-bottom: 20px !important;
+}
+
+#collection-products .sort-container,
+#collection-products .sort-products {
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+}
+
+#collection-products input[placeholder*="Search"] {
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+/* MOBILE */
+@media (max-width: 760px) {
+
+    #collection-products {
+        padding-top: 18px !important;
+        padding-bottom: 25px !important;
+    }
+
+    #collection-products h2,
+    #collection-products .section-title {
+        margin-bottom: 8px !important;
+    }
+
+    #collection-products .collection-header {
+        margin-bottom: 12px !important;
+    }
+
+    #collection-products .collection-controls {
+        margin-top: 5px !important;
+        margin-bottom: 14px !important;
+    }
+
+    #collection-products input[placeholder*="Search"] {
+        margin-bottom: 15px !important;
+    }
+}
+/* ================================
+   DECOREVA COLLECTION SPACE FIX
+   ================================ */
+
+#collection-products {
+    padding-top: 10px !important;
+    padding-bottom: 20px !important;
+}
+
+#collection-products .collection-header {
+    margin-bottom: 5px !important;
+}
+
+#collection-products .collection-controls {
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+}
+
+#collection-products input[placeholder*="Search"] {
+    margin-bottom: 8px !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+
+    #collection-products {
+        padding-top: 5px !important;
+        padding-bottom: 15px !important;
+    }
+
+    #collection-products .collection-header {
+        margin-bottom: 4px !important;
+    }
+
+    #collection-products .collection-controls {
+        margin-top: 0 !important;
+        margin-bottom: 8px !important;
+    }
+}
+</style>
+</head>
 
 
-        <body>
+<body>
+
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
 
 <header>
 
     <div class="logo-box">
 
         <div class="brand-logo">
+
             <img
                 src="images/Logo_01.jpeg"
                 alt="DECOREVA Logo"
             >
+
         </div>
 
+
         <div class="brand-text">
+
             <h1>DECOREVA</h1>
-            <p>Premium Wall Art For Beautiful Homes</p>
+
+            <p>
+                Premium Wall Art For Beautiful Homes
+            </p>
+
         </div>
 
     </div>
 
+
+    <!-- MOBILE MENU -->
+
+    <button
+        class="mobile-menu-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false">
+
+        ☰
+
+    </button>
+
+
+    <!-- MOBILE INSTAGRAM -->
+
+    <a
+        class="mobile-instagram"
+        href="https://www.instagram.com/decoreva.wallart/"
+        target="_blank"
+        rel="noopener"
+        aria-label="Instagram">
+
+        <i class="fab fa-instagram"></i>
+
+    </a>
+
 </header>
 
-<nav>
 
-    <a href="#home">Home</a>
 
-    <a href="#collection-products">Collection</a>
+<!-- =========================================================
+     NAVIGATION
+     ========================================================= -->
+
+<nav id="main-nav">
+
+    <a href="#home">
+        Home
+    </a>
+
+
+    <a href="#collection-products">
+        Collection
+    </a>
+
+
+    <a href="#contact">
+        About Us
+    </a>
+
 
     <a
         href="#contact"
-        onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'}); return false;"
-    >
+        onclick="
+            document.getElementById('contact')
+            .scrollIntoView({behavior:'smooth'});
+            return false;
+        ">
+
         Contact
+
+    </a>
+
+
+    <a
+        class="nav-instagram"
+        href="https://www.instagram.com/decoreva.wallart/"
+        target="_blank"
+        rel="noopener">
+
+        <i class="fab fa-instagram"></i>
+
+        Instagram
+
     </a>
 
 </nav>
 
 
-<section class="hero" id="home">
+
+<!-- =========================================================
+     HERO
+     ========================================================= -->
+
+<section
+    class="hero"
+    id="home">
+
 
     <img
         src="images/Banner_01.jpeg"
@@ -75,46 +334,179 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         class="hero-banner"
     >
 
+
     <div class="hero-content">
 
-        <h2>Decorate Your Dream Wall</h2>
+        <h2>
+            Decorate Your Dream Wall
+        </h2>
 
-        <p>Premium Wall Art Collection</p>
 
-        <a href="#collection" class="button">
+        <p>
+            Premium Wall Art Collection
+        </p>
+
+
+        <a
+            href="#collection"
+            class="button">
+
             Explore Collection
+
         </a>
 
     </div>
 
+
 </section>
-<!-- FEATURED PRODUCTS SLIDESHOW -->
+
+
 
 <!-- =========================================================
-     FEATURED PRODUCTS - 8 MAIN PRODUCTS
+     TRUST STRIP
      ========================================================= -->
 
-<section class="featured-products" id="featured">
+<section
+    class="decoreva-trust-strip"
+    aria-label="DECOREVA benefits">
+
+
+    <div class="trust-item">
+
+        <i class="fas fa-award"></i>
+
+        <div>
+
+            <strong>
+                Premium Quality
+            </strong>
+
+            <span>
+                Finest materials &amp;<br>
+                long lasting
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="trust-item">
+
+        <i class="fas fa-leaf"></i>
+
+        <div>
+
+            <strong>
+                Made in India
+            </strong>
+
+            <span>
+                Proudly designed &amp;<br>
+                crafted in India
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="trust-item">
+
+        <i class="fas fa-box-open"></i>
+
+        <div>
+
+            <strong>
+                Secure Packaging
+            </strong>
+
+            <span>
+                Safe delivery<br>
+                at your doorstep
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="trust-item">
+
+        <i class="fab fa-whatsapp"></i>
+
+        <div>
+
+            <strong>
+                WhatsApp Support
+            </strong>
+
+            <span>
+                Quick assistance<br>
+                &amp; easy ordering
+            </span>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================================================
+     FEATURED PRODUCTS
+     ========================================================= -->
+
+<section
+    class="featured-products"
+    id="featured">
+
 
     <div class="featured-heading">
-    <span class="featured-ornament">
-        <i class="fas fa-gem"></i>
-    </span>
-    <h2>Featured Products</h2>
-    <p>Our most loved wall art</p>
-</div>
+
+        <span class="featured-ornament">
+
+            <i class="fas fa-gem"></i>
+
+        </span>
+
+
+        <h2>
+            Featured Products
+        </h2>
+
+
+        <p>
+            Our most loved wall art
+        </p>
+
+    </div>
+
 
 
     <div class="featured-slider">
 
 
-        <!-- 1. LIVE LOVE LAUGH -->
+        <!-- =================================================
+             FEATURED 1
+             ================================================= -->
+
         <div class="featured-slide active">
 
             <div class="featured-image-box">
-                <img src="images/Livelovelaugh_01.jpeg"
-                     alt="Live Love Laugh MDF Wallart">
+
+                <img
+                    src="images/Livelovelaugh_01.jpeg"
+                    alt="Live Love Laugh MDF Wallart"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -122,19 +514,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     BEST SELLER
                 </span>
 
-                <h3>Live Love Laugh MDF Wallart</h3>
 
-                <p class="featured-price">₹499</p>
+                <h3>
+                    Live Love Laugh MDF Wallart
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹499
+                </p>
+
 
                 <p class="featured-size">
                     Width: 7 inch × Length: 3.5 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Live%20Love%20Laugh%20Wall%20Art"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Live%20Love%20Laugh%20Wall%20Art"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -144,13 +546,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 2. GANESHA ACRYLIC -->
+
+        <!-- =================================================
+             FEATURED 2
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/GaneshaAcrylic_01.jpeg"
-                     alt="Ganesha Acrylic">
+
+                <img
+                    src="images/GaneshaAcrylic_01.jpeg"
+                    alt="Ganesha Acrylic"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -158,19 +569,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     FEATURED
                 </span>
 
-                <h3>Ganesha Acrylic</h3>
 
-                <p class="featured-price">₹499</p>
+                <h3>
+                    Ganesha Acrylic
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹499
+                </p>
+
 
                 <p class="featured-size">
                     Size: 4 × 4 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Ganesha%20Acrylic"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Ganesha%20Acrylic"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -180,13 +601,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 3. KHATUSHYAM TEMPLE -->
+
+        <!-- =================================================
+             FEATURED 3
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/KhatushayamTemple_01.jpeg"
-                     alt="Khatushayam Temple">
+
+                <img
+                    src="images/KhatushayamTemple_01.jpeg"
+                    alt="Khatushyam Temple"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -194,19 +624,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     POPULAR
                 </span>
 
-                <h3>Khatushayam Temple</h3>
 
-                <p class="featured-price">₹199</p>
+                <h3>
+                    Khatushyam Temple
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹199
+                </p>
+
 
                 <p class="featured-size">
                     Size: 4 × 4 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Khatushayam%20Temple"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Khatushyam%20Temple"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -216,13 +656,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 4. OM DARKBROWN -->
+
+        <!-- =================================================
+             FEATURED 4
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/Om_01.jpeg"
-                     alt="OM DarkBrown">
+
+                <img
+                    src="images/Om_01.jpeg"
+                    alt="OM DarkBrown"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -230,19 +679,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     FEATURED
                 </span>
 
-                <h3>OM DarkBrown</h3>
 
-                <p class="featured-price">₹499</p>
+                <h3>
+                    OM DarkBrown
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹499
+                </p>
+
 
                 <p class="featured-size">
                     Size: 4 × 4 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -252,13 +711,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 5. WELCOME KEYHOLDER -->
+
+        <!-- =================================================
+             FEATURED 5
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/WelcomeKeyholder_01.jpeg"
-                     alt="Welcome Keyholder">
+
+                <img
+                    src="images/WelcomeKeyholder_01.jpeg"
+                    alt="Welcome Keyholder"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -266,19 +734,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     POPULAR
                 </span>
 
-                <h3>Welcome Keyholder</h3>
 
-                <p class="featured-price">₹499</p>
+                <h3>
+                    Welcome Keyholder
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹499
+                </p>
+
 
                 <p class="featured-size">
                     Size: 4 × 4 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Welcome%20Keyholder"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Welcome%20Keyholder"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -288,13 +766,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 6. GIVE ME A HUG -->
+
+        <!-- =================================================
+             FEATURED 6
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/Givemeahug_01.jpeg"
-                     alt="Give Me a Hug Keyholder">
+
+                <img
+                    src="images/Givemeahug_01.jpeg"
+                    alt="Give Me a Hug Keyholder"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -302,19 +789,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     BEST SELLER
                 </span>
 
-                <h3>Give Me a Hug Keyholder</h3>
 
-                <p class="featured-price">₹299</p>
+                <h3>
+                    Give Me a Hug Keyholder
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹299
+                </p>
+
 
                 <p class="featured-size">
                     Size: 5 × 5 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Give%20Me%20a%20Hug%20MDF%20Keyholder"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Give%20Me%20a%20Hug%20MDF%20Keyholder"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -324,13 +821,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 7. HAPPY HOME -->
+
+        <!-- =================================================
+             FEATURED 7
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/Happyhome_01.jpeg"
-                     alt="Happy Home Keyholder">
+
+                <img
+                    src="images/Happyhome_01.jpeg"
+                    alt="Happy Home Keyholder"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -338,19 +844,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     FEATURED
                 </span>
 
-                <h3>Happy Home Keyholder</h3>
 
-                <p class="featured-price">₹250</p>
+                <h3>
+                    Happy Home Keyholder
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹250
+                </p>
+
 
                 <p class="featured-size">
                     Size: 4 × 4 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Panda%20Keyholder"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Panda%20Keyholder"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -360,13 +876,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- 8. MY ROOM MY RULES -->
+
+        <!-- =================================================
+             FEATURED 8
+             ================================================= -->
+
         <div class="featured-slide">
 
             <div class="featured-image-box">
-                <img src="images/Myroommyruleskeyholder_01.jpeg"
-                     alt="My Room My Rules Keyholder">
+
+                <img
+                    src="images/Myroommyruleskeyholder_01.jpeg"
+                    alt="My Room My Rules Keyholder"
+                >
+
             </div>
+
 
             <div class="featured-info">
 
@@ -374,19 +899,29 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     NEW FAVOURITE
                 </span>
 
-                <h3>My Room My Rules Keyholder</h3>
 
-                <p class="featured-price">₹250</p>
+                <h3>
+                    My Room My Rules Keyholder
+                </h3>
+
+
+                <p class="featured-price">
+                    ₹250
+                </p>
+
 
                 <p class="featured-size">
                     Size: 4 × 4 inch
                 </p>
 
-                <a class="featured-button"
-                   href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20My%20Room%20My%20Rules%20Keyholder"
-                   target="_blank">
+
+                <a
+                    class="featured-button"
+                    href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20My%20Room%20My%20Rules%20Keyholder"
+                    target="_blank">
 
                     <i class="fab fa-whatsapp"></i>
+
                     Order on WhatsApp
 
                 </a>
@@ -396,2162 +931,3189 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
 
 
-        <!-- PREVIOUS / NEXT -->
-        <button class="featured-prev" type="button">‹</button>
-
-        <button class="featured-next" type="button">›</button>
-
     </div>
 
 
-    <!-- 8 DOTS -->
-    <div class="featured-dots">
+    <!-- FEATURED CONTROLS -->
 
-        <span class="featured-dot active"
-              data-slide="0"></span>
+    <button
+        class="featured-prev"
+        type="button"
+        aria-label="Previous featured product">
 
-        <span class="featured-dot"
-              data-slide="1"></span>
+        ‹
 
-        <span class="featured-dot"
-              data-slide="2"></span>
+    </button>
 
-        <span class="featured-dot"
-              data-slide="3"></span>
 
-        <span class="featured-dot"
-              data-slide="4"></span>
+    <button
+        class="featured-next"
+        type="button"
+        aria-label="Next featured product">
 
-        <span class="featured-dot"
-              data-slide="5"></span>
+        ›
 
-        <span class="featured-dot"
-              data-slide="6"></span>
+    </button>
 
-        <span class="featured-dot"
-              data-slide="7"></span>
 
+    <div
+        class="featured-dots"
+        aria-label="Featured product navigation">
     </div>
+
 
 </section>
-
-<section id="collection">
-    <!-- =========================================================
-     DECOREVA — INDIAN FESTIVAL OFFERS
+<!-- =========================================================
+     FESTIVE COLLECTION
      ========================================================= -->
 
-<section class="festival-section" id="festival-offers">
-
-  <div class="festival-heading">
-
-    <span class="festival-eyebrow">
-      ✦ FESTIVE COLLECTION 2026 ✦
-    </span>
-
-    <h2>Celebrate Every Moment</h2>
-
-    <p>
-      Bring tradition, warmth and elegance into your home
-      with DECOREVA's festive collection.
-    </p>
-
-    <div class="festival-line"></div>
-
-  </div>
+<section id="collection">
 
 
-  <div class="festival-grid">
-
-    <!-- ONAM -->
-    <article class="festival-card festival-onam">
-
-      <div class="festival-glow"></div>
-
-      <div class="festival-icon">🌼</div>
-
-      <span class="festival-tag">FESTIVE SPECIAL</span>
-
-      <h3>Onam</h3>
-
-      <p>
-        Bring warmth, tradition & elegance home.
-      </p>
-
-      <button class="festival-button"
-        onclick="showFestivalProducts('onam'); return false;">
-    Explore Collection
-    <span>→</span>
-</button>
-
-    </article>
+    <section
+        class="festival-section"
+        id="festival-offers">
 
 
-    <!-- RAKSHA BANDHAN -->
-    <article class="festival-card festival-rakhi">
+        <div class="festival-heading">
 
-      <div class="festival-glow"></div>
-
-      <div class="festival-icon">🎀</div>
-
-      <span class="festival-tag">SPECIAL COLLECTION</span>
-
-      <h3>Raksha Bandhan</h3>
-
-      <p>
-        Celebrate the bond that lasts forever.
-      </p>
-
-      <button class="festival-button"
-        onclick="showFestivalProducts('raksha'); return false;">
-    Explore Collection
-    <span>→</span>
-</button>
-
-    </article>
+            <span class="festival-eyebrow">
+                ✦ FESTIVE COLLECTION 2026 ✦
+            </span>
 
 
-    <!-- JANMASHTAMI -->
-    <article class="festival-card festival-janmashtami">
-
-      <div class="festival-glow"></div>
-
-      <div class="festival-icon">🪷</div>
-
-      <span class="festival-tag">DIVINE COLLECTION</span>
-
-      <h3>Janmashtami</h3>
-
-      <p>
-        Add a divine touch to your beautiful space.
-      </p>
-
-      <button class="festival-button"
-        onclick="showFestivalProducts('janmashtami'); return false;">
-    Explore Collection
-    <span>→</span>
-</button>
-
-    </article>
+            <h2>
+                Celebrate Every Moment
+            </h2>
 
 
-    <!-- GANESH CHATURTHI -->
-    <article class="festival-card festival-ganesh">
+            <p>
+                Bring tradition, warmth and elegance into your home
+                with DECOREVA's festive collection.
+            </p>
 
-      <div class="festival-glow"></div>
 
-      <div class="festival-icon">🪔</div>
-
-      <span class="festival-tag">MOST SPECIAL</span>
-
-      <h3>Ganesh Chaturthi</h3>
-
-      <p>
-        Welcome prosperity, positivity & happiness home.
-      </p>
-
-      <button class="festival-button"
-        onclick="showFestivalProducts('ganesh'); return false;">
-    Explore Collection
-    <span>→</span>
-</button>
-
-    </article>
-
-  </div>
-
-</section>
-
-<!-- END FESTIVAL OFFERS -->
-
-<h2>Our Collection</h2>
-<div class="product-sort">
-
-    <div class="custom-sort">
-
-        <button type="button" class="custom-sort-button">
-            <span>Sort Products</span>
-            <span class="custom-sort-arrow">⌄</span>
-        </button>
-
-        <div class="custom-sort-menu">
-
-            <button type="button" data-value="default">
-                Sort Products
-            </button>
-
-            <button type="button" data-value="low-high">
-                Price: Low to High
-            </button>
-
-            <button type="button" data-value="high-low">
-                Price: High to Low
-            </button>
-
-            <button type="button" data-value="az">
-                Name: A to Z
-            </button>
-
-            <button type="button" data-value="za">
-                Name: Z to A
-            </button>
+            <div class="festival-line"></div>
 
         </div>
 
+
+
+        <div class="festival-grid">
+
+
+            <!-- ONAM -->
+
+            <article class="festival-card festival-onam">
+
+                <div class="festival-glow"></div>
+
+                <div class="festival-icon">
+                    🌼
+                </div>
+
+                <span class="festival-tag">
+                    FESTIVE SPECIAL
+                </span>
+
+                <h3>
+                    Onam
+                </h3>
+
+                <p>
+                    Bring warmth, tradition &amp; elegance home.
+                </p>
+
+                <button
+                    class="festival-button"
+                    type="button"
+                    onclick="showFestivalProducts('onam'); return false;">
+
+                    Explore Collection
+
+                    <span>→</span>
+
+                </button>
+
+            </article>
+
+
+
+            <!-- RAKSHA BANDHAN -->
+
+            <article class="festival-card festival-rakhi">
+
+                <div class="festival-glow"></div>
+
+                <div class="festival-icon">
+                    🎀
+                </div>
+
+                <span class="festival-tag">
+                    SPECIAL COLLECTION
+                </span>
+
+                <h3>
+                    Raksha Bandhan
+                </h3>
+
+                <p>
+                    Celebrate the bond that lasts forever.
+                </p>
+
+                <button
+                    class="festival-button"
+                    type="button"
+                    onclick="showFestivalProducts('raksha'); return false;">
+
+                    Explore Collection
+
+                    <span>→</span>
+
+                </button>
+
+            </article>
+
+
+
+            <!-- JANMASHTAMI -->
+
+            <article
+                class="festival-card festival-janmashtami">
+
+                <div class="festival-glow"></div>
+
+                <div class="festival-icon">
+                    🪷
+                </div>
+
+                <span class="festival-tag">
+                    DIVINE COLLECTION
+                </span>
+
+                <h3>
+                    Janmashtami
+                </h3>
+
+                <p>
+                    Add a divine touch to your beautiful space.
+                </p>
+
+                <button
+                    class="festival-button"
+                    type="button"
+                    onclick="showFestivalProducts('janmashtami'); return false;">
+
+                    Explore Collection
+
+                    <span>→</span>
+
+                </button>
+
+            </article>
+
+
+
+            <!-- GANESH CHATURTHI -->
+
+            <article
+                class="festival-card festival-ganesh">
+
+                <div class="festival-glow"></div>
+
+                <div class="festival-icon">
+                    🪔
+                </div>
+
+                <span class="festival-tag">
+                    MOST SPECIAL
+                </span>
+
+                <h3>
+                    Ganesh Chaturthi
+                </h3>
+
+                <p>
+                    Welcome prosperity, positivity &amp;
+                    happiness home.
+                </p>
+
+                <button
+                    class="festival-button"
+                    type="button"
+                    onclick="showFestivalProducts('ganesh'); return false;">
+
+                    Explore Collection
+
+                    <span>→</span>
+
+                </button>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         OUR COLLECTION
+         ===================================================== -->
+
+    <h2 class="collection-title">
+        Our Collection
+    </h2>
+
+
+
+    <!-- SORT -->
+
+    <div class="product-sort">
+
+        <div class="custom-sort">
+
+            <button
+                type="button"
+                class="custom-sort-button">
+
+                <span>
+                    Sort Products
+                </span>
+
+                <span class="custom-sort-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+
+            <div class="custom-sort-menu">
+
+                <button
+                    type="button"
+                    data-value="default">
+
+                    Sort Products
+
+                </button>
+
+
+                <button
+                    type="button"
+                    data-value="low-high">
+
+                    Price: Low to High
+
+                </button>
+
+
+                <button
+                    type="button"
+                    data-value="high-low">
+
+                    Price: High to Low
+
+                </button>
+
+
+                <button
+                    type="button"
+                    data-value="az">
+
+                    Name: A to Z
+
+                </button>
+
+
+                <button
+                    type="button"
+                    data-value="za">
+
+                    Name: Z to A
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <select
+            id="productSort"
+            class="native-sort">
+
+            <option value="default">
+                Sort Products
+            </option>
+
+            <option value="low-high">
+                Price: Low to High
+            </option>
+
+            <option value="high-low">
+                Price: High to Low
+            </option>
+
+            <option value="az">
+                Name: A to Z
+            </option>
+
+            <option value="za">
+                Name: Z to A
+            </option>
+
+        </select>
+
     </div>
 
-    <!-- Hidden original select - keeps existing sorting working -->
-    <select id="productSort" class="native-sort">
 
-        <option value="default">Sort Products</option>
-        <option value="low-high">Price: Low to High</option>
-        <option value="high-low">Price: High to Low</option>
-        <option value="az">Name: A to Z</option>
-        <option value="za">Name: Z to A</option>
 
-    </select>
+    <!-- SEARCH -->
 
-</div>
-
-<div class="product-search">
+    <div class="product-search">
     <input
         type="search"
         id="productSearch"
-        placeholder="🔍 Search wall art..."
-        autocomplete="off"
-    >
-</div>
-<div class="products" id="collection-products">
-
-<!-- WALL 1 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Livelovelaugh_01.jpeg",
-         "images/Livelovelaugh_02.jpeg",
-         "images/Livelovelaugh_03.jpeg",
-         "images/Livelovelaugh_04.jpeg",
-         "images/Livelovelaugh_05.jpeg",
-         "images/Livelovelaugh_06.jpeg",
-         "images/Livelovelaugh_07.jpeg",
-         "images/Livelovelaugh_08.jpeg",
-         "images/Livelovelaugh_09.jpeg",
-         "images/Livelovelaugh_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Livelovelaugh_01.jpeg"
-             alt="Live Love Laugh Wall Art">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Live Love Laugh MDF Wallart</h3>
-
-    <p class="price">₹499</p>
-
-    <p class="size">Width: 7 inch × Length: 3.5 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Live%20Love%20Laugh%20Wall%20Art"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<!-- WALL 2 - GANESHA ACRYLIC -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/GaneshaAcrylic_01.jpeg",
-         "images/GaneshaAcrylic_02.jpeg",
-         "images/GaneshaAcrylic_03.jpeg",
-         "images/GaneshaAcrylic_04.jpeg",
-         "images/GaneshaAcrylic_05.jpeg",
-         "images/GaneshaAcrylic_06.jpeg",
-         "images/GaneshaAcrylic_07.jpeg",
-         "images/GaneshaAcrylic_08.jpeg",
-         "images/GaneshaAcrylic_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/GaneshaAcrylic_01.jpeg"
-             alt="Ganesha Acrylic Wall Art">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Ganesha Wallart</h3>
-
-    <p class="price">₹499</p>
-
-    <p class="size">
-        Diameter: 7.9 inch × Thickness: 5 mm
-    </p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Ganesha%20Acrylic%20Wall%20Art"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-    
-<div class="image-slider"
-     data-index="0"
-     data-images='[
-     "images/KhatushayamTemple_01.jpeg",
-     "images/KhatushayamTemple_02.jpeg",
-     "images/KhatushayamTemple_03.jpeg",
-     "images/KhatushayamTemple_04.jpeg"
-     ]'>
-
-    <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
-
-    <img class="slider-image"
-         src="images/KhatushayamTemple_01.jpeg"
-         alt="Wall Art 3">
-
-    <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
-
-    <div class="slider-dots"></div>
-
-</div>
-
-<h3>Khatushayam Temple</h3>
-
-<p class="price">₹199</p>
-
-<p class="size">Size : 4 × 4 inch</p>
-
-<a class="button"
-href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Wall%20Art%203"
-target="_blank">
-
-<i class="fab fa-whatsapp"></i>
-
-Order on WhatsApp
-
-</a>
-
-</div>
-
-<!-- WALL 4 - OM DARKBROWN -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Om_01.jpeg",
-         "images/Om_02.jpeg",
-         "images/Om_03.jpeg",
-         "images/Om_04.jpeg",
-         "images/Om_05.jpeg",
-         "images/Om_06.jpeg",
-         "images/Om_07.jpeg",
-         "images/Om_08.jpeg",
-         "images/Om_09.jpeg",
-         "images/Om_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Om_01.jpeg"
-             alt="OM DarkBrown Wall Art">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>OM DarkBrown Small</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">
-         Diameter 7.8 inch × Thickness: 5 mm
-    </p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Om2_01.jpeg",
-         "images/Om2_02.jpeg",
-         "images/Om2_03.jpeg",
-         "images/Om2_04.jpeg",
-         "images/Om2_05.jpeg",
-         "images/Om2_06.jpeg",
-         "images/Om2_07.jpeg",
-         "images/Om2_08.jpeg",
-         "images/Om2_09.jpeg",
-         "images/Om2_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Om2_01.jpeg"
-             alt="OM DarkBrown Wall Art">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>OM DarkBrown Big</h3>
-
-    <p class="price">₹499</p>
-
-    <p class="size">
-        Diameter 15 inch × Thickness: 5 mm
-    </p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<!-- WALL 6 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Givemeahug_01.jpeg",
-         "images/Givemeahug_02.jpeg",
-         "images/Givemeahug_03.jpeg",
-         "images/Givemeahug_04.jpeg",
-         "images/Givemeahug_05.jpeg",
-         "images/Givemeahug_06.jpeg",
-         "images/Givemeahug_07.jpeg",
-         "images/Givemeahug_08.jpeg",
-         "images/Givemeahug_09.jpeg",
-         "images/Givemeahug_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Givemeahug_01.jpeg"
-             alt="Give Me a Hug MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Give Me a Hug Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5 × 5 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Give%20Me%20a%20Hug%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Happyhome_01.jpeg",
-         "images/Happyhome_02.jpeg",
-         "images/Happyhome_03.jpeg",
-         "images/Happyhome_04.jpeg",
-         "images/Happyhome_05.jpeg",
-         "images/Happyhome_06.jpeg",
-         "images/Happyhome_07.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Happyhome_01.jpeg"
-             alt="Happy Home Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Happy Home Keyholder</h3>
-
-    <p class="price">₹250</p>
-
-    <p class="size">Size : 4 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Panda%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Myroommyruleskeyholder_01.jpeg",
-         "images/Myroommyruleskeyholder_02.jpeg",
-         "images/Myroommyruleskeyholder_03.jpeg",
-         "images/Myroommyruleskeyholder_04.jpeg",
-         "images/Myroommyruleskeyholder_05.jpeg",
-         "images/Myroommyruleskeyholder_06.jpeg",
-         "images/Myroommyruleskeyholder_07.jpeg",
-         "images/Myroommyruleskeyholder_08.jpeg",
-         "images/Myroommyruleskeyholder_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Myroommyruleskeyholder_01.jpeg"
-             alt="My Room My Rules Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>My Room My Rules Keyholder</h3>
-
-    <p class="price">₹250</p>
-
-    <p class="size">Size : 4 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20My%20Room%20My%20Rules%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Khatushyamsmalltemple_01.jpeg",
-         "images/Khatushyamsmalltemple_02.jpeg",
-         "images/Khatushyamsmalltemple_03.jpeg",
-         "images/Khatushyamsmalltemple_04.jpeg",
-         "images/Khatushyamsmalltemple_05.jpeg",
-         "images/Khatushyamsmalltemple_06.jpeg",
-         "images/Khatushyamsmalltemple_07.jpeg",
-         "images/Khatushyamsmalltemple_08.jpeg",
-         "images/Khatushyamsmalltemple_09.jpeg",
-         "images/Khatushyamsmalltemple_10.jpeg",
-         "images/Khatushyamsmalltemple_11.jpeg",
-         "images/Khatushyamsmalltemple_12.jpeg",
-         "images/Khatushyamsmalltemple_13.jpeg",
-         "images/Khatushyamsmalltemple_14.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Khatushyamsmalltemple_01.jpeg"
-             alt="Khatu Shyam Small Temple">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Khatu Shyam Small Temple</h3>
-
-    <p class="price">₹399</p>
-
-    <p class="size">Size : 3.3 × 4.6 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Khatu%20Shyam%20Small%20Temple"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wehavetogokeyholder_01.jpeg",
-         "images/Wehavetogokeyholder_02.jpeg",
-         "images/Wehavetogokeyholder_03.jpeg",
-         "images/Wehavetogokeyholder_04.jpeg",
-         "images/Wehavetogokeyholder_05.jpeg",
-         "images/Wehavetogokeyholder_06.jpeg",
-         "images/Wehavetogokeyholder_07.jpeg",
-         "images/Wehavetogokeyholder_08.jpeg",
-         "images/Wehavetogokeyholder_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Wehavetogokeyholder_01.jpeg"
-             alt="Wall Art 10">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>We Have To Go To Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5.9 × 3.8 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Have%20To%20Go%20To%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wearehungrykeyholder_01.jpeg",
-         "images/Wearehungrykeyholder_02.jpeg",
-         "images/Wearehungrykeyholder_03.jpeg",
-         "images/Wearehungrykeyholder_04.jpeg",
-         "images/Wearehungrykeyholder_05.jpeg",
-         "images/Wearehungrykeyholder_06.jpeg",
-         "images/Wearehungrykeyholder_07.jpeg",
-         "images/Wearehungrykeyholder_08.jpeg",
-         "images/Wearehungrykeyholder_09.jpeg",
-         "images/Wearehungrykeyholder_10.jpeg",
-         "images/Wearehungrykeyholder_11.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Wearehungrykeyholder_01.jpeg"
-             alt="We Are Hungry Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>We Are Hungry Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5.2 × 4.4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Are%20Hungry%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_01.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_02.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_03.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_04.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_05.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_06.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_07.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_08.jpeg",
-         "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Kabikabilagtahaiapunhibhagwanhaikeyholder_01.jpeg"
-             alt="Kabhi Kabhi Lagta Hai Apun Hi Bhagwan Hai Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Kabhi Kabhi Lagta Hai Apun Hi Bhagwan Hai Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Kabhi%20Kabhi%20Lagta%20Hai%20Apun%20Hi%20Bhagwan%20Hai%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Ladkikachakkarbabubhaiya_01.jpeg",
-         "images/Ladkikachakkarbabubhaiya_02.jpeg",
-         "images/Ladkikachakkarbabubhaiya_03.jpeg",
-         "images/Ladkikachakkarbabubhaiya_04.jpeg",
-         "images/Ladkikachakkarbabubhaiya_05.jpeg",
-         "images/Ladkikachakkarbabubhaiya_06.jpeg",
-         "images/Ladkikachakkarbabubhaiya_07.jpeg",
-         "images/Ladkikachakkarbabubhaiya_08.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Ladkikachakkarbabubhaiya_01.jpeg"
-             alt="Ladki Ka Chakkar Babu Bhaiya Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Ladki Ka Chakkar Babu Bhaiya Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Ladki%20Ka%20Chakkar%20Babu%20Bhaiya%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Dusbahanekarkenahigayegym_01.jpeg",
-         "images/Dusbahanekarkenahigayegym_02.jpeg",
-         "images/Dusbahanekarkenahigayegym_03.jpeg",
-         "images/Dusbahanekarkenahigayegym_04.jpeg",
-         "images/Dusbahanekarkenahigayegym_05.jpeg",
-         "images/Dusbahanekarkenahigayegym_06.jpeg",
-         "images/Dusbahanekarkenahigayegym_07.jpeg",
-         "images/Dusbahanekarkenahigayegym_08.jpeg",
-         "images/Dusbahanekarkenahigayegym_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Dusbahanekarkenahigayegym_01.jpeg"
-             alt="Dus Bahane Karke Nahi Gaye Gym Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Dus Bahane Karke Nahi Gaye Gym Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Dus%20Bahane%20Karke%20Nahi%20Gaye%20Gym%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Liftyourselfupfirstthenlifttheweightbro_01.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_02.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_03.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_04.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_05.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_06.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_07.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_08.jpeg",
-         "images/Liftyourselfupfirstthenlifttheweightbro_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Liftyourselfupfirstthenlifttheweightbro_01.jpeg"
-             alt="Lift Yourself Up First Then Lift The Weight Bro Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Lift Yourself Up First Then Lift The Weight Bro Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Lift%20Yourself%20Up%20First%20Then%20Lift%20The%20Weight%20Bro%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Whimsicalbirdkeyholder_01.jpeg",
-         "images/Whimsicalbirdkeyholder_02.jpeg",
-         "images/Whimsicalbirdkeyholder_03.jpeg",
-         "images/Whimsicalbirdkeyholder_04.jpeg",
-         "images/Whimsicalbirdkeyholder_05.jpeg",
-         "images/Whimsicalbirdkeyholder_06.jpeg",
-         "images/Whimsicalbirdkeyholder_07.jpeg",
-         "images/Whimsicalbirdkeyholder_08.jpeg",
-         "images/Whimsicalbirdkeyholder_09.jpeg",
-         "images/Whimsicalbirdkeyholder_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Whimsicalbirdkeyholder_01.jpeg"
-             alt="Whimsical Bird Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Whimsical Bird Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6.3 × 3.9 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Whimsical%20Bird%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Lifeisajourneyenjoytheride_01.jpeg",
-         "images/Lifeisajourneyenjoytheride_02.jpeg",
-         "images/Lifeisajourneyenjoytheride_03.jpeg",
-         "images/Lifeisajourneyenjoytheride_04.jpeg",
-         "images/Lifeisajourneyenjoytheride_05.jpeg",
-         "images/Lifeisajourneyenjoytheride_06.jpeg",
-         "images/Lifeisajourneyenjoytheride_07.jpeg",
-         "images/Lifeisajourneyenjoytheride_08.jpeg",
-         "images/Lifeisajourneyenjoytheride_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Lifeisajourneyenjoytheride_01.jpeg"
-             alt="Life Is A Journey Enjoy The Ride Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Life Is A Journey Enjoy The Ride Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Life%20Is%20A%20Journey%20Enjoy%20The%20Ride%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
+        placeholder="Search wall art..."
+        autocomplete="off">
+
+    <button type="button" id="voiceSearchBtn" aria-label="Voice search">
+    <i class="fa-solid fa-microphone"></i>
+</button>
 </div>
 
 
-<!-- WALL 18 -->
 
-<div class="card">
+    <!-- =====================================================
+         PRODUCT GRID
+         ===================================================== -->
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wherewereuallday_01.jpeg",
-         "images/Wherewereuallday_02.jpeg",
-         "images/Wherewereuallday_03.jpeg",
-         "images/Wherewereuallday_04.jpeg",
-         "images/Wherewereuallday_05.jpeg",
-         "images/Wherewereuallday_06.jpeg",
-         "images/Wherewereuallday_07.jpeg",
-         "images/Wherewereuallday_08.jpeg",
-         "images/Wherewereuallday_09.jpeg",
-         "images/Wherewereuallday_10.jpeg"
-         ]'>
+    <div
+        class="products"
+        id="collection-products">
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
 
-        <img class="slider-image"
-             src="images/Wherewereuallday_01.jpeg"
-             alt="Where Were U All Day Keyholder">
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
+        <!-- =================================================
+             PRODUCT 1
+             LIVE LOVE LAUGH
+             ================================================= -->
 
-        <div class="slider-dots"></div>
+        <div class="card">
 
-    </div>
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Livelovelaugh_01.jpeg",
+                    "images/Livelovelaugh_02.jpeg",
+                    "images/Livelovelaugh_03.jpeg",
+                    "images/Livelovelaugh_04.jpeg",
+                    "images/Livelovelaugh_05.jpeg",
+                    "images/Livelovelaugh_06.jpeg",
+                    "images/Livelovelaugh_07.jpeg",
+                    "images/Livelovelaugh_08.jpeg",
+                    "images/Livelovelaugh_09.jpeg",
+                    "images/Livelovelaugh_10.jpeg"
+                ]'>
 
-    <h3>Where Were U All Day Keyholder</h3>
 
-    <p class="price">₹299</p>
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
 
-    <p class="size">Size : 5.8 × 4 inch</p>
+                    ‹
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Where%20Were%20U%20All%20Day%20Keyholder"
-       target="_blank">
+                </button>
 
-        <i class="fab fa-whatsapp"></i>
 
-        Order on WhatsApp
+                <img
+                    class="slider-image"
+                    src="images/Livelovelaugh_01.jpeg"
+                    alt="Live Love Laugh Wall Art">
 
-    </a>
 
-</div>
-<!-- WALL 19 -->
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
 
-<div class="card">
+                    ›
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Lovekeyholder_01.jpeg",
-         "images/Lovekeyholder_02.jpeg",
-         "images/Lovekeyholder_03.jpeg",
-         "images/Lovekeyholder_04.jpeg",
-         "images/Lovekeyholder_05.jpeg",
-         "images/Lovekeyholder_06.jpeg",
-         "images/Lovekeyholder_07.jpeg",
-         "images/Lovekeyholder_08.jpeg",
-         "images/Lovekeyholder_09.jpeg",
-         "images/Lovekeyholder_10.jpeg"
-         ]'>
+                </button>
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
 
-        <img class="slider-image"
-             src="images/Lovekeyholder_01.jpeg"
-             alt="Love Keyholder">
+                <div class="slider-dots"></div>
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
+            </div>
 
-        <div class="slider-dots"></div>
 
-    </div>
+            <h3>
+                Live Love Laugh MDF Wallart
+            </h3>
 
-    <h3>Love Keyholder</h3>
 
-    <p class="price">₹299</p>
+            <p class="price">
+                ₹499
+            </p>
 
-    <p class="size">Size : 5 × 4.9 inch</p>
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Love%20Keyholder"
-       target="_blank">
+            <p class="size">
+                Width: 7 inch × Length: 3.5 inch
+            </p>
 
-        <i class="fab fa-whatsapp"></i>
 
-        Order on WhatsApp
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Live%20Love%20Laugh%20Wall%20Art"
+                target="_blank">
 
-    </a>
+                <i class="fab fa-whatsapp"></i>
 
-</div>
-<!-- WALL 20 -->
+                Order on WhatsApp
 
-<div class="card">
+            </a>
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Letsgooutside_01.jpeg",
-         "images/Letsgooutside_02.jpeg",
-         "images/Letsgooutside_03.jpeg",
-         "images/Letsgooutside_04.jpeg",
-         "images/Letsgooutside_05.jpeg",
-         "images/Letsgooutside_06.jpeg",
-         "images/Letsgooutside_07.jpeg",
-         "images/Letsgooutside_08.jpeg",
-         "images/Letsgooutside_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Letsgooutside_01.jpeg"
-             alt="Let's Go Outside Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Let's Go Outside Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5.9 × 4.1 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Let's%20Go%20Outside%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 21 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Thukrakmerapyarmerainteqamdekhegi_01.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_02.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_03.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_04.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_05.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_06.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_07.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_08.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_09.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_10.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_11.jpeg",
-         "images/Thukrakmerapyarmerainteqamdekhegi_12.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Thukrakmerapyarmerainteqamdekhegi_01.jpeg"
-             alt="Thukra K Mera Pyar Mera Inteqam Dekhegi Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Thukra K Mera Pyar Mera Inteqam Dekhegi Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Thukra%20K%20Mera%20Pyar%20Mera%20Inteqam%20Dekhegi%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 22 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wemissedu_01.jpeg",
-         "images/Wemissedu_02.jpeg",
-         "images/Wemissedu_03.jpeg",
-         "images/Wemissedu_04.jpeg",
-         "images/Wemissedu_05.jpeg",
-         "images/Wemissedu_06.jpeg",
-         "images/Wemissedu_07.jpeg",
-         "images/Wemissedu_08.jpeg",
-         "images/Wemissedu_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Wemissedu_01.jpeg"
-             alt="We Missed U Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>We Missed U Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5.8 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Missed%20U%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 23 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Pyarkachakkarmatlubmautsetakkar_01.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_02.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_03.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_04.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_05.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_06.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_07.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_08.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_09.jpeg",
-         "images/Pyarkachakkarmatlubmautsetakkar_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Pyarkachakkarmatlubmautsetakkar_01.jpeg"
-             alt="Pyar Ka Chakkar Matlab Maut Se Takkar Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Pyar Ka Chakkar Matlab Maut Se Takkar Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Pyar%20Ka%20Chakkar%20Matlab%20Maut%20Se%20Takkar%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 24 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Thejourneymattersthanthedestination_01.jpeg",
-         "images/Thejourneymattersthanthedestination_02.jpeg",
-         "images/Thejourneymattersthanthedestination_03.jpeg",
-         "images/Thejourneymattersthanthedestination_04.jpeg",
-         "images/Thejourneymattersthanthedestination_05.jpeg",
-         "images/Thejourneymattersthanthedestination_06.jpeg",
-         "images/Thejourneymattersthanthedestination_07.jpeg",
-         "images/Thejourneymattersthanthedestination_08.jpeg",
-         "images/Thejourneymattersthanthedestination_09.jpeg",
-         "images/Thejourneymattersthanthedestination_10.jpeg",
-         "images/Thejourneymattersthanthedestination_11.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Thejourneymattersthanthedestination_01.jpeg"
-             alt="The Journey Matters Than The Destination Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>The Journey Matters Than The Destination Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20The%20Journey%20Matters%20Than%20The%20Destination%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 25 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Whimsicalowl_01.jpeg",
-         "images/Whimsicalowl_02.jpeg",
-         "images/Whimsicalowl_03.jpeg",
-         "images/Whimsicalowl_04.jpeg",
-         "images/Whimsicalowl_05.jpeg",
-         "images/Whimsicalowl_06.jpeg",
-         "images/Whimsicalowl_07.jpeg",
-         "images/Whimsicalowl_08.jpeg",
-         "images/Whimsicalowl_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Whimsicalowl_01.jpeg"
-             alt="Whimsical Owl MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Whimsical Owl Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5.5 × 4.4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Whimsical%20Owl%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 26 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Futureitnabrighthaikidikhhinahiraha_01.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_02.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_03.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_04.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_05.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_06.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_07.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_08.jpeg",
-         "images/Futureitnabrighthaikidikhhinahiraha_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Futureitnabrighthaikidikhhinahiraha_01.jpeg"
-             alt="Future Itna Bright Hai Ki Dikh Hi Nahi Raha MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Future Itna Bright Hai Ki Dikh Hi Nahi Raha Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Future%20Itna%20Bright%20Hai%20Ki%20Dikh%20Hi%20Nahi%20Raha%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 27 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Charmingwoodlandfriendskeyholder_01.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_02.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_03.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_04.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_05.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_06.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_07.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_08.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_09.jpeg",
-         "images/Charmingwoodlandfriendskeyholder_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Charmingwoodlandfriendskeyholder_01.jpeg"
-             alt="Charming Woodland Friends MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Charming Woodland Friends Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6.1 × 3.5 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Charming%20Woodland%20Friends%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 28 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Myeyesonyou_01.jpeg",
-         "images/Myeyesonyou_02.jpeg",
-         "images/Myeyesonyou_03.jpeg",
-         "images/Myeyesonyou_04.jpeg",
-         "images/Myeyesonyou_05.jpeg",
-         "images/Myeyesonyou_06.jpeg",
-         "images/Myeyesonyou_07.jpeg",
-         "images/Myeyesonyou_08.jpeg",
-         "images/Myeyesonyou_09.jpeg",
-         "images/Myeyesonyou_10.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Myeyesonyou_01.jpeg"
-             alt="My Eyes On You MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>My Eyes On You Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6.5 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20My%20Eyes%20On%20You%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 29 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wemissedu2_01.jpeg",
-         "images/Wemissedu2_02.jpeg",
-         "images/Wemissedu2_03.jpeg",
-         "images/Wemissedu2_04.jpeg",
-         "images/Wemissedu2_05.jpeg",
-         "images/Wemissedu2_06.jpeg",
-         "images/Wemissedu2_07.jpeg",
-         "images/Wemissedu2_08.jpeg",
-         "images/Wemissedu2_09.jpeg",
-         "images/Wemissedu2_10.jpeg",
-         "images/Wemissedu2_11.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Wemissedu2_01.jpeg"
-             alt="We Missed U MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>We Missed U Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6.5 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Missed%20U%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-
-<!-- WALL 30 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wemissedu3_01.jpeg",
-         "images/Wemissedu3_02.jpeg",
-         "images/Wemissedu3_03.jpeg",
-         "images/Wemissedu3_04.jpeg",
-         "images/Wemissedu3_05.jpeg",
-         "images/Wemissedu3_06.jpeg",
-         "images/Wemissedu3_07.jpeg",
-         "images/Wemissedu3_08.jpeg",
-         "images/Wemissedu3_09.jpeg",
-         "images/Wemissedu3_10.jpeg",
-         "images/Wemissedu3_11.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Wemissedu3_01.jpeg"
-             alt="We Missed U MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>We Missed U Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 6 × 4 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Missed%20U%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 31 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Wedidnotdoit_01.jpeg",
-         "images/Wedidnotdoit_02.jpeg",
-         "images/Wedidnotdoit_03.jpeg",
-         "images/Wedidnotdoit_04.jpeg",
-         "images/Wedidnotdoit_05.jpeg",
-         "images/Wedidnotdoit_06.jpeg",
-         "images/Wedidnotdoit_07.jpeg",
-         "images/Wedidnotdoit_08.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Wedidnotdoit_01.jpeg"
-             alt="We Didn't Do It MDF Keyholder">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>We Didn't Do It Keyholder</h3>
-
-    <p class="price">₹299</p>
-
-    <p class="size">Size : 5.2 × 4.9 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Didn't%20Do%20It%20MDF%20Keyholder"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 32 -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Gullack_01.jpeg",
-         "images/Gullack_02.jpeg",
-         "images/Gullack_03.jpeg",
-         "images/Gullack_04.jpeg",
-         "images/Gullack_05.jpeg",
-         "images/Gullack_06.jpeg",
-         "images/Gullack_07.jpeg",
-         "images/Gullack_08.jpeg",
-         "images/Gullack_09.jpeg"
-         ]'>
-
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/Gullack_01.jpeg"
-             alt="MDF Gullack">
-
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots"></div>
-
-    </div>
-
-    <h3>Premium MDF Gullack</h3>
-
-    <p class="price">₹399</p>
-
-    <p class="size">Size : 4.3 × 4.1 inch</p>
-
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Premium%20MDF%20Gullack"
-       target="_blank">
-
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-
-    </a>
-
-</div>
-<!-- WALL 33 - OM DARKBROWN -->
-
-<div class="card">
-
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/WelcomeKeyholder_01.jpeg",
-         "images/WelcomeKeyholder_02.jpeg",
-         "images/WelcomeKeyholder_03.jpeg",
-         "images/WelcomeKeyholder_04.jpeg"
-         ]'>
-
-        <button class="slider-btn prev" onclick="changeImage(this, -1)">‹</button>
-
-        <img class="slider-image"
-             src="images/WelcomeKeyholder_01.jpeg"
-             alt="Welcome Keyholder">
-
-        <button class="slider-btn next" onclick="changeImage(this, 1)">›</button>
-
-        <div class="slider-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
         </div>
 
+
+
+        <!-- =================================================
+             PRODUCT 2
+             GANESHA
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/GaneshaAcrylic_01.jpeg",
+                    "images/GaneshaAcrylic_02.jpeg",
+                    "images/GaneshaAcrylic_03.jpeg",
+                    "images/GaneshaAcrylic_04.jpeg",
+                    "images/GaneshaAcrylic_05.jpeg",
+                    "images/GaneshaAcrylic_06.jpeg",
+                    "images/GaneshaAcrylic_07.jpeg",
+                    "images/GaneshaAcrylic_08.jpeg",
+                    "images/GaneshaAcrylic_09.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/GaneshaAcrylic_01.jpeg"
+                    alt="Ganesha Acrylic Wall Art">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                Ganesha Wallart
+            </h3>
+
+
+            <p class="price">
+                ₹499
+            </p>
+
+
+            <p class="size">
+                Diameter: 7.9 inch × Thickness: 5 mm
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Ganesha%20Acrylic%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT 3
+             KHATUSHYAM
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/KhatushayamTemple_01.jpeg",
+                    "images/KhatushayamTemple_02.jpeg",
+                    "images/KhatushayamTemple_03.jpeg",
+                    "images/KhatushayamTemple_04.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/KhatushayamTemple_01.jpeg"
+                    alt="Khatushyam Temple Wall Art">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                Khatushayam Temple
+            </h3>
+
+
+            <p class="price">
+                ₹199
+            </p>
+
+
+            <p class="size">
+                Size: 4 × 4 inch
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Khatushayam%20Temple"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT 4
+             OM DARKBROWN SMALL
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Om_01.jpeg",
+                    "images/Om_02.jpeg",
+                    "images/Om_03.jpeg",
+                    "images/Om_04.jpeg",
+                    "images/Om_05.jpeg",
+                    "images/Om_06.jpeg",
+                    "images/Om_07.jpeg",
+                    "images/Om_08.jpeg",
+                    "images/Om_09.jpeg",
+                    "images/Om_10.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/Om_01.jpeg"
+                    alt="OM DarkBrown Wall Art">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                OM DarkBrown Small
+            </h3>
+
+
+            <p class="price">
+                ₹299
+            </p>
+
+
+            <p class="size">
+                Diameter 7.8 inch × Thickness: 5 mm
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT 5
+             OM DARKBROWN BIG
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Om2_01.jpeg",
+                    "images/Om2_02.jpeg",
+                    "images/Om2_03.jpeg",
+                    "images/Om2_04.jpeg",
+                    "images/Om2_05.jpeg",
+                    "images/Om2_06.jpeg",
+                    "images/Om2_07.jpeg",
+                    "images/Om2_08.jpeg",
+                    "images/Om2_09.jpeg",
+                    "images/Om2_10.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/Om2_01.jpeg"
+                    alt="OM DarkBrown Big Wall Art">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                OM DarkBrown Big
+            </h3>
+
+
+            <p class="price">
+                ₹499
+            </p>
+
+
+            <p class="size">
+                Diameter 15 inch × Thickness: 5 mm
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT 6
+             GIVE ME A HUG
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Givemeahug_01.jpeg",
+                    "images/Givemeahug_02.jpeg",
+                    "images/Givemeahug_03.jpeg",
+                    "images/Givemeahug_04.jpeg",
+                    "images/Givemeahug_05.jpeg",
+                    "images/Givemeahug_06.jpeg",
+                    "images/Givemeahug_07.jpeg",
+                    "images/Givemeahug_08.jpeg",
+                    "images/Givemeahug_09.jpeg",
+                    "images/Givemeahug_10.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/Givemeahug_01.jpeg"
+                    alt="Give Me a Hug MDF Keyholder">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                Give Me a Hug Keyholder
+            </h3>
+
+
+            <p class="price">
+                ₹299
+            </p>
+
+
+            <p class="size">
+                Size: 5 × 5 inch
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Give%20Me%20a%20Hug%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT 7
+             HAPPY HOME
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Happyhome_01.jpeg",
+                    "images/Happyhome_02.jpeg",
+                    "images/Happyhome_03.jpeg",
+                    "images/Happyhome_04.jpeg",
+                    "images/Happyhome_05.jpeg",
+                    "images/Happyhome_06.jpeg",
+                    "images/Happyhome_07.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/Happyhome_01.jpeg"
+                    alt="Happy Home Keyholder">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                Happy Home Keyholder
+            </h3>
+
+
+            <p class="price">
+                ₹250
+            </p>
+
+
+            <p class="size">
+                Size: 4 × 4 inch
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Panda%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT 8
+             MY ROOM MY RULES
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Myroommyruleskeyholder_01.jpeg",
+                    "images/Myroommyruleskeyholder_02.jpeg",
+                    "images/Myroommyruleskeyholder_03.jpeg",
+                    "images/Myroommyruleskeyholder_04.jpeg",
+                    "images/Myroommyruleskeyholder_05.jpeg",
+                    "images/Myroommyruleskeyholder_06.jpeg",
+                    "images/Myroommyruleskeyholder_07.jpeg",
+                    "images/Myroommyruleskeyholder_08.jpeg",
+                    "images/Myroommyruleskeyholder_09.jpeg"
+                ]'>
+
+
+                <button
+                    class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">
+
+                    ‹
+
+                </button>
+
+
+                <img
+                    class="slider-image"
+                    src="images/Myroommyruleskeyholder_01.jpeg"
+                    alt="My Room My Rules Keyholder">
+
+
+                <button
+                    class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">
+
+                    ›
+
+                </button>
+
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+
+            <h3>
+                My Room My Rules Keyholder
+            </h3>
+
+
+            <p class="price">
+                ₹250
+            </p>
+
+
+            <p class="size">
+                Size: 4 × 4 inch
+            </p>
+
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20My%20Room%20My%20Rules%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+                <!-- =================================================
+             PRODUCT 9
+             KHATU SHYAM SMALL TEMPLE
+             ================================================= -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Khatushyamsmalltemple_01.jpeg",
+                    "images/Khatushyamsmalltemple_02.jpeg",
+                    "images/Khatushyamsmalltemple_03.jpeg",
+                    "images/Khatushyamsmalltemple_04.jpeg",
+                    "images/Khatushyamsmalltemple_05.jpeg",
+                    "images/Khatushyamsmalltemple_06.jpeg",
+                    "images/Khatushyamsmalltemple_07.jpeg",
+                    "images/Khatushyamsmalltemple_08.jpeg",
+                    "images/Khatushyamsmalltemple_09.jpeg",
+                    "images/Khatushyamsmalltemple_10.jpeg",
+                    "images/Khatushyamsmalltemple_11.jpeg",
+                    "images/Khatushyamsmalltemple_12.jpeg",
+                    "images/Khatushyamsmalltemple_13.jpeg",
+                    "images/Khatushyamsmalltemple_14.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Khatushyamsmalltemple_01.jpeg"
+                    alt="Khatu Shyam Small Temple">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Khatu Shyam Small Temple</h3>
+
+            <p class="price">₹399</p>
+
+            <p class="size">Size: 3.3 × 4.6 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Khatu%20Shyam%20Small%20Temple"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 10 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wehavetogokeyholder_01.jpeg",
+                    "images/Wehavetogokeyholder_02.jpeg",
+                    "images/Wehavetogokeyholder_03.jpeg",
+                    "images/Wehavetogokeyholder_04.jpeg",
+                    "images/Wehavetogokeyholder_05.jpeg",
+                    "images/Wehavetogokeyholder_06.jpeg",
+                    "images/Wehavetogokeyholder_07.jpeg",
+                    "images/Wehavetogokeyholder_08.jpeg",
+                    "images/Wehavetogokeyholder_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wehavetogokeyholder_01.jpeg"
+                    alt="We Have To Go To Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>We Have To Go To Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.9 × 3.8 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Have%20To%20Go%20To%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 11 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wearehungrykeyholder_01.jpeg",
+                    "images/Wearehungrykeyholder_02.jpeg",
+                    "images/Wearehungrykeyholder_03.jpeg",
+                    "images/Wearehungrykeyholder_04.jpeg",
+                    "images/Wearehungrykeyholder_05.jpeg",
+                    "images/Wearehungrykeyholder_06.jpeg",
+                    "images/Wearehungrykeyholder_07.jpeg",
+                    "images/Wearehungrykeyholder_08.jpeg",
+                    "images/Wearehungrykeyholder_09.jpeg",
+                    "images/Wearehungrykeyholder_10.jpeg",
+                    "images/Wearehungrykeyholder_11.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wearehungrykeyholder_01.jpeg"
+                    alt="We Are Hungry Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>We Are Hungry Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.2 × 4.4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Are%20Hungry%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 12 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_01.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_02.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_03.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_04.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_05.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_06.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_07.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_08.jpeg",
+                    "images/Kabikabilagtahaiapunhibhagwanhaikeyholder_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Kabikabilagtahaiapunhibhagwanhaikeyholder_01.jpeg"
+                    alt="Kabhi Kabhi Lagta Hai Apun Hi Bhagwan Hai Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Kabhi Kabhi Lagta Hai Apun Hi Bhagwan Hai Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Kabhi%20Kabhi%20Lagta%20Hai%20Apun%20Hi%20Bhagwan%20Hai%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 13 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Ladkikachakkarbabubhaiya_01.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_02.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_03.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_04.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_05.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_06.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_07.jpeg",
+                    "images/Ladkikachakkarbabubhaiya_08.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Ladkikachakkarbabubhaiya_01.jpeg"
+                    alt="Ladki Ka Chakkar Babu Bhaiya Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Ladki Ka Chakkar Babu Bhaiya Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Ladki%20Ka%20Chakkar%20Babu%20Bhaiya%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 14 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Dusbahanekarkenahigayegym_01.jpeg",
+                    "images/Dusbahanekarkenahigayegym_02.jpeg",
+                    "images/Dusbahanekarkenahigayegym_03.jpeg",
+                    "images/Dusbahanekarkenahigayegym_04.jpeg",
+                    "images/Dusbahanekarkenahigayegym_05.jpeg",
+                    "images/Dusbahanekarkenahigayegym_06.jpeg",
+                    "images/Dusbahanekarkenahigayegym_07.jpeg",
+                    "images/Dusbahanekarkenahigayegym_08.jpeg",
+                    "images/Dusbahanekarkenahigayegym_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Dusbahanekarkenahigayegym_01.jpeg"
+                    alt="Dus Bahane Karke Nahi Gaye Gym Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Dus Bahane Karke Nahi Gaye Gym Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Dus%20Bahane%20Karke%20Nahi%20Gaye%20Gym%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 15 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Liftyourselfupfirstthenlifttheweightbro_01.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_02.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_03.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_04.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_05.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_06.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_07.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_08.jpeg",
+                    "images/Liftyourselfupfirstthenlifttheweightbro_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Liftyourselfupfirstthenlifttheweightbro_01.jpeg"
+                    alt="Lift Yourself Up First Then Lift The Weight Bro Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Lift Yourself Up First Then Lift The Weight Bro Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Lift%20Yourself%20Up%20First%20Then%20Lift%20The%20Weight%20Bro%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 16 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Whimsicalbirdkeyholder_01.jpeg",
+                    "images/Whimsicalbirdkeyholder_02.jpeg",
+                    "images/Whimsicalbirdkeyholder_03.jpeg",
+                    "images/Whimsicalbirdkeyholder_04.jpeg",
+                    "images/Whimsicalbirdkeyholder_05.jpeg",
+                    "images/Whimsicalbirdkeyholder_06.jpeg",
+                    "images/Whimsicalbirdkeyholder_07.jpeg",
+                    "images/Whimsicalbirdkeyholder_08.jpeg",
+                    "images/Whimsicalbirdkeyholder_09.jpeg",
+                    "images/Whimsicalbirdkeyholder_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Whimsicalbirdkeyholder_01.jpeg"
+                    alt="Whimsical Bird Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Whimsical Bird Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6.3 × 3.9 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Whimsical%20Bird%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 17 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Lifeisajourneyenjoytheride_01.jpeg",
+                    "images/Lifeisajourneyenjoytheride_02.jpeg",
+                    "images/Lifeisajourneyenjoytheride_03.jpeg",
+                    "images/Lifeisajourneyenjoytheride_04.jpeg",
+                    "images/Lifeisajourneyenjoytheride_05.jpeg",
+                    "images/Lifeisajourneyenjoytheride_06.jpeg",
+                    "images/Lifeisajourneyenjoytheride_07.jpeg",
+                    "images/Lifeisajourneyenjoytheride_08.jpeg",
+                    "images/Lifeisajourneyenjoytheride_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Lifeisajourneyenjoytheride_01.jpeg"
+                    alt="Life Is A Journey Enjoy The Ride Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Life Is A Journey Enjoy The Ride Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Life%20Is%20A%20Journey%20Enjoy%20The%20Ride%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 18 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wherewereuallday_01.jpeg",
+                    "images/Wherewereuallday_02.jpeg",
+                    "images/Wherewereuallday_03.jpeg",
+                    "images/Wherewereuallday_04.jpeg",
+                    "images/Wherewereuallday_05.jpeg",
+                    "images/Wherewereuallday_06.jpeg",
+                    "images/Wherewereuallday_07.jpeg",
+                    "images/Wherewereuallday_08.jpeg",
+                    "images/Wherewereuallday_09.jpeg",
+                    "images/Wherewereuallday_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wherewereuallday_01.jpeg"
+                    alt="Where Were U All Day Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Where Were U All Day Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.8 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Where%20Were%20U%20All%20Day%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 19 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Lovekeyholder_01.jpeg",
+                    "images/Lovekeyholder_02.jpeg",
+                    "images/Lovekeyholder_03.jpeg",
+                    "images/Lovekeyholder_04.jpeg",
+                    "images/Lovekeyholder_05.jpeg",
+                    "images/Lovekeyholder_06.jpeg",
+                    "images/Lovekeyholder_07.jpeg",
+                    "images/Lovekeyholder_08.jpeg",
+                    "images/Lovekeyholder_09.jpeg",
+                    "images/Lovekeyholder_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Lovekeyholder_01.jpeg"
+                    alt="Love Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Love Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5 × 4.9 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Love%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 20 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Letsgooutside_01.jpeg",
+                    "images/Letsgooutside_02.jpeg",
+                    "images/Letsgooutside_03.jpeg",
+                    "images/Letsgooutside_04.jpeg",
+                    "images/Letsgooutside_05.jpeg",
+                    "images/Letsgooutside_06.jpeg",
+                    "images/Letsgooutside_07.jpeg",
+                    "images/Letsgooutside_08.jpeg",
+                    "images/Letsgooutside_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Letsgooutside_01.jpeg"
+                    alt="Let's Go Outside Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Let's Go Outside Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.9 × 4.1 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Let's%20Go%20Outside%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 21 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Thukrakmerapyarmerainteqamdekhegi_01.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_02.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_03.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_04.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_05.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_06.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_07.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_08.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_09.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_10.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_11.jpeg",
+                    "images/Thukrakmerapyarmerainteqamdekhegi_12.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Thukrakmerapyarmerainteqamdekhegi_01.jpeg"
+                    alt="Thukra K Mera Pyar Mera Inteqam Dekhegi Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Thukra K Mera Pyar Mera Inteqam Dekhegi Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Thukra%20K%20Mera%20Pyar%20Mera%20Inteqam%20Dekhegi%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 22 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wemissedu_01.jpeg",
+                    "images/Wemissedu_02.jpeg",
+                    "images/Wemissedu_03.jpeg",
+                    "images/Wemissedu_04.jpeg",
+                    "images/Wemissedu_05.jpeg",
+                    "images/Wemissedu_06.jpeg",
+                    "images/Wemissedu_07.jpeg",
+                    "images/Wemissedu_08.jpeg",
+                    "images/Wemissedu_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wemissedu_01.jpeg"
+                    alt="We Missed U Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>We Missed U Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.8 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Missed%20U%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 23 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Pyarkachakkarmatlubmautsetakkar_01.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_02.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_03.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_04.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_05.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_06.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_07.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_08.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_09.jpeg",
+                    "images/Pyarkachakkarmatlubmautsetakkar_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Pyarkachakkarmatlubmautsetakkar_01.jpeg"
+                    alt="Pyar Ka Chakkar Matlab Maut Se Takkar Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Pyar Ka Chakkar Matlab Maut Se Takkar Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Pyar%20Ka%20Chakkar%20Matlab%20Maut%20Se%20Takkar%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 24 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Thejourneymattersthanthedestination_01.jpeg",
+                    "images/Thejourneymattersthanthedestination_02.jpeg",
+                    "images/Thejourneymattersthanthedestination_03.jpeg",
+                    "images/Thejourneymattersthanthedestination_04.jpeg",
+                    "images/Thejourneymattersthanthedestination_05.jpeg",
+                    "images/Thejourneymattersthanthedestination_06.jpeg",
+                    "images/Thejourneymattersthanthedestination_07.jpeg",
+                    "images/Thejourneymattersthanthedestination_08.jpeg",
+                    "images/Thejourneymattersthanthedestination_09.jpeg",
+                    "images/Thejourneymattersthanthedestination_10.jpeg",
+                    "images/Thejourneymattersthanthedestination_11.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Thejourneymattersthanthedestination_01.jpeg"
+                    alt="The Journey Matters Than The Destination Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>The Journey Matters Than The Destination Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20The%20Journey%20Matters%20Than%20The%20Destination%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 25 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Whimsicalowl_01.jpeg",
+                    "images/Whimsicalowl_02.jpeg",
+                    "images/Whimsicalowl_03.jpeg",
+                    "images/Whimsicalowl_04.jpeg",
+                    "images/Whimsicalowl_05.jpeg",
+                    "images/Whimsicalowl_06.jpeg",
+                    "images/Whimsicalowl_07.jpeg",
+                    "images/Whimsicalowl_08.jpeg",
+                    "images/Whimsicalowl_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Whimsicalowl_01.jpeg"
+                    alt="Whimsical Owl MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Whimsical Owl Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.5 × 4.4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Whimsical%20Owl%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 26 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Futureitnabrighthaikidikhhinahiraha_01.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_02.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_03.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_04.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_05.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_06.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_07.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_08.jpeg",
+                    "images/Futureitnabrighthaikidikhhinahiraha_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Futureitnabrighthaikidikhhinahiraha_01.jpeg"
+                    alt="Future Itna Bright Hai Ki Dikh Hi Nahi Raha MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Future Itna Bright Hai Ki Dikh Hi Nahi Raha Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Future%20Itna%20Bright%20Hai%20Ki%20Dikh%20Hi%20Nahi%20Raha%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 27 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Charmingwoodlandfriendskeyholder_01.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_02.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_03.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_04.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_05.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_06.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_07.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_08.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_09.jpeg",
+                    "images/Charmingwoodlandfriendskeyholder_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Charmingwoodlandfriendskeyholder_01.jpeg"
+                    alt="Charming Woodland Friends MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Charming Woodland Friends Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6.1 × 3.5 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Charming%20Woodland%20Friends%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 28 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Myeyesonyou_01.jpeg",
+                    "images/Myeyesonyou_02.jpeg",
+                    "images/Myeyesonyou_03.jpeg",
+                    "images/Myeyesonyou_04.jpeg",
+                    "images/Myeyesonyou_05.jpeg",
+                    "images/Myeyesonyou_06.jpeg",
+                    "images/Myeyesonyou_07.jpeg",
+                    "images/Myeyesonyou_08.jpeg",
+                    "images/Myeyesonyou_09.jpeg",
+                    "images/Myeyesonyou_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Myeyesonyou_01.jpeg"
+                    alt="My Eyes On You MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>My Eyes On You Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6.5 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20My%20Eyes%20On%20You%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 29 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wemissedu2_01.jpeg",
+                    "images/Wemissedu2_02.jpeg",
+                    "images/Wemissedu2_03.jpeg",
+                    "images/Wemissedu2_04.jpeg",
+                    "images/Wemissedu2_05.jpeg",
+                    "images/Wemissedu2_06.jpeg",
+                    "images/Wemissedu2_07.jpeg",
+                    "images/Wemissedu2_08.jpeg",
+                    "images/Wemissedu2_09.jpeg",
+                    "images/Wemissedu2_10.jpeg",
+                    "images/Wemissedu2_11.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wemissedu2_01.jpeg"
+                    alt="We Missed U MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>We Missed U Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6.5 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Missed%20U%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 30 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wemissedu3_01.jpeg",
+                    "images/Wemissedu3_02.jpeg",
+                    "images/Wemissedu3_03.jpeg",
+                    "images/Wemissedu3_04.jpeg",
+                    "images/Wemissedu3_05.jpeg",
+                    "images/Wemissedu3_06.jpeg",
+                    "images/Wemissedu3_07.jpeg",
+                    "images/Wemissedu3_08.jpeg",
+                    "images/Wemissedu3_09.jpeg",
+                    "images/Wemissedu3_10.jpeg",
+                    "images/Wemissedu3_11.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wemissedu3_01.jpeg"
+                    alt="We Missed U MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>We Missed U Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 6 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Missed%20U%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 31 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Wedidnotdoit_01.jpeg",
+                    "images/Wedidnotdoit_02.jpeg",
+                    "images/Wedidnotdoit_03.jpeg",
+                    "images/Wedidnotdoit_04.jpeg",
+                    "images/Wedidnotdoit_05.jpeg",
+                    "images/Wedidnotdoit_06.jpeg",
+                    "images/Wedidnotdoit_07.jpeg",
+                    "images/Wedidnotdoit_08.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Wedidnotdoit_01.jpeg"
+                    alt="We Didn't Do It MDF Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>We Didn't Do It Keyholder</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">Size: 5.2 × 4.9 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20We%20Didn't%20Do%20It%20MDF%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 32 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Gullack_01.jpeg",
+                    "images/Gullack_02.jpeg",
+                    "images/Gullack_03.jpeg",
+                    "images/Gullack_04.jpeg",
+                    "images/Gullack_05.jpeg",
+                    "images/Gullack_06.jpeg",
+                    "images/Gullack_07.jpeg",
+                    "images/Gullack_08.jpeg",
+                    "images/Gullack_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Gullack_01.jpeg"
+                    alt="Premium MDF Gullack">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Premium MDF Gullack</h3>
+
+            <p class="price">₹399</p>
+
+            <p class="size">Size: 4.3 × 4.1 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Premium%20MDF%20Gullack"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 33 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/WelcomeKeyholder_01.jpeg",
+                    "images/WelcomeKeyholder_02.jpeg",
+                    "images/WelcomeKeyholder_03.jpeg",
+                    "images/WelcomeKeyholder_04.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/WelcomeKeyholder_01.jpeg"
+                    alt="Welcome Keyholder">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Welcome Keyholder</h3>
+
+            <p class="price">₹499</p>
+
+            <p class="size">Size: 4 × 4 inch</p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Welcome%20Keyholder"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 34 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Om3_01.jpeg",
+                    "images/Om3_02.jpeg",
+                    "images/Om3_03.jpeg",
+                    "images/Om3_04.jpeg",
+                    "images/Om3_05.jpeg",
+                    "images/Om3_06.jpeg",
+                    "images/Om3_07.jpeg",
+                    "images/Om3_08.jpeg",
+                    "images/Om3_09.jpeg",
+                    "images/Om3_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Om3_01.jpeg"
+                    alt="OM Brown Small">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>OM Brown Small</h3>
+
+            <p class="price">₹299</p>
+
+            <p class="size">
+                Diameter: 7.9 inch × Thickness: 5 mm
+            </p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 35 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Om4_01.jpeg",
+                    "images/Om4_02.jpeg",
+                    "images/Om4_03.jpeg",
+                    "images/Om4_04.jpeg",
+                    "images/Om4_05.jpeg",
+                    "images/Om4_06.jpeg",
+                    "images/Om4_07.jpeg",
+                    "images/Om4_08.jpeg",
+                    "images/Om4_09.jpeg",
+                    "images/Om4_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Om4_01.jpeg"
+                    alt="OM Brown Big">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>OM Brown Big</h3>
+
+            <p class="price">₹499</p>
+
+            <p class="size">
+                Diameter: 15 inch × Thickness: 5 mm
+            </p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 36 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Krishnaacrylic_01.jpeg",
+                    "images/Krishnaacrylic_02.jpeg",
+                    "images/Krishnaacrylic_03.jpeg",
+                    "images/Krishnaacrylic_04.jpeg",
+                    "images/Krishnaacrylic_05.jpeg",
+                    "images/Krishnaacrylic_06.jpeg",
+                    "images/Krishnaacrylic_07.jpeg",
+                    "images/Krishnaacrylic_08.jpeg",
+                    "images/Krishnaacrylic_09.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Krishnaacrylic_01.jpeg"
+                    alt="Krishna Acrylic Wall Art">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Krishna Wallart</h3>
+
+            <p class="price">₹499</p>
+
+            <p class="size">
+                Diameter: 7.8 inch × Thickness: 5 mm
+            </p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Krishna%20Acrylic%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 37 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Budhaacrylic_01.jpeg",
+                    "images/Budhaacrylic_02.jpeg",
+                    "images/Budhaacrylic_03.jpeg",
+                    "images/Budhaacrylic_04.jpeg",
+                    "images/Budhaacrylic_05.jpeg",
+                    "images/Budhaacrylic_06.jpeg",
+                    "images/Budhaacrylic_07.jpeg",
+                    "images/Budhaacrylic_08.jpeg",
+                    "images/Budhaacrylic_09.jpeg",
+                    "images/Budhaacrylic_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Budhaacrylic_01.jpeg"
+                    alt="Buddha Acrylic Wall Art">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>Buddha Wallart</h3>
+
+            <p class="price">₹499</p>
+
+            <p class="size">
+                Diameter: 7.9 inch × Thickness: 5 mm
+            </p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Buddha%20Acrylic%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+
+        <!-- PRODUCT 38 -->
+
+        <div class="card">
+
+            <div
+                class="image-slider"
+                data-index="0"
+                data-images='[
+                    "images/Omacrylic_01.jpeg",
+                    "images/Omacrylic_02.jpeg",
+                    "images/Omacrylic_03.jpeg",
+                    "images/Omacrylic_04.jpeg",
+                    "images/Omacrylic_05.jpeg",
+                    "images/Omacrylic_06.jpeg",
+                    "images/Omacrylic_07.jpeg",
+                    "images/Omacrylic_08.jpeg",
+                    "images/Omacrylic_09.jpeg",
+                    "images/Omacrylic_10.jpeg"
+                ]'>
+
+                <button class="slider-btn prev"
+                    type="button"
+                    onclick="changeImage(this, -1)">‹</button>
+
+                <img
+                    class="slider-image"
+                    src="images/Omacrylic_01.jpeg"
+                    alt="OM Acrylic Wall Art">
+
+                <button class="slider-btn next"
+                    type="button"
+                    onclick="changeImage(this, 1)">›</button>
+
+                <div class="slider-dots"></div>
+
+            </div>
+
+            <h3>OM Acrylic Wallart</h3>
+
+            <p class="price">₹499</p>
+
+            <p class="size">
+                Diameter: 7.8 inch × Thickness: 5 mm
+            </p>
+
+            <a
+                class="button"
+                href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20Acrylic%20Wall%20Art"
+                target="_blank">
+
+                <i class="fab fa-whatsapp"></i>
+                Order on WhatsApp
+
+            </a>
+
+        </div>
+
+
+    </div>
+    <!-- END PRODUCTS -->
+
+
+
+    <!-- =====================================================
+         CONTACT
+         ===================================================== -->
+
+    <section id="contact">
+
+        <h2>
+            Contact Us
+        </h2>
+
+        <p>
+            For orders, contact us on WhatsApp or Instagram.
+        </p>
+
+
+        <a
+            class="button"
+            href="https://wa.me/919582899547"
+            target="_blank">
+
+            <i class="fab fa-whatsapp"></i>
+
+            Chat on WhatsApp
+
+        </a>
+
+
+        <br><br>
+
+
+        <a
+            class="button"
+            href="https://www.instagram.com/decoreva.wallart/"
+            target="_blank">
+
+            <i class="fab fa-instagram"></i>
+
+            Follow on Instagram
+
+        </a>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer>
+
+        <p>
+            © 2026 DECOREVA Wall Art. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         FLOATING WHATSAPP
+         ===================================================== -->
+
+    <a
+        href="https://wa.me/919582899547"
+        class="floating-whatsapp"
+        target="_blank"
+        aria-label="Chat on WhatsApp">
+
+        <i class="fab fa-whatsapp"></i>
+
+    </a>
+
+
+
+    <!-- =====================================================
+         LIGHTBOX
+         ===================================================== -->
+
+    <div
+        id="lightbox"
+        class="lightbox">
+
+        <span class="close">
+            &times;
+        </span>
+
+        <button
+            class="lightbox-prev"
+            type="button">
+
+            ‹
+
+        </button>
+
+        <button
+            class="lightbox-next"
+            type="button">
+
+            ›
+
+        </button>
+
+        <img
+            id="lightbox-img"
+            src=""
+            alt="Preview">
+
     </div>
 
-    <h3>Welcome Keyholder</h3>
 
-    <p class="price">₹499</p>
 
-    <p class="size">Size : 4 × 4 inch</p>
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Welcome%20Keyholder"
-       target="_blank">
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
-    </a>
+    <script src="script.js?v=20260820"></script>
+    <script>
+/* =========================================================
+   DECOREVA — 2 PAGE COLLECTION
+   PAGE 1 = PRODUCTS 1–20
+   PAGE 2 = PRODUCTS 21–38
+   ========================================================= */
 
-</div>
-<!-- WALL 34 - OM DARKBROWN -->
+document.addEventListener("DOMContentLoaded", function () {
 
-<div class="card">
+    const productsContainer =
+        document.querySelector("#collection-products");
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Om3_01.jpeg",
-         "images/Om3_02.jpeg",
-         "images/Om3_03.jpeg",
-         "images/Om3_04.jpeg",
-         "images/Om3_05.jpeg",
-         "images/Om3_06.jpeg",
-         "images/Om3_07.jpeg",
-         "images/Om3_08.jpeg",
-         "images/Om3_09.jpeg",
-         "images/Om3_10.jpeg"
-         ]'>
+    if (!productsContainer) return;
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
+    const allCards =
+        Array.from(productsContainer.querySelectorAll(".card"));
 
-        <img class="slider-image"
-             src="images/Om3_01.jpeg"
-             alt="OM DarkBrown Wall Art">
+    const perPage = 20;
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
+    /* -----------------------------------------
+       CURRENT PAGE
+       ----------------------------------------- */
 
-        <div class="slider-dots"></div>
+    const urlParams =
+        new URLSearchParams(window.location.search);
 
-    </div>
+    let currentPage =
+        parseInt(urlParams.get("page")) || 1;
 
-    <h3>OM Brown Small</h3>
+    const totalPages =
+        Math.ceil(allCards.length / perPage);
 
-    <p class="price">₹299</p>
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages) currentPage = totalPages;
 
-    <p class="size">
-        Diameter: 7.9 inch × Thickness: 5 mm
-    </p>
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
-       target="_blank">
+    /* -----------------------------------------
+       PAGINATION
+       ----------------------------------------- */
 
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
+    function renderPagination() {
 
-    </a>
+        let oldPagination =
+            document.querySelector(".collection-pagination");
 
-</div>
-<!-- WALL 35 - OM DARKBROWN -->
+        if (oldPagination) {
+            oldPagination.remove();
+        }
 
-<div class="card">
+        const pagination =
+            document.createElement("div");
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Om4_01.jpeg",
-         "images/Om4_02.jpeg",
-         "images/Om4_03.jpeg",
-         "images/Om4_04.jpeg",
-         "images/Om4_05.jpeg",
-         "images/Om4_06.jpeg",
-         "images/Om4_07.jpeg",
-         "images/Om4_08.jpeg",
-         "images/Om4_09.jpeg",
-         "images/Om4_10.jpeg"
-         ]'>
+        pagination.className =
+            "collection-pagination";
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
+        /* PREVIOUS */
 
-        <img class="slider-image"
-             src="images/Om4_01.jpeg"
-             alt="OM DarkBrown Wall Art">
+        if (currentPage > 1) {
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
+            const previous =
+                document.createElement("a");
 
-        <div class="slider-dots"></div>
+            previous.className =
+                "page-prev";
 
-    </div>
+            previous.href =
+                "?page=" + (currentPage - 1) + "#collection-products";
 
-    <h3>OM Brown Big</h3>
+            previous.innerHTML =
+                "← Previous";
 
-    <p class="price">₹499</p>
+            pagination.appendChild(previous);
+        }
 
-    <p class="size">
-        Diameter: 15 inch × Thickness: 5 mm
-    </p>
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20DarkBrown%20Wall%20Art"
-       target="_blank">
+        /* PAGE 1 */
 
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
+        if (currentPage === 1) {
 
-    </a>
+            const page1 =
+                document.createElement("span");
 
-</div>
-<!-- WALL 36 - KRISHNA ACRYLIC -->
+            page1.className =
+                "page-current";
 
-<div class="card">
+            page1.textContent = "1";
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Krishnaacrylic_01.jpeg",
-         "images/Krishnaacrylic_02.jpeg",
-         "images/Krishnaacrylic_03.jpeg",
-         "images/Krishnaacrylic_04.jpeg",
-         "images/Krishnaacrylic_05.jpeg",
-         "images/Krishnaacrylic_06.jpeg",
-         "images/Krishnaacrylic_07.jpeg",
-         "images/Krishnaacrylic_08.jpeg",
-         "images/Krishnaacrylic_09.jpeg"
-         ]'>
+            pagination.appendChild(page1);
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
+        } else {
 
-        <img class="slider-image"
-             src="images/Krishnaacrylic_01.jpeg"
-             alt="Krishna Acrylic Wall Art">
+            const page1 =
+                document.createElement("a");
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
+            page1.className =
+                "page-link";
 
-        <div class="slider-dots"></div>
+            page1.href =
+                "?page=1#collection-products";
 
-    </div>
+            page1.textContent = "1";
 
-    <h3>Krishna Wallart</h3>
+            pagination.appendChild(page1);
+        }
 
-    <p class="price">₹499</p>
 
-    <p class="size">
-        Diameter: 7.8 inch × Thickness: 5 mm
-    </p>
+        /* PAGE 2 */
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Krishna%20Acrylic%20Wall%20Art"
-       target="_blank">
+        if (totalPages >= 2) {
 
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
+            if (currentPage === 2) {
 
-    </a>
+                const page2 =
+                    document.createElement("span");
 
-</div>
-<!-- WALL 37 - BUDDHA ACRYLIC -->
+                page2.className =
+                    "page-current";
 
-<div class="card">
+                page2.textContent = "2";
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Budhaacrylic_01.jpeg",
-         "images/Budhaacrylic_02.jpeg",
-         "images/Budhaacrylic_03.jpeg",
-         "images/Budhaacrylic_04.jpeg",
-         "images/Budhaacrylic_05.jpeg",
-         "images/Budhaacrylic_06.jpeg",
-         "images/Budhaacrylic_07.jpeg",
-         "images/Budhaacrylic_08.jpeg",
-         "images/Budhaacrylic_09.jpeg",
-         "images/Budhaacrylic_10.jpeg"
-         ]'>
+                pagination.appendChild(page2);
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
+            } else {
 
-        <img class="slider-image"
-             src="images/Budhaacrylic_01.jpeg"
-             alt="Buddha Acrylic Wall Art">
+                const page2 =
+                    document.createElement("a");
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
+                page2.className =
+                    "page-link";
 
-        <div class="slider-dots"></div>
+                page2.href =
+                    "?page=2#collection-products";
 
-    </div>
+                page2.textContent = "2";
 
-    <h3>Buddha Wallart</h3>
+                pagination.appendChild(page2);
+            }
+        }
 
-    <p class="price">₹499</p>
 
-    <p class="size">
-        Diameter: 7.9 inch × Thickness: 5 mm
-    </p>
+        /* NEXT */
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20Buddha%20Acrylic%20Wall%20Art"
-       target="_blank">
+        if (currentPage < totalPages) {
 
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
+            const next =
+                document.createElement("a");
 
-    </a>
+            next.className =
+                "page-next";
 
-</div>
-<!-- WALL 38 - OM ACRYLIC -->
+            next.href =
+                "?page=" + (currentPage + 1) +
+                "#collection-products";
 
-<div class="card">
+            next.innerHTML =
+                "Next →";
 
-    <div class="image-slider"
-         data-index="0"
-         data-images='[
-         "images/Omacrylic_01.jpeg",
-         "images/Omacrylic_02.jpeg",
-         "images/Omacrylic_03.jpeg",
-         "images/Omacrylic_04.jpeg",
-         "images/Omacrylic_05.jpeg",
-         "images/Omacrylic_06.jpeg",
-         "images/Omacrylic_07.jpeg",
-         "images/Omacrylic_08.jpeg",
-         "images/Omacrylic_09.jpeg",
-         "images/Omacrylic_10.jpeg"
-         ]'>
+            pagination.appendChild(next);
+        }
 
-        <button class="slider-btn prev"
-                onclick="changeImage(this, -1)">‹</button>
 
-        <img class="slider-image"
-             src="images/Omacrylic_01.jpeg"
-             alt="OM Acrylic Wall Art">
+        productsContainer.after(pagination);
+    }
 
-        <button class="slider-btn next"
-                onclick="changeImage(this, 1)">›</button>
 
-        <div class="slider-dots"></div>
+    /* -----------------------------------------
+       SHOW PRODUCTS FOR CURRENT PAGE
+       ----------------------------------------- */
 
-    </div>
+    function showCurrentPage() {
 
-    <h3>OM Acrylic Wallart</h3>
+        const searchBox =
+            document.querySelector("#productSearch");
 
-    <p class="price">₹499</p>
+        const searchText =
+            searchBox
+                ? searchBox.value.toLowerCase().trim()
+                : "";
 
-    <p class="size">
-        Diameter: 7.8 inch × Thickness: 5 mm
-    </p>
+        /*
+         * Apply search first
+         */
 
-    <a class="button"
-       href="https://wa.me/919582899547?text=Hello%20DECOREVA,%20I%20want%20to%20buy%20OM%20Acrylic%20Wall%20Art"
-       target="_blank">
+        const matchingCards =
+            allCards.filter(function (card) {
 
-        <i class="fab fa-whatsapp"></i>
-        Order on WhatsApp
+                const title =
+                    card.querySelector("h3");
 
-    </a>
+                if (!title) return true;
 
-</div>
+                return title.textContent
+                    .toLowerCase()
+                    .includes(searchText);
+            });
 
-</div>
 
-</section>
+        /*
+         * Hide everything first
+         */
 
-<section id="contact">
+        allCards.forEach(function (card) {
 
-    <h2>Contact Us</h2>
+            card.style.display = "none";
 
-    <p>For orders, contact us on WhatsApp or Instagram.</p>
+        });
 
-    <a class="button"
-       href="https://wa.me/919582899547"
-       target="_blank">
 
-       <i class="fab fa-whatsapp"></i>
+        /*
+         * Calculate page range
+         */
 
-       Chat on WhatsApp
+        const start =
+            (currentPage - 1) * perPage;
 
-    </a>
+        const end =
+            start + perPage;
 
-    <br><br>
 
-    <a class="button"
-       href="https://www.instagram.com/decoreva.wallart/"
-       target="_blank">
+        /*
+         * Show only current page
+         */
 
-       <i class="fab fa-instagram"></i>
+        matchingCards
+            .slice(start, end)
+            .forEach(function (card) {
 
-       Follow on Instagram
+                card.style.display = "";
 
-    </a>
+            });
 
-</section>
 
-<footer>
+        /*
+         * Pagination based on normal 38-product collection.
+         */
 
-    <p>© 2026 DECOREVA Wall Art. All Rights Reserved.</p>
+        renderPagination();
+    }
 
-</footer>
 
-<a href="https://wa.me/919582899547"
-class="floating-whatsapp"
-target="_blank">
+    /* -----------------------------------------
+       INITIAL LOAD
+       ----------------------------------------- */
 
-    <i class="fab fa-whatsapp"></i>
+    showCurrentPage();
 
-</a>
 
-<div id="lightbox" class="lightbox">
+    /* -----------------------------------------
+       SEARCH SUPPORT
+       ----------------------------------------- */
 
-    <span class="close">&times;</span>
+    const searchBox =
+        document.querySelector("#productSearch");
 
-    <button class="lightbox-prev">‹</button>
-<button class="lightbox-next">›</button>
+    if (searchBox) {
 
-    <img id="lightbox-img" src="" alt="Preview">
+        searchBox.addEventListener(
+            "input",
+            function () {
 
-</div>
+                currentPage = 1;
 
-<script src="script.js?v=20260820"></script>
+                showCurrentPage();
+
+            }
+        );
+    }
+
+
+    /* -----------------------------------------
+       SORT SUPPORT
+       ----------------------------------------- */
+
+    const sortSelect =
+        document.querySelector("#productSort");
+
+    if (sortSelect) {
+
+        sortSelect.addEventListener(
+            "change",
+            function () {
+
+                setTimeout(function () {
+
+                    showCurrentPage();
+
+                }, 100);
+
+            }
+        );
+    }
+
+
+    /*
+     * Custom sort buttons
+     */
+
+    document
+        .querySelectorAll(".custom-sort-menu [data-value]")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    setTimeout(function () {
+
+                        showCurrentPage();
+
+                    }, 150);
+
+                }
+            );
+
+        });
+
+});
+</script>
+
 
 </body>
 
