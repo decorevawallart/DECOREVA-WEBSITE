@@ -2681,12 +2681,37 @@ footer p{
 
 
   .decoreva-trust-strip{
-    min-height:68px;padding:6px 0;grid-template-columns:repeat(4,minmax(0,1fr));
-  }
-  .trust-item{
-    min-height:56px;padding:4px 3px;gap:4px;flex-direction:column;text-align:center;
+    min-height:52px !important;
+    height:auto !important;
+    padding:3px 0 !important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+.trust-item{
+    min-height:44px !important;
+    height:auto !important;
+    padding:2px 2px !important;
+    gap:2px !important;
+    flex-direction:column;
+    text-align:center;
     border-right:1px solid rgba(214,179,106,.32);
-  }
+}
+
+.trust-item > i{
+    font-size:11px !important;
+    margin-bottom:1px !important;
+}
+
+.trust-item strong{
+    font-size:7px !important;
+    line-height:1.05 !important;
+}
+
+.trust-item span{
+    margin-top:1px !important;
+    font-size:5.5px !important;
+    line-height:1.1 !important;
+}
   .trust-item>i{font-size:14px}
   .trust-item strong{font-size:8px;line-height:1.1}
   .trust-item span{margin-top:2px;font-size:5.8px;line-height:1.15}

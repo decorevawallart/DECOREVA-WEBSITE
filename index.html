@@ -4264,211 +4264,245 @@ if (nativeSort) {
 
 /* =========================================
    DECOREVA - VOICE SEARCH
-   FINAL WORKING VERSION
+   FINAL SAFE VERSION
    ========================================= */
 
-const voiceSearchBtn = document.getElementById("voiceSearchBtn");
-const searchBoxVoice = document.getElementById("productSearch");
+const voiceSearchBtn =
+    document.getElementById("voiceSearchBtn");
 
-if (voiceSearchBtn && searchBoxVoice) {
+const voiceSearchBox =
+    document.getElementById("productSearch");
+
+if (voiceSearchBtn && voiceSearchBox) {
 
     const SpeechRecognition =
         window.SpeechRecognition ||
         window.webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
+    let recognition = null;
+    let voiceRunning = false;
 
-        voiceSearchBtn.addEventListener("click", function () {
-            alert(
-                "Voice search is not supported in this browser. Please use Google Chrome."
-            );
-        });
 
-    } else {
+    /* -----------------------------------------
+       BROWSER SUPPORT
+       ----------------------------------------- */
 
-        const recognition = new SpeechRecognition();
+    if (SpeechRecognition) {
+
+        recognition = new SpeechRecognition();
 
         recognition.lang = "en-IN";
+
         recognition.continuous = false;
+
         recognition.interimResults = false;
-        recognition.maxAlternatives = 3;
 
-        let isListening = false;
+        recognition.maxAlternatives = 1;
 
-        voiceSearchBtn.addEventListener("click", function (event) {
 
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (isListening) {
-                return;
-            }
-
-            try {
-
-                recognition.start();
-
-            } catch (error) {
-
-                console.log("Recognition start error:", error);
-
-            }
-
-        });
-
+        /* -----------------------------------------
+           WHEN VOICE SEARCH STARTS
+           ----------------------------------------- */
 
         recognition.onstart = function () {
 
-            isListening = true;
+            voiceRunning = true;
 
-            voiceSearchBtn.style.color = "#b87908";
+            voiceSearchBtn.style.color = "#b77a08";
+
             voiceSearchBtn.style.transform =
                 "translateY(-50%) scale(1.15)";
 
-            console.log("VOICE SEARCH STARTED");
-
         };
 
 
-        recognition.onaudiostart = function () {
-
-            console.log("MICROPHONE AUDIO STARTED");
-
-        };
-
-
-        recognition.onspeechstart = function () {
-
-            console.log("SPEECH DETECTED");
-
-        };
-
+        /* -----------------------------------------
+           VOICE RESULT
+           ----------------------------------------- */
 
         recognition.onresult = function (event) {
 
-            console.log("VOICE EVENT RECEIVED");
-
             let spokenText = "";
 
-            for (
-                let i = event.resultIndex;
-                i < event.results.length;
-                i++
+            if (
+                event.results &&
+                event.results.length > 0 &&
+                event.results[0] &&
+                event.results[0][0]
             ) {
-
-                spokenText +=
-                    event.results[i][0].transcript;
-
-            }
-
-            spokenText = spokenText
-                .trim()
-                .replace(/[.,!?]/g, "");
-
-            console.log(
-                "VOICE SEARCH RESULT:",
-                spokenText
-            );
-
-
-            if (!spokenText) {
-
-                alert("I couldn't understand. Please speak again.");
-
-                return;
-
+                spokenText =
+                    event.results[0][0].transcript.trim();
             }
 
 
-            /* PUT VOICE TEXT INTO SEARCH BOX */
+            if (spokenText) {
 
-            searchBoxVoice.value = spokenText;
+                /* Put voice text into search box */
 
-
-            /* Make sure browser updates the field */
-
-            searchBoxVoice.dispatchEvent(
-                new Event("input", {
-                    bubbles: true
-                })
-            );
+                voiceSearchBox.value = spokenText;
 
 
-            /* FILTER PRODUCTS */
+                /* Trigger the SAME search used
+                   by normal typing */
 
-            currentPage = 1;
+                voiceSearchBox.dispatchEvent(
+                    new Event("input", {
+                        bubbles: true
+                    })
+                );
 
-            showCurrentPage();
 
+                /* Make sure collection starts
+                   from page 1 */
 
-            /* Put cursor in search box */
+                currentPage = 1;
 
-            searchBoxVoice.focus();
+                showCurrentPage();
 
+            }
         };
 
 
-        recognition.onnomatch = function () {
-
-            console.log("NO SPEECH MATCH");
-
-            alert(
-                "I couldn't understand your voice. Please try again."
-            );
-
-        };
-
+        /* -----------------------------------------
+           VOICE SEARCH ERROR
+           ----------------------------------------- */
 
         recognition.onerror = function (event) {
 
             console.log(
-                "VOICE SEARCH ERROR:",
+                "Voice search:",
                 event.error
             );
 
 
-            if (event.error === "not-allowed") {
+            /*
+             IMPORTANT:
 
-                alert(
-                    "Microphone permission is blocked. " +
-                    "Please allow microphone access for 127.0.0.1 and try again."
-                );
+             Do NOT show an alert for
+             service-not-allowed.
 
-            } else if (event.error === "no-speech") {
+             Some browsers/iPhones don't allow
+             webpage speech recognition.
+            */
 
-                alert(
-                    "No voice detected. Please speak the product name."
-                );
+            if (event.error === "service-not-allowed") {
 
-            } else if (event.error === "audio-capture") {
+                voiceSearchBox.focus();
 
-                alert(
-                    "Microphone was not detected. Please check your microphone."
-                );
-
-            } else {
-
-                alert(
-                    "Voice search error: " + event.error
-                );
+                voiceSearchBox.placeholder =
+                    "Use your keyboard microphone to speak...";
 
             }
 
+            else if (event.error === "not-allowed") {
+
+                voiceSearchBox.focus();
+
+                voiceSearchBox.placeholder =
+                    "Allow microphone access, then try again.";
+
+            }
+
+            else if (event.error === "no-speech") {
+
+                voiceSearchBox.placeholder =
+                    "No speech detected. Try again...";
+
+            }
+
+            else {
+
+                voiceSearchBox.placeholder =
+                    "Voice search unavailable. Type product name.";
+
+            }
         };
 
 
+        /* -----------------------------------------
+           WHEN VOICE SEARCH ENDS
+           ----------------------------------------- */
+
         recognition.onend = function () {
 
-            isListening = false;
+            voiceRunning = false;
 
-            voiceSearchBtn.style.color = "#2b1b0f";
+            voiceSearchBtn.style.color = "";
 
             voiceSearchBtn.style.transform =
                 "translateY(-50%)";
 
-            console.log("VOICE SEARCH ENDED");
-
         };
+
+
+        /* -----------------------------------------
+           MICROPHONE BUTTON
+           ----------------------------------------- */
+
+        voiceSearchBtn.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                if (voiceRunning) {
+
+                    try {
+                        recognition.stop();
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    return;
+                }
+
+
+                /* Reset placeholder */
+
+                voiceSearchBox.placeholder =
+                    "Search wall art...";
+
+
+                try {
+
+                    recognition.start();
+
+                }
+
+                catch (error) {
+
+                    console.log(
+                        "Voice start error:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+    else {
+
+        /* -----------------------------------------
+           BROWSER DOES NOT SUPPORT
+           ----------------------------------------- */
+
+        voiceSearchBtn.addEventListener(
+            "click",
+            function () {
+
+                voiceSearchBox.focus();
+
+                voiceSearchBox.placeholder =
+                    "Type product name here...";
+
+            }
+        );
 
     }
 
