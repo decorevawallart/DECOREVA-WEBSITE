@@ -4062,417 +4062,84 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
-        /* =========================================
-   DECOREVA - PRODUCT SORT
-   ========================================= */
-
-const sortButton =
-    document.querySelector(".custom-sort-button");
-
-const sortMenu =
-    document.querySelector(".custom-sort-menu");
-
-const sortOptions =
-    document.querySelectorAll(".custom-sort-menu button");
-
-const nativeSort =
-    document.querySelector("#productSort");
-
-/* Save original product order */
-const originalCardOrder = allCards.slice();
-
-
-function applyProductSort(sortValue) {
-
-    if (sortValue === "low-high") {
-
-        allCards.sort(function (a, b) {
-
-            const priceA =
-                parseInt(
-                    a.querySelector(".price")?.textContent
-                        .replace(/[^\d]/g, "")
-                ) || 0;
-
-            const priceB =
-                parseInt(
-                    b.querySelector(".price")?.textContent
-                        .replace(/[^\d]/g, "")
-                ) || 0;
-
-            return priceA - priceB;
-        });
-
-    }
-
-    else if (sortValue === "high-low") {
-
-        allCards.sort(function (a, b) {
-
-            const priceA =
-                parseInt(
-                    a.querySelector(".price")?.textContent
-                        .replace(/[^\d]/g, "")
-                ) || 0;
-
-            const priceB =
-                parseInt(
-                    b.querySelector(".price")?.textContent
-                        .replace(/[^\d]/g, "")
-                ) || 0;
-
-            return priceB - priceA;
-        });
-
-    }
-
-    else if (sortValue === "az") {
-
-        allCards.sort(function (a, b) {
-
-            const nameA =
-                a.querySelector("h3")?.textContent
-                    .trim()
-                    .toLowerCase() || "";
-
-            const nameB =
-                b.querySelector("h3")?.textContent
-                    .trim()
-                    .toLowerCase() || "";
-
-            return nameA.localeCompare(nameB);
-        });
-
-    }
-
-    else if (sortValue === "za") {
-
-        allCards.sort(function (a, b) {
-
-            const nameA =
-                a.querySelector("h3")?.textContent
-                    .trim()
-                    .toLowerCase() || "";
-
-            const nameB =
-                b.querySelector("h3")?.textContent
-                    .trim()
-                    .toLowerCase() || "";
-
-            return nameB.localeCompare(nameA);
-        });
-
-    }
-
-    else {
-
-        /* Restore original order */
-
-        allCards.length = 0;
-
-        originalCardOrder.forEach(function (card) {
-            allCards.push(card);
-        });
-    }
-
-
-    /* Rebuild product order in the page */
-
-    allCards.forEach(function (card) {
-        productsContainer.appendChild(card);
-    });
-
-
-    currentPage = 1;
-
-    showCurrentPage();
-}
-
-
-/* Custom sort button */
-
-if (sortButton && sortMenu) {
-
-    sortButton.addEventListener("click", function (event) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        sortMenu.classList.toggle("active");
-
-    });
-
-
-    /* Sort option buttons */
-
-    sortOptions.forEach(function (option) {
-
-        option.addEventListener("click", function (event) {
-
-            event.preventDefault();
-
-            const value =
-                option.getAttribute("data-value");
-
-            applyProductSort(value);
-
-            /* Update button text */
-
-            const buttonText =
-                sortButton.querySelector("span");
-
-            if (buttonText) {
-                buttonText.textContent =
-                    option.textContent.trim();
-            }
-
-            sortMenu.classList.remove("active");
-
-        });
-
-    });
-
-
-    /* Close menu when clicking outside */
-
-    document.addEventListener("click", function (event) {
-
-        if (
-            !sortButton.contains(event.target) &&
-            !sortMenu.contains(event.target)
-        ) {
-            sortMenu.classList.remove("active");
-        }
-
-    });
-
-}
-
-
-/* Native select support */
-
-if (nativeSort) {
-
-    nativeSort.addEventListener("change", function () {
-
-        applyProductSort(this.value);
-
-    });
-
-}
     }
 
 /* =========================================
    DECOREVA - VOICE SEARCH
-   FINAL WORKING VERSION
    ========================================= */
 
 const voiceSearchBtn = document.getElementById("voiceSearchBtn");
-const searchBoxVoice = document.getElementById("productSearch");
 
-if (voiceSearchBtn && searchBoxVoice) {
+if (voiceSearchBtn && searchBox) {
 
     const SpeechRecognition =
         window.SpeechRecognition ||
         window.webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
-
-        voiceSearchBtn.addEventListener("click", function () {
-            alert(
-                "Voice search is not supported in this browser. Please use Google Chrome."
-            );
-        });
-
-    } else {
+    if (SpeechRecognition) {
 
         const recognition = new SpeechRecognition();
 
         recognition.lang = "en-IN";
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.maxAlternatives = 3;
 
-        let isListening = false;
-
-        voiceSearchBtn.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (isListening) {
-                return;
-            }
+        voiceSearchBtn.addEventListener("click", function () {
 
             try {
-
                 recognition.start();
-
+                voiceSearchBtn.style.color = "#b87908";
+                voiceSearchBtn.style.transform = "translateY(-50%) scale(1.15)";
             } catch (error) {
-
-                console.log("Recognition start error:", error);
-
+                console.log("Voice search already active.");
             }
 
         });
 
-
-        recognition.onstart = function () {
-
-            isListening = true;
-
-            voiceSearchBtn.style.color = "#b87908";
-            voiceSearchBtn.style.transform =
-                "translateY(-50%) scale(1.15)";
-
-            console.log("VOICE SEARCH STARTED");
-
-        };
-
-
-        recognition.onaudiostart = function () {
-
-            console.log("MICROPHONE AUDIO STARTED");
-
-        };
-
-
-        recognition.onspeechstart = function () {
-
-            console.log("SPEECH DETECTED");
-
-        };
-
-
         recognition.onresult = function (event) {
 
-            console.log("VOICE EVENT RECEIVED");
+            const spokenText =
+                event.results[0][0].transcript;
 
-            let spokenText = "";
+            searchBox.value = spokenText;
 
-            for (
-                let i = event.resultIndex;
-                i < event.results.length;
-                i++
-            ) {
-
-                spokenText +=
-                    event.results[i][0].transcript;
-
-            }
-
-            spokenText = spokenText
-                .trim()
-                .replace(/[.,!?]/g, "");
-
-            console.log(
-                "VOICE SEARCH RESULT:",
-                spokenText
+            searchBox.dispatchEvent(
+                new Event("input", { bubbles: true })
             );
-
-
-            if (!spokenText) {
-
-                alert("I couldn't understand. Please speak again.");
-
-                return;
-
-            }
-
-
-            /* PUT VOICE TEXT INTO SEARCH BOX */
-
-            searchBoxVoice.value = spokenText;
-
-
-            /* Make sure browser updates the field */
-
-            searchBoxVoice.dispatchEvent(
-                new Event("input", {
-                    bubbles: true
-                })
-            );
-
-
-            /* FILTER PRODUCTS */
-
-            currentPage = 1;
-
-            showCurrentPage();
-
-
-            /* Put cursor in search box */
-
-            searchBoxVoice.focus();
-
         };
 
+        recognition.onend = function () {
 
-        recognition.onnomatch = function () {
-
-            console.log("NO SPEECH MATCH");
-
-            alert(
-                "I couldn't understand your voice. Please try again."
-            );
-
+            voiceSearchBtn.style.color = "#2b1b0f";
+            voiceSearchBtn.style.transform =
+                "translateY(-50%)";
         };
-
 
         recognition.onerror = function (event) {
 
             console.log(
-                "VOICE SEARCH ERROR:",
+                "Voice search error:",
                 event.error
             );
 
-
-            if (event.error === "not-allowed") {
-
-                alert(
-                    "Microphone permission is blocked. " +
-                    "Please allow microphone access for 127.0.0.1 and try again."
-                );
-
-            } else if (event.error === "no-speech") {
-
-                alert(
-                    "No voice detected. Please speak the product name."
-                );
-
-            } else if (event.error === "audio-capture") {
-
-                alert(
-                    "Microphone was not detected. Please check your microphone."
-                );
-
-            } else {
-
-                alert(
-                    "Voice search error: " + event.error
-                );
-
-            }
-
-        };
-
-
-        recognition.onend = function () {
-
-            isListening = false;
-
             voiceSearchBtn.style.color = "#2b1b0f";
-
             voiceSearchBtn.style.transform =
                 "translateY(-50%)";
-
-            console.log("VOICE SEARCH ENDED");
-
         };
 
-    }
+    } else {
 
+        voiceSearchBtn.addEventListener("click", function () {
+
+            alert(
+                "Voice search is not supported in this browser. Please use Google Chrome."
+            );
+
+        });
+
+    }
 }
+   
 
 });
 </script>
