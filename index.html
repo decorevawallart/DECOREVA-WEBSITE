@@ -4063,7 +4063,81 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+/* =========================================
+   DECOREVA - VOICE SEARCH
+   ========================================= */
 
+const voiceSearchBtn = document.getElementById("voiceSearchBtn");
+
+if (voiceSearchBtn && searchBox) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = "en-IN";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        voiceSearchBtn.addEventListener("click", function () {
+
+            try {
+                recognition.start();
+                voiceSearchBtn.style.color = "#b87908";
+                voiceSearchBtn.style.transform = "translateY(-50%) scale(1.15)";
+            } catch (error) {
+                console.log("Voice search already active.");
+            }
+
+        });
+
+        recognition.onresult = function (event) {
+
+            const spokenText =
+                event.results[0][0].transcript;
+
+            searchBox.value = spokenText;
+
+            searchBox.dispatchEvent(
+                new Event("input", { bubbles: true })
+            );
+        };
+
+        recognition.onend = function () {
+
+            voiceSearchBtn.style.color = "#2b1b0f";
+            voiceSearchBtn.style.transform =
+                "translateY(-50%)";
+        };
+
+        recognition.onerror = function (event) {
+
+            console.log(
+                "Voice search error:",
+                event.error
+            );
+
+            voiceSearchBtn.style.color = "#2b1b0f";
+            voiceSearchBtn.style.transform =
+                "translateY(-50%)";
+        };
+
+    } else {
+
+        voiceSearchBtn.addEventListener("click", function () {
+
+            alert(
+                "Voice search is not supported in this browser. Please use Google Chrome."
+            );
+
+        });
+
+    }
+}
     /* -----------------------------------------
        SORT SUPPORT
        ----------------------------------------- */
