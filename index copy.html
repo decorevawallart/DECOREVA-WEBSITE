@@ -32,6 +32,176 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+           <style>
+/* =========================================================
+   DECOREVA COLLECTION PAGINATION
+   20 PRODUCTS PER PAGE
+   ========================================================= */
+
+.collection-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 30px auto 10px;
+    flex-wrap: wrap;
+}
+
+.collection-pagination a,
+.collection-pagination span {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+
+    border: 1px solid #c99a3d;
+    border-radius: 10px;
+
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #8b5b16;
+    background: #fff8eb;
+
+    transition: all .25s ease;
+}
+
+.collection-pagination .page-current {
+    background: #c99a3d;
+    color: white;
+}
+
+.collection-pagination a:hover {
+    background: #c99a3d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.collection-pagination .page-prev,
+.collection-pagination .page-next {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+@media (max-width: 760px) {
+
+    .collection-pagination {
+        gap: 7px;
+        margin: 24px auto 10px;
+    }
+
+    .collection-pagination a,
+    .collection-pagination span {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}
+
+/* COLLECTION AREA - COMPACT SPACING */
+
+#collection-products {
+    padding-top: 25px !important;
+    padding-bottom: 35px !important;
+}
+
+#collection-products h2,
+#collection-products .section-title {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+#collection-products .collection-header {
+    margin-bottom: 18px !important;
+}
+
+#collection-products .collection-controls {
+    margin-top: 10px !important;
+    margin-bottom: 20px !important;
+}
+
+#collection-products .sort-container,
+#collection-products .sort-products {
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+}
+
+#collection-products input[placeholder*="Search"] {
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+/* MOBILE */
+@media (max-width: 760px) {
+
+    #collection-products {
+        padding-top: 18px !important;
+        padding-bottom: 25px !important;
+    }
+
+    #collection-products h2,
+    #collection-products .section-title {
+        margin-bottom: 8px !important;
+    }
+
+    #collection-products .collection-header {
+        margin-bottom: 12px !important;
+    }
+
+    #collection-products .collection-controls {
+        margin-top: 5px !important;
+        margin-bottom: 14px !important;
+    }
+
+    #collection-products input[placeholder*="Search"] {
+        margin-bottom: 15px !important;
+    }
+}
+/* ================================
+   DECOREVA COLLECTION SPACE FIX
+   ================================ */
+
+#collection-products {
+    padding-top: 10px !important;
+    padding-bottom: 20px !important;
+}
+
+#collection-products .collection-header {
+    margin-bottom: 5px !important;
+}
+
+#collection-products .collection-controls {
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+}
+
+#collection-products input[placeholder*="Search"] {
+    margin-bottom: 8px !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+
+    #collection-products {
+        padding-top: 5px !important;
+        padding-bottom: 15px !important;
+    }
+
+    #collection-products .collection-header {
+        margin-bottom: 4px !important;
+    }
+
+    #collection-products .collection-controls {
+        margin-top: 0 !important;
+        margin-bottom: 8px !important;
+    }
+}
+</style>
 </head>
 
 
@@ -1103,14 +1273,16 @@
     <!-- SEARCH -->
 
     <div class="product-search">
+    <input
+        type="search"
+        id="productSearch"
+        placeholder="Search wall art..."
+        autocomplete="off">
 
-        <input
-            type="search"
-            id="productSearch"
-            placeholder="🔍 Search wall art..."
-            autocomplete="off">
-
-    </div>
+    <button type="button" id="voiceSearchBtn" aria-label="Voice search">
+    <i class="fa-solid fa-microphone"></i>
+</button>
+</div>
 
 
 
@@ -3623,6 +3795,721 @@
          ===================================================== -->
 
     <script src="script.js?v=20260820"></script>
+    <script>
+/* =========================================================
+   DECOREVA — 2 PAGE COLLECTION
+   PAGE 1 = PRODUCTS 1–20
+   PAGE 2 = PRODUCTS 21–38
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const productsContainer =
+        document.querySelector("#collection-products");
+
+    if (!productsContainer) return;
+
+    const allCards =
+        Array.from(productsContainer.querySelectorAll(".card"));
+
+    const perPage = 20;
+
+    /* -----------------------------------------
+       CURRENT PAGE
+       ----------------------------------------- */
+
+    const urlParams =
+        new URLSearchParams(window.location.search);
+
+    let currentPage =
+        parseInt(urlParams.get("page")) || 1;
+
+    const totalPages =
+        Math.ceil(allCards.length / perPage);
+
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+
+
+    /* -----------------------------------------
+       PAGINATION
+       ----------------------------------------- */
+
+    function renderPagination() {
+
+        let oldPagination =
+            document.querySelector(".collection-pagination");
+
+        if (oldPagination) {
+            oldPagination.remove();
+        }
+
+        const pagination =
+            document.createElement("div");
+
+        pagination.className =
+            "collection-pagination";
+
+        /* PREVIOUS */
+
+        if (currentPage > 1) {
+
+            const previous =
+                document.createElement("a");
+
+            previous.className =
+                "page-prev";
+
+            previous.href =
+                "?page=" + (currentPage - 1) + "#collection-products";
+
+            previous.innerHTML =
+                "← Previous";
+
+            pagination.appendChild(previous);
+        }
+
+
+        /* PAGE 1 */
+
+        if (currentPage === 1) {
+
+            const page1 =
+                document.createElement("span");
+
+            page1.className =
+                "page-current";
+
+            page1.textContent = "1";
+
+            pagination.appendChild(page1);
+
+        } else {
+
+            const page1 =
+                document.createElement("a");
+
+            page1.className =
+                "page-link";
+
+            page1.href =
+                "?page=1#collection-products";
+
+            page1.textContent = "1";
+
+            pagination.appendChild(page1);
+        }
+
+
+        /* PAGE 2 */
+
+        if (totalPages >= 2) {
+
+            if (currentPage === 2) {
+
+                const page2 =
+                    document.createElement("span");
+
+                page2.className =
+                    "page-current";
+
+                page2.textContent = "2";
+
+                pagination.appendChild(page2);
+
+            } else {
+
+                const page2 =
+                    document.createElement("a");
+
+                page2.className =
+                    "page-link";
+
+                page2.href =
+                    "?page=2#collection-products";
+
+                page2.textContent = "2";
+
+                pagination.appendChild(page2);
+            }
+        }
+
+
+        /* NEXT */
+
+        if (currentPage < totalPages) {
+
+            const next =
+                document.createElement("a");
+
+            next.className =
+                "page-next";
+
+            next.href =
+                "?page=" + (currentPage + 1) +
+                "#collection-products";
+
+            next.innerHTML =
+                "Next →";
+
+            pagination.appendChild(next);
+        }
+
+
+        productsContainer.after(pagination);
+    }
+
+
+    /* -----------------------------------------
+       SHOW PRODUCTS FOR CURRENT PAGE
+       ----------------------------------------- */
+
+    function showCurrentPage() {
+
+        const searchBox =
+            document.querySelector("#productSearch");
+
+        const searchText =
+            searchBox
+                ? searchBox.value.toLowerCase().trim()
+                : "";
+
+        /*
+         * Apply search first
+         */
+
+        const matchingCards =
+            allCards.filter(function (card) {
+
+                const title =
+                    card.querySelector("h3");
+
+                if (!title) return true;
+
+                return title.textContent
+                    .toLowerCase()
+                    .includes(searchText);
+            });
+
+
+        /*
+         * Hide everything first
+         */
+
+        allCards.forEach(function (card) {
+
+            card.style.display = "none";
+
+        });
+
+
+        /*
+         * Calculate page range
+         */
+
+        const start =
+            (currentPage - 1) * perPage;
+
+        const end =
+            start + perPage;
+
+
+        /*
+         * Show only current page
+         */
+
+        matchingCards
+            .slice(start, end)
+            .forEach(function (card) {
+
+                card.style.display = "";
+
+            });
+
+
+        /*
+         * Pagination based on normal 38-product collection.
+         */
+
+        renderPagination();
+    }
+
+
+    /* -----------------------------------------
+       INITIAL LOAD
+       ----------------------------------------- */
+
+    showCurrentPage();
+    
+
+
+    /* -----------------------------------------
+       SEARCH SUPPORT
+       ----------------------------------------- */
+
+    const searchBox =
+        document.querySelector("#productSearch");
+
+    if (searchBox) {
+
+        searchBox.addEventListener(
+            "input",
+            function () {
+
+                currentPage = 1;
+
+                showCurrentPage();
+
+            }
+        );
+        /* =========================================
+   DECOREVA - PRODUCT SORT
+   ========================================= */
+
+const sortButton =
+    document.querySelector(".custom-sort-button");
+
+const sortMenu =
+    document.querySelector(".custom-sort-menu");
+
+const sortOptions =
+    document.querySelectorAll(".custom-sort-menu button");
+
+const nativeSort =
+    document.querySelector("#productSort");
+
+/* Save original product order */
+const originalCardOrder = allCards.slice();
+
+
+function applyProductSort(sortValue) {
+
+    if (sortValue === "low-high") {
+
+        allCards.sort(function (a, b) {
+
+            const priceA =
+                parseInt(
+                    a.querySelector(".price")?.textContent
+                        .replace(/[^\d]/g, "")
+                ) || 0;
+
+            const priceB =
+                parseInt(
+                    b.querySelector(".price")?.textContent
+                        .replace(/[^\d]/g, "")
+                ) || 0;
+
+            return priceA - priceB;
+        });
+
+    }
+
+    else if (sortValue === "high-low") {
+
+        allCards.sort(function (a, b) {
+
+            const priceA =
+                parseInt(
+                    a.querySelector(".price")?.textContent
+                        .replace(/[^\d]/g, "")
+                ) || 0;
+
+            const priceB =
+                parseInt(
+                    b.querySelector(".price")?.textContent
+                        .replace(/[^\d]/g, "")
+                ) || 0;
+
+            return priceB - priceA;
+        });
+
+    }
+
+    else if (sortValue === "az") {
+
+        allCards.sort(function (a, b) {
+
+            const nameA =
+                a.querySelector("h3")?.textContent
+                    .trim()
+                    .toLowerCase() || "";
+
+            const nameB =
+                b.querySelector("h3")?.textContent
+                    .trim()
+                    .toLowerCase() || "";
+
+            return nameA.localeCompare(nameB);
+        });
+
+    }
+
+    else if (sortValue === "za") {
+
+        allCards.sort(function (a, b) {
+
+            const nameA =
+                a.querySelector("h3")?.textContent
+                    .trim()
+                    .toLowerCase() || "";
+
+            const nameB =
+                b.querySelector("h3")?.textContent
+                    .trim()
+                    .toLowerCase() || "";
+
+            return nameB.localeCompare(nameA);
+        });
+
+    }
+
+    else {
+
+        /* Restore original order */
+
+        allCards.length = 0;
+
+        originalCardOrder.forEach(function (card) {
+            allCards.push(card);
+        });
+    }
+
+
+    /* Rebuild product order in the page */
+
+    allCards.forEach(function (card) {
+        productsContainer.appendChild(card);
+    });
+
+
+    currentPage = 1;
+
+    showCurrentPage();
+}
+
+
+/* Custom sort button */
+
+if (sortButton && sortMenu) {
+
+    sortButton.addEventListener("click", function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        sortMenu.classList.toggle("active");
+
+    });
+
+
+    /* Sort option buttons */
+
+    sortOptions.forEach(function (option) {
+
+        option.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            const value =
+                option.getAttribute("data-value");
+
+            applyProductSort(value);
+
+            /* Update button text */
+
+            const buttonText =
+                sortButton.querySelector("span");
+
+            if (buttonText) {
+                buttonText.textContent =
+                    option.textContent.trim();
+            }
+
+            sortMenu.classList.remove("active");
+
+        });
+
+    });
+
+
+    /* Close menu when clicking outside */
+
+    document.addEventListener("click", function (event) {
+
+        if (
+            !sortButton.contains(event.target) &&
+            !sortMenu.contains(event.target)
+        ) {
+            sortMenu.classList.remove("active");
+        }
+
+    });
+
+}
+
+
+/* Native select support */
+
+if (nativeSort) {
+
+    nativeSort.addEventListener("change", function () {
+
+        applyProductSort(this.value);
+
+    });
+
+}
+    }
+
+/* =========================================
+   DECOREVA - VOICE SEARCH
+   FINAL SAFE VERSION
+   ========================================= */
+
+const voiceSearchBtn =
+    document.getElementById("voiceSearchBtn");
+
+const voiceSearchBox =
+    document.getElementById("productSearch");
+
+if (voiceSearchBtn && voiceSearchBox) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    let recognition = null;
+    let voiceRunning = false;
+
+
+    /* -----------------------------------------
+       BROWSER SUPPORT
+       ----------------------------------------- */
+
+    if (SpeechRecognition) {
+
+        recognition = new SpeechRecognition();
+
+        recognition.lang = "en-IN";
+
+        recognition.continuous = false;
+
+        recognition.interimResults = false;
+
+        recognition.maxAlternatives = 1;
+
+
+        /* -----------------------------------------
+           WHEN VOICE SEARCH STARTS
+           ----------------------------------------- */
+
+        recognition.onstart = function () {
+
+            voiceRunning = true;
+
+            voiceSearchBtn.style.color = "#b77a08";
+
+            voiceSearchBtn.style.transform =
+                "translateY(-50%) scale(1.15)";
+
+        };
+
+
+        /* -----------------------------------------
+           VOICE RESULT
+           ----------------------------------------- */
+
+        recognition.onresult = function (event) {
+
+            let spokenText = "";
+
+            if (
+                event.results &&
+                event.results.length > 0 &&
+                event.results[0] &&
+                event.results[0][0]
+            ) {
+                spokenText =
+                    event.results[0][0].transcript.trim();
+            }
+
+
+            if (spokenText) {
+
+                /* Put voice text into search box */
+
+                voiceSearchBox.value = spokenText;
+
+
+                /* Trigger the SAME search used
+                   by normal typing */
+
+                voiceSearchBox.dispatchEvent(
+                    new Event("input", {
+                        bubbles: true
+                    })
+                );
+
+
+                /* Make sure collection starts
+                   from page 1 */
+
+                currentPage = 1;
+
+                showCurrentPage();
+
+            }
+        };
+
+
+        /* -----------------------------------------
+           VOICE SEARCH ERROR
+           ----------------------------------------- */
+
+        recognition.onerror = function (event) {
+
+            console.log(
+                "Voice search:",
+                event.error
+            );
+
+
+            /*
+             IMPORTANT:
+
+             Do NOT show an alert for
+             service-not-allowed.
+
+             Some browsers/iPhones don't allow
+             webpage speech recognition.
+            */
+
+            if (event.error === "service-not-allowed") {
+
+                voiceSearchBox.focus();
+
+                voiceSearchBox.placeholder =
+                    "Use your keyboard microphone to speak...";
+
+            }
+
+            else if (event.error === "not-allowed") {
+
+                voiceSearchBox.focus();
+
+                voiceSearchBox.placeholder =
+                    "Allow microphone access, then try again.";
+
+            }
+
+            else if (event.error === "no-speech") {
+
+                voiceSearchBox.placeholder =
+                    "No speech detected. Try again...";
+
+            }
+
+            else {
+
+                voiceSearchBox.placeholder =
+                    "Voice search unavailable. Type product name.";
+
+            }
+        };
+
+
+        /* -----------------------------------------
+           WHEN VOICE SEARCH ENDS
+           ----------------------------------------- */
+
+        recognition.onend = function () {
+
+            voiceRunning = false;
+
+            voiceSearchBtn.style.color = "";
+
+            voiceSearchBtn.style.transform =
+                "translateY(-50%)";
+
+        };
+
+
+        /* -----------------------------------------
+           MICROPHONE BUTTON
+           ----------------------------------------- */
+
+        voiceSearchBtn.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                if (voiceRunning) {
+
+                    try {
+                        recognition.stop();
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    return;
+                }
+
+
+                /* Reset placeholder */
+
+                voiceSearchBox.placeholder =
+                    "Search wall art...";
+
+
+                try {
+
+                    recognition.start();
+
+                }
+
+                catch (error) {
+
+                    console.log(
+                        "Voice start error:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+    else {
+
+        /* -----------------------------------------
+           BROWSER DOES NOT SUPPORT
+           ----------------------------------------- */
+
+        voiceSearchBtn.addEventListener(
+            "click",
+            function () {
+
+                voiceSearchBox.focus();
+
+                voiceSearchBox.placeholder =
+                    "Type product name here...";
+
+            }
+        );
+
+    }
+
+}
+
+});
+</script>
 
 
 </body>
