@@ -197,11 +197,8 @@ nav a.active::after{transform:scaleX(1)}
 .product-sort{width:100%;max-width:1200px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center}
 .custom-sort{position:relative;width:190px;flex:0 0 190px}
 .custom-sort-button{width:100%;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border:1px solid
-    rgba(201,149,46,.48);border-radius:12px;background:linear-gradient(
-      145deg,
-      #eee1cd,
-      #e4d3b8
-    );color:#493a2b;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 5px 15px rgba(85,56,12,.07)}
+    rgba(201,149,46,.48);border-radius:12px;background: #fffaf0;
+);;color:#493a2b;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 5px 15px rgba(85,56,12,.07)}
 .custom-sort-button:hover{border-color:#c9952e}
 .custom-sort-arrow{color:#b17818;font-size:18px}
 .custom-sort-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:100;display:none;overflow:hidden;background:#eee1cd;border:1px solid
