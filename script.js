@@ -1983,25 +1983,25 @@ function decorevaShowPage(page) {
         );
 
 
-    /* MOVE TO COLLECTION */
+    /* MOVE TO COLLECTION HEADER */
 
-    const collection =
-        document.querySelector(
-            "#collection-products"
-        );
+const collectionTitle =
+    document.querySelector(
+        ".collection-title"
+    );
 
-    if (collection) {
+if (collectionTitle) {
 
-        window.scrollTo({
+    window.scrollTo({
 
-            top:
-                collection.offsetTop - 120,
+        top:
+            collectionTitle.offsetTop - 90,
 
-            behavior: "smooth"
+        behavior: "smooth"
 
-        });
+    });
 
-    }
+}
 
 }
 

@@ -1681,5 +1681,396 @@ if (featuredLightboxSlider) {
             );
         }
     );
+/* =====================================================
+   DECOREVA PREMIUM 4-PAGE PAGINATION
+   20 + 20 + 20 + 8 PRODUCTS
+   ===================================================== */
+
+const decorevaProducts = Array.from(
+    document.querySelectorAll("#collection-products .card")
+);
+
+const decorevaPerPage = 20;
+const decorevaTotalPages = 4;
+
+let decorevaCurrentPage = 1;
+
+
+/* ---------- PAGINATION STYLE ---------- */
+
+function decorevaPaginationStyle(nav) {
+
+    nav.style.display = "flex";
+    nav.style.justifyContent = "center";
+    nav.style.alignItems = "center";
+    nav.style.gap = "22px";
+    nav.style.margin = "28px 0";
+    nav.style.padding = "8px 0";
+    nav.style.fontFamily = "inherit";
+}
+
+
+/* ---------- CREATE PAGINATION ---------- */
+
+function createDecorevaPagination() {
+
+    const nav = document.createElement("div");
+
+    nav.className = "decoreva-pagination";
+
+    decorevaPaginationStyle(nav);
+
+
+    /* PREVIOUS ARROW */
+
+    const previous = document.createElement("button");
+
+    previous.type = "button";
+    previous.innerHTML = "‹";
+    previous.setAttribute(
+        "aria-label",
+        "Previous page"
+    );
+
+    previous.style.border = "none";
+    previous.style.background = "transparent";
+    previous.style.fontSize = "30px";
+    previous.style.lineHeight = "1";
+    previous.style.color = "#8b6a32";
+    previous.style.cursor = "pointer";
+    previous.style.padding = "4px 8px";
+    previous.style.fontWeight = "400";
+
+
+    previous.addEventListener(
+        "click",
+        function () {
+
+            if (decorevaCurrentPage > 1) {
+
+                decorevaShowPage(
+                    decorevaCurrentPage - 1
+                );
+
+            }
+
+        }
+    );
+
+    nav.appendChild(previous);
+
+
+    /* PAGE NUMBERS */
+
+    for (
+        let page = 1;
+        page <= decorevaTotalPages;
+        page++
+    ) {
+
+        const number = document.createElement("button");
+
+        number.type = "button";
+        number.textContent = page;
+
+        number.dataset.page = page;
+
+        number.style.border = "none";
+        number.style.background = "transparent";
+        number.style.color = "#5a4630";
+        number.style.cursor = "pointer";
+        number.style.fontSize = "15px";
+        number.style.padding = "5px 4px";
+        number.style.minWidth = "24px";
+        number.style.fontWeight = "400";
+
+
+        number.addEventListener(
+            "click",
+            function () {
+
+                decorevaShowPage(page);
+
+            }
+        );
+
+        nav.appendChild(number);
+    }
+
+
+    /* NEXT ARROW */
+
+    const next = document.createElement("button");
+
+    next.type = "button";
+    next.innerHTML = "›";
+    next.setAttribute(
+        "aria-label",
+        "Next page"
+    );
+
+    next.style.border = "none";
+    next.style.background = "transparent";
+    next.style.fontSize = "30px";
+    next.style.lineHeight = "1";
+    next.style.color = "#8b6a32";
+    next.style.cursor = "pointer";
+    next.style.padding = "4px 8px";
+    next.style.fontWeight = "400";
+
+
+    next.addEventListener(
+        "click",
+        function () {
+
+            if (
+                decorevaCurrentPage <
+                decorevaTotalPages
+            ) {
+
+                decorevaShowPage(
+                    decorevaCurrentPage + 1
+                );
+
+            }
+
+        }
+    );
+
+    nav.appendChild(next);
+
+
+    return nav;
+}
+
+
+/* ---------- SHOW PAGE ---------- */
+
+function decorevaShowPage(page) {
+
+    decorevaCurrentPage = page;
+
+
+    const start =
+        (page - 1) * decorevaPerPage;
+
+    const end =
+        start + decorevaPerPage;
+
+
+    /* SHOW ONLY CURRENT PAGE */
+
+    decorevaProducts.forEach(
+        function (card, index) {
+
+            card.style.display =
+                index >= start && index < end
+                    ? ""
+                    : "none";
+
+        }
+    );
+
+
+    /* UPDATE PAGINATION */
+
+    document
+        .querySelectorAll(
+            ".decoreva-pagination"
+        )
+        .forEach(
+            function (nav) {
+
+                const buttons =
+                    nav.querySelectorAll(
+                        "button"
+                    );
+
+
+                /* PAGE NUMBERS */
+
+                buttons.forEach(
+                    function (button) {
+
+                        if (
+                            button.dataset.page
+                        ) {
+
+                            const isActive =
+                                Number(
+                                    button.dataset.page
+                                ) === page;
+
+
+                            if (isActive) {
+
+                                button.style.color =
+                                    "#b98218";
+
+                                button.style.fontWeight =
+                                    "700";
+
+                                button.style.borderBottom =
+                                    "2px solid #b98218";
+
+                            } else {
+
+                                button.style.color =
+                                    "#5a4630";
+
+                                button.style.fontWeight =
+                                    "400";
+
+                                button.style.borderBottom =
+                                    "2px solid transparent";
+
+                            }
+
+                        }
+
+                    }
+                );
+
+
+                /* FIRST BUTTON = PREVIOUS */
+
+                const previousButton =
+                    buttons[0];
+
+
+                /* LAST BUTTON = NEXT */
+
+                const nextButton =
+                    buttons[buttons.length - 1];
+
+
+                if (page === 1) {
+
+                    previousButton.disabled = true;
+                    previousButton.style.opacity = "0.25";
+                    previousButton.style.cursor =
+                        "default";
+
+                } else {
+
+                    previousButton.disabled = false;
+                    previousButton.style.opacity = "1";
+                    previousButton.style.cursor =
+                        "pointer";
+
+                }
+
+
+                if (
+                    page === decorevaTotalPages
+                ) {
+
+                    nextButton.disabled = true;
+                    nextButton.style.opacity = "0.25";
+                    nextButton.style.cursor =
+                        "default";
+
+                } else {
+
+                    nextButton.disabled = false;
+                    nextButton.style.opacity = "1";
+                    nextButton.style.cursor =
+                        "pointer";
+
+                }
+
+            }
+        );
+
+
+    /* MOVE TO COLLECTION */
+
+    const collection =
+        document.querySelector(
+            "#collection-products"
+        );
+
+    if (collection) {
+
+        window.scrollTo({
+
+            top:
+                collection.offsetTop - 120,
+
+            behavior: "smooth"
+
+        });
+
+    }
+
+}
+
+
+/* ---------- ADD ABOVE + BELOW ---------- */
+
+const decorevaGrid =
+    document.querySelector(
+        "#collection-products"
+    );
+
+
+if (
+    decorevaGrid &&
+    decorevaProducts.length > 0
+) {
+
+    const paginationAbove =
+        createDecorevaPagination();
+
+    const paginationBelow =
+        createDecorevaPagination();
+
+
+    /* ABOVE PRODUCTS */
+
+    decorevaGrid.parentNode.insertBefore(
+        paginationAbove,
+        decorevaGrid
+    );
+
+
+    /* BELOW PRODUCTS */
+
+    decorevaGrid.insertAdjacentElement(
+        "afterend",
+        paginationBelow
+    );
+
+
+    /* START PAGE 1 */
+
+    decorevaShowPage(1);
+}
+});
+/* =====================================================
+   COLLECTION NAVIGATION → ALWAYS OPEN PAGE 1
+   ===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const collectionLink = Array.from(
+        document.querySelectorAll("#main-nav a")
+    ).find(function (link) {
+        return link.textContent.trim() === "Collection";
+    });
+
+    if (!collectionLink) return;
+
+    collectionLink.addEventListener("click", function () {
+
+        const pageOneButton = document.querySelector(
+            '.decoreva-pagination button[data-page="1"]'
+        );
+
+        if (pageOneButton) {
+            pageOneButton.click();
+        }
+
+    });
 
 });
