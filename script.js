@@ -2047,3 +2047,30 @@ if (
     decorevaShowPage(1);
 }
 });
+/* =====================================================
+   COLLECTION NAVIGATION → ALWAYS OPEN PAGE 1
+   ===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const collectionLink = Array.from(
+        document.querySelectorAll("#main-nav a")
+    ).find(function (link) {
+        return link.textContent.trim() === "Collection";
+    });
+
+    if (!collectionLink) return;
+
+    collectionLink.addEventListener("click", function () {
+
+        const pageOneButton = document.querySelector(
+            '.decoreva-pagination button[data-page="1"]'
+        );
+
+        if (pageOneButton) {
+            pageOneButton.click();
+        }
+
+    });
+
+});
