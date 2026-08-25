@@ -1317,90 +1317,159 @@ if (featuredLightboxSlider) {
     }
 
     /* =====================================================
-       FESTIVAL COLLECTION
-       ===================================================== */
+   FESTIVAL COLLECTION
+   DYNAMIC PRODUCT FILTER
+   ===================================================== */
 
-    window.showFestivalProducts =
-        function (festival) {
+window.decorevaFestivalMode = false;
 
-            const products =
-                document.querySelectorAll(
-                    "#collection-products .card"
-                );
+window.showFestivalProducts = function (festival) {
 
-            if (!products.length) return;
+    const products = Array.from(
+        document.querySelectorAll("#collection-products .card")
+    );
 
-            products.forEach(function (card) {
-                card.style.display = "";
+    if (!products.length) return;
+
+    window.decorevaFestivalMode = true;
+
+    /* Hide normal pagination */
+    document
+        .querySelectorAll(".decoreva-pagination")
+        .forEach(function (nav) {
+            nav.style.display = "none";
+        });
+
+    /* Clear search */
+    const searchInput =
+        document.querySelector("#productSearch");
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+
+    products.forEach(function (card) {
+
+        const title = card.querySelector("h3");
+
+        if (!title) {
+            card.style.display = "none";
+            return;
+        }
+
+        const name =
+            title.textContent
+                .trim()
+                .toLowerCase();
+
+        let matched = false;
+
+
+        /* =========================================
+           ONAM
+           ALL WALL ART PRODUCTS
+           EXCEPT KEYHOLDERS
+           ========================================= */
+
+        if (festival === "onam") {
+
+            matched =
+                !name.includes("keyholder") &&
+                !name.includes("key holder");
+        }
+
+
+        /* =========================================
+           RAKSHA BANDHAN
+           ALL KEYHOLDERS
+           ========================================= */
+
+        else if (festival === "raksha") {
+
+            matched =
+                name.includes("keyholder") ||
+                name.includes("key holder");
+        }
+
+
+        /* =========================================
+           JANMASHTAMI
+           ALL KRISHNA PRODUCTS
+           ========================================= */
+
+        else if (festival === "janmashtami") {
+
+            matched =
+                name.includes("krishna");
+        }
+
+
+        /* =========================================
+           GANESH CHATURTHI
+           ALL GANESHA PRODUCTS
+           ========================================= */
+
+        else if (festival === "ganesh") {
+
+            matched =
+                name.includes("ganesha");
+        }
+
+
+        card.style.display =
+            matched ? "" : "none";
+    });
+
+
+    /* Scroll to products */
+
+    const section =
+        document.querySelector("#collection-products");
+
+    if (section) {
+
+        setTimeout(function () {
+
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
             });
 
-            const festivalProducts = {
+        }, 100);
+    }
+};
 
-                onam: [
-                    "Welcome Keyholder",
-                    "Happy Home Keyholder"
-                ],
 
-                raksha: [
-                    "Give Me a Hug Keyholder",
-                    "My Room My Rules Keyholder"
-                ],
+/* =====================================================
+   RESET FESTIVAL FILTER
+   ===================================================== */
 
-                janmashtami: [
-                    "Khatushyam Temple"
-                ],
+window.resetFestivalProducts = function () {
 
-                ganesh: [
-                    "Ganesha Wallart"
-                ]
-            };
+    window.decorevaFestivalMode = false;
 
-            const selected =
-                festivalProducts[festival] || [];
+    const products = Array.from(
+        document.querySelectorAll(
+            "#collection-products .card"
+        )
+    );
 
-            if (!selected.length) return;
+    products.forEach(function (card) {
+        card.style.display = "";
+    });
 
-            products.forEach(function (card) {
 
-                const title =
-                    card.querySelector("h3");
+    document
+        .querySelectorAll(".decoreva-pagination")
+        .forEach(function (nav) {
+            nav.style.display = "flex";
+        });
 
-                if (!title) return;
 
-                const name =
-                    title.textContent
-                        .trim()
-                        .toLowerCase();
-
-                const matched =
-                    selected.some(function (item) {
-
-                        return name.includes(
-                            item.toLowerCase()
-                        );
-                    });
-
-                card.style.display =
-                    matched ? "" : "none";
-            });
-
-            const section =
-                document.querySelector(
-                    "#collection-products"
-                );
-
-            if (section) {
-
-                setTimeout(function () {
-
-                    section.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }, 100);
-            }
-        };
+    if (typeof decorevaShowPage === "function") {
+        decorevaShowPage(1);
+    }
+};
 
     /* =====================================================
        MOBILE MENU
@@ -1847,7 +1916,9 @@ function createDecorevaPagination() {
 /* ---------- SHOW PAGE ---------- */
 
 function decorevaShowPage(page) {
-
+    if (window.decorevaFestivalMode) {
+        return;
+    }
     decorevaCurrentPage = page;
 
 
@@ -2071,6 +2142,23 @@ document.addEventListener("DOMContentLoaded", function () {
             pageOneButton.click();
         }
 
+    });
+
+});
+/* =====================================================
+   OPEN WEBSITE FROM TOP ON INITIAL LOAD
+   ===================================================== */
+
+window.addEventListener("load", function () {
+
+    if (window.location.hash) {
+        history.replaceState(null, "", window.location.pathname);
+    }
+
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "instant"
     });
 
 });
