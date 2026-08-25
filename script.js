@@ -1367,6 +1367,53 @@ if (featuredLightboxSlider) {
 
 window.decorevaFestivalMode = false;
 
+/* =====================================================
+   FESTIVAL BACK TO MAIN COLLECTION BUTTON
+   ===================================================== */
+function ensureFestivalBackButton() {
+
+    const grid = document.querySelector("#collection-products");
+    if (!grid) return null;
+
+    let button = document.querySelector("#festival-back-main");
+
+    if (button) return button;
+
+    button = document.createElement("button");
+    button.type = "button";
+    button.id = "festival-back-main";
+    button.className = "festival-back-main festival-back-visible";
+    button.innerHTML = "<span aria-hidden=\"true\">←</span> Back to Main Collection";
+
+    button.addEventListener("click", function () {
+        window.resetFestivalProducts();
+    });
+
+    grid.parentNode.insertBefore(button, grid);
+    return button;
+}
+
+function removeFestivalBackButton() {
+    const button = document.querySelector("#festival-back-main");
+
+    if (button) {
+        button.remove();
+    }
+}
+
+function scrollToCollectionTitle(behavior) {
+    const title = document.querySelector("#collection-title, .collection-title");
+    if (!title) return;
+
+    const offset = window.innerWidth <= 760 ? 58 : 72;
+    const top = title.getBoundingClientRect().top + window.pageYOffset - offset;
+
+    window.scrollTo({
+        top: Math.max(0, top),
+        behavior: behavior || "smooth"
+    });
+}
+
 window.showFestivalProducts = function (festival) {
 
     const products = Array.from(
@@ -1465,20 +1512,22 @@ window.showFestivalProducts = function (festival) {
     });
 
 
-    /* Scroll to products */
+    /* Add a clear way back to the normal Collection. */
+    const backButton = ensureFestivalBackButton();
 
-    const section =
-        document.querySelector("#collection-products");
+    /* Scroll to the filtered products. The back button stays immediately above them. */
+    const section = document.querySelector("#collection-products");
 
     if (section) {
-
         setTimeout(function () {
+            const target = backButton || section;
+            const offset = window.innerWidth <= 760 ? 64 : 82;
+            const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
 
-            section.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
+            window.scrollTo({
+                top: Math.max(0, top),
+                behavior: "smooth"
             });
-
         }, 100);
     }
 };
@@ -1491,6 +1540,7 @@ window.showFestivalProducts = function (festival) {
 window.resetFestivalProducts = function () {
 
     window.decorevaFestivalMode = false;
+    removeFestivalBackButton();
 
     const products = Array.from(
         document.querySelectorAll(
@@ -2128,28 +2178,27 @@ function decorevaShowPage(page) {
 
 
 
-    /* SCROLL TO COLLECTION HEADER AFTER PAGE CHANGE */
-    const collectionTitle =
-        document.querySelector("#collection-title, .collection-title");
+/* SCROLL TO COLLECTION HEADER AFTER PAGE CHANGE */
+const collectionTitle =
+    document.querySelector("#collection-title, .collection-title");
 
-    if (collectionTitle) {
-        requestAnimationFrame(function () {
-            const headerOffset =
-                window.innerWidth <= 760 ? 58 : 72;
+if (collectionTitle) {
 
-            const targetTop =
-                collectionTitle.getBoundingClientRect().top +
-                window.pageYOffset -
-                headerOffset;
+    const headerOffset =
+        window.innerWidth <= 760 ? 55 : 80;
 
-            window.scrollTo({
-                top: Math.max(0, targetTop),
-                behavior: "smooth"
-            });
-        });
+    const targetTop =
+        collectionTitle.getBoundingClientRect().top +
+        window.pageYOffset -
+        headerOffset;
+
+    window.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: "smooth"
+    });
+}
     }
 
-}
 
 /* ---------- ADD ABOVE + BELOW ---------- */
 
@@ -2225,9 +2274,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 nav.style.display = "flex";
             });
 
-        if (typeof decorevaShowPage === "function") {
+        if (typeof window.resetFestivalProducts === "function") {
+            window.resetFestivalProducts();
+        } else if (typeof decorevaShowPage === "function") {
             decorevaShowPage(1);
         }
+
+        scrollToCollectionTitle("smooth");
 
         history.replaceState(
             null,

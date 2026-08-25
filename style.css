@@ -4111,3 +4111,190 @@ footer{
     transition-duration:.01ms!important;
   }
 }
+
+/* =====================================================
+   FINAL POLISH — COLLECTION SPACING + FESTIVAL RETURN
+   ===================================================== */
+
+/* Tighter, more premium transition from Festive Collection to products. */
+#collection{
+  padding-bottom:48px!important;
+}
+
+#collection-title{
+  padding-top:26px!important;
+  margin-top:0!important;
+}
+
+.collection-controls{
+  margin-top:18px!important;
+  margin-bottom:12px!important;
+}
+
+.decoreva-pagination{
+  margin-top:10px!important;
+  margin-bottom:18px!important;
+}
+
+/* Clear return control shown only while a festival filter is active. */
+.festival-back-main{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  width:min(310px,92%)!important;
+  min-height:44px!important;
+  margin:8px auto 18px!important;
+  padding:10px 18px!important;
+  border:1px solid rgba(184,134,44,.55)!important;
+  border-radius:12px!important;
+  background:linear-gradient(135deg,#fffaf0,#f5e4c4)!important;
+  color:#5a3b17!important;
+  font-family:inherit!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  letter-spacing:.15px!important;
+  cursor:pointer!important;
+  box-shadow:0 7px 18px rgba(103,73,28,.12)!important;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease!important;
+}
+
+.festival-back-main span{
+  font-size:19px!important;
+  line-height:1!important;
+}
+
+.festival-back-main:hover{
+  transform:translateY(-2px)!important;
+  box-shadow:0 10px 24px rgba(103,73,28,.18)!important;
+  background:linear-gradient(135deg,#fffdf7,#f1d9ae)!important;
+}
+
+.festival-back-main:focus-visible{
+  outline:2px solid #b8862c!important;
+  outline-offset:3px!important;
+}
+
+@media (max-width:760px){
+  #collection{
+    padding-bottom:34px!important;
+  }
+
+  #collection-title{
+    padding-top:20px!important;
+  }
+
+  .collection-controls{
+    margin-top:12px!important;
+    margin-bottom:8px!important;
+    gap:8px!important;
+  }
+
+  .decoreva-pagination{
+    margin-top:8px!important;
+    margin-bottom:14px!important;
+  }
+
+  .festival-back-main{
+    width:min(280px,88%)!important;
+    min-height:40px!important;
+    margin:6px auto 14px!important;
+    padding:8px 14px!important;
+    font-size:11px!important;
+    border-radius:10px!important;
+  }
+
+  .festival-back-main span{
+    font-size:17px!important;
+  }
+}
+/* =========================================================
+   DECOREVA MOBILE COLLECTION SPACING + FESTIVAL BACK FIX
+   ========================================================= */
+
+/* Back button hidden by default on main collection */
+#festival-back-main {
+    display: none !important;
+}
+
+/* When JavaScript opens a festival collection */
+#festival-back-main.festival-back-visible {
+    display: flex !important;
+    width: min(310px, 90%);
+    height: 44px;
+    margin: 0 auto 18px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid rgba(201,149,46,.55);
+    border-radius: 12px;
+    background: #fff8eb;
+    color: #4a351f;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Desktop */
+#collection {
+    padding-top: 42px;
+}
+
+#collection > h2 {
+    margin-bottom: 18px;
+}
+
+.product-sort {
+    margin-bottom: 12px;
+}
+
+.product-search {
+    margin-bottom: 16px;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+
+    #collection {
+        padding-top: 25px !important;
+        padding-bottom: 45px !important;
+    }
+
+    #collection > h2 {
+        margin-top: 0 !important;
+        margin-bottom: 14px !important;
+        line-height: 1.1 !important;
+    }
+
+    .product-sort {
+        margin-top: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    .product-search {
+        margin-top: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    #festival-back-main.festival-back-visible {
+        width: calc(100% - 30px);
+        max-width: 310px;
+        height: 42px;
+        margin: 0 auto 12px !important;
+        font-size: 12px;
+    }
+
+    #collection-products {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    .products {
+        margin-top: 0 !important;
+    }
+
+    .decoreva-pagination {
+        margin-top: 12px !important;
+        margin-bottom: 8px !important;
+    }
+}
