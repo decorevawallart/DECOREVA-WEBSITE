@@ -97,7 +97,14 @@ document.addEventListener("DOMContentLoaded", function () {
             images.length;
 
         slider.dataset.index = String(index);
-        image.src = images[index];
+
+        const targetSrc = images[index];
+
+        if (image.getAttribute("src") !== targetSrc) {
+            image.src = targetSrc;
+        }
+
+        image.dataset.loaded = "true";
 
         updateDots(slider, images, index);
     }
@@ -118,10 +125,44 @@ document.addEventListener("DOMContentLoaded", function () {
         showSliderImage(slider, index);
     };
 
+    /* =====================================================
+       PERFORMANCE — LAZY COLLECTION IMAGE LOADING
+       Only images near the viewport are downloaded.
+       This is the biggest mobile-speed improvement.
+       ===================================================== */
+
+    const sliderObserver =
+        "IntersectionObserver" in window
+            ? new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+
+                        const slider = entry.target;
+                        const index = getSliderIndex(slider);
+
+                        showSliderImage(slider, index);
+                        sliderObserver.unobserve(slider);
+                    });
+                },
+                {
+                    rootMargin: "650px 0px",
+                    threshold: 0.01
+                }
+            )
+            : null;
+
     document.querySelectorAll(".image-slider").forEach(function (slider) {
         const images = getSliderImages(slider);
 
-        if (images.length) {
+        if (!images.length) return;
+
+        /* Build dots without downloading the image. */
+        updateDots(slider, images, getSliderIndex(slider));
+
+        if (sliderObserver) {
+            sliderObserver.observe(slider);
+        } else {
             showSliderImage(slider, getSliderIndex(slider));
         }
     });
@@ -437,29 +478,44 @@ if (featuredLightboxSlider) {
         if (!productSearch) return;
 
         const searchText =
-            productSearch.value
-                .toLowerCase()
-                .trim();
+            productSearch.value.toLowerCase().trim();
 
-        document
-            .querySelectorAll("#collection-products .card")
-            .forEach(function (card) {
+        const cards =
+            document.querySelectorAll("#collection-products .card");
 
+        /* Search mode shows matching products across all pages. */
+        if (searchText) {
+            window.decorevaFestivalMode = false;
+
+            document
+                .querySelectorAll(".decoreva-pagination")
+                .forEach(function (nav) {
+                    nav.style.display = "none";
+                });
+
+            cards.forEach(function (card) {
                 const title = card.querySelector("h3");
-
-                if (!title) return;
-
-                const name =
-                    title.textContent
-                        .toLowerCase();
-
-                const match =
-                    !searchText ||
-                    name.includes(searchText);
+                const name = title
+                    ? title.textContent.toLowerCase()
+                    : "";
 
                 card.style.display =
-                    match ? "" : "none";
+                    name.includes(searchText) ? "" : "none";
             });
+
+            if (typeof window.decorevaLoadVisibleSliders === "function") {
+                window.decorevaLoadVisibleSliders();
+            }
+
+            return;
+        }
+
+        /* Empty search returns to page 1. */
+        if (typeof window.resetFestivalProducts === "function") {
+            window.resetFestivalProducts();
+        } else if (typeof decorevaShowPage === "function") {
+            decorevaShowPage(1);
+        }
     }
 
     if (productSearch) {
@@ -648,22 +704,8 @@ if (featuredLightboxSlider) {
             productsContainer.appendChild(card);
         });
 
-        document
-            .querySelectorAll(
-                "#collection-products .image-slider"
-            )
-            .forEach(function (slider) {
-
-                const images =
-                    getSliderImages(slider);
-
-                if (images.length) {
-                    showSliderImage(
-                        slider,
-                        getSliderIndex(slider)
-                    );
-                }
-            });
+        /* Do not force-load every product image after sorting.
+           IntersectionObserver will load only images near the viewport. */
     }
 
     function updateSortLabel(value) {
@@ -770,6 +812,8 @@ if (featuredLightboxSlider) {
     let featuredResizeTimer = null;
 
     function getFeaturedVisibleCount() {
+        if (window.innerWidth <= 760) return 2;
+        if (window.innerWidth <= 1100) return 3;
         return 4;
     }
 
@@ -1760,7 +1804,10 @@ const decorevaProducts = Array.from(
 );
 
 const decorevaPerPage = 20;
-const decorevaTotalPages = 4;
+const decorevaTotalPages = Math.max(
+    1,
+    Math.ceil(decorevaProducts.length / decorevaPerPage)
+);
 
 let decorevaCurrentPage = 1;
 
@@ -1913,6 +1960,27 @@ function createDecorevaPagination() {
 }
 
 
+/* ---------- LOAD VISIBLE COLLECTION SLIDERS ---------- */
+
+window.decorevaLoadVisibleSliders = function () {
+    const sliders =
+        document.querySelectorAll("#collection-products .image-slider");
+
+    sliders.forEach(function (slider) {
+        if (slider.closest(".card")?.style.display === "none") return;
+
+        const rect = slider.getBoundingClientRect();
+
+        if (
+            rect.bottom >= -650 &&
+            rect.top <= window.innerHeight + 650
+        ) {
+            showSliderImage(slider, getSliderIndex(slider));
+        }
+    });
+};
+
+
 /* ---------- SHOW PAGE ---------- */
 
 function decorevaShowPage(page) {
@@ -1942,6 +2010,11 @@ function decorevaShowPage(page) {
         }
     );
 
+
+    /* Load only images that are now near the viewport. */
+    if (typeof window.decorevaLoadVisibleSliders === "function") {
+        window.decorevaLoadVisibleSliders();
+    }
 
     /* UPDATE PAGINATION */
 
@@ -2057,18 +2130,22 @@ function decorevaShowPage(page) {
 
     /* SCROLL TO COLLECTION HEADER AFTER PAGE CHANGE */
     const collectionTitle =
-        document.querySelector(".collection-title");
+        document.querySelector("#collection-title, .collection-title");
 
     if (collectionTitle) {
-        const headerOffset = 90;
-        const targetTop =
-            collectionTitle.getBoundingClientRect().top +
-            window.pageYOffset -
-            headerOffset;
+        requestAnimationFrame(function () {
+            const headerOffset =
+                window.innerWidth <= 760 ? 58 : 72;
 
-        window.scrollTo({
-            top: Math.max(0, targetTop),
-            behavior: "smooth"
+            const targetTop =
+                collectionTitle.getBoundingClientRect().top +
+                window.pageYOffset -
+                headerOffset;
+
+            window.scrollTo({
+                top: Math.max(0, targetTop),
+                behavior: "smooth"
+            });
         });
     }
 
@@ -2117,7 +2194,7 @@ if (
 
 });
 /* =====================================================
-   COLLECTION NAVIGATION → ALWAYS OPEN PAGE 1
+   COLLECTION NAVIGATION — ALWAYS OPEN COLLECTION TOP
    ===================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -2130,27 +2207,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!collectionLink) return;
 
-    collectionLink.addEventListener("click", function () {
+    collectionLink.addEventListener("click", function (event) {
+        event.preventDefault();
 
-        const pageOneButton = document.querySelector(
-            '.decoreva-pagination button[data-page="1"]'
-        );
+        window.decorevaFestivalMode = false;
 
-        if (pageOneButton) {
-            pageOneButton.click();
+        const searchInput =
+            document.querySelector("#productSearch");
+
+        if (searchInput) {
+            searchInput.value = "";
         }
 
+        document
+            .querySelectorAll(".decoreva-pagination")
+            .forEach(function (nav) {
+                nav.style.display = "flex";
+            });
+
+        if (typeof decorevaShowPage === "function") {
+            decorevaShowPage(1);
+        }
+
+        history.replaceState(
+            null,
+            "",
+            window.location.pathname + "#collection-title"
+        );
     });
 
 });
+
+
 /* =====================================================
-   OPEN WEBSITE FROM TOP ON INITIAL LOAD
+   INITIAL LOAD — OPEN FROM TOP
    ===================================================== */
 
 window.addEventListener("load", function () {
 
     if (window.location.hash) {
-        history.replaceState(null, "", window.location.pathname);
+        history.replaceState(
+            null,
+            "",
+            window.location.pathname
+        );
     }
 
     window.scrollTo({
