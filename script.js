@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 },
                 {
-                    rootMargin: "650px 0px",
+                    rootMargin: "250px 0px",
                     threshold: 0.01
                 }
             )
@@ -1683,6 +1683,27 @@ window.resetFestivalProducts = function () {
 
                 if (id === "#collection-title") {
 
+                    window.decorevaFestivalMode = false;
+
+                    const searchInput =
+                        document.querySelector("#productSearch");
+
+                    if (searchInput) {
+                        searchInput.value = "";
+                    }
+
+                    document
+                        .querySelectorAll(".decoreva-pagination")
+                        .forEach(function (pagination) {
+                            pagination.style.display = "flex";
+                        });
+
+                    if (typeof window.resetFestivalProducts === "function") {
+                        window.resetFestivalProducts();
+                    } else if (typeof decorevaShowPage === "function") {
+                        decorevaShowPage(1);
+                    }
+
                     requestAnimationFrame(function () {
                         scrollToCollectionTitle("smooth");
                     });
@@ -2080,8 +2101,8 @@ window.decorevaLoadVisibleSliders = function () {
         const rect = slider.getBoundingClientRect();
 
         if (
-            rect.bottom >= -650 &&
-            rect.top <= window.innerHeight + 650
+            rect.bottom >= -250 &&
+            rect.top <= window.innerHeight + 250
         ) {
             showSliderImage(slider, getSliderIndex(slider));
         }
