@@ -2185,29 +2185,6 @@ function decorevaShowPage(page) {
         );
 
 
-
-/* SCROLL TO COLLECTION HEADER AFTER PAGE CHANGE */
-const collectionTitle =
-    document.querySelector("#collection-title, .collection-title");
-
-if (collectionTitle) {
-
-    const headerOffset =
-        window.innerWidth <= 760 ? 55 : 80;
-
-    const targetTop =
-        collectionTitle.getBoundingClientRect().top +
-        window.pageYOffset -
-        headerOffset;
-
-    window.scrollTo({
-        top: Math.max(0, targetTop),
-        behavior: "smooth"
-    });
-}
-    }
-
-
 /* ---------- ADD ABOVE + BELOW ---------- */
 
 const decorevaGrid =
@@ -2247,6 +2224,8 @@ if (
     /* START PAGE 1 */
 
     decorevaShowPage(1);
+}
+
 }
 
 });
@@ -2301,11 +2280,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* =====================================================
-   INITIAL LOAD — OPEN FROM TOP
+   INITIAL LOAD — ALWAYS OPEN FROM TOP
+   Prevent browser refresh / hard-refresh scroll restoration.
    ===================================================== */
 
-window.addEventListener("load", function () {
+if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+}
 
+function decorevaForceTop() {
     if (window.location.hash) {
         history.replaceState(
             null,
@@ -2317,7 +2300,22 @@ window.addEventListener("load", function () {
     window.scrollTo({
         top: 0,
         left: 0,
-        behavior: "instant"
+        behavior: "auto"
     });
+}
 
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) return;
+
+    decorevaForceTop();
+    setTimeout(decorevaForceTop, 50);
+    setTimeout(decorevaForceTop, 250);
+    setTimeout(decorevaForceTop, 600);
+});
+
+window.addEventListener("load", function () {
+    decorevaForceTop();
+    setTimeout(decorevaForceTop, 50);
+    setTimeout(decorevaForceTop, 250);
+    setTimeout(decorevaForceTop, 600);
 });

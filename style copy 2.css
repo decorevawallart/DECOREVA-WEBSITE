@@ -752,7 +752,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 #contact .button i,
 #contact .button{position:relative}
 #contact .button:hover{transform:translateY(-3px);filter:brightness(1.08);box-shadow:0 8px 20px rgba(120, 75, 10, 0.28)}
-
+/* MOVED FROM INDEX INLINE STYLE — SAME FINAL VALUES */
 .collection-pagination{display:flex;justify-content:center;align-items:center;gap:10px;margin:30px auto 10px;flex-wrap:wrap}
 .collection-pagination a,.collection-pagination span{min-width:42px;height:42px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;border:1px solid #c99a3d;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;color:#8b5b16;background:#fff8eb;transition:all .25s ease}
 .collection-pagination .page-current{background:#c99a3d;color:#fff}
@@ -773,6 +773,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 #collection-products .collection-controls{margin-top:0!important;margin-bottom:8px!important}
 #collection-products input[placeholder*="Search"]{margin-bottom:15px!important}
 }
+/* =========================================================
+   DECOREVA SEARCH BAR — FINAL POLISH
+   ========================================================= */
 
 #searchInput,
 #searchBox,
@@ -825,6 +828,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         0 6px 20px rgba(91, 58, 20, 0.10);
 }
 
+
+/* MIC BUTTON */
+
 #voiceSearchBtn,
 .voice-search-btn,
 .voice-search,
@@ -849,12 +855,18 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     transform: scale(1.08);
 }
 
+
+/* SEARCH AREA */
+
 .search-container,
 .search-box {
     position: relative;
     width: min(520px, 90%);
     margin: 0 auto 35px;
 }
+
+
+/* MOBILE */
 
 @media (max-width: 600px) {
 
@@ -877,7 +889,13 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         padding-right: 48px;
     }
 }
+/* =========================================================
+   DECOREVA - COLLECTION PRODUCT IMAGES FINAL FIX
+   MAKE PRODUCT IMAGES LARGE - REMOVE WHITE STRIPS
+   DO NOT TOUCH FEATURED PRODUCTS
+   ========================================================= */
 
+/* COLLECTION IMAGE AREA */
 #collection .products .image-slider {
     position: relative !important;
     width: 100% !important;
@@ -888,14 +906,17 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background: #f8f5ee !important;
 }
 
+/* COLLECTION PRODUCT IMAGE */
 #collection .products .slider-image {
     display: block !important;
     width: 100% !important;
     height: 295px !important;
 
+    /* REMOVE THE WHITE BORDER/SPACE */
     padding: 0 !important;
     margin: 0 !important;
 
+    /* MAKE THE IMAGE FILL THE CARD */
     object-fit: cover !important;
     object-position: center center !important;
 
@@ -908,11 +929,13 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         filter 0.45s ease !important;
 }
 
+/* PREMIUM HOVER */
 #collection .products .card:hover .slider-image {
     transform: scale(1.025) !important;
     filter: brightness(1.02) !important;
 }
 
+/* KEEP SLIDER DOTS BELOW IMAGE */
 #collection .products .image-slider .slider-dots {
     position: absolute !important;
     left: 0 !important;
@@ -933,6 +956,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     z-index: 12 !important;
 }
 
+/* DOTS */
 #collection .products .image-slider .slider-dot,
 #collection .products .image-slider .dot {
     width: 8px !important;
@@ -948,15 +972,21 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background: #c8c8c8 !important;
 }
 
+/* ACTIVE DOT */
 #collection .products .image-slider .slider-dot.active,
 #collection .products .image-slider .dot.active {
     background: #b8860b !important;
     transform: scale(1.25) !important;
 }
 
+/* SLIDER ARROWS STAY ABOVE IMAGE */
 #collection .products .slider-btn {
     z-index: 20 !important;
 }
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 700px) {
 
@@ -985,6 +1015,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         padding: 0 !important;
     }
 }
+/* =========================================================
+   DECOREVA - FINAL PRODUCT DOT POSITION
+   DOTS BELOW IMAGE - NEVER ON TOP OF IMAGE
+   ========================================================= */
 
 #collection .products .image-slider {
     height: 325px !important;
@@ -992,6 +1026,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     position: relative !important;
 }
 
+/* Keep actual product image at current perfect size */
 #collection .products .slider-image {
     width: 100% !important;
     height: 295px !important;
@@ -1002,6 +1037,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     display: block !important;
 }
 
+/* DOTS STRIP BELOW IMAGE */
 #collection .products .image-slider .slider-dots {
     position: absolute !important;
 
@@ -1023,6 +1059,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     z-index: 30 !important;
 }
 
+/* DOT */
 #collection .products .image-slider .slider-dot,
 #collection .products .image-slider .dot {
     width: 8px !important;
@@ -1041,15 +1078,22 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     display: block !important;
 }
 
+/* ACTIVE DOT */
 #collection .products .image-slider .slider-dot.active,
 #collection .products .image-slider .dot.active {
     background: #b8860b !important;
     transform: scale(1.3) !important;
 }
 
+/* Keep arrows centered on IMAGE, not whole slider */
 #collection .products .image-slider .slider-btn {
     top: 147.5px !important;
 }
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 700px) {
 
@@ -1069,11 +1113,16 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         top: 110px !important;
     }
 }
+/* =====================================================
+   DECOREVA FINAL PRODUCT SLIDER
+   IMAGE + SEPARATE DOT AREA
+   ===================================================== */
 
 #collection .products .card .image-slider {
     position: relative !important;
     width: 100% !important;
 
+    /* image 295px + dots area 28px */
     height: 323px !important;
     min-height: 323px !important;
 
@@ -1084,6 +1133,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background: transparent !important;
 }
 
+/* IMAGE — keep it large */
 #collection .products .card .image-slider .slider-image {
     position: absolute !important;
 
@@ -1102,6 +1152,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background: transparent !important;
 }
 
+/* DOT AREA — completely below image */
 #collection .products .card .image-slider .slider-dots {
     position: absolute !important;
 
@@ -1126,6 +1177,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     z-index: 50 !important;
 }
 
+/* DOTS */
 #collection .products .card .image-slider .slider-dots .slider-dot {
     position: static !important;
 
@@ -1147,14 +1199,20 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     transform: none !important;
 }
 
+/* ACTIVE DOT */
 #collection .products .card .image-slider .slider-dots .slider-dot.active {
     background: #c9952e !important;
     transform: scale(1.25) !important;
 }
 
+/* ARROWS stay centered on IMAGE */
 #collection .products .card .image-slider .slider-btn {
     top: 147.5px !important;
 }
+/* =====================================================
+   FINAL FIX — SHOW COMPLETE PRODUCT IMAGE
+   NO CROPPING / KEEP ALL TEXT INSIDE IMAGE
+   ===================================================== */
 
 #collection .products .card .image-slider .slider-image {
     object-fit: contain !important;
@@ -1165,6 +1223,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     margin: 0 !important;
     background: transparent !important;
 }
+/* =====================================================
+   DECOREVA MOBILE COLLECTION — EQUAL IMAGE BOX
+   DESKTOP COMPLETELY UNTOUCHED
+   ===================================================== */
 
 @media screen and (max-width: 650px) {
 
@@ -1185,6 +1247,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         display: block !important;
 
+        /*
+         * Makes every mobile image occupy
+         * exactly the same visual box.
+         */
         object-fit: cover !important;
         object-position: center center !important;
 
@@ -1192,14 +1258,22 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         margin: 0 !important;
     }
 
+    /* Keep dots below the image */
     #collection .products .image-slider .slider-dots {
         bottom: -1px !important;
     }
 
+    /* Keep arrows vertically centered */
     #collection .products .image-slider .slider-btn {
         top: 89px !important;
     }
 }
+/* =====================================================
+   FINAL MOBILE COLLECTION IMAGE POSITION FIX
+   Removes empty space above images
+   Keeps equal image sizes
+   DESKTOP UNTOUCHED
+   ===================================================== */
 
 @media screen and (max-width: 650px) {
 
@@ -1272,6 +1346,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         z-index: 20 !important;
     }
 }
+/* =====================================================
+   FINAL MOBILE COLLECTION CARD FIX
+   SHOW NAME + PRICE + SIZE + WHATSAPP
+   DESKTOP UNCHANGED
+   ===================================================== */
 
 @media screen and (max-width: 650px) {
 
@@ -1345,8 +1424,14 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-size: 10px !important;
     }
 }
+/* =========================================================
+   DECOREVA — FINAL MOBILE COLLECTION
+   DESKTOP VIEW COMPLETELY UNCHANGED
+   ========================================================= */
 
 @media screen and (max-width: 760px) {
+
+    /* ---------- COLLECTION GRID ---------- */
 
     #collection {
         width: 100% !important;
@@ -1361,6 +1446,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         gap: 10px !important;
         margin: 0 !important;
     }
+
+
+    /* ---------- PRODUCT CARD ---------- */
 
     #collection .products .card {
         width: 100% !important;
@@ -1380,6 +1468,13 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         border-radius: 14px !important;
     }
+
+
+    /* =====================================================
+       IMAGE AREA
+       205px TOTAL
+       177px IMAGE + 28px DOT AREA
+       ===================================================== */
 
     #collection .products .card .image-slider {
 
@@ -1405,6 +1500,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+
+    /* ---------- PRODUCT IMAGE ---------- */
+
     #collection .products .card .image-slider .slider-image {
 
         position: absolute !important;
@@ -1423,6 +1521,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         display: block !important;
 
+        /*
+           SAME IMAGE BOX FOR EVERY PRODUCT
+           Keeps complete product image visible.
+        */
         object-fit: contain !important;
         object-position: center center !important;
 
@@ -1432,6 +1534,13 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         box-sizing: border-box !important;
     }
+
+
+    /* =====================================================
+       DOTS
+       ALWAYS BELOW IMAGE
+       NEVER INSIDE PRODUCT IMAGE
+       ===================================================== */
 
     #collection .products .card .image-slider .slider-dots {
 
@@ -1463,6 +1572,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+
+    /* ---------- DOT ---------- */
+
     #collection .products .card .image-slider
     .slider-dots .slider-dot {
 
@@ -1493,6 +1605,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         visibility: visible !important;
     }
 
+
+    /* ---------- ACTIVE DOT ---------- */
+
     #collection .products .card .image-slider
     .slider-dots .slider-dot.active {
 
@@ -1507,6 +1622,12 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         transform: scale(1.2) !important;
     }
+
+
+    /* =====================================================
+       SLIDER ARROWS
+       CENTERED ONLY ON IMAGE
+       ===================================================== */
 
     #collection .products .card .image-slider .slider-btn {
 
@@ -1529,6 +1650,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     #collection .products .card .image-slider .slider-btn.next {
         right: 5px !important;
     }
+
+
+    /* =====================================================
+       PRODUCT NAME
+       ===================================================== */
 
     #collection .products .card h3 {
 
@@ -1556,6 +1682,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+
+    /* =====================================================
+       PRICE
+       ===================================================== */
+
     #collection .products .card .price {
 
         width: 100% !important;
@@ -1575,6 +1706,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         flex-shrink: 0 !important;
     }
+
+
+    /* =====================================================
+       SIZE
+       ===================================================== */
 
     #collection .products .card .size {
 
@@ -1598,6 +1734,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 
         flex-shrink: 0 !important;
     }
+
+
+    /* =====================================================
+       WHATSAPP BUTTON
+       ===================================================== */
 
     #collection .products .card > .button {
 
@@ -1627,6 +1768,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 }
+
+
+/* =========================================================
+   SMALL PHONES — 390px AND BELOW
+   ========================================================= */
 
 @media screen and (max-width: 390px) {
 
@@ -1688,7 +1834,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-size: 9px !important;
     }
 }
-
+/* =========================================================
+   MOBILE PRODUCT CARD — REMOVE EXTRA EMPTY SPACE
+   Desktop remains completely unchanged
+   ========================================================= */
 @media (max-width: 760px) {
 
   .product-card {
@@ -1719,6 +1868,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     margin-top: 4px !important;
   }
 }
+/* =========================================================
+   FINAL MOBILE PRODUCT CARD SPACING FIX
+   Desktop remains untouched
+   ========================================================= */
 
 @media (max-width: 760px) {
 
@@ -1760,12 +1913,15 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     height: 38px !important;
     min-height: 38px !important;
 
+    /* THIS removes the big empty space */
     margin: 7px 6px 0 !important;
 
     flex-shrink: 0 !important;
   }
 }
 
+
+/* Smaller phones */
 @media (max-width: 380px) {
 
   .products .card {
@@ -1799,6 +1955,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     margin: 6px 6px 0 !important;
   }
 }
+/* =========================================================
+   DECOREVA — FINAL REAL MOBILE CARD FIX
+   Removes blank space above WhatsApp button
+   Desktop completely unchanged
+   ========================================================= */
 
 @media screen and (max-width: 760px) {
 
@@ -1816,6 +1977,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* IMAGE + DOTS */
     #collection .products .card .image-slider {
         width: 100% !important;
 
@@ -1831,6 +1993,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         overflow: hidden !important;
     }
 
+    /* PRODUCT NAME */
     #collection .products .card h3 {
         width: 100% !important;
 
@@ -1850,6 +2013,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         line-height: 1.15 !important;
     }
 
+    /* PRICE */
     #collection .products .card .price {
         width: 100% !important;
 
@@ -1868,6 +2032,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-size: 17px !important;
     }
 
+    /* SIZE */
     #collection .products .card .size {
         width: calc(100% - 10px) !important;
 
@@ -1887,6 +2052,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         line-height: 1.2 !important;
     }
 
+    /* WHATSAPP BUTTON — NO AUTO MARGIN */
     #collection .products .card > .button {
         width: calc(100% - 12px) !important;
 
@@ -1894,6 +2060,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         min-height: 38px !important;
         max-height: 38px !important;
 
+        /* IMPORTANT */
         margin: 7px 6px 6px !important;
 
         flex: 0 0 38px !important;
@@ -1906,6 +2073,8 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     }
 }
 
+
+/* 390px and below */
 @media screen and (max-width: 390px) {
 
     #collection .products .card {
@@ -1966,14 +2135,17 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-size: 9px !important;
     }
 }
-
+/* DESKTOP ONLY — MOVE COLLECTION WHATSAPP BUTTON UP */
 @media screen and (min-width: 761px) {
     #collection .products .card > .button {
         position: relative !important;
         bottom: 10px !important;
     }
 }
-
+/* =====================================================
+   FEATURED CARDS — DESKTOP TEXT ALIGNMENT
+   Keep Featured text compact and evenly aligned
+   ===================================================== */
 @media screen and (min-width: 761px) {
 
     .featured-slide .featured-info,
@@ -2055,7 +2227,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 }
-
+/* =====================================================
+   FINAL FEATURED CARD TEXT FIX — DESKTOP
+   Keep all Featured content compact like Collection
+   ===================================================== */
 @media screen and (min-width: 761px) {
 
     .featured-slide .featured-info,
@@ -2070,6 +2245,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* Badge */
     .featured-slide .featured-label,
     .featured-slide .featured-badge,
     .featured-clone .featured-label,
@@ -2080,6 +2256,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+    /* Product name */
     .featured-slide .featured-info h3,
     .featured-clone .featured-info h3 {
         width: 100% !important;
@@ -2098,6 +2275,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* Price */
     .featured-slide .featured-price,
     .featured-clone .featured-price {
         width: 100% !important;
@@ -2113,6 +2291,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+    /* Size */
     .featured-slide .featured-size,
     .featured-clone .featured-size {
         width: 100% !important;
@@ -2128,6 +2307,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+    /* IMPORTANT:
+       Remove the auto-margin that was spreading
+       the Featured card content apart */
     .featured-slide .featured-button,
     .featured-clone .featured-button {
         width: calc(100% - 8px) !important;
@@ -2140,7 +2322,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 }
-
+/* =====================================================
+   FINAL FIX — STOP FEATURED TEXT FROM SPREADING
+   ===================================================== */
 @media screen and (min-width: 761px) {
 
     .featured-slide .featured-info,
@@ -2156,6 +2340,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         margin: 6px 4px 2px !important;
     }
 }
+/* =========================================================
+   FEATURED CARDS — SAME TEXT LAYOUT AS COLLECTION CARDS
+   ========================================================= */
 
 @media screen and (min-width: 761px) {
 
@@ -2174,6 +2361,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* Badge */
     .featured-slide .featured-label,
     .featured-slide .featured-badge,
     .featured-clone .featured-label,
@@ -2186,6 +2374,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+    /* Product name — compact like Collection */
     .featured-slide .featured-info h3,
     .featured-clone .featured-info h3 {
         width: 100% !important;
@@ -2205,6 +2394,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* Price */
     .featured-slide .featured-price,
     .featured-clone .featured-price {
         width: 100% !important;
@@ -2220,6 +2410,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+    /* Size */
     .featured-slide .featured-size,
     .featured-clone .featured-size {
         width: 100% !important;
@@ -2235,6 +2426,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex-shrink: 0 !important;
     }
 
+    /* WhatsApp button — anchored like Collection */
     .featured-slide .featured-button,
     .featured-clone .featured-button {
         width: calc(100% - 8px) !important;
@@ -2247,7 +2439,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 }
-
+/* FEATURED PRODUCTS — MOBILE TEXT ONLY */
 @media (max-width:760px){
 
   .featured-slide .featured-info h3,
@@ -2271,9 +2463,14 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
   }
 
 }
+/* =====================================================
+   MOBILE COLLECTION — FINAL CARD CLEANUP
+   Desktop completely unchanged
+   ===================================================== */
 
 @media screen and (max-width: 760px) {
 
+    /* Remove white outer strips around image */
     #collection .products .card {
         padding: 0 !important;
         height: auto !important;
@@ -2282,6 +2479,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* Image + dots area */
     #collection .products .card .image-slider {
         width: 100% !important;
         height: 190px !important;
@@ -2294,6 +2492,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         background: #f7eddd !important;
     }
 
+    /* Product image — remove white side strips */
     #collection .products .card .image-slider .slider-image {
         width: 100% !important;
         height: 162px !important;
@@ -2307,6 +2506,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         background: #f7eddd !important;
     }
 
+    /* Keep dots area clean */
     #collection .products .card .image-slider .slider-dots {
         left: 0 !important;
         right: 0 !important;
@@ -2316,6 +2516,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         background: #f7eddd !important;
     }
 
+    /* Product text */
     #collection .products .card h3 {
         margin: 6px 5px 0 !important;
         height: 44px !important;
@@ -2338,6 +2539,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-size: 9px !important;
     }
 
+    /* Remove extra blank space before WhatsApp */
     #collection .products .card > .button {
         width: calc(100% - 12px) !important;
         height: 36px !important;
@@ -2347,6 +2549,11 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-size: 9px !important;
     }
 }
+/* =====================================================
+   MOBILE COLLECTION — REMOVE WHITE STRIP
+   DOTS OVER IMAGE
+   DESKTOP COMPLETELY UNCHANGED
+   ===================================================== */
 
 @media screen and (max-width: 760px) {
 
@@ -2360,6 +2567,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         background: #f7eddd !important;
     }
 
+    /* FULL IMAGE — NO CROPPING */
     #collection .products .card .image-slider .slider-image {
         position: absolute !important;
         top: 0 !important;
@@ -2380,6 +2588,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         transform: none !important;
     }
 
+    /* DOTS FLOAT OVER IMAGE */
     #collection .products .card .image-slider .slider-dots {
         position: absolute !important;
         left: 0 !important;
@@ -2428,14 +2637,22 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         background: #c9952e !important;
     }
 
+    /* ARROWS CENTERED ON IMAGE */
     #collection .products .card .image-slider .slider-btn {
         top: 95px !important;
         z-index: 110 !important;
     }
 }
+/* =====================================================
+   DECOREVA — MOBILE COLLECTION
+   SAME DESIGN AS DESKTOP
+   ONLY SCALED FOR 2-COLUMN MOBILE
+   DESKTOP UNCHANGED
+   ===================================================== */
 
 @media screen and (max-width: 760px) {
 
+    /* COLLECTION GRID */
     #collection .products {
         width: 100% !important;
         display: grid !important;
@@ -2443,6 +2660,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         gap: 10px !important;
     }
 
+    /* CARD — SAME DESKTOP DESIGN */
     #collection .products .card {
         position: relative !important;
         width: 100% !important;
@@ -2476,6 +2694,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 
+    /* PRODUCT IMAGE AREA */
     #collection .products .card .image-slider {
         position: relative !important;
 
@@ -2495,6 +2714,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         flex: 0 0 190px !important;
     }
 
+    /* FULL IMAGE — SAME AS DESKTOP */
     #collection .products .card .image-slider .slider-image {
         position: absolute !important;
         top: 0 !important;
@@ -2520,6 +2740,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         transform: none !important;
     }
 
+    /* DOTS — OVER IMAGE, NO WHITE STRIP */
     #collection .products .card .image-slider .slider-dots {
         position: absolute !important;
 
@@ -2542,6 +2763,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         z-index: 100 !important;
     }
 
+    /* DOT STYLE — SAME GOLD/GRAY LOOK */
     #collection .products .card .image-slider .slider-dot,
     #collection .products .card .image-slider .slider-dot.active {
         width: 7px !important;
@@ -2572,6 +2794,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         background: #c9952e !important;
     }
 
+    /* ARROWS */
     #collection .products .card .image-slider .slider-btn {
         top: 50% !important;
 
@@ -2592,6 +2815,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         right: 5px !important;
     }
 
+    /* PRODUCT NAME */
     #collection .products .card h3 {
         width: 100% !important;
         height: 48px !important;
@@ -2616,6 +2840,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         overflow: hidden !important;
     }
 
+    /* PRICE */
     #collection .products .card .price {
         width: 100% !important;
         height: 25px !important;
@@ -2632,6 +2857,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         font-weight: 800 !important;
     }
 
+    /* SIZE */
     #collection .products .card .size {
         width: calc(100% - 10px) !important;
         height: 32px !important;
@@ -2650,6 +2876,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         line-height: 1.25 !important;
     }
 
+    /* WHATSAPP — SAME DESKTOP STYLE */
     #collection .products .card > .button {
         width: calc(100% - 12px) !important;
         height: 38px !important;
@@ -2686,6 +2913,10 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
             inset 0 1px 0 rgba(255,255,255,.34) !important;
     }
 }
+/* =====================================================
+   MOBILE COLLECTION — DOTS BELOW IMAGE
+   DESKTOP COMPLETELY UNCHANGED
+   ===================================================== */
 
 @media screen and (max-width:760px){
 
@@ -2693,6 +2924,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     position:relative !important;
     width:100% !important;
 
+    /* 162px image + 28px dots */
     height:190px !important;
     min-height:190px !important;
     max-height:190px !important;
@@ -2701,6 +2933,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background:#f7eddd !important;
   }
 
+  /* IMAGE ONLY */
   #collection .products .card .image-slider .slider-image{
     position:absolute !important;
     top:0 !important;
@@ -2721,6 +2954,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     z-index:1 !important;
   }
 
+  /* SEPARATE DOT STRIP */
   #collection .products .card .image-slider .slider-dots{
     position:absolute !important;
     left:0 !important;
@@ -2771,11 +3005,17 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     transform:scale(1.2) !important;
   }
 
+  /* ARROWS — IMAGE CENTER ONLY */
   #collection .products .card .image-slider .slider-btn{
     top:81px !important;
     z-index:1100 !important;
   }
 }
+/* =====================================================
+   MOBILE COLLECTION — REMOVE WHITE IMAGE STRIPS
+   DOTS UNCHANGED
+   DESKTOP COMPLETELY UNCHANGED
+   ===================================================== */
 
 @media screen and (max-width:760px){
 
@@ -2791,9 +3031,15 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background:#f7eddd !important;
   }
 }
+/* =====================================================
+   FINAL MOBILE COLLECTION — BIGGER IMAGE + LESS BLANK
+   DESKTOP COMPLETELY UNCHANGED
+   DOTS UNCHANGED
+   ===================================================== */
 
 @media screen and (max-width:760px){
 
+  /* Smaller overall card */
   #collection .products .card{
     height:370px !important;
     min-height:370px !important;
@@ -2801,6 +3047,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     padding:7px !important;
   }
 
+  /* Bigger product image area */
   #collection .products .card .image-slider{
     height:220px !important;
     min-height:220px !important;
@@ -2811,6 +3058,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background:#f7eddd !important;
   }
 
+  /* Bigger complete product image */
   #collection .products .card .image-slider .slider-image{
     width:100% !important;
     height:220px !important;
@@ -2823,12 +3071,14 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     padding:0 !important;
   }
 
+  /* Keep dots exactly visible */
   #collection .products .card .image-slider .slider-dots{
     bottom:0 !important;
     height:28px !important;
     background:#f7eddd !important;
   }
 
+  /* Slightly reduce text area */
   #collection .products .card h3{
     height:42px !important;
     min-height:42px !important;
@@ -2850,6 +3100,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     font-size:9px !important;
   }
 
+  /* WhatsApp button stays at bottom without large gap */
   #collection .products .card > .button{
     height:36px !important;
     min-height:36px !important;
@@ -2857,11 +3108,18 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     font-size:10px !important;
   }
 
+  /* Arrows centered on the larger image */
   #collection .products .card .image-slider .slider-btn{
     top:96px !important;
   }
 }
 
+
+/* =========================================================
+   DECOREVA — FINAL COLLECTION DESKTOP BUTTON VISIBILITY FIX
+   Removes the extra bottom clipping seen in Collection cards.
+   Mobile layout remains controlled by the existing mobile rules.
+   ========================================================= */
 @media screen and (min-width: 761px) {
     #collection .products .card {
         height: 500px !important;
@@ -2932,6 +3190,9 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         box-sizing: border-box !important;
     }
 }
+/* =========================================================
+   DECOREVA COLLECTION — COMPACT SPACING FIX
+   ========================================================= */
 
 #collection {
     padding-top: 22px !important;
@@ -2972,7 +3233,14 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         margin-bottom: 14px !important;
     }
 }
+/* =========================================================
+   DECOREVA — PREMIUM COLLECTION SECTION
+   VISUAL UPGRADE ONLY
+   Keeps existing product cards, sliders, search & pagination.
+   Paste at the VERY BOTTOM of style.css
+   ========================================================= */
 
+/* ---------- COLLECTION BACKGROUND / SECTION ---------- */
 #collection {
     position: relative;
     width: 100%;
@@ -2987,6 +3255,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     box-sizing: border-box;
 }
 
+/* subtle top divider */
 #collection::before {
     content: "";
     display: block;
@@ -3002,6 +3271,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     );
 }
 
+/* ---------- TITLE ---------- */
 #collection > h2,
 .collection-title {
     position: relative;
@@ -3032,6 +3302,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     );
 }
 
+/* ---------- SORT / SEARCH CONTROLS ---------- */
 .product-sort {
     width: min(1180px, 100%);
     margin: 26px auto 12px !important;
@@ -3062,6 +3333,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     transform: translateY(-1px);
 }
 
+/* search */
 .search-container,
 .search-box {
     width: min(620px, 92%) !important;
@@ -3089,6 +3361,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         0 10px 28px rgba(91,58,20,.10) !important;
 }
 
+/* ---------- PAGINATION ---------- */
 .decoreva-pagination {
     margin: 8px auto 28px !important;
     gap: 16px !important;
@@ -3108,12 +3381,15 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     background: rgba(199,149,50,.10) !important;
 }
 
+/* ---------- PRODUCT GRID ---------- */
+/* Keep your existing 4-column/card dimensions intact. */
 #collection-products {
     width: min(1200px, 100%) !important;
     margin: 0 auto !important;
     padding-top: 6px !important;
 }
 
+/* add a little premium breathing room without creating a huge gap */
 #collection-products .card {
     box-shadow:
         0 8px 24px rgba(83,52,20,.07),
@@ -3130,6 +3406,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
         0 1px 0 rgba(255,255,255,.85) inset;
 }
 
+/* ---------- DESKTOP ---------- */
 @media (min-width: 900px) {
     #collection {
         padding-left: 32px !important;
@@ -3152,6 +3429,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     }
 }
 
+/* ---------- TABLET / MOBILE ---------- */
 @media (max-width: 760px) {
     #collection {
         padding: 28px 12px 42px !important;
@@ -3204,6 +3482,12 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
     }
 }
 
+
+/* =========================================================
+   DECOREVA 10/10 FINAL POLISH
+   Safe override layer — keep existing working components.
+   ========================================================= */
+
 :root{
   --decoreva-gold:#c79532;
   --decoreva-gold-light:#e6c878;
@@ -3213,6 +3497,7 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
   --decoreva-card:#fffaf1;
 }
 
+/* ---------- GLOBAL ---------- */
 html{
   scroll-behavior:smooth;
   scroll-padding-top:78px;
@@ -3226,6 +3511,7 @@ img{
   image-rendering:auto;
 }
 
+/* ---------- HEADER / NAV ---------- */
 header{
   position:relative;
   z-index:10001;
@@ -3241,6 +3527,7 @@ nav a:hover{
   transform:translateY(-1px);
 }
 
+/* ---------- HERO ---------- */
 .hero-banner{
   display:block;
   width:100%;
@@ -3250,11 +3537,13 @@ nav a:hover{
   box-shadow:0 10px 26px rgba(88,54,10,.22);
 }
 
+/* ---------- TRUST STRIP ---------- */
 .decoreva-trust-strip{
   background:rgba(255,250,241,.94);
   backdrop-filter:blur(6px);
 }
 
+/* ---------- FEATURED ---------- */
 .featured-products{
   padding-top:34px!important;
   padding-bottom:22px!important;
@@ -3297,6 +3586,7 @@ nav a:hover{
   transform:scaleY(1.05);
 }
 
+/* ---------- FESTIVE COLLECTION ---------- */
 #collection{
   padding:0 20px 64px!important;
   background:
@@ -3374,6 +3664,7 @@ nav a:hover{
   font-size:10px!important;
 }
 
+/* ---------- COLLECTION TITLE / SEPARATOR ---------- */
 #collection-title{
   display:block;
   margin:0 auto!important;
@@ -3387,6 +3678,7 @@ nav a:hover{
   margin-top:13px!important;
 }
 
+/* ---------- COLLECTION CONTROLS ---------- */
 .collection-controls{
   width:min(1180px,100%);
   margin:24px auto 20px;
@@ -3429,6 +3721,7 @@ nav a:hover{
   padding:12px 15px!important;
 }
 
+/* ---------- PRODUCT GRID ---------- */
 #collection-products{
   width:min(1200px,100%)!important;
   margin:0 auto!important;
@@ -3487,6 +3780,7 @@ nav a:hover{
   font-size:10px!important;
 }
 
+/* ---------- PAGINATION ---------- */
 .decoreva-pagination{
   margin:20px auto 26px!important;
   gap:8px!important;
@@ -3503,6 +3797,7 @@ nav a:hover{
   transform:translateY(-1px);
 }
 
+/* ---------- CONTACT / FOOTER ---------- */
 #contact{
   background:linear-gradient(180deg,#f6ead9,#fbf7ef)!important;
   border-top:1px solid rgba(201,149,46,.18);
@@ -3513,6 +3808,7 @@ footer{
   color:#ead9b8!important;
 }
 
+/* ---------- WHATSAPP ---------- */
 .floating-whatsapp{
   width:58px!important;
   height:58px!important;
@@ -3522,6 +3818,7 @@ footer{
   z-index:10000!important;
 }
 
+/* ---------- LIGHTBOX ---------- */
 .lightbox{
   background:rgba(20,14,8,.94)!important;
 }
@@ -3530,6 +3827,9 @@ footer{
   box-shadow:0 20px 60px rgba(0,0,0,.45)!important;
 }
 
+/* =========================================================
+   TABLET
+   ========================================================= */
 @media (max-width:1100px){
   .products{
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -3539,11 +3839,15 @@ footer{
   }
 }
 
+/* =========================================================
+   MOBILE
+   ========================================================= */
 @media (max-width:760px){
   html{
     scroll-padding-top:58px;
   }
 
+  /* Keep mobile header clean; the horizontal nav is already visible. */
   .mobile-menu-toggle,
   .mobile-instagram{
     display:none!important;
@@ -3796,6 +4100,7 @@ footer{
   }
 }
 
+/* Reduce motion for users who request it. */
 @media (prefers-reduced-motion:reduce){
   *,
   *::before,
@@ -3807,6 +4112,11 @@ footer{
   }
 }
 
+/* =====================================================
+   FINAL POLISH — COLLECTION SPACING + FESTIVAL RETURN
+   ===================================================== */
+
+/* Tighter, more premium transition from Festive Collection to products. */
 #collection{
   padding-bottom:48px!important;
 }
@@ -3826,6 +4136,7 @@ footer{
   margin-bottom:18px!important;
 }
 
+/* Clear return control shown only while a festival filter is active. */
 .festival-back-main{
   display:flex!important;
   align-items:center!important;
@@ -3897,11 +4208,16 @@ footer{
     font-size:17px!important;
   }
 }
+/* =========================================================
+   DECOREVA MOBILE COLLECTION SPACING + FESTIVAL BACK FIX
+   ========================================================= */
 
+/* Back button hidden by default on main collection */
 #festival-back-main {
     display: none !important;
 }
 
+/* When JavaScript opens a festival collection */
 #festival-back-main.festival-back-visible {
     display: flex !important;
     width: min(310px, 90%);
@@ -3919,6 +4235,7 @@ footer{
     cursor: pointer;
 }
 
+/* Desktop */
 #collection {
     padding-top: 42px;
 }
@@ -3935,6 +4252,7 @@ footer{
     margin-bottom: 16px;
 }
 
+/* Mobile */
 @media (max-width: 760px) {
 
     #collection {
@@ -3981,6 +4299,14 @@ footer{
     }
 }
 
+/* =========================================================
+   DECOREVA — FINAL 10/10 POLISH
+   MOBILE SPACE FIX + DESKTOP BALANCE
+   Added after all previous rules so this is the final
+   authority without disturbing sliders/cards/JS.
+   ========================================================= */
+
+/* ---------- GLOBAL SAFETY ---------- */
 html,
 body{
   width:100%;
@@ -3993,6 +4319,7 @@ body{
   box-sizing:border-box;
 }
 
+/* ---------- DESKTOP: KEEP THE CURRENT PREMIUM BALANCE ---------- */
 @media (min-width:761px){
   #collection{
     padding-top:38px !important;
@@ -4024,17 +4351,29 @@ body{
   }
 }
 
+/* =========================================================
+   MOBILE — REMOVE THE WASTED VERTICAL SPACE
+   ========================================================= */
 @media (max-width:760px){
 
+  /* Collection begins immediately after the previous section. */
   #collection{
     padding:8px 10px 28px !important;
   }
 
+  /*
+     The old divider had a large bottom margin. Keep the
+     elegant line, remove the empty space below it.
+  */
   #collection::before{
     height:1px !important;
     margin:0 auto 5px !important;
   }
 
+  /*
+     The title previously had its own top padding on top of
+     the section padding. Remove that double spacing.
+  */
   #collection-title{
     padding-top:0 !important;
     margin-top:0 !important;
@@ -4049,6 +4388,10 @@ body{
     margin-top:7px !important;
   }
 
+  /*
+     Sort + search should behave like one compact control group.
+     No inherited desktop margins are allowed here.
+  */
   .collection-controls{
     width:100% !important;
     margin:7px auto 5px !important;
@@ -4103,12 +4446,14 @@ body{
     font-size:12.5px !important;
   }
 
+  /* Voice icon remains comfortably tappable without enlarging the bar. */
   #voiceSearchBtn{
     width:38px !important;
     height:38px !important;
     right:3px !important;
   }
 
+  /* Keep pagination very close to the controls and products. */
   #collection-products{
     padding-top:0 !important;
     margin-top:0 !important;
@@ -4134,6 +4479,10 @@ body{
     font-size:22px !important;
   }
 
+  /*
+     Product grid starts immediately after pagination.
+     Card dimensions remain the accepted 2-column design.
+  */
   .products{
     margin-top:0 !important;
     gap:9px !important;
@@ -4208,6 +4557,7 @@ body{
     font-size:8px !important;
   }
 
+  /* Festival return button stays compact when a festival is active. */
   #festival-back-main.festival-back-visible{
     width:min(270px,88%) !important;
     height:38px !important;
@@ -4230,6 +4580,7 @@ body{
   }
 }
 
+/* Extra-tight phones: 390px and below. */
 @media (max-width:390px){
   #collection{
     padding-left:8px !important;
@@ -4308,6 +4659,7 @@ body{
   }
 }
 
+/* Keyboard/touch accessibility without visual clutter. */
 .custom-sort-button:focus-visible,
 #productSearch:focus-visible,
 .decoreva-pagination button:focus-visible,
@@ -4315,14 +4667,19 @@ body{
   outline:2px solid #b8862c !important;
   outline-offset:2px !important;
 }
+/* =========================================================
+   DECOREVA FINAL MOBILE COLLECTION — COMPACT FLOW
+   ========================================================= */
 
 @media (max-width:760px){
 
+  /* SECTION */
   #collection{
     padding:6px 8px 24px !important;
     margin:0 !important;
   }
 
+  /* TITLE */
   #collection-title{
     display:block !important;
     margin:0 !important;
@@ -4338,6 +4695,7 @@ body{
     margin:5px auto 0 !important;
   }
 
+  /* CONTROLS — FORCE NO EXTRA SPACE */
   #collection .collection-controls{
     display:flex !important;
     flex-direction:column !important;
@@ -4353,6 +4711,7 @@ body{
     gap:5px !important;
   }
 
+  /* SORT */
   #collection .collection-controls .product-sort,
   #collection .collection-controls .custom-sort{
     display:flex !important;
@@ -4376,6 +4735,7 @@ body{
     padding:0 13px !important;
   }
 
+  /* SEARCH */
   #collection .collection-controls .search-container,
   #collection .collection-controls .search-box,
   #collection .collection-controls .product-search{
@@ -4396,6 +4756,7 @@ body{
     padding:0 42px 0 15px !important;
   }
 
+  /* PAGINATION */
   #collection .decoreva-pagination{
     display:flex !important;
     align-items:center !important;
@@ -4410,6 +4771,7 @@ body{
     gap:5px !important;
   }
 
+  /* PRODUCT AREA */
   #collection-products,
   #collection .products{
     margin-top:0 !important;
@@ -4419,14 +4781,4 @@ body{
   #collection .products{
     gap:8px !important;
   }
-}
-/* =========================================================
-   MOBILE NAV GAP FIX
-   Remove the extra strip below fixed navigation
-   ========================================================= */
-
-@media (max-width: 760px) {
-    body {
-        padding-top: 45px !important;
-    }
 }
