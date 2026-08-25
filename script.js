@@ -372,6 +372,30 @@ if (featuredLightboxSlider) {
         );
     }
 
+    /* Direct product-image lightbox fallback. */
+    document
+        .querySelectorAll("#collection-products .slider-image")
+        .forEach(function (image) {
+
+            image.addEventListener("click", function (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                const slider =
+                    image.closest(".image-slider");
+
+                if (!slider) return;
+
+                const images = getSliderImages(slider);
+                const index = getSliderIndex(slider);
+
+                if (!images.length) return;
+
+                openLightbox(images, index);
+            });
+        });
+
     /* =====================================================
        LIGHTBOX CLOSE
        ===================================================== */
@@ -1636,32 +1660,48 @@ window.resetFestivalProducts = function () {
     }
 
     /* =====================================================
-       NAVIGATION
+       NAVIGATION — SINGLE SAFE HANDLER
+       Prevent duplicate Collection/Home handlers.
        ===================================================== */
 
     document
-        .querySelectorAll(
-            '#main-nav a[href^="#"]'
-        )
+        .querySelectorAll("#main-nav a[href^='#']")
         .forEach(function (link) {
 
-            link.addEventListener(
-                "click",
-                function (event) {
+            link.addEventListener("click", function (event) {
 
-                    const id =
-                        link.getAttribute("href");
+                const id = link.getAttribute("href");
 
-                    if (!id || id === "#") {
-                        return;
-                    }
+                if (!id || id === "#") return;
 
-                    const target =
-                        document.querySelector(id);
+                const target = document.querySelector(id);
 
-                    if (!target) return;
+                if (!target) return;
 
-                    event.preventDefault();
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (id === "#collection-title") {
+
+                    requestAnimationFrame(function () {
+                        scrollToCollectionTitle("smooth");
+                    });
+
+                } else if (id === "#home") {
+
+                    history.replaceState(
+                        null,
+                        "",
+                        window.location.pathname
+                    );
+
+                    window.scrollTo({
+                        top: 0,
+                        left: 0,
+                        behavior: "smooth"
+                    });
+
+                } else {
 
                     target.scrollIntoView({
                         behavior: "smooth",
@@ -1674,7 +1714,17 @@ window.resetFestivalProducts = function () {
                         id
                     );
                 }
-            );
+
+                nav.classList.remove("mobile-open");
+                document.body.classList.remove("menu-open");
+
+                if (menuButton) {
+                    menuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+                }
+            });
         });
 
     /* =====================================================
@@ -2229,56 +2279,6 @@ if (
 }
 
 });
-/* =====================================================
-   COLLECTION NAVIGATION — ALWAYS OPEN COLLECTION TOP
-   ===================================================== */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const collectionLink = Array.from(
-        document.querySelectorAll("#main-nav a")
-    ).find(function (link) {
-        return link.textContent.trim() === "Collection";
-    });
-
-    if (!collectionLink) return;
-
-    collectionLink.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        window.decorevaFestivalMode = false;
-
-        const searchInput =
-            document.querySelector("#productSearch");
-
-        if (searchInput) {
-            searchInput.value = "";
-        }
-
-        document
-            .querySelectorAll(".decoreva-pagination")
-            .forEach(function (nav) {
-                nav.style.display = "flex";
-            });
-
-        if (typeof window.resetFestivalProducts === "function") {
-            window.resetFestivalProducts();
-        } else if (typeof decorevaShowPage === "function") {
-            decorevaShowPage(1);
-        }
-
-        scrollToCollectionTitle("smooth");
-
-        history.replaceState(
-            null,
-            "",
-            window.location.pathname + "#collection-title"
-        );
-    });
-
-});
-
-
 /* =====================================================
    INITIAL LOAD — ALWAYS OPEN FROM TOP
    Prevent browser refresh / hard-refresh scroll restoration.
