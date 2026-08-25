@@ -767,6 +767,10 @@ if (featuredLightboxSlider) {
                     option.classList.add("active");
 
                     customSort.classList.remove("open");
+                    customSortButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
                 }
             );
         });
@@ -777,6 +781,10 @@ if (featuredLightboxSlider) {
 
                 if (!customSort.contains(event.target)) {
                     customSort.classList.remove("open");
+                    customSortButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
                 }
             }
         );
