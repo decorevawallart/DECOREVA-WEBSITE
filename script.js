@@ -1683,27 +1683,6 @@ window.resetFestivalProducts = function () {
 
                 if (id === "#collection-title") {
 
-                    window.decorevaFestivalMode = false;
-
-                    const searchInput =
-                        document.querySelector("#productSearch");
-
-                    if (searchInput) {
-                        searchInput.value = "";
-                    }
-
-                    document
-                        .querySelectorAll(".decoreva-pagination")
-                        .forEach(function (pagination) {
-                            pagination.style.display = "flex";
-                        });
-
-                    if (typeof window.resetFestivalProducts === "function") {
-                        window.resetFestivalProducts();
-                    } else if (typeof decorevaShowPage === "function") {
-                        decorevaShowPage(1);
-                    }
-
                     requestAnimationFrame(function () {
                         scrollToCollectionTitle("smooth");
                     });
