@@ -900,23 +900,9 @@ if (collectionControls) {
         clearAllButton.type = "button";
         clearAllButton.id = "clear-all-products";
         clearAllButton.className = "clear-all-products";
+        clearAllButton.setAttribute("aria-label", "Clear all collection filters");
         clearAllButton.textContent = "Clear All";
 
-        clearAllButton.style.width = "120px";
-        clearAllButton.style.height = "42px";
-        clearAllButton.style.minHeight = "42px";
-        clearAllButton.style.padding = "0 18px";
-        clearAllButton.style.border =
-            "1px solid #b8862c";
-        clearAllButton.style.borderRadius = "11px";
-        clearAllButton.style.background =
-            "linear-gradient(135deg,#fff7e6,#f1dfb9)";
-        clearAllButton.style.color = "#7b561b";
-        clearAllButton.style.fontWeight = "700";
-        clearAllButton.style.fontSize = "12px";
-        clearAllButton.style.fontFamily = "inherit";
-        clearAllButton.style.cursor = "pointer";
-        clearAllButton.style.boxSizing = "border-box";
 
         clearAllButton.addEventListener(
             "click",
@@ -2001,29 +1987,7 @@ window.resetFestivalProducts = function () {
             ".search-box"
         );
 
-    if (searchContainer) {
-
-        searchContainer.style.width = "100%";
-        searchContainer.style.maxWidth = "520px";
-        searchContainer.style.margin = "0 auto 30px";
-        searchContainer.style.position = "relative";
-    }
-
-    if (searchBox) {
-
-        searchBox.style.position = "relative";
-        searchBox.style.width = "100%";
-    }
-
-    if (productSearch) {
-
-        productSearch.style.width = "100%";
-        productSearch.style.height = "54px";
-        productSearch.style.paddingRight = "55px";
-        productSearch.style.boxSizing = "border-box";
-        productSearch.style.borderRadius = "28px";
-        productSearch.style.outline = "none";
-    }
+    
 
     if (voiceSearchBtn) {
 

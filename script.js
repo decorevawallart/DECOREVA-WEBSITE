@@ -523,8 +523,11 @@ if (featuredLightboxSlider) {
                     ? title.textContent.toLowerCase()
                     : "";
 
-                card.style.display =
-                    name.includes(searchText) ? "" : "none";
+                card.style.setProperty(
+                    "display",
+                    name.includes(searchText) ? "flex" : "none",
+                    "important"
+                );
             });
 
             if (typeof window.decorevaLoadVisibleSliders === "function") {
@@ -734,6 +737,15 @@ const originalProductOrder =
         cards.forEach(function (card) {
             productsContainer.appendChild(card);
         });
+
+        /* Keep pagination in the same order as the sorted DOM. */
+        decorevaProducts = Array.from(
+            productsContainer.querySelectorAll(".card")
+        );
+
+        if (!window.decorevaFestivalMode && typeof decorevaShowPage === "function") {
+            decorevaShowPage(1);
+        }
 
         /* Do not force-load every product image after sorting.
            IntersectionObserver will load only images near the viewport. */
@@ -1578,105 +1590,63 @@ window.showFestivalProducts = function (festival) {
 
     window.decorevaFestivalMode = true;
 
-    /* Hide normal pagination */
+    /* Hide normal pagination while a festival collection is active. */
     document
         .querySelectorAll(".decoreva-pagination")
         .forEach(function (nav) {
-            nav.style.display = "none";
+            nav.style.setProperty("display", "none", "important");
         });
 
-    /* Clear search */
-    const searchInput =
-        document.querySelector("#productSearch");
-
-    if (searchInput) {
-        searchInput.value = "";
-    }
+    /* Clear search. */
+    const searchInput = document.querySelector("#productSearch");
+    if (searchInput) searchInput.value = "";
 
     products.forEach(function (card) {
-
         const title = card.querySelector("h3");
-
-        if (!title) {
-            card.style.display = "none";
-            return;
-        }
-
-        const name =
-            title.textContent
-                .trim()
-                .toLowerCase();
+        const name = title
+            ? title.textContent.trim().toLowerCase()
+            : "";
 
         let matched = false;
 
-
-        /* =========================================
-           ONAM
-           ALL WALL ART PRODUCTS
-           EXCEPT KEYHOLDERS
-           ========================================= */
-
         if (festival === "onam") {
-
             matched =
                 !name.includes("keyholder") &&
                 !name.includes("key holder");
-        }
-
-
-        /* =========================================
-           RAKSHA BANDHAN
-           ALL KEYHOLDERS
-           ========================================= */
-
-        else if (festival === "raksha") {
-
+        } else if (festival === "raksha") {
             matched =
                 name.includes("keyholder") ||
                 name.includes("key holder");
-        }
-
-
-        /* =========================================
-           JANMASHTAMI
-           ALL KRISHNA PRODUCTS
-           ========================================= */
-
-        else if (festival === "janmashtami") {
-
+        } else if (festival === "janmashtami") {
             matched =
                 name.includes("krishna");
-        }
-
-
-        /* =========================================
-           GANESH CHATURTHI
-           ALL GANESHA PRODUCTS
-           ========================================= */
-
-        else if (festival === "ganesh") {
-
+        } else if (festival === "ganesh") {
+            /* Match both Ganesha and Ganesh naming. */
             matched =
-                name.includes("ganesha");
+                name.includes("ganesha") ||
+                name.includes("ganesh");
         }
 
-
-        card.style.display =
-            matched ? "" : "none";
+        card.style.setProperty(
+            "display",
+            matched ? "flex" : "none",
+            "important"
+        );
     });
-
 
     /* Add a clear way back to the normal Collection. */
     const backButton = ensureFestivalBackButton();
 
-    /* Scroll to the filtered products. The back button stays immediately above them. */
+    /* Scroll to the filtered products. */
     const section = document.querySelector("#collection-products");
-
     if (section) {
         setTimeout(function () {
             const target = backButton || section;
             const offset = window.innerWidth <= 760 ? 64 : 82;
-            const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+            const top =
+                target.getBoundingClientRect().top +
+                window.pageYOffset -
+                offset;
 
             window.scrollTo({
                 top: Math.max(0, top),
@@ -1693,102 +1663,21 @@ window.showFestivalProducts = function (festival) {
 
 window.resetFestivalProducts = function () {
 
-    /* =================================================
-       SAFE RESET — BACK TO MAIN COLLECTION
-       Do not call decorevaShowPage() here because the
-       festival reset should not trigger another slider/
-       pagination cycle while the DOM is being restored.
-       ================================================= */
-
     window.decorevaFestivalMode = false;
-
-    /* Remove the temporary Back button first. */
     removeFestivalBackButton();
 
-    const products = Array.from(
-        document.querySelectorAll("#collection-products .card")
-    );
-
-    /* Restore normal Collection page 1 only. */
-    products.forEach(function (card, index) {
-        card.style.display =
-            index < decorevaPerPage ? "" : "none";
-    });
-
-    /* Restore both pagination bars. */
+    /* Restore pagination bars. */
     document
         .querySelectorAll(".decoreva-pagination")
         .forEach(function (nav) {
-            nav.style.display = "flex";
+            nav.style.setProperty("display", "flex", "important");
         });
 
-    /* Reset pagination state without running decorevaShowPage(). */
-    decorevaCurrentPage = 1;
+    /* Restore normal page 1 using the same pagination controller. */
+    if (typeof decorevaShowPage === "function") {
+        decorevaShowPage(1);
+    }
 
-    document
-        .querySelectorAll(".decoreva-pagination")
-        .forEach(function (nav) {
-            const buttons = nav.querySelectorAll("button");
-
-            buttons.forEach(function (button) {
-                if (!button.dataset.page) return;
-
-                const active =
-                    Number(button.dataset.page) === 1;
-
-                button.style.color =
-                    active ? "#b98218" : "#5a4630";
-
-                button.style.fontWeight =
-                    active ? "700" : "400";
-
-                button.style.borderBottom =
-                    active
-                        ? "2px solid #b98218"
-                        : "2px solid transparent";
-            });
-
-            const previousButton = buttons[0];
-            const nextButton =
-                buttons[buttons.length - 1];
-
-            if (previousButton) {
-                previousButton.disabled = true;
-                previousButton.style.opacity = "0.25";
-                previousButton.style.cursor = "default";
-            }
-
-            if (nextButton) {
-                nextButton.disabled =
-                    decorevaTotalPages <= 1;
-                nextButton.style.opacity =
-                    decorevaTotalPages <= 1 ? "0.25" : "1";
-                nextButton.style.cursor =
-                    decorevaTotalPages <= 1
-                        ? "default"
-                        : "pointer";
-            }
-        });
-
-    /*
-       Load only the currently visible product sliders.
-       This is intentionally deferred by one animation frame
-       so the browser finishes the DOM/display update first.
-    */
-    requestAnimationFrame(function () {
-        if (
-            typeof window.decorevaLoadVisibleSliders ===
-            "function"
-        ) {
-            window.decorevaLoadVisibleSliders();
-        }
-    });
-
-    /*
-       Return to the Collection heading without smooth-scroll
-       animation. This avoids a long-running scroll/render cycle
-       on mobile and older devices.
-    */
     requestAnimationFrame(function () {
         const title = document.querySelector(
             "#collection-title, .collection-title"
@@ -1796,9 +1685,7 @@ window.resetFestivalProducts = function () {
 
         if (!title) return;
 
-        const offset =
-            window.innerWidth <= 760 ? 58 : 72;
-
+        const offset = window.innerWidth <= 760 ? 58 : 72;
         const top =
             title.getBoundingClientRect().top +
             window.pageYOffset -
@@ -1811,6 +1698,7 @@ window.resetFestivalProducts = function () {
         });
     });
 };
+
 
     /* =====================================================
        MOBILE MENU
@@ -2100,9 +1988,11 @@ window.resetFestivalProducts = function () {
    20 + 20 + 20 + 8 PRODUCTS
    ===================================================== */
 
-const decorevaProducts = Array.from(
+let decorevaProducts = Array.from(
     document.querySelectorAll("#collection-products .card")
 );
+
+window.decorevaFestivalMode = false;
 
 const decorevaPerPage = 20;
 const decorevaTotalPages = Math.max(
@@ -2303,10 +2193,13 @@ function decorevaShowPage(page) {
     decorevaProducts.forEach(
         function (card, index) {
 
-            card.style.display =
+            card.style.setProperty(
+                "display",
                 index >= start && index < end
-                    ? ""
-                    : "none";
+                    ? "flex"
+                    : "none",
+                "important"
+            );
 
         }
     );
@@ -2316,6 +2209,11 @@ function decorevaShowPage(page) {
     if (typeof window.decorevaLoadVisibleSliders === "function") {
         window.decorevaLoadVisibleSliders();
     }
+
+    /* Return to Collection top whenever a page is selected. */
+    requestAnimationFrame(function () {
+        scrollToCollectionTitle("auto");
+    });
 
     /* UPDATE PAGINATION */
 
