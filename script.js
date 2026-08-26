@@ -2051,7 +2051,7 @@ function createDecorevaPagination() {
 
     previous.addEventListener(
         "click",
-        function () {
+        function () {window.decorevaPageNavigation = true;
 
             if (decorevaCurrentPage > 1) {
 
@@ -2094,7 +2094,7 @@ function createDecorevaPagination() {
 
         number.addEventListener(
             "click",
-            function () {
+            function () {window.decorevaPageNavigation = true;
 
                 decorevaShowPage(page);
 
@@ -2128,7 +2128,7 @@ function createDecorevaPagination() {
 
     next.addEventListener(
         "click",
-        function () {
+        function () {window.decorevaPageNavigation = true;
 
             if (
                 decorevaCurrentPage <
@@ -2210,10 +2210,12 @@ function decorevaShowPage(page) {
         window.decorevaLoadVisibleSliders();
     }
 
-    /* Return to Collection top whenever a page is selected. */
+    /* Scroll to Collection top only when user changes page. */
+if (window.decorevaPageNavigation) {
     requestAnimationFrame(function () {
         scrollToCollectionTitle("auto");
     });
+}
 
     /* UPDATE PAGINATION */
 
