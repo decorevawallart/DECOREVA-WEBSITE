@@ -710,9 +710,63 @@ body{padding-top:56px!important;scroll-padding-top:70px!important}
 @media (max-width: 760px){.featured-slide,
     .featured-clone{padding:0!important;border:0!important;box-sizing:border-box!important;overflow:hidden!important}.featured-image-box{width:100%!important;height:105px!important;min-height:105px!important;max-height:105px!important;padding:0!important;margin:0!important;overflow:hidden!important;background:transparent!important;border:0!important}.featured-image-box img{width:108%!important;height:108%!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;margin:-4%!important;padding:0!important;display:block!important;object-fit:cover!important;object-position:center center!important;background:transparent!important;border:0!important;transform:none!important}.featured-slide:hover .featured-image-box img,
     .featured-clone:hover .featured-image-box img{transform:none!important}}
-@media (max-width: 760px){.products .card{height:350px!important;min-height:350px!important;padding:7px!important;box-sizing:border-box!important}.products .card .image-slider{height:190px!important;min-height:190px!important}.products .card > .button{height:38px!important;min-height:38px!important;margin-top:auto!important}}
-@media (max-width: 760px){.products .card{height:340px!important;min-height:340px!important}.products .card .image-slider{height:165px!important;min-height:165px!important}.products .card .dots{margin-top:2px!important;margin-bottom:2px!important;height:9px!important;min-height:9px!important}.products .card h3{margin-top:1px!important;margin-bottom:2px!important;line-height:1.1!important}.products .card .price{margin-top:1px!important;margin-bottom:2px!important;line-height:1.05!important}.products .card .size,
-    .products .card .dimensions{margin-top:1px!important;margin-bottom:2px!important;line-height:1.1!important}.products .card > .button{margin-top:auto!important;margin-bottom:4px!important;height:36px!important;min-height:36px!important;flex:none!important}}
+@media (max-width:760px){
+  /* SINGLE MOBILE COLLECTION CARD RULE */
+  .products .card{
+    height:405px !important;
+    min-height:405px !important;
+    max-height:405px !important;
+    padding:7px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+  }
+
+  .products .card .image-slider{
+    height:190px !important;
+    min-height:190px !important;
+    max-height:190px !important;
+    flex:0 0 190px !important;
+  }
+
+  .products .card h3{
+    height:48px !important;
+    min-height:48px !important;
+    max-height:48px !important;
+    flex:0 0 48px !important;
+  }
+
+  .products .card .price{
+    height:25px !important;
+    min-height:25px !important;
+    max-height:25px !important;
+    flex:0 0 25px !important;
+  }
+
+  .products .card .size{
+    height:32px !important;
+    min-height:32px !important;
+    max-height:32px !important;
+    flex:0 0 32px !important;
+  }
+
+  .products .card > .button{
+    width:calc(100% - 12px) !important;
+    height:38px !important;
+    min-height:38px !important;
+    max-height:38px !important;
+    flex:0 0 38px !important;
+    margin:auto 6px 6px !important;
+    position:relative !important;
+    bottom:auto !important;
+    z-index:50 !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+}
 .product-search{position:relative!important}
 .product-search input#productSearch{width:400px!important;max-width:400px!important;padding-right:48px!important;box-sizing:border-box}
 #voiceSearchBtn{position:absolute;right:13px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;margin:0;border:0;background:transparent;color:#2b1b0f;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10}
@@ -4431,3 +4485,508 @@ body{
         padding-top: 45px !important;
     }
 }
+
+/* =========================================================
+   DECOREVA FINAL — MOBILE WHATSAPP BUTTON SAFETY
+   One authoritative rule for collection cards at <=760px.
+   No 340px/350px conflicting card-height rule.
+   ========================================================= */
+@media (max-width:760px){
+  #collection .products .card{
+    height:405px !important;
+    min-height:405px !important;
+    max-height:405px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+
+  #collection .products .card > .button{
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:calc(100% - 12px) !important;
+    height:38px !important;
+    min-height:38px !important;
+    max-height:38px !important;
+    flex:0 0 38px !important;
+    margin:auto 6px 6px !important;
+    z-index:100 !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+}
+
+
+/* =========================================================
+   DECOREVA FINAL V2 — COLLECTION CONTROLS + CARD BALANCE
+   Fix:
+   1. Sort box styling/position
+   2. Clear All default-browser appearance
+   3. Search box sizing
+   4. Excess blank space inside product cards
+   5. Keep WhatsApp buttons visible inside cards
+   ========================================================= */
+
+/* ---------- COLLECTION CONTROLS: DESKTOP ---------- */
+#collection .collection-controls{
+  width:min(100%,700px) !important;
+  max-width:700px !important;
+  margin:18px auto 12px !important;
+  padding:0 !important;
+  display:grid !important;
+  grid-template-columns:180px 110px 380px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  box-sizing:border-box !important;
+}
+
+#collection .collection-controls .product-sort,
+#collection .collection-controls .custom-sort{
+  width:180px !important;
+  max-width:180px !important;
+  height:44px !important;
+  min-height:44px !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+#collection .collection-controls .custom-sort-button{
+  width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  padding:0 13px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  box-sizing:border-box !important;
+  border:1px solid rgba(184,134,44,.48) !important;
+  border-radius:9px !important;
+  background:#fffdf8 !important;
+  color:#342317 !important;
+  font:600 13px/1 Arial,Helvetica,sans-serif !important;
+  box-shadow:0 3px 12px rgba(52,35,23,.055) !important;
+}
+
+#collection .collection-controls .custom-sort-arrow{
+  color:#a96f12 !important;
+  font-size:14px !important;
+}
+
+#collection .collection-controls .custom-sort-menu{
+  top:calc(100% + 5px) !important;
+  border-radius:9px !important;
+  background:#fffdf8 !important;
+  border:1px solid rgba(184,134,44,.42) !important;
+  box-shadow:0 14px 30px rgba(52,35,23,.14) !important;
+  z-index:1000 !important;
+}
+
+#collection .collection-controls .clear-all-products{
+  width:110px !important;
+  height:44px !important;
+  min-height:44px !important;
+  max-height:44px !important;
+  margin:0 !important;
+  padding:0 10px !important;
+  box-sizing:border-box !important;
+  border:1px solid rgba(184,134,44,.48) !important;
+  border-radius:9px !important;
+  background:#fffdf8 !important;
+  color:#342317 !important;
+  font:600 12px/1 Arial,Helvetica,sans-serif !important;
+  cursor:pointer !important;
+  box-shadow:0 3px 12px rgba(52,35,23,.055) !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+
+#collection .collection-controls .clear-all-products:hover{
+  border-color:#b8862c !important;
+  background:#fffaf0 !important;
+  box-shadow:0 6px 16px rgba(52,35,23,.09) !important;
+  transform:translateY(-1px);
+}
+
+#collection .collection-controls .search-container,
+#collection .collection-controls .search-box{
+  width:380px !important;
+  max-width:380px !important;
+  height:44px !important;
+  min-height:44px !important;
+  margin:0 !important;
+  padding:0 !important;
+  position:relative !important;
+  box-sizing:border-box !important;
+}
+
+#collection .collection-controls .search-box input,
+#collection .collection-controls input#productSearch{
+  width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  max-height:44px !important;
+  margin:0 !important;
+  padding:0 43px 0 15px !important;
+  box-sizing:border-box !important;
+  border:1px solid rgba(184,134,44,.48) !important;
+  border-radius:22px !important;
+  background:#fffdf8 !important;
+  color:#342317 !important;
+  font:400 13px/1 Arial,Helvetica,sans-serif !important;
+  box-shadow:0 3px 12px rgba(52,35,23,.055) !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+}
+
+#collection .collection-controls input#productSearch::placeholder{
+  color:#8b7357 !important;
+  opacity:1 !important;
+}
+
+#collection .collection-controls input#productSearch:focus{
+  border-color:#b8862c !important;
+  box-shadow:0 0 0 3px rgba(184,134,44,.09),0 7px 18px rgba(52,35,23,.08) !important;
+}
+
+#collection .collection-controls #voiceSearchBtn{
+  position:absolute !important;
+  right:7px !important;
+  top:50% !important;
+  width:28px !important;
+  height:28px !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  transform:translateY(-50%) !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#a96f12 !important;
+  font-size:15px !important;
+  cursor:pointer !important;
+  z-index:5 !important;
+}
+
+/* ---------- PRODUCT CARDS: DESKTOP ---------- */
+@media (min-width:761px){
+  #collection .products{
+    gap:20px !important;
+  }
+
+  #collection .products .card{
+    height:455px !important;
+    min-height:455px !important;
+    max-height:455px !important;
+    padding:10px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+  }
+
+  #collection .products .card .image-slider{
+    height:250px !important;
+    min-height:250px !important;
+    max-height:250px !important;
+    flex:0 0 250px !important;
+    overflow:hidden !important;
+  }
+
+  #collection .products .card .image-slider .slider-image{
+    height:222px !important;
+    max-height:222px !important;
+    object-fit:contain !important;
+  }
+
+  #collection .products .card h3{
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    margin:7px 0 1px !important;
+    font-size:16px !important;
+    line-height:1.15 !important;
+  }
+
+  #collection .products .card .price{
+    height:27px !important;
+    min-height:27px !important;
+    max-height:27px !important;
+    margin:1px 0 !important;
+    font-size:18px !important;
+    line-height:1.1 !important;
+  }
+
+  #collection .products .card .size{
+    height:29px !important;
+    min-height:29px !important;
+    max-height:29px !important;
+    margin:0 5px 2px !important;
+    font-size:10px !important;
+    line-height:1.2 !important;
+  }
+
+  #collection .products .card > .button{
+    width:calc(100% - 10px) !important;
+    height:38px !important;
+    min-height:38px !important;
+    max-height:38px !important;
+    flex:0 0 38px !important;
+    margin:auto 5px 3px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+}
+
+/* ---------- COLLECTION CONTROLS: MOBILE ---------- */
+@media (max-width:760px){
+  #collection .collection-controls{
+    width:100% !important;
+    max-width:100% !important;
+    margin:8px auto 5px !important;
+    padding:0 8px !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    align-items:center !important;
+    column-gap:8px !important;
+    row-gap:6px !important;
+    box-sizing:border-box !important;
+  }
+
+  #collection .collection-controls .product-sort,
+  #collection .collection-controls .custom-sort{
+    width:100% !important;
+    max-width:none !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+  }
+
+  #collection .collection-controls .custom-sort-button{
+    width:100% !important;
+    height:40px !important;
+    min-height:40px !important;
+    padding:0 11px !important;
+    border-radius:8px !important;
+    font-size:12px !important;
+  }
+
+  #collection .collection-controls .clear-all-products{
+    width:100% !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+    padding:0 8px !important;
+    border-radius:8px !important;
+    font-size:12px !important;
+  }
+
+  #collection .collection-controls .search-container,
+  #collection .collection-controls .search-box{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    max-width:none !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+  }
+
+  #collection .collection-controls .search-box input,
+  #collection .collection-controls input#productSearch{
+    width:100% !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+    padding:0 38px 0 13px !important;
+    border-radius:20px !important;
+    font-size:12px !important;
+  }
+
+  #collection .collection-controls #voiceSearchBtn{
+    right:5px !important;
+    width:25px !important;
+    height:25px !important;
+    font-size:14px !important;
+  }
+
+  /* MOBILE CARDS — compact but keep all content visible */
+  #collection .products{
+    gap:9px !important;
+  }
+
+  #collection .products .card{
+    height:350px !important;
+    min-height:350px !important;
+    max-height:350px !important;
+    padding:6px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+  }
+
+  #collection .products .card .image-slider{
+    height:165px !important;
+    min-height:165px !important;
+    max-height:165px !important;
+    flex:0 0 165px !important;
+    overflow:hidden !important;
+  }
+
+  #collection .products .card .image-slider .slider-image{
+    height:137px !important;
+    max-height:137px !important;
+    object-fit:contain !important;
+  }
+
+  #collection .products .card .image-slider .slider-dots{
+    height:28px !important;
+    min-height:28px !important;
+  }
+
+  #collection .products .card h3{
+    height:42px !important;
+    min-height:42px !important;
+    max-height:42px !important;
+    margin:5px 0 1px !important;
+    font-size:11.5px !important;
+    line-height:1.12 !important;
+  }
+
+  #collection .products .card .price{
+    height:24px !important;
+    min-height:24px !important;
+    max-height:24px !important;
+    margin:1px 0 !important;
+    font-size:15px !important;
+    line-height:1.1 !important;
+  }
+
+  #collection .products .card .size{
+    height:25px !important;
+    min-height:25px !important;
+    max-height:25px !important;
+    margin:0 4px 1px !important;
+    font-size:7.8px !important;
+    line-height:1.15 !important;
+  }
+
+  #collection .products .card > .button{
+    width:calc(100% - 8px) !important;
+    height:33px !important;
+    min-height:33px !important;
+    max-height:33px !important;
+    flex:0 0 33px !important;
+    margin:auto 4px 2px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:8px !important;
+    border-radius:8px !important;
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+  }
+}
+
+@media (max-width:390px){
+  #collection .collection-controls{
+    padding:0 6px !important;
+    gap:6px !important;
+  }
+
+  #collection .products{
+    gap:8px !important;
+  }
+
+  #collection .products .card{
+    height:342px !important;
+    min-height:342px !important;
+    max-height:342px !important;
+  }
+
+  #collection .products .card .image-slider{
+    height:160px !important;
+    min-height:160px !important;
+    max-height:160px !important;
+    flex-basis:160px !important;
+  }
+
+  #collection .products .card .image-slider .slider-image{
+    height:132px !important;
+    max-height:132px !important;
+  }
+
+  #collection .products .card h3{
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+    font-size:11px !important;
+  }
+
+  #collection .products .card > .button{
+    height:31px !important;
+    min-height:31px !important;
+    max-height:31px !important;
+    flex-basis:31px !important;
+    font-size:7.7px !important;
+  }
+}
+
+/* =========================================================
+   DECOREVA V2 — TARGETED FIX ONLY
+   1. Banner already contains "Explore Collection".
+      Hide the duplicate HTML overlay button.
+   2. Remove fixed card-height blank space.
+      Keep all image/content sizing and other styling unchanged.
+   ========================================================= */
+
+.hero-content .button{
+  display:none !important;
+}
+
+@media (min-width:761px){
+  #collection .products .card{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+  }
+
+  #collection .products .card > .button{
+    margin:6px 5px 3px !important;
+  }
+}
+
+@media (max-width:760px){
+  #collection .products .card{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+  }
+
+  #collection .products .card > .button{
+    margin:6px 4px 2px !important;
+  }
+}
+
+@media (max-width:390px){
+  #collection .products .card{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+  }
+}
+

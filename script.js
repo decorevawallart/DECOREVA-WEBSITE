@@ -662,6 +662,13 @@ if (featuredLightboxSlider) {
                 )
             )
             : [];
+            /* Keep the original product order for Clear All. */
+const originalProductOrder =
+    productsContainer
+        ? Array.from(
+            productsContainer.querySelectorAll(".card")
+        )
+        : [];
 
     function getCards() {
         if (!productsContainer) return [];
@@ -776,10 +783,10 @@ if (featuredLightboxSlider) {
                     const value =
                         option.dataset.value;
 
-                    if (value === "default") {
-                        location.reload();
-                        return;
-                    }
+                   if (value === "default") {
+    clearAllCollectionFilters();
+    return;
+}
 
                     sortProducts(value);
                     updateSortLabel(value);
@@ -813,7 +820,122 @@ if (featuredLightboxSlider) {
             }
         );
     }
+/* =====================================================
+   CLEAR ALL — SORT + SEARCH + PAGINATION
+   ===================================================== */
 
+function clearAllCollectionFilters() {
+
+    /* Clear search */
+    if (productSearch) {
+        productSearch.value = "";
+    }
+
+    /* Restore original product order */
+    if (productsContainer && originalProductOrder.length) {
+        originalProductOrder.forEach(function (card) {
+            productsContainer.appendChild(card);
+        });
+    }
+
+    /* Reset Sort Products label */
+    if (customSortButton) {
+        const label =
+            customSortButton.querySelector(
+                "span:first-child"
+            );
+
+        if (label) {
+            label.textContent = "Sort Products";
+        }
+
+        customSortButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+    /* Remove active sort option */
+    sortOptions.forEach(function (item) {
+        item.classList.remove("active");
+    });
+
+    if (customSort) {
+        customSort.classList.remove("open");
+    }
+
+    /* Return to normal Collection page 1 */
+    window.decorevaFestivalMode = false;
+
+    if (typeof window.resetFestivalProducts === "function") {
+        window.resetFestivalProducts();
+    } else if (typeof decorevaShowPage === "function") {
+        decorevaShowPage(1);
+    }
+
+    /* Scroll to Collection */
+    requestAnimationFrame(function () {
+        scrollToCollectionTitle("smooth");
+    });
+}
+
+
+/* =====================================================
+   CLEAR ALL BUTTON
+   ===================================================== */
+
+const collectionControls =
+    document.querySelector(".collection-controls");
+
+if (collectionControls) {
+
+    let clearAllButton =
+        document.querySelector("#clear-all-products");
+
+    if (!clearAllButton) {
+
+        clearAllButton =
+            document.createElement("button");
+
+        clearAllButton.type = "button";
+        clearAllButton.id = "clear-all-products";
+        clearAllButton.className = "clear-all-products";
+        clearAllButton.setAttribute("aria-label", "Clear all collection filters");
+        clearAllButton.textContent = "Clear All";
+
+
+        clearAllButton.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                clearAllCollectionFilters();
+            }
+        );
+
+        const productSort =
+            collectionControls.querySelector(
+                ".product-sort"
+            );
+
+        if (productSort) {
+
+            productSort.insertAdjacentElement(
+                "afterend",
+                clearAllButton
+            );
+
+        } else {
+
+            collectionControls.insertBefore(
+                clearAllButton,
+                collectionControls.firstChild
+            );
+        }
+    }
+}
     /* =====================================================
        FEATURED PRODUCTS SLIDER
        ===================================================== */
@@ -1571,30 +1693,123 @@ window.showFestivalProducts = function (festival) {
 
 window.resetFestivalProducts = function () {
 
+    /* =================================================
+       SAFE RESET — BACK TO MAIN COLLECTION
+       Do not call decorevaShowPage() here because the
+       festival reset should not trigger another slider/
+       pagination cycle while the DOM is being restored.
+       ================================================= */
+
     window.decorevaFestivalMode = false;
+
+    /* Remove the temporary Back button first. */
     removeFestivalBackButton();
 
     const products = Array.from(
-        document.querySelectorAll(
-            "#collection-products .card"
-        )
+        document.querySelectorAll("#collection-products .card")
     );
 
-    products.forEach(function (card) {
-        card.style.display = "";
+    /* Restore normal Collection page 1 only. */
+    products.forEach(function (card, index) {
+        card.style.display =
+            index < decorevaPerPage ? "" : "none";
     });
 
-
+    /* Restore both pagination bars. */
     document
         .querySelectorAll(".decoreva-pagination")
         .forEach(function (nav) {
             nav.style.display = "flex";
         });
 
+    /* Reset pagination state without running decorevaShowPage(). */
+    decorevaCurrentPage = 1;
 
-    if (typeof decorevaShowPage === "function") {
-        decorevaShowPage(1);
-    }
+    document
+        .querySelectorAll(".decoreva-pagination")
+        .forEach(function (nav) {
+            const buttons = nav.querySelectorAll("button");
+
+            buttons.forEach(function (button) {
+                if (!button.dataset.page) return;
+
+                const active =
+                    Number(button.dataset.page) === 1;
+
+                button.style.color =
+                    active ? "#b98218" : "#5a4630";
+
+                button.style.fontWeight =
+                    active ? "700" : "400";
+
+                button.style.borderBottom =
+                    active
+                        ? "2px solid #b98218"
+                        : "2px solid transparent";
+            });
+
+            const previousButton = buttons[0];
+            const nextButton =
+                buttons[buttons.length - 1];
+
+            if (previousButton) {
+                previousButton.disabled = true;
+                previousButton.style.opacity = "0.25";
+                previousButton.style.cursor = "default";
+            }
+
+            if (nextButton) {
+                nextButton.disabled =
+                    decorevaTotalPages <= 1;
+                nextButton.style.opacity =
+                    decorevaTotalPages <= 1 ? "0.25" : "1";
+                nextButton.style.cursor =
+                    decorevaTotalPages <= 1
+                        ? "default"
+                        : "pointer";
+            }
+        });
+
+    /*
+       Load only the currently visible product sliders.
+       This is intentionally deferred by one animation frame
+       so the browser finishes the DOM/display update first.
+    */
+    requestAnimationFrame(function () {
+        if (
+            typeof window.decorevaLoadVisibleSliders ===
+            "function"
+        ) {
+            window.decorevaLoadVisibleSliders();
+        }
+    });
+
+    /*
+       Return to the Collection heading without smooth-scroll
+       animation. This avoids a long-running scroll/render cycle
+       on mobile and older devices.
+    */
+    requestAnimationFrame(function () {
+        const title = document.querySelector(
+            "#collection-title, .collection-title"
+        );
+
+        if (!title) return;
+
+        const offset =
+            window.innerWidth <= 760 ? 58 : 72;
+
+        const top =
+            title.getBoundingClientRect().top +
+            window.pageYOffset -
+            offset;
+
+        window.scrollTo({
+            top: Math.max(0, top),
+            left: 0,
+            behavior: "auto"
+        });
+    });
 };
 
     /* =====================================================
@@ -1772,29 +1987,7 @@ window.resetFestivalProducts = function () {
             ".search-box"
         );
 
-    if (searchContainer) {
-
-        searchContainer.style.width = "100%";
-        searchContainer.style.maxWidth = "520px";
-        searchContainer.style.margin = "0 auto 30px";
-        searchContainer.style.position = "relative";
-    }
-
-    if (searchBox) {
-
-        searchBox.style.position = "relative";
-        searchBox.style.width = "100%";
-    }
-
-    if (productSearch) {
-
-        productSearch.style.width = "100%";
-        productSearch.style.height = "54px";
-        productSearch.style.paddingRight = "55px";
-        productSearch.style.boxSizing = "border-box";
-        productSearch.style.borderRadius = "28px";
-        productSearch.style.outline = "none";
-    }
+    
 
     if (voiceSearchBtn) {
 
@@ -2233,6 +2426,9 @@ function decorevaShowPage(page) {
 
             }
         );
+    }
+
+    /* ---------- END decorevaShowPage ---------- */
 
 
 /* ---------- ADD ABOVE + BELOW ---------- */
@@ -2242,11 +2438,17 @@ const decorevaGrid =
         "#collection-products"
     );
 
-
 if (
     decorevaGrid &&
     decorevaProducts.length > 0
 ) {
+
+    /* Remove any old pagination bars first. */
+    decorevaGrid.parentNode
+        .querySelectorAll(".decoreva-pagination")
+        .forEach(function (nav) {
+            nav.remove();
+        });
 
     const paginationAbove =
         createDecorevaPagination();
@@ -2254,28 +2456,20 @@ if (
     const paginationBelow =
         createDecorevaPagination();
 
-
     /* ABOVE PRODUCTS */
-
     decorevaGrid.parentNode.insertBefore(
         paginationAbove,
         decorevaGrid
     );
 
-
     /* BELOW PRODUCTS */
-
     decorevaGrid.insertAdjacentElement(
         "afterend",
         paginationBelow
     );
 
-
     /* START PAGE 1 */
-
     decorevaShowPage(1);
-}
-
 }
 
 });
