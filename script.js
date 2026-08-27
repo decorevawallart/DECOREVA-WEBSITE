@@ -509,8 +509,6 @@ if (featuredLightboxSlider) {
 
         /* Search mode shows matching products across all pages. */
         if (searchText) {
-            window.decorevaFestivalMode = false;
-
             document
                 .querySelectorAll(".decoreva-pagination")
                 .forEach(function (nav) {
@@ -538,9 +536,7 @@ if (featuredLightboxSlider) {
         }
 
         /* Empty search returns to page 1. */
-        if (typeof window.resetFestivalProducts === "function") {
-            window.resetFestivalProducts();
-        } else if (typeof decorevaShowPage === "function") {
+        if (typeof decorevaShowPage === "function") {
             decorevaShowPage(1);
         }
     }
@@ -738,15 +734,6 @@ const originalProductOrder =
             productsContainer.appendChild(card);
         });
 
-        /* Keep pagination in the same order as the sorted DOM. */
-        decorevaProducts = Array.from(
-            productsContainer.querySelectorAll(".card")
-        );
-
-        if (!window.decorevaFestivalMode && typeof decorevaShowPage === "function") {
-            decorevaShowPage(1);
-        }
-
         /* Do not force-load every product image after sorting.
            IntersectionObserver will load only images near the viewport. */
     }
@@ -877,11 +864,7 @@ function clearAllCollectionFilters() {
     }
 
     /* Return to normal Collection page 1 */
-    window.decorevaFestivalMode = false;
-
-    if (typeof window.resetFestivalProducts === "function") {
-        window.resetFestivalProducts();
-    } else if (typeof decorevaShowPage === "function") {
+    if (typeof decorevaShowPage === "function") {
         decorevaShowPage(1);
     }
 
@@ -1527,180 +1510,6 @@ if (collectionControls) {
     }
 
     /* =====================================================
-   FESTIVAL COLLECTION
-   DYNAMIC PRODUCT FILTER
-   ===================================================== */
-
-window.decorevaFestivalMode = false;
-
-/* =====================================================
-   FESTIVAL BACK TO MAIN COLLECTION BUTTON
-   ===================================================== */
-function ensureFestivalBackButton() {
-
-    const grid = document.querySelector("#collection-products");
-    if (!grid) return null;
-
-    let button = document.querySelector("#festival-back-main");
-
-    if (button) return button;
-
-    button = document.createElement("button");
-    button.type = "button";
-    button.id = "festival-back-main";
-    button.className = "festival-back-main festival-back-visible";
-    button.innerHTML = "<span aria-hidden=\"true\">←</span> Back to Main Collection";
-
-    button.addEventListener("click", function () {
-        window.resetFestivalProducts();
-    });
-
-    grid.parentNode.insertBefore(button, grid);
-    return button;
-}
-
-function removeFestivalBackButton() {
-    const button = document.querySelector("#festival-back-main");
-
-    if (button) {
-        button.remove();
-    }
-}
-
-function scrollToCollectionTitle(behavior) {
-    const title = document.querySelector("#collection-title, .collection-title");
-    if (!title) return;
-
-    const offset = window.innerWidth <= 760 ? 58 : 72;
-    const top = title.getBoundingClientRect().top + window.pageYOffset - offset;
-
-    window.scrollTo({
-        top: Math.max(0, top),
-        behavior: behavior || "smooth"
-    });
-}
-
-window.showFestivalProducts = function (festival) {
-
-    const products = Array.from(
-        document.querySelectorAll("#collection-products .card")
-    );
-
-    if (!products.length) return;
-
-    window.decorevaFestivalMode = true;
-
-    /* Hide normal pagination while a festival collection is active. */
-    document
-        .querySelectorAll(".decoreva-pagination")
-        .forEach(function (nav) {
-            nav.style.setProperty("display", "none", "important");
-        });
-
-    /* Clear search. */
-    const searchInput = document.querySelector("#productSearch");
-    if (searchInput) searchInput.value = "";
-
-    products.forEach(function (card) {
-        const title = card.querySelector("h3");
-        const name = title
-            ? title.textContent.trim().toLowerCase()
-            : "";
-
-        let matched = false;
-
-        if (festival === "onam") {
-            matched =
-                !name.includes("keyholder") &&
-                !name.includes("key holder");
-        } else if (festival === "raksha") {
-            matched =
-                name.includes("keyholder") ||
-                name.includes("key holder");
-        } else if (festival === "janmashtami") {
-            matched =
-                name.includes("krishna");
-        } else if (festival === "ganesh") {
-            /* Match both Ganesha and Ganesh naming. */
-            matched =
-                name.includes("ganesha") ||
-                name.includes("ganesh");
-        }
-
-        card.style.setProperty(
-            "display",
-            matched ? "flex" : "none",
-            "important"
-        );
-    });
-
-    /* Add a clear way back to the normal Collection. */
-    const backButton = ensureFestivalBackButton();
-
-    /* Scroll to the filtered products. */
-    const section = document.querySelector("#collection-products");
-    if (section) {
-        setTimeout(function () {
-            const target = backButton || section;
-            const offset = window.innerWidth <= 760 ? 64 : 82;
-            const top =
-                target.getBoundingClientRect().top +
-                window.pageYOffset -
-                offset;
-
-            window.scrollTo({
-                top: Math.max(0, top),
-                behavior: "smooth"
-            });
-        }, 100);
-    }
-};
-
-
-/* =====================================================
-   RESET FESTIVAL FILTER
-   ===================================================== */
-
-window.resetFestivalProducts = function () {
-
-    window.decorevaFestivalMode = false;
-    removeFestivalBackButton();
-
-    /* Restore pagination bars. */
-    document
-        .querySelectorAll(".decoreva-pagination")
-        .forEach(function (nav) {
-            nav.style.setProperty("display", "flex", "important");
-        });
-
-    /* Restore normal page 1 using the same pagination controller. */
-    if (typeof decorevaShowPage === "function") {
-        decorevaShowPage(1);
-    }
-
-    requestAnimationFrame(function () {
-        const title = document.querySelector(
-            "#collection-title, .collection-title"
-        );
-
-        if (!title) return;
-
-        const offset = window.innerWidth <= 760 ? 58 : 72;
-        const top =
-            title.getBoundingClientRect().top +
-            window.pageYOffset -
-            offset;
-
-        window.scrollTo({
-            top: Math.max(0, top),
-            left: 0,
-            behavior: "auto"
-        });
-    });
-};
-
-
-    /* =====================================================
        MOBILE MENU
        ===================================================== */
 
@@ -1786,9 +1595,16 @@ window.resetFestivalProducts = function () {
 
                 if (id === "#collection-title") {
 
-                    requestAnimationFrame(function () {
-                        scrollToCollectionTitle("smooth");
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
                     });
+
+                    history.replaceState(
+                        null,
+                        "",
+                        id
+                    );
 
                 } else if (id === "#home") {
 
@@ -1988,11 +1804,9 @@ window.resetFestivalProducts = function () {
    20 + 20 + 20 + 8 PRODUCTS
    ===================================================== */
 
-let decorevaProducts = Array.from(
+const decorevaProducts = Array.from(
     document.querySelectorAll("#collection-products .card")
 );
-
-window.decorevaFestivalMode = false;
 
 const decorevaPerPage = 20;
 const decorevaTotalPages = Math.max(
@@ -2051,12 +1865,13 @@ function createDecorevaPagination() {
 
     previous.addEventListener(
         "click",
-        function () {window.decorevaPageNavigation = true;
+        function () {
 
             if (decorevaCurrentPage > 1) {
 
                 decorevaShowPage(
-                    decorevaCurrentPage - 1
+                    decorevaCurrentPage - 1,
+                    true
                 );
 
             }
@@ -2094,9 +1909,9 @@ function createDecorevaPagination() {
 
         number.addEventListener(
             "click",
-            function () {window.decorevaPageNavigation = true;
+            function () {
 
-                decorevaShowPage(page);
+                decorevaShowPage(page, true);
 
             }
         );
@@ -2128,7 +1943,7 @@ function createDecorevaPagination() {
 
     next.addEventListener(
         "click",
-        function () {window.decorevaPageNavigation = true;
+        function () {
 
             if (
                 decorevaCurrentPage <
@@ -2136,7 +1951,8 @@ function createDecorevaPagination() {
             ) {
 
                 decorevaShowPage(
-                    decorevaCurrentPage + 1
+                    decorevaCurrentPage + 1,
+                    true
                 );
 
             }
@@ -2174,10 +1990,7 @@ window.decorevaLoadVisibleSliders = function () {
 
 /* ---------- SHOW PAGE ---------- */
 
-function decorevaShowPage(page) {
-    if (window.decorevaFestivalMode) {
-        return;
-    }
+function decorevaShowPage(page, scrollToCollection = false) {
     decorevaCurrentPage = page;
 
 
@@ -2195,9 +2008,7 @@ function decorevaShowPage(page) {
 
             card.style.setProperty(
                 "display",
-                index >= start && index < end
-                    ? "flex"
-                    : "none",
+                index >= start && index < end ? "flex" : "none",
                 "important"
             );
 
@@ -2210,12 +2021,22 @@ function decorevaShowPage(page) {
         window.decorevaLoadVisibleSliders();
     }
 
-    /* Scroll to Collection top only when user changes page. */
-if (window.decorevaPageNavigation) {
-    requestAnimationFrame(function () {
-        scrollToCollectionTitle("auto");
-    });
-}
+    /* When the user changes collection page, return to the top of Collection. */
+    if (scrollToCollection) {
+        const collectionTitle = document.querySelector("#collection-title");
+        if (collectionTitle) {
+            const top =
+                collectionTitle.getBoundingClientRect().top +
+                window.scrollY -
+                75;
+
+            window.scrollTo({
+                top: Math.max(0, top),
+                left: 0,
+                behavior: "smooth"
+            });
+        }
+    }
 
     /* UPDATE PAGINATION */
 
