@@ -636,17 +636,18 @@ a{padding:7px 9px;font-size:10px;} .hero-content
 }
 
 .featured-slide, .featured-clone, .featured-button, .hero-content
-.button{position:relative;overflow:hidden;}
+.button, #collection .products .card, #collection .products .card > .button{position:relative;overflow:hidden;}
 
 .featured-slide::after,
-.featured-clone::after{content:"";position:absolute;top:-40%;left:-70%;width:22%;height:180%;pointer-events:none;z-index:20;opacity:0;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.72),transparent);animation:cardShine
+.featured-clone::after,
+#collection .products .card::after{content:"";position:absolute;top:-40%;left:-70%;width:12%;height:180%;pointer-events:none;z-index:20;opacity:0;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.64),transparent);animation:cardShine
 5.5s ease-in-out infinite;}
 
 .featured-button::before, .hero-content
-.button::before{content:"";position:absolute;top:-80%;left:-75%;width:20%;height:260%;pointer-events:none;z-index:10;opacity:0;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);animation:buttonShine
+.button::before, #collection .products .card > .button::before{content:"";position:absolute;top:-80%;left:-75%;width:11%;height:260%;pointer-events:none;z-index:10;opacity:0;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.78),transparent);animation:buttonShine
 4.2s ease-in-out infinite;}
 
-.featured-button > *, .hero-content .button > *{position:relative;z-index:11;}
+.featured-button > *, .hero-content .button > *, #collection .products .card > .button > *{position:relative;z-index:11;}
 
 @keyframes cardShine{0%,55%{left:-70%;opacity:0;} 62%{opacity:.9;}
 78%,100%{left:135%;opacity:0;}}
@@ -655,10 +656,11 @@ a{padding:7px 9px;font-size:10px;} .hero-content
 72%,100%{left:135%;opacity:0;}}
 
 .featured-slide:hover::after,
-.featured-clone:hover::after{animation:cardHoverShine .8s ease 1;}
+.featured-clone:hover::after,
+#collection .products .card:hover::after{animation:cardHoverShine .8s ease 1;}
 
 .featured-button:hover::before, .hero-content
-.button:hover::before{animation:buttonHoverShine .7s ease 1;}
+.button:hover::before, #collection .products .card > .button:hover::before{animation:buttonHoverShine .7s ease 1;}
 
 @keyframes cardHoverShine{0%{left:-70%;opacity:0;} 15%{opacity:1;}
 100%{left:135%;opacity:0;}}
@@ -667,8 +669,8 @@ a{padding:7px 9px;font-size:10px;} .hero-content
 100%{left:135%;opacity:0;}}
 
 @media (prefers-reduced-motion:reduce){.featured-slide::after,
-.featured-clone::after, .featured-button::before, .hero-content
-.button::before{animation:none!important;}}
+.featured-clone::after, #collection .products .card::after, .featured-button::before, .hero-content
+.button::before, #collection .products .card > .button::before{animation:none!important;}}
 
 nav a:focus-visible, .featured-prev:focus-visible,
 .featured-next:focus-visible, .featured-dot:focus-visible,
@@ -1025,36 +1027,60 @@ h1{font-size:36px;letter-spacing:4px;color:#e6b957;text-shadow:none;}
 
 .brand-text p{font-size:12px;letter-spacing:1.2px;color:#ead9b8;}
 
-#contact
-.button{position:relative;overflow:hidden;isolation:isolate;transition:transform
-0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;}
+#contact .button{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
 
-#contact
-.button::before{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(
-110deg, transparent 0%, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255,
-255, 0.65) 50%, rgba(255, 255, 255, 0.08) 75%, transparent 100%
-);transform:skewX(-20deg);pointer-events:none;z-index:2;}
+#contact .button::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-120%;
+  width:30%;
+  height:100%;
+  background:linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.45) 50%,
+    rgba(255,255,255,0.05) 75%,
+    transparent 100%
+  );
+  transform:skewX(-20deg);
+  pointer-events:none;
+  z-index:2;
+  animation:contactAutoShine 3.5s ease-in-out infinite;
+}
 
-#contact .button:hover::before{animation:contactButtonShine 0.8s ease
-forwards;}
+#contact .button:hover::before{
+  animation:contactButtonShine 0.8s ease forwards;
+}
 
-@keyframes contactButtonShine{from{left:-120%;} to{left:140%;}}
+@keyframes contactButtonShine{
+  from{left:-120%;}
+  to{left:140%;}
+}
 
-#contact
-.button:hover{transform:translateY(-3px);filter:brightness(1.08);box-shadow:0
-8px 20px rgba(120, 75, 10, 0.28);}
+@keyframes contactAutoShine{
+  0%{left:-120%;}
+  25%{left:140%;}
+  100%{left:140%;}
+}
 
-#contact .button i, #contact .button{z-index:1;}
+#contact .button:hover{
+  transform:translateY(-3px);
+  filter:brightness(1.08);
+  box-shadow:0 8px 20px rgba(120,75,10,0.28);
+}
 
-#contact
-.button::before{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(
-110deg, transparent 0%, rgba(255,255,255,0.05) 25%,
-rgba(255,255,255,0.65) 50%, rgba(255,255,255,0.05) 75%, transparent 100%
-);transform:skewX(-20deg);pointer-events:none;z-index:2;animation:contactAutoShine
-3.5s ease-in-out infinite;}
-
-@keyframes contactAutoShine{0%{left:-120%;} 25%{left:140%;}
-100%{left:140%;}}
+#contact .button i,
+#contact .button{
+  position:relative;
+  z-index:1;
+}
 
 #contact .button i, #contact .button{position:relative;}
 
