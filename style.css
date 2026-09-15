@@ -568,8 +568,6 @@ ease;}
 .featured-clone .featured-button > *{
     position:relative;
     z-index:2;
-    flex-shrink:0;
-    white-space:nowrap;
 }
 @keyframes featuredButtonShine{
     0%,50%{left:-75%;opacity:0;}
@@ -2815,25 +2813,10 @@ card/image system. No repeated Collection image overrides.
         position:relative !important;
         z-index:1 !important;
     }
-}
 
-/* FINAL MOBILE NORMAL-CARD WHATSAPP FIX — only normal collection cards */
-@media (max-width:760px){
-  #collection .products .card:not(.decoreva-variation-card):not(.sherawali-variation-card) > div[style*="grid-template-columns"] .button{
-    font-size:7px!important;
-    gap:2px!important;
-    padding:0 2px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-  }
-  #collection .products .card:not(.decoreva-variation-card):not(.sherawali-variation-card) > div[style*="grid-template-columns"] .button span{
-    white-space:nowrap!important;
-  }
-}
-@media (max-width:390px){
-  #collection .products .card:not(.decoreva-variation-card):not(.sherawali-variation-card) > div[style*="grid-template-columns"] .button{
-    font-size:6.5px!important;
-    gap:1px!important;
-    padding:0 1px!important;
-  }
+    /* Keep hero dots visible above the overlapping offer strip. */
+    .hero-dots{
+        bottom:32px !important;
+        z-index:30 !important;
+    }
 }

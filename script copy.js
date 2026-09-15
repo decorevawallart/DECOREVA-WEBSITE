@@ -3725,6 +3725,14 @@
             }
         }
 };
+        function getVariationWhatsAppName(card, key, variation) {
+            const title = card.querySelector("h3");
+            const button = card.querySelector('[data-variation="' + key + '"]');
+            const productName = title ? title.textContent.trim() : variation.whatsapp;
+            const variationName = button ? button.textContent.trim() : key.replace(/-/g, " ");
+            return productName + " - " + variationName;
+        }
+
         document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function (card) {
             card.classList.add("sherawali-variation-card");
             const options = card.querySelector(".variation-options");
@@ -3766,7 +3774,7 @@
                 if (amazon) amazon.href = variation.amazon;
                 if (whatsapp) {
                     whatsapp.href = "https://wa.me/919582899547?text=" +
-                        encodeURIComponent("Hello DECOREVA, I want to buy " + variation.whatsapp);
+                        encodeURIComponent("Hello DECOREVA, I want to buy " + getVariationWhatsAppName(card, key, variation));
                 }
                 buttons.forEach(function (button) {
                     button.classList.toggle("active", button.dataset.variation === key);
@@ -3805,7 +3813,7 @@
             if (amazon) amazon.href = variation.amazon;
             if (whatsapp) {
                 whatsapp.href = "https://wa.me/919582899547?text=" +
-                    encodeURIComponent("Hello DECOREVA, I want to buy " + variation.whatsapp);
+                    encodeURIComponent("Hello DECOREVA, I want to buy " + getVariationWhatsAppName(card, key, variation));
             }
             card.querySelectorAll(".variation-button, .sherawali-variation").forEach(function (item) {
                 item.classList.toggle("active", item.dataset.variation === key);
