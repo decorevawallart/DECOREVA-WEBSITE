@@ -580,7 +580,14 @@
                 return;
             }
 
-            /* Empty search returns to page 1. */
+            /* Empty search:
+               show pagination again and return to page 1. */
+            document
+                .querySelectorAll(".decoreva-pagination")
+                .forEach(function (nav) {
+                    nav.style.display = "flex";
+                });
+
             if (typeof decorevaShowPage === "function") {
                 decorevaShowPage(1);
             }
@@ -1659,16 +1666,35 @@
 
                     if (!target) return;
 
+                    const aboutSection = document.querySelector("#about");
+                    if (aboutSection) aboutSection.style.display = id === "#about" ? "block" : "none";
+
                     event.preventDefault();
                     event.stopPropagation();
 
                     if (id === "#collection-title") {
+
+                        /* Restore pagination when Collection is opened from navigation. */
+                        document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
+                            nav.style.display = "flex";
+                        });
+
+                        const savedPage = Number(sessionStorage.getItem("decorevaPage")) || 1;
+                        if (typeof decorevaShowPage === "function") {
+                            window.decorevaPageNavigation = false;
+                            decorevaShowPage(savedPage);
+                        }
 
                         requestAnimationFrame(function () {
                             scrollToCollectionTitle("smooth");
                         });
 
                     } else if (id === "#home") {
+
+                        /* Keep pagination visible/stateful while returning Home. */
+                        document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
+                            nav.style.display = "flex";
+                        });
 
                         history.replaceState(
                             null,
@@ -1684,7 +1710,15 @@
 
                     } else {
 
-                        target.scrollIntoView({
+                        /* Do not hide Collection pagination when opening Contact/About. */
+                        document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
+                            nav.style.display = "flex";
+                        });
+
+                        (id === "#about"
+                            ? (target.querySelector(".about-heading") || target)
+                            : target
+                        ).scrollIntoView({
                             behavior: "smooth",
                             block: "start"
                         });
@@ -2052,6 +2086,10 @@
 
     function decorevaShowPage(page) {
         decorevaCurrentPage = page;
+        sessionStorage.setItem("decorevaPage", page);
+
+        const aboutSection = document.querySelector("#about");
+        if (aboutSection) aboutSection.style.display = "none";
 
 
         const start =
@@ -2241,48 +2279,2260 @@
             paginationBelow
         );
 
-        /* START PAGE 1 */
-        decorevaShowPage(1);
+        /* RESTORE LAST COLLECTION PAGE */
+        const savedPage =
+            Number(sessionStorage.getItem("decorevaPage")) || 1;
+        decorevaShowPage(savedPage);
     }
 
-    });
-    /* =====================================================
-       INITIAL LOAD — ALWAYS OPEN FROM TOP
-       Prevent browser refresh / hard-refresh scroll restoration.
-       ===================================================== */
 
-    if ("scrollRestoration" in history) {
-        history.scrollRestoration = "manual";
+        /* =====================================================
+           DECOREVA — REUSABLE PRODUCT VARIATION SYSTEM
+           4-variation cards: Sherawali 2, Sherawali 3, Ganesha 2, Hanuman 2, Krishna 1
+           ===================================================== */
+
+        const decorevaVariationProducts = {
+        "happy-place-1": {
+            defaultVariation: "black",
+            variations: {
+                "black": {
+                    price: "₹299",
+                    size: "Size: 12 × 7 inch (Approx.)",
+                    amazon: "https://amzn.in/d/0bqU4Xuu",
+                    whatsapp: "This Is My Happy Place MDF Wallart - Black",
+                    images: [
+                        "images/Thisismyhappyplace_Black_01.webp",
+                        "images/Thisismyhappyplace_Black_02.webp",
+                        "images/Thisismyhappyplace_Black_03.webp",
+                        "images/Thisismyhappyplace_Black_04.webp",
+                        "images/Thisismyhappyplace_Black_05.webp",
+                        "images/Thisismyhappyplace_Black_06.webp",
+                        "images/Thisismyhappyplace_Black_07.webp",
+                        "images/Thisismyhappyplace_Black_08.webp",
+                        "images/Thisismyhappyplace_Black_09.webp"
+                    ]
+                },
+                "red": {
+                    price: "₹299",
+                    size: "Size: 12 × 7 inch (Approx.)",
+                    amazon: "https://amzn.in/d/06FvVbYg",
+                    whatsapp: "This Is My Happy Place MDF Wallart - Red",
+                    images: [
+                        "images/Thisismyhappyplace_Red_01.webp",
+                        "images/Thisismyhappyplace_Red_02.webp",
+                        "images/Thisismyhappyplace_Red_03.webp",
+                        "images/Thisismyhappyplace_Red_04.webp",
+                        "images/Thisismyhappyplace_Red_05.webp",
+                        "images/Thisismyhappyplace_Red_06.webp",
+                        "images/Thisismyhappyplace_Red_07.webp",
+                        "images/Thisismyhappyplace_Red_08.webp",
+                        "images/Thisismyhappyplace_Red_09.webp"
+                    ]
+                }
+            }
+        },
+
+        "radha-krishna-2": {
+            defaultVariation: "brown-small",
+            variations: {
+                "brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/005U5hmW",
+                    whatsapp: "Radha Krishna Small Temple 2 - Brown Small",
+                    images: [
+                        "images/Radha Krishna Temple_02_Small_Brown_01.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_02.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_03.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_04.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_05.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_06.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_07.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_08.webp",
+                        "images/Radha Krishna Temple_02_Small_Brown_09.webp"
+                    ]
+                },
+                "brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/0aHi7S4O",
+                    whatsapp: "Radha Krishna Small Temple 2 - Brown Big",
+                    images: [
+                        "images/Radha Krishna Temple_02_Big_Brown_01.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_02.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_03.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_04.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_05.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_06.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_07.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_08.webp",
+                        "images/Radha Krishna Temple_02_Big_Brown_09.webp"
+                    ]
+                },
+                "dark-brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/0c7WcRdE",
+                    whatsapp: "Radha Krishna Small Temple 2 - Dark Brown Small",
+                    images: [
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_01.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_02.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_03.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_04.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_05.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_06.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_07.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_08.webp",
+                        "images/Radha Krishna Temple_02_Small_Darkbrown_09.webp"
+                    ]
+                },
+                "dark-brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/0cIsHZ0d",
+                    whatsapp: "Radha Krishna Small Temple 2 - Dark Brown Big",
+                    images: [
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_01.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_02.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_03.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_04.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_05.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_06.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_07.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_08.webp",
+                        "images/Radha Krishna Temple_02_Big_Darkbrown_09.webp"
+                    ]
+                }
+            }
+        },
+
+        "radha-krishna-1": {
+            defaultVariation: "brown-small",
+            variations: {
+                "brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/0412ozF3",
+                    whatsapp: "Radha Krishna Small Temple - Brown Small",
+                    images: [
+                        "images/Radha Krishna Temple_01_Small_Brown_01.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_02.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_03.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_04.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_05.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_06.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_07.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_08.webp",
+                        "images/Radha Krishna Temple_01_Small_Brown_09.webp"
+                    ]
+                },
+                "brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/03VyLAM6",
+                    whatsapp: "Radha Krishna Small Temple - Brown Big",
+                    images: [
+                        "images/Radha Krishna Temple_01_Big_Brown_01.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_02.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_03.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_04.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_05.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_06.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_07.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_08.webp",
+                        "images/Radha Krishna Temple_01_Big_Brown_09.webp"
+                    ]
+                },
+                "dark-brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/0iF4jE0x",
+                    whatsapp: "Radha Krishna Small Temple - Dark Brown Small",
+                    images: [
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_01.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_02.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_03.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_04.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_05.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_06.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_07.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_08.webp",
+                        "images/Radha Krishna Temple_01_Small_Darkbrown_09.webp"
+                    ]
+                },
+                "dark-brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/08WY03U0",
+                    whatsapp: "Radha Krishna Small Temple - Dark Brown Big",
+                    images: [
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_01.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_02.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_03.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_04.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_05.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_06.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_07.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_08.webp",
+                        "images/Radha Krishna Temple_01_Big_Darkbrown_09.webp"
+                    ]
+                }
+            }
+        },
+
+        "lakshmi-ganesha-1": {
+            defaultVariation: "brown-small",
+            variations: {
+                "brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/0dZPplNw",
+                    whatsapp: "Lakshmi Ganesha Small Temple - Brown Small",
+                    images: [
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_01.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_02.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_03.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_04.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_05.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_06.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_07.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_08.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Brown_09.webp"
+                    ]
+                },
+                "brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/04y60sk1",
+                    whatsapp: "Lakshmi Ganesha Small Temple - Brown Big",
+                    images: [
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_01.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_02.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_03.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_04.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_05.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_06.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_07.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_08.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Brown_09.webp"
+                    ]
+                },
+                "dark-brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/01CKyfSY",
+                    whatsapp: "Lakshmi Ganesha Small Temple - Dark Brown Small",
+                    images: [
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_01.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_02.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_03.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_04.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_05.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_06.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_07.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_08.webp",
+                        "images/Lakshmi Ganesha_Temple_Small_Darkbrown_09.webp"
+                    ]
+                },
+                "dark-brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/0654Yb37",
+                    whatsapp: "Lakshmi Ganesha Small Temple - Dark Brown Big",
+                    images: [
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_01.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_02.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_03.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_04.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_05.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_06.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_07.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_08.webp",
+                        "images/Lakshmi Ganesha_Temple_Big_Darkbrown_09.webp"
+                    ]
+                }
+            }
+        },
+
+            "sherawali-1": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0hKdqLAl",
+                        whatsapp: "Sherawali Mata Temple - Brown Small",
+                        images: [
+                            "images/Sherawalimatatemple_01_Small_Brown.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown.webp",
+                            "images/Sherawalimatatemple_03_Small_Brown.webp",
+                            "images/Sherawalimatatemple_04_Small_Brown.webp",
+                            "images/Sherawalimatatemple_05_Small_Brown.webp",
+                            "images/Sherawalimatatemple_06_Small_Brown.webp",
+                            "images/Sherawalimatatemple_07_Small_Brown.webp",
+                            "images/Sherawalimatatemple_08_Small_Brown.webp",
+                            "images/Sherawalimatatemple_09_Small_Brown.webp"
+                        ]
+                    },
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/09hyu0US",
+                        whatsapp: "Sherawali Mata Temple - Brown Big",
+                        images: [
+                            "images/Sherawalimatatemple_01_Big_Brown.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown.webp",
+                            "images/Sherawalimatatemple_03_Big_Brown.webp",
+                            "images/Sherawalimatatemple_04_Big_Brown.webp",
+                            "images/Sherawalimatatemple_05_Big_Brown.webp",
+                            "images/Sherawalimatatemple_06_Big_Brown.webp",
+                            "images/Sherawalimatatemple_07_Big_Brown.webp",
+                            "images/Sherawalimatatemple_08_Big_Brown.webp",
+                            "images/Sherawalimatatemple_09_Big_Brown.webp"
+                        ]
+                    },
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/08DePxbl",
+                        whatsapp: "Sherawali Mata Temple - Dark Brown Small",
+                        images: [
+                            "images/Sherawalimatatemple_01_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_03_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_04_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_05_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_06_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_07_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_08_Small_Darkbrown.webp",
+                            "images/Sherawalimatatemple_09_Small_Darkbrown.webp"
+                        ]
+                    },
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/03Rcbh9e",
+                        whatsapp: "Sherawali Mata Temple - Dark Brown Big",
+                        images: [
+                            "images/Sherawalimatatemple_01_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_03_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_04_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_05_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_06_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_07_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_08_Big_DarkBrown.webp",
+                            "images/Sherawalimatatemple_09_Big_DarkBrown.webp"
+                        ]
+                    }
+                }
+            },
+            "sherawali-2": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0arqThT9",
+                        whatsapp: "Sherawali Mata Temple 2 - Brown Small",
+                        images: [
+                            "images/Sherawalimatatemple_02_Small_Brown_01.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_02.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_03.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_04.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_05.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_06.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_07.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_08.webp",
+                            "images/Sherawalimatatemple_02_Small_Brown_09.webp"
+                        ]
+                    },
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/03E4xYH5",
+                        whatsapp: "Sherawali Mata Temple 2 - Brown Big",
+                        images: [
+                            "images/Sherawalimatatemple_02_Big_Brown_01.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_02.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_03.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_04.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_05.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_06.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_07.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_08.webp",
+                            "images/Sherawalimatatemple_02_Big_Brown_09.webp"
+                        ]
+                    },
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0dj2Lz3c",
+                        whatsapp: "Sherawali Mata Temple 2 - Dark Brown Small",
+                        images: [
+                            "images/Sherawalimatatemple_02_Small_Darkrown_01.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_02.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_03.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_04.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_05.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_06.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_07.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_08.webp",
+                            "images/Sherawalimatatemple_02_Small_Darkrown_09.webp"
+                        ]
+                    },
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0cGv5Z1p",
+                        whatsapp: "Sherawali Mata Temple 2 - Dark Brown Big",
+                        images: [
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_01.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_02.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_03.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_04.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_05.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_06.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_07.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_08.webp",
+                            "images/Sherawalimatatemple_02_Big_DarkBrown_09.webp"
+                        ]
+                    }
+                }
+                },
+
+    "sherawali-3": {
+        defaultVariation: "brown-small",
+
+        variations: {
+
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0izsug2U",
+                whatsapp: "Sherawali Mata Temple 3 - Brown Small",
+                images: [
+                    "images/Sherawalimata_03_Small_Brown_01.webp",
+                    "images/Sherawalimata_03_Small_Brown_02.webp",
+                    "images/Sherawalimata_03_Small_Brown_03.webp",
+                    "images/Sherawalimata_03_Small_Brown_04.webp",
+                    "images/Sherawalimata_03_Small_Brown_05.webp",
+                    "images/Sherawalimata_03_Small_Brown_06.webp",
+                    "images/Sherawalimata_03_Small_Brown_07.webp",
+                    "images/Sherawalimata_03_Small_Brown_08.webp",
+                    "images/Sherawalimata_03_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0fajTDks",
+                whatsapp: "Sherawali Mata Temple 3 - Brown Big",
+                images: [
+                    "images/Sherawalimata_03_Big_Brown_01.webp",
+                    "images/Sherawalimata_03_Big_Brown_02.webp",
+                    "images/Sherawalimata_03_Big_Brown_03.webp",
+                    "images/Sherawalimata_03_Big_Brown_04.webp",
+                    "images/Sherawalimata_03_Big_Brown_05.webp",
+                    "images/Sherawalimata_03_Big_Brown_06.webp",
+                    "images/Sherawalimata_03_Big_Brown_07.webp",
+                    "images/Sherawalimata_03_Big_Brown_08.webp",
+                    "images/Sherawalimata_03_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0fiWhSdI",
+                whatsapp: "Sherawali Mata Temple 3 - Dark Brown Small",
+                images: [
+                    "images/Sherawalimata_03_Small_Darkbrown_01.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_02.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_03.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_04.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_05.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_06.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_07.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_08.webp",
+                    "images/Sherawalimata_03_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0cL2sOsj",
+                whatsapp: "Sherawali Mata Temple 3 - Dark Brown Big",
+                images: [
+                    "images/Sherawalimata_03_Big_Darkbrown_01.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_02.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_03.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_04.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_05.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_06.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_07.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_08.webp",
+                    "images/Sherawalimata_03_Big_Darkbrown_09.webp"
+                ]
+            }
+
+        }
+    },
+
+            "sherawali-4": {
+        defaultVariation: "brown-small",
+
+        variations: {
+
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0gfODZNB",
+                whatsapp: "Sherawali Mata Temple 4 - Brown Small",
+                images: [
+                    "images/Sherawalimata Temple_04_Small_Brown_01.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_02.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_03.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_04.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_05.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_06.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_07.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_08.webp",
+                    "images/Sherawalimata Temple_04_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0a1tvQM1",
+                whatsapp: "Sherawali Mata Temple 4 - Brown Big",
+                images: [
+                    "images/Sherawalimata Temple_04_Big_Brown_01.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_02.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_03.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_04.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_05.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_06.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_07.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_08.webp",
+                    "images/Sherawalimata Temple_04_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/05l1jM6H",
+                whatsapp: "Sherawali Mata Temple 4 - Dark Brown Small",
+                images: [
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_01.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_02.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_03.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_04.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_05.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_06.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_07.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_08.webp",
+                    "images/Sherawalimata Temple_04_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0f5J7uWW",
+                whatsapp: "Sherawali Mata Temple 4 - Dark Brown Big",
+                images: [
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_01.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_02.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_03.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_04.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_05.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_06.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_07.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_08.webp",
+                    "images/Sherawalimata Temple_04_Big_Darkbrown_09.webp"
+                ]
+            }
+
+        }
+    },
+
+    "shiv-parvati-1": {
+        defaultVariation: "brown-small",
+
+        variations: {
+
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0b5XcQw3",
+                whatsapp: "Shiv Parvati Temple - Brown Small",
+                images: [
+                    "images/Shivparvatitemple_01_Small_Brown_01.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_02.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_03.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_04.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_05.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_06.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_07.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_08.webp",
+                    "images/Shivparvatitemple_01_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/03cwZ8fE",
+                whatsapp: "Shiv Parvati Temple - Brown Big",
+                images: [
+                    "images/Shivparvatitemple_01_Big_Brown_01.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_02.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_03.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_04.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_05.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_06.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_07.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_08.webp",
+                    "images/Shivparvatitemple_01_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/03ersPUv",
+                whatsapp: "Shiv Parvati Temple - Dark Brown Small",
+                images: [
+                    "images/Shivparvatitemple_01_Small_Darkbrown_01.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_02.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_03.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_04.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_05.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_06.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_07.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_08.webp",
+                    "images/Shivparvatitemple_01_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/03hAJP4O",
+                whatsapp: "Shiv Parvati Temple - Dark Brown Big",
+                images: [
+                    "images/Shivparvatitemple_01_Big_Darkbrown_01.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_02.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_03.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_04.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_05.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_06.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_07.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_08.webp",
+                    "images/Shivparvatitemple_01_Big_Darkbrown_09.webp"
+                ]
+            }
+
+        }
+    },
+
+        "shiv-parvati-2": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0hYVylr1",
+                whatsapp: "Shiv Parvati Small Temple 2 - Brown Small",
+                images: [
+                    "images/ShivParvatitemple_02_Small_Brown_01.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_02.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_03.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_04.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_05.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_06.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_07.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_08.webp",
+                    "images/ShivParvatitemple_02_Small_Brown_09.webp"
+                ]
+            },
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/02CrHlvJ",
+                whatsapp: "Shiv Parvati Small Temple 2 - Brown Big",
+                images: [
+                    "images/ShivParvatitemple_02_Big_Brown_01.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_02.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_03.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_04.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_05.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_06.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_07.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_08.webp",
+                    "images/ShivParvatitemple_02_Big_Brown_09.webp"
+                ]
+            },
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/03uf1aPo",
+                whatsapp: "Shiv Parvati Small Temple 2 - Dark Brown Small",
+                images: [
+                    "images/ShivParvatitemple_02_Small_Darkbrown_01.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_02.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_03.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_04.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_05.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_06.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_07.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_08.webp",
+                    "images/ShivParvatitemple_02_Small_Darkbrown_09.webp"
+                ]
+            },
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/02XBU4Gd",
+                whatsapp: "Shiv Parvati Small Temple 2 - Dark Brown Big",
+                images: [
+                    "images/ShivParvatitemple_02_Big_Darkbrown_01.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_02.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_03.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_04.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_05.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_06.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_07.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_08.webp",
+                    "images/ShivParvatitemple_02_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    },
+
+
+            "shiv-parvati-3": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0f1drRls",
+                        whatsapp: "Shiv Parvati Temple 3 - Brown Small",
+                        images: [
+                        "images/Shivparvatitemple_03_Small_Brown_01.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_02.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_03.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_04.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_05.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_06.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_07.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_08.webp",
+                        "images/Shivparvatitemple_03_Small_Brown_09.webp"
+                        ]
+                    },
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/05o5nTgm",
+                        whatsapp: "Shiv Parvati Temple 3 - Brown Big",
+                        images: [
+                        "images/Shivparvatitemple_03_Big_Brown_01.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_02.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_03.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_04.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_05.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_06.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_07.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_08.webp",
+                        "images/Shivparvatitemple_03_Big_Brown_09.webp"
+                        ]
+                    },
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0bjseaa9",
+                        whatsapp: "Shiv Parvati Temple 3 - Dark Brown Small",
+                        images: [
+                        "images/Shivparvatitemple_03_Small_Darkbrown_01.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_02.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_03.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_04.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_05.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_06.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_07.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_08.webp",
+                        "images/Shivparvatitemple_03_Small_Darkbrown_09.webp"
+                        ]
+                    },
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/05Q5QwZF",
+                        whatsapp: "Shiv Parvati Temple 3 - Dark Brown Big",
+                        images: [
+                        "images/Shivparvatitemple_03_Big_Darkbrown_01.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_02.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_03.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_04.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_05.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_06.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_07.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_08.webp",
+                        "images/Shivparvatitemple_03_Big_Darkbrown_09.webp"
+                        ]
+                    }
+                }
+            },
+
+"shiva-1": {
+    defaultVariation: "brown-small",
+    variations: {
+        "brown-small": {
+            price: "₹299",
+            size: "Size : 3.3 × 4.6 inch Approx",
+            amazon: "https://amzn.in/d/0bhOrhrA",
+            whatsapp: "Shiva Small Temple - Brown Small",
+            images: [
+                "images/Shivatemple_Small_Brown_01.webp",
+                "images/Shivatemple_Small_Brown_02.webp",
+                "images/Shivatemple_Small_Brown_03.webp",
+                "images/Shivatemple_Small_Brown_04.webp",
+                "images/Shivatemple_Small_Brown_05.webp",
+                "images/Shivatemple_Small_Brown_06.webp",
+                "images/Shivatemple_Small_Brown_07.webp",
+                "images/Shivatemple_Small_Brown_08.webp",
+                "images/Shivatemple_Small_Brown_09.webp"
+            ]
+        },
+        "brown-big": {
+            price: "₹399",
+            size: "Size : 4 × 5.1 inch Approx",
+            amazon: "https://amzn.in/d/0gGYOUAX",
+            whatsapp: "Shiva Small Temple - Brown Big",
+            images: [
+                "images/Shivatemple_Big_Brown_01.webp",
+                "images/Shivatemple_Big_Brown_02.webp",
+                "images/Shivatemple_Big_Brown_03.webp",
+                "images/Shivatemple_Big_Brown_04.webp",
+                "images/Shivatemple_Big_Brown_05.webp",
+                "images/Shivatemple_Big_Brown_06.webp",
+                "images/Shivatemple_Big_Brown_07.webp",
+                "images/Shivatemple_Big_Brown_08.webp",
+                "images/Shivatemple_Big_Brown_09.webp"
+            ]
+        },
+        "dark-brown-small": {
+            price: "₹299",
+            size: "Size : 3.3 × 4.6 inch Approx",
+            amazon: "https://amzn.in/d/09BhbjJ1",
+            whatsapp: "Shiva Small Temple - Dark Brown Small",
+            images: [
+                "images/Shivatemple_Small_Darkrown_01.webp",
+                "images/Shivatemple_Small_Darkrown_02.webp",
+                "images/Shivatemple_Small_Darkrown_03.webp",
+                "images/Shivatemple_Small_Darkrown_04.webp",
+                "images/Shivatemple_Small_Darkrown_05.webp",
+                "images/Shivatemple_Small_Darkrown_06.webp",
+                "images/Shivatemple_Small_Darkrown_07.webp",
+                "images/Shivatemple_Small_Darkrown_08.webp",
+                "images/Shivatemple_Small_Darkrown_09.webp"
+            ]
+        },
+        "dark-brown-big": {
+            price: "₹399",
+            size: "Size : 4 × 5.1 inch Approx",
+            amazon: "https://amzn.in/d/08soQzMu",
+            whatsapp: "Shiva Small Temple - Dark Brown Big",
+            images: [
+                "images/Shivatemple_Big_Darkrown_01.webp",
+                "images/Shivatemple_Big_Darkrown_02.webp",
+                "images/Shivatemple_Big_Darkrown_03.webp",
+                "images/Shivatemple_Big_Darkrown_04.webp",
+                "images/Shivatemple_Big_Darkrown_05.webp",
+                "images/Shivatemple_Big_Darkrown_06.webp",
+                "images/Shivatemple_Big_Darkrown_07.webp",
+                "images/Shivatemple_Big_Darkrown_08.webp",
+                "images/Shivatemple_Big_Darkrown_09.webp"
+            ]
+        }
     }
+},
 
-    function decorevaForceTop() {
-        if (window.location.hash) {
-            history.replaceState(
-                null,
-                "",
-                window.location.pathname
-            );
+"siyaram-1": {
+    defaultVariation: "brown-small",
+    variations: {
+        "brown-small": {
+            price: "₹299",
+            size: "Size : 3.3 × 4.6 inch Approx",
+            amazon: "https://amzn.in/d/05tK8gJy",
+            whatsapp: "Siyaram Small Temple - Brown Small",
+            images: [
+                "images/Siyaramtemple_01_Small_Brown_01.webp",
+                "images/Siyaramtemple_01_Small_Brown_02.webp",
+                "images/Siyaramtemple_01_Small_Brown_03.webp",
+                "images/Siyaramtemple_01_Small_Brown_04.webp",
+                "images/Siyaramtemple_01_Small_Brown_05.webp",
+                "images/Siyaramtemple_01_Small_Brown_06.webp",
+                "images/Siyaramtemple_01_Small_Brown_07.webp",
+                "images/Siyaramtemple_01_Small_Brown_08.webp",
+                "images/Siyaramtemple_01_Small_Brown_09.webp"
+            ]
+        },
+        "brown-big": {
+            price: "₹399",
+            size: "Size : 4 × 5.1 inch Approx",
+            amazon: "https://amzn.in/d/06I1Y8Ry",
+            whatsapp: "Siyaram Small Temple - Brown Big",
+            images: [
+                "images/Siyaramtemple_01_Big_Brown_01.webp",
+                "images/Siyaramtemple_01_Big_Brown_02.webp",
+                "images/Siyaramtemple_01_Big_Brown_03.webp",
+                "images/Siyaramtemple_01_Big_Brown_04.webp",
+                "images/Siyaramtemple_01_Big_Brown_05.webp",
+                "images/Siyaramtemple_01_Big_Brown_06.webp",
+                "images/Siyaramtemple_01_Big_Brown_07.webp",
+                "images/Siyaramtemple_01_Big_Brown_08.webp",
+                "images/Siyaramtemple_01_Big_Brown_09.webp"
+            ]
+        },
+        "dark-brown-small": {
+            price: "₹299",
+            size: "Size : 3.3 × 4.6 inch Approx",
+            amazon: "https://amzn.in/d/05WrvCs0",
+            whatsapp: "Siyaram Small Temple - Dark Brown Small",
+            images: [
+                "images/Siyaramtemple_01_Small_Darkbrown_01.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_02.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_03.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_04.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_05.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_06.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_07.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_08.webp",
+                "images/Siyaramtemple_01_Small_Darkbrown_09.webp"
+            ]
+        },
+        "dark-brown-big": {
+            price: "₹399",
+            size: "Size : 4 × 5.1 inch Approx",
+            amazon: "https://amzn.in/d/09BSNNbN",
+            whatsapp: "Siyaram Small Temple - Dark Brown Big",
+            images: [
+                "images/Siyaramtemple_01_Big_Darkbrown_01.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_02.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_03.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_04.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_05.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_06.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_07.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_08.webp",
+                "images/Siyaramtemple_01_Big_Darkbrown_09.webp"
+            ]
+        }
+    }
+},
+
+"siyaram-2": {
+    defaultVariation: "brown-small",
+    variations: {
+        "brown-small": {
+            price: "₹299",
+            size: "Size : 3.3 × 4.6 inch Approx",
+            amazon: "https://amzn.in/d/0357ndZq",
+            whatsapp: "Siyaram Small Temple 2 - Brown Small",
+            images: [
+                "images/Siyaramtemple_02_Small_Brown_01.webp",
+                "images/Siyaramtemple_02_Small_Brown_02.webp",
+                "images/Siyaramtemple_02_Small_Brown_03.webp",
+                "images/Siyaramtemple_02_Small_Brown_04.webp",
+                "images/Siyaramtemple_02_Small_Brown_05.webp",
+                "images/Siyaramtemple_02_Small_Brown_06.webp",
+                "images/Siyaramtemple_02_Small_Brown_07.webp",
+                "images/Siyaramtemple_02_Small_Brown_08.webp",
+                "images/Siyaramtemple_02_Small_Brown_09.webp"
+            ]
+        },
+        "brown-big": {
+            price: "₹399",
+            size: "Size : 4 × 5.1 inch Approx",
+            amazon: "https://amzn.in/d/0cIg1mVm",
+            whatsapp: "Siyaram Small Temple 2 - Brown Big",
+            images: [
+                "images/Siyaramtemple_02_Big_Brown_01.webp",
+                "images/Siyaramtemple_02_Big_Brown_02.webp",
+                "images/Siyaramtemple_02_Big_Brown_03.webp",
+                "images/Siyaramtemple_02_Big_Brown_04.webp",
+                "images/Siyaramtemple_02_Big_Brown_05.webp",
+                "images/Siyaramtemple_02_Big_Brown_06.webp",
+                "images/Siyaramtemple_02_Big_Brown_07.webp",
+                "images/Siyaramtemple_02_Big_Brown_08.webp",
+                "images/Siyaramtemple_02_Big_Brown_09.webp"
+            ]
+        },
+        "dark-brown-small": {
+            price: "₹299",
+            size: "Size : 3.3 × 4.6 inch Approx",
+            amazon: "https://amzn.in/d/0e9dbVWa",
+            whatsapp: "Siyaram Small Temple 2 - Dark Brown Small",
+            images: [
+                "images/Siyaramtemple_02_Small_Darkbrown_01.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_02.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_03.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_04.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_05.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_06.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_07.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_08.webp",
+                "images/Siyaramtemple_02_Small_Darkbrown_09.webp"
+            ]
+        },
+        "dark-brown-big": {
+            price: "₹399",
+            size: "Size : 4 × 5.1 inch Approx",
+            amazon: "https://amzn.in/d/0401KVZ2",
+            whatsapp: "Siyaram Small Temple 2 - Dark Brown Big",
+            images: [
+                "images/Siyaramtemple_02_Big_Darkbrown_01.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_02.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_03.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_04.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_05.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_06.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_07.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_08.webp",
+                "images/Siyaramtemple_02_Big_Darkbrown_09.webp"
+            ]
+        }
+    }
+},
+
+"ganesha-1": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/07GtndwV",
+                        whatsapp: "Ganesha Small Temple 2 - Brown Small",
+                        images: [
+                            "images/Ganesha_01_Small_Brown_01.webp",
+                            "images/Ganesha_01_Small_Brown_02.webp",
+                            "images/Ganesha_01_Small_Brown_03.webp",
+                            "images/Ganesha_01_Small_Brown_04.webp",
+                            "images/Ganesha_01_Small_Brown_05.webp",
+                            "images/Ganesha_01_Small_Brown_06.webp",
+                            "images/Ganesha_01_Small_Brown_07.webp",
+                            "images/Ganesha_01_Small_Brown_08.webp",
+                            "images/Ganesha_01_Small_Brown_09.webp"
+                        ]
+                    },
+
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/00a4ejCY",
+                        whatsapp: "Ganesha Small Temple 2 - Brown Big",
+                        images: [
+                            "images/Ganesha_01_Big_Brown_01.webp",
+                            "images/Ganesha_01_Big_Brown_02.webp",
+                            "images/Ganesha_01_Big_Brown_03.webp",
+                            "images/Ganesha_01_Big_Brown_04.webp",
+                            "images/Ganesha_01_Big_Brown_05.webp",
+                            "images/Ganesha_01_Big_Brown_06.webp",
+                            "images/Ganesha_01_Big_Brown_07.webp",
+                            "images/Ganesha_01_Big_Brown_08.webp",
+                            "images/Ganesha_01_Big_Brown_09.webp"
+                        ]
+                    },
+
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0j0ORVEp",
+                        whatsapp: "Ganesha Small Temple 2 - Dark Brown Small",
+                        images: [
+                            "images/Ganesha_01_Small_Darkbrown_01.webp",
+                            "images/Ganesha_01_Small_Darkbrown_02.webp",
+                            "images/Ganesha_01_Small_Darkbrown_03.webp",
+                            "images/Ganesha_01_Small_Darkbrown_04.webp",
+                            "images/Ganesha_01_Small_Darkbrown_05.webp",
+                            "images/Ganesha_01_Small_Darkbrown_06.webp",
+                            "images/Ganesha_01_Small_Darkbrown_07.webp",
+                            "images/Ganesha_01_Small_Darkbrown_08.webp",
+                            "images/Ganesha_01_Small_Darkbrown_09.webp"
+                        ]
+                    },
+
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/05AU3mcR",
+                        whatsapp: "Ganesha Small Temple 2 - Dark Brown Big",
+                        images: [
+                            "images/Ganesha_01_Big_Darkbrown_01.webp",
+                            "images/Ganesha_01_Big_Darkbrown_02.webp",
+                            "images/Ganesha_01_Big_Darkbrown_03.webp",
+                            "images/Ganesha_01_Big_Darkbrown_04.webp",
+                            "images/Ganesha_01_Big_Darkbrown_05.webp",
+                            "images/Ganesha_01_Big_Darkbrown_06.webp",
+                            "images/Ganesha_01_Big_Darkbrown_07.webp",
+                            "images/Ganesha_01_Big_Darkbrown_08.webp",
+                            "images/Ganesha_01_Big_Darkbrown_09.webp"
+                        ]
+                    }
+                }
+            },
+            
+            "hanuman-1": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/09fx0mfl",
+                        whatsapp: "Hanuman Small Temple 2 - Dark Brown Small",
+                        images: [
+                            "images/Hanuman_01_Small_Darkbrown_01.webp",
+                            "images/Hanuman_01_Small_Darkbrown_02.webp",
+                            "images/Hanuman_01_Small_Darkbrown_03.webp",
+                            "images/Hanuman_01_Small_Darkbrown_04.webp",
+                            "images/Hanuman_01_Small_Darkbrown_05.webp",
+                            "images/Hanuman_01_Small_Darkbrown_06.webp",
+                            "images/Hanuman_01_Small_Darkbrown_07.webp",
+                            "images/Hanuman_01_Small_Darkbrown_08.webp",
+                            "images/Hanuman_01_Small_Darkbrown_09.webp"
+                        ]
+                    },
+
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/08hD7M2s",
+                        whatsapp: "Hanuman Small Temple 2 - Brown Small",
+                        images: [
+                            "images/Hanuman_01_Small_Brown_01.webp",
+                            "images/Hanuman_01_Small_Brown_02.webp",
+                            "images/Hanuman_01_Small_Brown_03.webp",
+                            "images/Hanuman_01_Small_Brown_04.webp",
+                            "images/Hanuman_01_Small_Brown_05.webp",
+                            "images/Hanuman_01_Small_Brown_06.webp",
+                            "images/Hanuman_01_Small_Brown_07.webp",
+                            "images/Hanuman_01_Small_Brown_08.webp",
+                            "images/Hanuman_01_Small_Brown_09.webp"
+                        ]
+                    },
+
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/0178n2Pc",
+                        whatsapp: "Hanuman Small Temple 2 - Dark Brown Big",
+                        images: [
+                            "images/Hanuman_01_Big_Darkbrown_01.webp",
+                            "images/Hanuman_01_Big_Darkbrown_02.webp",
+                            "images/Hanuman_01_Big_Darkbrown_03.webp",
+                            "images/Hanuman_01_Big_Darkbrown_04.webp",
+                            "images/Hanuman_01_Big_Darkbrown_05.webp",
+                            "images/Hanuman_01_Big_Darkbrown_06.webp",
+                            "images/Hanuman_01_Big_Darkbrown_07.webp",
+                            "images/Hanuman_01_Big_Darkbrown_08.webp",
+                            "images/Hanuman_01_Big_Darkbrown_09.webp"
+                        ]
+                    },
+
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/05X0m7c9",
+                        whatsapp: "Hanuman Small Temple 2 - Brown Big",
+                        images: [
+                            "images/Hanuman_01_Big_Brown_01.webp",
+                            "images/Hanuman_01_Big_Brown_02.webp",
+                            "images/Hanuman_01_Big_Brown_03.webp",
+                            "images/Hanuman_01_Big_Brown_04.webp",
+                            "images/Hanuman_01_Big_Brown_05.webp",
+                            "images/Hanuman_01_Big_Brown_06.webp",
+                            "images/Hanuman_01_Big_Brown_07.webp",
+                            "images/Hanuman_01_Big_Brown_08.webp",
+                            "images/Hanuman_01_Big_Brown_09.webp"
+                        ]
+                    }
+                }
+            },
+
+
+
+            "hanuman-2": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/04bbMP4C",
+                        whatsapp: "Hanuman Small Temple - Dark Brown Small",
+                        images: [
+                            "images/Hanuman Temple_02_Small_Darkbrown_01.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_02.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_03.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_04.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_05.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_06.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_07.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_08.webp", 
+                            "images/Hanuman Temple_02_Small_Darkbrown_09.webp"
+                        ]
+                    },
+
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0cOuzgW0",
+                        whatsapp: "Hanuman Small Temple - Brown Small",
+                        images: [
+                            "images/Hanuman Temple_02_Small_Brown_01.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_02.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_03.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_04.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_05.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_06.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_07.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_08.webp", 
+                            "images/Hanuman Temple_02_Small_Brown_09.webp"
+                        ]
+                    },
+
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/02ng878g",
+                        whatsapp: "Hanuman Small Temple - Brown Big",
+                        images: [
+                            "images/Hanuman Temple_02_Big_Brown_01.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_02.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_03.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_04.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_05.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_06.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_07.webp", 
+                            "images/Hanuman Temple_02_Big_Brown_08.webp"
+                        ]
+                    },
+
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/023TUFUz",
+                        whatsapp: "Hanuman Small Temple - Dark Brown Big",
+                        images: [
+                            "images/Hanuman Temple_02_Big_Darkbrown_01.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_02.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_03.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_04.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_05.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_06.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_07.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_08.webp", 
+                            "images/Hanuman Temple_02_Big_Darkbrown_09.webp"
+                        ]
+                    }
+                }
+            },
+
+            "krishna-2": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/02blWPLh",
+                        whatsapp: "Krishna Small Temple 2 - Brown Small",
+                        images: [
+                            "images/Krishna Temple_02_Small_Brown_01.webp",
+                            "images/Krishna Temple_02_Small_Brown_02.webp",
+                            "images/Krishna Temple_02_Small_Brown_03.webp",
+                            "images/Krishna Temple_02_Small_Brown_04.webp",
+                            "images/Krishna Temple_02_Small_Brown_05.webp",
+                            "images/Krishna Temple_02_Small_Brown_06.webp",
+                            "images/Krishna Temple_02_Small_Brown_07.webp",
+                            "images/Krishna Temple_02_Small_Brown_08.webp",
+                            "images/Krishna Temple_02_Small_Brown_09.webp"
+                        ]
+                    },
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/0hSl5Th1",
+                        whatsapp: "Krishna Small Temple 2 - Brown Big",
+                        images: [
+                            "images/Krishna Temple_02_Big_Brown_01.webp",
+                            "images/Krishna Temple_02_Big_Brown_02.webp",
+                            "images/Krishna Temple_02_Big_Brown_03.webp",
+                            "images/Krishna Temple_02_Big_Brown_04.webp",
+                            "images/Krishna Temple_02_Big_Brown_05.webp",
+                            "images/Krishna Temple_02_Big_Brown_06.webp",
+                            "images/Krishna Temple_02_Big_Brown_07.webp",
+                            "images/Krishna Temple_02_Big_Brown_08.webp",
+                            "images/Krishna Temple_02_Big_Brown_09.webp"
+                        ]
+                    },
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0h3PBqKK",
+                        whatsapp: "Krishna Small Temple 2 - Dark Brown Small",
+                        images: [
+                            "images/Krishna Temple_02_Small_Darkbrown_01.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_02.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_03.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_04.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_05.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_06.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_07.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_08.webp",
+                            "images/Krishna Temple_02_Small_Darkbrown_09.webp"
+                        ]
+                    },
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/0g4EiQdm",
+                        whatsapp: "Krishna Small Temple 2 - Dark Brown Big",
+                        images: [
+                            "images/Krishna Temple_02_Big_Darkbrown_01.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_02.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_03.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_04.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_05.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_06.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_07.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_08.webp",
+                            "images/Krishna Temple_02_Big_Darkbrown_09.webp"
+                        ]
+                    }
+                }
+            },
+            "krishna-1": {
+                defaultVariation: "brown-small",
+                variations: {
+                    "brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/0ckxBzLQ",
+                        whatsapp: "Krishna Small Temple - Brown Small",
+                        images: [
+                            "images/Krishna_01_Small_Brown_01.webp",
+                            "images/Krishna_01_Small_Brown_02.webp",
+                            "images/Krishna_01_Small_Brown_03.webp",
+                            "images/Krishna_01_Small_Brown_04.webp",
+                            "images/Krishna_01_Small_Brown_05.webp",
+                            "images/Krishna_01_Small_Brown_06.webp",
+                            "images/Krishna_01_Small_Brown_07.webp",
+                            "images/Krishna_01_Small_Brown_08.webp",
+                            "images/Krishna_01_Small_Brown_09.webp"
+                        ]
+                    },
+                    "brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/0g1zPNTD",
+                        whatsapp: "Krishna Small Temple - Brown Big",
+                        images: [
+                            "images/Krishna_01_Big_Brown_01.webp",
+                            "images/Krishna_01_Big_Brown_02.webp",
+                            "images/Krishna_01_Big_Brown_03.webp",
+                            "images/Krishna_01_Big_Brown_04.webp",
+                            "images/Krishna_01_Big_Brown_05.webp",
+                            "images/Krishna_01_Big_Brown_06.webp",
+                            "images/Krishna_01_Big_Brown_07.webp",
+                            "images/Krishna_01_Big_Brown_08.webp",
+                            "images/Krishna_01_Big_Brown_09.webp"
+                        ]
+                    },
+                    "dark-brown-small": {
+                        price: "₹299",
+                        size: "Size : 3.3 × 4.6 inch Approx",
+                        amazon: "https://amzn.in/d/01O8N3YG",
+                        whatsapp: "Krishna Small Temple - Dark Brown Small",
+                        images: [
+                            "images/Krishna_01_Small Darkbrown_01.webp",
+                            "images/Krishna_01_Small Darkbrown_02.webp",
+                            "images/Krishna_01_Small Darkbrown_03.webp",
+                            "images/Krishna_01_Small Darkbrown_04.webp",
+                            "images/Krishna_01_Small Darkbrown_05.webp",
+                            "images/Krishna_01_Small Darkbrown_06.webp",
+                            "images/Krishna_01_Small Darkbrown_07.webp",
+                            "images/Krishna_01_Small Darkbrown_08.webp",
+                            "images/Krishna_01_Small Darkbrown_09.webp"
+                        ]
+                    },
+                    "dark-brown-big": {
+                        price: "₹399",
+                        size: "Size : 4 × 5.1 inch Approx",
+                        amazon: "https://amzn.in/d/03O2qNHf",
+                        whatsapp: "Krishna Small Temple - Dark Brown Big",
+                        images: [
+                            "images/Krishna_01_Big_Darkbrown_01.webp",
+                            "images/Krishna_01_Big_Darkbrown_02.webp",
+                            "images/Krishna_01_Big_Darkbrown_03.webp",
+                            "images/Krishna_01_Big_Darkbrown_04.webp",
+                            "images/Krishna_01_Big_Darkbrown_05.webp",
+                            "images/Krishna_01_Big_Darkbrown_06.webp",
+                            "images/Krishna_01_Big_Darkbrown_07.webp",
+                            "images/Krishna_01_Big_Darkbrown_08.webp",
+                            "images/Krishna_01_Big_Darkbrown_09.webp"
+                        ]
+                    }
+                }
+            },
+        
+    "khatushyam-1": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0gytQnqS",
+                whatsapp: "Khatu Shyam Temple - Brown Small",
+                images: [
+                    "images/Khatushyam Temple_01_Small_Brown_01.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_02.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_03.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_04.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_05.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_06.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_07.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_08.webp",
+                    "images/Khatushyam Temple_01_Small_Brown_09.webp"
+                ]
+            },
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0a3QIQ5w",
+                whatsapp: "Khatu Shyam Temple - Brown Big",
+                images: [
+                    "images/Khatushyam Temple_01_Big_Brown_01.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_02.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_03.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_04.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_05.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_06.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_07.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_08.webp",
+                    "images/Khatushyam Temple_01_Big_Brown_09.webp"
+                ]
+            },
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0etXsRC7",
+                whatsapp: "Khatu Shyam Temple - Dark Brown Small",
+                images: [
+                    "images/Khatushyam Temple_01_Small_Darkbrown_01.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_02.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_03.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_04.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_05.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_06.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_07.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_08.webp",
+                    "images/Khatushyam Temple_01_Small_Darkbrown_09.webp"
+                ]
+            },
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/038QapIf",
+                whatsapp: "Khatu Shyam Temple - Dark Brown Big",
+                images: [
+                    "images/Khatushyam Temple_01_Big_Darkbrown_01.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_02.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_03.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_04.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_05.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_06.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_07.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_08.webp",
+                    "images/Khatushyam Temple_01_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    },
+
+    "khatushyam-2": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/01UiCsYS",
+                whatsapp: "Khatu Shyam Temple 2 - Brown Small",
+                images: [
+                    "images/Khatushyamtemple_02_Small_Brown_01.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_02.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_03.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_04.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_05.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_06.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_07.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_08.webp",
+                    "images/Khatushyamtemple_02_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0cpQydWP",
+                whatsapp: "Khatu Shyam Temple 2 - Brown Big",
+                images: [
+                    "images/Khatushyamtemple_02_Big_Brown_01.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_02.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_03.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_04.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_05.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_06.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_07.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_08.webp",
+                    "images/Khatushyamtemple_02_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/03RM8NkW",
+                whatsapp: "Khatu Shyam Temple 2 - Dark Brown Small",
+                images: [
+                    "images/Khatushyamtemple_02_Small_Darkbrown_01.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_02.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_03.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_04.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_05.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_06.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_07.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_08.webp",
+                    "images/Khatushyamtemple_02_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/077VNHGC",
+                whatsapp: "Khatu Shyam Temple 2 - Dark Brown Big",
+                images: [
+                    "images/Khatushyamtemple_02_Big_Darkbrown_01.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_02.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_03.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_04.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_05.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_06.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_07.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_08.webp",
+                    "images/Khatushyamtemple_02_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    },
+
+    "om-1": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Diameter: 7.9 inch × Thickness: 5 mm",
+                amazon: "https://amzn.in/d/07kUNCJ4",
+                whatsapp: "OM Wall Art - Brown Small",
+                images: [
+                    "images/OMWallart_Small_Brown_01.webp",
+                    "images/OMWallart_Small_Brown_02.webp",
+                    "images/OMWallart_Small_Brown_03.webp",
+                    "images/OMWallart_Small_Brown_04.webp",
+                    "images/OMWallart_Small_Brown_05.webp",
+                    "images/OMWallart_Small_Brown_06.webp",
+                    "images/OMWallart_Small_Brown_07.webp",
+                    "images/OMWallart_Small_Brown_08.webp",
+                    "images/OMWallart_Small_Brown_09.webp"
+                ]
+            },
+            "brown-big": {
+                price: "₹399",
+                size: "Diameter: 15 inch × Thickness: 5 mm",
+                amazon: "https://amzn.in/d/066Mwcqs",
+                whatsapp: "OM Wall Art - Brown Big",
+                images: [
+                    "images/OMWallart_Big_Brown_01.webp",
+                    "images/OMWallart_Big_Brown_02.webp",
+                    "images/OMWallart_Big_Brown_03.webp",
+                    "images/OMWallart_Big_Brown_04.webp",
+                    "images/OMWallart_Big_Brown_05.webp",
+                    "images/OMWallart_Big_Brown_06.webp",
+                    "images/OMWallart_Big_Brown_07.webp",
+                    "images/OMWallart_Big_Brown_08.webp",
+                    "images/OMWallart_Big_Brown_09.webp"
+                ]
+            },
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Diameter: 7.9 inch × Thickness: 5 mm",
+                amazon: "https://amzn.in/d/0iC3x8Eq",
+                whatsapp: "OM Wall Art - Dark Brown Small",
+                images: [
+                    "images/OMWallart_Small_Darkbrown_01.webp",
+                    "images/OMWallart_Small_Darkbrown_02.webp",
+                    "images/OMWallart_Small_Darkbrown_03.webp",
+                    "images/OMWallart_Small_Darkbrown_04.webp",
+                    "images/OMWallart_Small_Darkbrown_05.webp",
+                    "images/OMWallart_Small_Darkbrown_06.webp",
+                    "images/OMWallart_Small_Darkbrown_07.webp",
+                    "images/OMWallart_Small_Darkbrown_08.webp",
+                    "images/OMWallart_Small_Darkbrown_09.webp"
+                ]
+            },
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Diameter: 15 inch × Thickness: 5 mm",
+                amazon: "https://amzn.in/d/06tXwLTg",
+                whatsapp: "OM Wall Art - Dark Brown Big",
+                images: [
+                    "images/OMWallart_Big_Darkbrown_01.webp",
+                    "images/OMWallart_Big_Darkbrown_02.webp",
+                    "images/OMWallart_Big_Darkbrown_03.webp",
+                    "images/OMWallart_Big_Darkbrown_04.webp",
+                    "images/OMWallart_Big_Darkbrown_05.webp",
+                    "images/OMWallart_Big_Darkbrown_06.webp",
+                    "images/OMWallart_Big_Darkbrown_07.webp",
+                    "images/OMWallart_Big_Darkbrown_08.webp",
+                    "images/OMWallart_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    },
+
+    "waheguru-1": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0fokBjGR",
+                whatsapp: "Waheguru Temple - Brown Small",
+                images: [
+                    "images/Waheguru Temple_01_Small_Brown_01.webp",
+                    "images/Waheguru Temple_01_Small_Brown_02.webp",
+                    "images/Waheguru Temple_01_Small_Brown_03.webp",
+                    "images/Waheguru Temple_01_Small_Brown_04.webp",
+                    "images/Waheguru Temple_01_Small_Brown_05.webp",
+                    "images/Waheguru Temple_01_Small_Brown_06.webp",
+                    "images/Waheguru Temple_01_Small_Brown_07.webp",
+                    "images/Waheguru Temple_01_Small_Brown_08.webp",
+                    "images/Waheguru Temple_01_Small_Brown_09.webp"
+                ]
+            },
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/02Csehqj",
+                whatsapp: "Waheguru Temple - Brown Big",
+                images: [
+                    "images/Waheguru Temple_01_Big_Brown_01.webp",
+                    "images/Waheguru Temple_01_Big_Brown_02.webp",
+                    "images/Waheguru Temple_01_Big_Brown_03.webp",
+                    "images/Waheguru Temple_01_Big_Brown_04.webp",
+                    "images/Waheguru Temple_01_Big_Brown_05.webp",
+                    "images/Waheguru Temple_01_Big_Brown_06.webp",
+                    "images/Waheguru Temple_01_Big_Brown_07.webp",
+                    "images/Waheguru Temple_01_Big_Brown_08.webp",
+                    "images/Waheguru Temple_01_Big_Brown_09.webp"
+                ]
+            },
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/06eRpND1",
+                whatsapp: "Waheguru Temple - Dark Brown Small",
+                images: [
+                    "images/Waheguru Temple_01_Small_Darkbrown_01.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_02.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_03.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_04.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_05.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_06.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_07.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_08.webp",
+                    "images/Waheguru Temple_01_Small_Darkbrown_09.webp"
+                ]
+            },
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/01gMmzz9",
+                whatsapp: "Waheguru Temple - Dark Brown Big",
+                images: [
+                    "images/Waheguru Temple_01_Big_Darkbrown_01.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_02.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_03.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_04.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_05.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_06.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_07.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_08.webp",
+                    "images/Waheguru Temple_01_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    },
+
+
+    "ganesha-2": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/05XiBBkn",
+                whatsapp: "Ganesha Temple 2 - Brown Small",
+                images: [
+                    "images/Ganesha Temple_02_Small_Brown_01.webp",
+                    "images/Ganesha Temple_02_Small_Brown_02.webp",
+                    "images/Ganesha Temple_02_Small_Brown_03.webp",
+                    "images/Ganesha Temple_02_Small_Brown_04.webp",
+                    "images/Ganesha Temple_02_Small_Brown_05.webp",
+                    "images/Ganesha Temple_02_Small_Brown_06.webp",
+                    "images/Ganesha Temple_02_Small_Brown_07.webp",
+                    "images/Ganesha Temple_02_Small_Brown_08.webp",
+                    "images/Ganesha Temple_02_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0ekYClw1",
+                whatsapp: "Ganesha Temple 2 - Brown Big",
+                images: [
+                    "images/Ganesha Temple_02_Big_Brown_01.webp",
+                    "images/Ganesha Temple_02_Big_Brown_02.webp",
+                    "images/Ganesha Temple_02_Big_Brown_03.webp",
+                    "images/Ganesha Temple_02_Big_Brown_04.webp",
+                    "images/Ganesha Temple_02_Big_Brown_05.webp",
+                    "images/Ganesha Temple_02_Big_Brown_06.webp",
+                    "images/Ganesha Temple_02_Big_Brown_07.webp",
+                    "images/Ganesha Temple_02_Big_Brown_08.webp",
+                    "images/Ganesha Temple_02_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/02bFdeRS",
+                whatsapp: "Ganesha Temple 2 - Dark Brown Small",
+                images: [
+                    "images/Ganesha Temple_02_Small_Darkbrown_01.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_02.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_03.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_04.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_05.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_06.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_07.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_08.webp",
+                    "images/Ganesha Temple_02_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0eS7NNPy",
+                whatsapp: "Ganesha Temple 2 - Dark Brown Big",
+                images: [
+                    "images/Ganesha Temple_02_Big_Darkbrown_01.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_02.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_03.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_04.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_05.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_06.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_07.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_08.webp",
+                    "images/Ganesha Temple_02_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    },
+
+    "guruji-1": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/07c5gB7M",
+                whatsapp: "Guruji Temple - Brown Small",
+                images: [
+                    "images/Guruji Temple_01_Small_Brown_01.webp",
+                    "images/Guruji Temple_01_Small_Brown_02.webp",
+                    "images/Guruji Temple_01_Small_Brown_03.webp",
+                    "images/Guruji Temple_01_Small_Brown_04.webp",
+                    "images/Guruji Temple_01_Small_Brown_05.webp",
+                    "images/Guruji Temple_01_Small_Brown_06.webp",
+                    "images/Guruji Temple_01_Small_Brown_07.webp",
+                    "images/Guruji Temple_01_Small_Brown_08.webp",
+                    "images/Guruji Temple_01_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/02fNtirt",
+                whatsapp: "Guruji Temple - Brown Big",
+                images: [
+                    "images/Guruji Temple_01_Big_Brown_01.webp",
+                    "images/Guruji Temple_01_Big_Brown_02.webp",
+                    "images/Guruji Temple_01_Big_Brown_03.webp",
+                    "images/Guruji Temple_01_Big_Brown_04.webp",
+                    "images/Guruji Temple_01_Big_Brown_05.webp",
+                    "images/Guruji Temple_01_Big_Brown_06.webp",
+                    "images/Guruji Temple_01_Big_Brown_07.webp",
+                    "images/Guruji Temple_01_Big_Brown_08.webp",
+                    "images/Guruji Temple_01_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/08vsGWlT",
+                whatsapp: "Guruji Temple - Dark Brown Small",
+                images: [
+                    "images/Guruji Temple_01_Small_Darkbrown_01.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_02.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_03.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_04.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_05.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_06.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_07.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_08.webp",
+                    "images/Guruji Temple_01_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0hd1fKjv",
+                whatsapp: "Guruji Temple - Dark Brown Big",
+                images: [
+                    "images/Guruji Temple_01_Big_Darkbrown_01.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_02.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_03.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_04.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_05.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_06.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_07.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_08.webp",
+                    "images/Guruji Temple_01_Big_Darkbrown_09.webp"
+                ]
+            }
+        }
+    }
+,
+
+    "guruji-2": {
+        defaultVariation: "brown-small",
+        variations: {
+            "brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/0io8XSB2",
+                whatsapp: "Guru Ji Temple 2 - Brown Small",
+                images: [
+                    "images/Guruji_Temple_02_Small_Brown_01.webp",
+                    "images/Guruji_Temple_02_Small_Brown_02.webp",
+                    "images/Guruji_Temple_02_Small_Brown_03.webp",
+                    "images/Guruji_Temple_02_Small_Brown_04.webp",
+                    "images/Guruji_Temple_02_Small_Brown_05.webp",
+                    "images/Guruji_Temple_02_Small_Brown_06.webp",
+                    "images/Guruji_Temple_02_Small_Brown_07.webp",
+                    "images/Guruji_Temple_02_Small_Brown_08.webp",
+                    "images/Guruji_Temple_02_Small_Brown_09.webp"
+                ]
+            },
+
+            "brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/01RuvYFr",
+                whatsapp: "Guru Ji Temple 2 - Brown Big",
+                images: [
+                    "images/Guruji_Temple_02_Big_Brown_01.webp",
+                    "images/Guruji_Temple_02_Big_Brown_02.webp",
+                    "images/Guruji_Temple_02_Big_Brown_03.webp",
+                    "images/Guruji_Temple_02_Big_Brown_04.webp",
+                    "images/Guruji_Temple_02_Big_Brown_05.webp",
+                    "images/Guruji_Temple_02_Big_Brown_06.webp",
+                    "images/Guruji_Temple_02_Big_Brown_07.webp",
+                    "images/Guruji_Temple_02_Big_Brown_08.webp",
+                    "images/Guruji_Temple_02_Big_Brown_09.webp"
+                ]
+            },
+
+            "dark-brown-small": {
+                price: "₹299",
+                size: "Size : 3.3 × 4.6 inch Approx",
+                amazon: "https://amzn.in/d/03Ys5G5S",
+                whatsapp: "Guru Ji Temple 2 - Dark Brown Small",
+                images: [
+                    "images/Guruji_Temple_02_Small_Darkbrown_01.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_02.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_03.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_04.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_05.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_06.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_07.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_08.webp",
+                    "images/Guruji_Temple_02_Small_Darkbrown_09.webp"
+                ]
+            },
+
+            "dark-brown-big": {
+                price: "₹399",
+                size: "Size : 4 × 5.1 inch Approx",
+                amazon: "https://amzn.in/d/0gsINYvT",
+                whatsapp: "Guru Ji Temple 2 - Dark Brown Big",
+                images: [
+                    "images/Guruji_Temple_02_Big_Darkbrown_01.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_02.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_03.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_04.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_05.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_06.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_07.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_08.webp",
+                    "images/Guruji_Temple_02_Big_Darkbrown_09.webp"
+                ]
+
+            }
+        }
+    },
+        "ganesha-3": {
+            defaultVariation: "brown-small",
+            variations: {
+                "brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/02tP3Qln",
+                    whatsapp: "Ganesha Small Temple 3 - Brown Small",
+                    images: [
+                        "images/Ganesha Temple_03_Small_Brown_01.webp",
+                        "images/Ganesha Temple_03_Small_Brown_02.webp",
+                        "images/Ganesha Temple_03_Small_Brown_03.webp",
+                        "images/Ganesha Temple_03_Small_Brown_04.webp",
+                        "images/Ganesha Temple_03_Small_Brown_05.webp",
+                        "images/Ganesha Temple_03_Small_Brown_06.webp",
+                        "images/Ganesha Temple_03_Small_Brown_07.webp",
+                        "images/Ganesha Temple_03_Small_Brown_08.webp",
+                        "images/Ganesha Temple_03_Small_Brown_09.webp"
+                    ]
+                },
+                "brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/07nr04Fj",
+                    whatsapp: "Ganesha Small Temple 3 - Brown Big",
+                    images: [
+                        "images/Ganesha Temple_03_Big_Brown_01.webp",
+                        "images/Ganesha Temple_03_Big_Brown_02.webp",
+                        "images/Ganesha Temple_03_Big_Brown_03.webp",
+                        "images/Ganesha Temple_03_Big_Brown_04.webp",
+                        "images/Ganesha Temple_03_Big_Brown_05.webp",
+                        "images/Ganesha Temple_03_Big_Brown_06.webp",
+                        "images/Ganesha Temple_03_Big_Brown_07.webp",
+                        "images/Ganesha Temple_03_Big_Brown_08.webp",
+                        "images/Ganesha Temple_03_Big_Brown_09.webp"
+                    ]
+                },
+                "dark-brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/09oEo56H",
+                    whatsapp: "Ganesha Small Temple 3 - Dark Brown Small",
+                    images: [
+                        "images/Ganesha Temple_03_Small_Darkbrown_01.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_02.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_03.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_04.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_05.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_06.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_07.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_08.webp",
+                        "images/Ganesha Temple_03_Small_Darkbrown_09.webp"
+                    ]
+                },
+                "dark-brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/05ymgN8z",
+                    whatsapp: "Ganesha Small Temple 3 - Dark Brown Big",
+                    images: [
+                        "images/Ganesha Temple_03_Big_Darkbrown_01.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_02.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_03.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_04.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_05.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_06.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_07.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_08.webp",
+                        "images/Ganesha Temple_03_Big_Darkbrown_09.webp"
+                    ]
+                }
+            }
+        },
+
+        "lord-mahaveer-1": {
+            defaultVariation: "brown-small",
+            variations: {
+                "brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/06I1HHyX",
+                    whatsapp: "Lord Mahaveer Small Temple - Brown Small",
+                    images: [
+                        "images/Lord Mahaveer Temple_Small_Brown_01.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_02.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_03.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_04.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_05.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_06.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_07.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_08.webp",
+                        "images/Lord Mahaveer Temple_Small_Brown_09.webp"
+                    ]
+                },
+                "brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/04KMW16w",
+                    whatsapp: "Lord Mahaveer Small Temple - Brown Big",
+                    images: [
+                        "images/Lord Mahaveer Temple_Big_Brown_01.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_02.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_03.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_04.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_05.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_06.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_07.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_08.webp",
+                        "images/Lord Mahaveer Temple_Big_Brown_09.webp"
+                    ]
+                },
+                "dark-brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/08bUt3cr",
+                    whatsapp: "Lord Mahaveer Small Temple - Dark Brown Small",
+                    images: [
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_01.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_02.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_03.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_04.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_05.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_06.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_07.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_08.webp",
+                        "images/Lord Mahaveer Temple_Small_Darkbrown_09.webp"
+                    ]
+                },
+                "dark-brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/07PITyT2",
+                    whatsapp: "Lord Mahaveer Small Temple - Dark Brown Big",
+                    images: [
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_01.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_02.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_03.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_04.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_05.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_06.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_07.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_08.webp",
+                        "images/Lord Mahaveer Temple_Big_Darkbrown_09.webp"
+                    ]
+                }
+            }
+        },
+
+        "sai-baba-1": {
+            defaultVariation: "brown-small",
+            variations: {
+                "brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/054EMTVf",
+                    whatsapp: "Sai Baba Temple - Brown Small",
+                    images: [
+                        "images/Saibaba Temple_Small_Brown_01.webp",
+                        "images/Saibaba Temple_Small_Brown_02.webp",
+                        "images/Saibaba Temple_Small_Brown_03.webp",
+                        "images/Saibaba Temple_Small_Brown_04.webp",
+                        "images/Saibaba Temple_Small_Brown_05.webp",
+                        "images/Saibaba Temple_Small_Brown_06.webp",
+                        "images/Saibaba Temple_Small_Brown_07.webp",
+                        "images/Saibaba Temple_Small_Brown_08.webp",
+                        "images/Saibaba Temple_Small_Brown_09.webp"
+                    ]
+                },
+                "brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/0gtVEVJy",
+                    whatsapp: "Sai Baba Temple - Brown Big",
+                    images: [
+                        "images/Saibaba Temple_Big_Brown_01.webp",
+                        "images/Saibaba Temple_Big_Brown_02.webp",
+                        "images/Saibaba Temple_Big_Brown_03.webp",
+                        "images/Saibaba Temple_Big_Brown_04.webp",
+                        "images/Saibaba Temple_Big_Brown_05.webp",
+                        "images/Saibaba Temple_Big_Brown_06.webp",
+                        "images/Saibaba Temple_Big_Brown_07.webp",
+                        "images/Saibaba Temple_Big_Brown_08.webp",
+                        "images/Saibaba Temple_Big_Brown_09.webp"
+                    ]
+                },
+                "dark-brown-small": {
+                    price: "₹299",
+                    size: "Size : 3.3 × 4.6 inch Approx",
+                    amazon: "https://amzn.in/d/0d2oGsHI",
+                    whatsapp: "Sai Baba Temple - Dark Brown Small",
+                    images: [
+                        "images/Saibaba Temple_Small_Darkbrown_01.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_02.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_03.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_04.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_05.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_06.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_07.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_08.webp",
+                        "images/Saibaba Temple_Small_Darkbrown_09.webp"
+                    ]
+                },
+                "dark-brown-big": {
+                    price: "₹399",
+                    size: "Size : 4 × 5.1 inch Approx",
+                    amazon: "https://amzn.in/d/04igizVh",
+                    whatsapp: "Sai Baba Temple - Dark Brown Big",
+                    images: [
+                        "images/Saibaba Temple_Big_Darkbrown_01.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_02.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_03.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_04.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_05.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_06.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_07.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_08.webp",
+                        "images/Saibaba Temple_Big_Darkbrown_09.webp"
+                    ]
+                }
+            }
+        }
+};
+
+        /* =====================================================
+           REUSABLE VARIATION SYSTEM
+           Same structure for every variation card.
+           ===================================================== */
+
+        document.querySelectorAll(".decoreva-variation-card").forEach(function (card) {
+            card.classList.add("sherawali-variation-card");
+
+            const options = card.querySelector(".variation-options");
+            if (options) options.classList.add("sherawali-variations");
+
+            card.querySelectorAll(".variation-button").forEach(function (button) {
+                button.classList.add("sherawali-variation");
+            });
+
+            const actions = card.querySelector(".variation-actions");
+            if (actions) actions.classList.add("sherawali-actions");
+
+            const amazon = card.querySelector(".variation-amazon-button");
+            if (amazon) amazon.classList.add("sherawali-amazon-button");
+
+            const whatsapp = card.querySelector(".variation-whatsapp-button");
+            if (whatsapp) whatsapp.classList.add("sherawali-whatsapp-button");
+        });
+
+        document.querySelectorAll(".decoreva-variation-card").forEach(function (card) {
+            const product = decorevaVariationProducts[card.dataset.variationProduct];
+            if (!product) return;
+
+            const slider = card.querySelector(".image-slider");
+            const image = card.querySelector(".slider-image");
+            const price = card.querySelector(".price");
+            const size = card.querySelector(".size");
+            const amazon = card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
+            const whatsapp = card.querySelector(".variation-whatsapp-button, .sherawali-whatsapp-button");
+            const buttons = card.querySelectorAll(".variation-button, .sherawali-variation");
+
+            function applyVariation(key) {
+                const variation = product.variations[key];
+                if (!variation || !slider) return;
+
+                slider.dataset.images = JSON.stringify(variation.images);
+                slider.dataset.index = "0";
+
+                if (image) {
+                    image.src = variation.images[0];
+                    image.dataset.src = variation.images[0];
+                    image.dataset.loaded = "true";
+                    const title = card.querySelector("h3");
+                    image.alt = (title ? title.textContent.trim() : "DECOREVA Product") + " - " + key.replace(/-/g, " ");
+                }
+
+                if (price) price.textContent = variation.price;
+                if (size) size.textContent = variation.size;
+                if (amazon) amazon.href = variation.amazon;
+                if (whatsapp) {
+                    whatsapp.href = "https://wa.me/919582899547?text=" +
+                        encodeURIComponent("Hello DECOREVA, I want to buy " + variation.whatsapp);
+                }
+
+                buttons.forEach(function (button) {
+                    button.classList.toggle("active", button.dataset.variation === key);
+                });
+
+                updateDots(slider, variation.images, 0);
+            }
+
+            card._decorevaApplyVariation = applyVariation;
+            applyVariation(product.defaultVariation);
+        });
+
+        /* One reusable capture handler for every variation button. */
+        const variationContainer = document.querySelector("#collection-products");
+
+        if (variationContainer) {
+            variationContainer.addEventListener("click", function (event) {
+                const button = event.target.closest(".variation-button, .sherawali-variation");
+                if (!button || !variationContainer.contains(button)) return;
+
+                const card = button.closest(".decoreva-variation-card");
+                if (!card || typeof card._decorevaApplyVariation !== "function") return;
+
+                event.preventDefault();
+                event.stopPropagation();
+                card._decorevaApplyVariation(button.dataset.variation);
+            }, true);
         }
 
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "auto"
-        });
-    }
-
-    window.addEventListener("pageshow", function (event) {
-        if (event.persisted) return;
-
-        decorevaForceTop();
-        setTimeout(decorevaForceTop, 50);
-        setTimeout(decorevaForceTop, 250);
-        setTimeout(decorevaForceTop, 600);
     });
-
-    window.addEventListener("load", function () {
-        decorevaForceTop();
-        setTimeout(decorevaForceTop, 50);
-        setTimeout(decorevaForceTop, 250);
-        setTimeout(decorevaForceTop, 600);
-    });
+    
