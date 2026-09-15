@@ -4451,7 +4451,7 @@
            Same structure for every variation card.
            ===================================================== */
 
-        document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function (card) {
+        document.querySelectorAll(".decoreva-variation-card").forEach(function (card) {
             card.classList.add("sherawali-variation-card");
 
             const options = card.querySelector(".variation-options");
@@ -4461,26 +4461,26 @@
                 button.classList.add("sherawali-variation");
             });
 
-            const actions = card.querySelector(".variation-actions, .featured-variation-actions");
+            const actions = card.querySelector(".variation-actions");
             if (actions) actions.classList.add("sherawali-actions");
 
             const amazon = card.querySelector(".variation-amazon-button");
             if (amazon) amazon.classList.add("sherawali-amazon-button");
 
-            const whatsapp = card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button");
+            const whatsapp = card.querySelector(".variation-whatsapp-button");
             if (whatsapp) whatsapp.classList.add("sherawali-whatsapp-button");
         });
 
-        document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function (card) {
+        document.querySelectorAll(".decoreva-variation-card").forEach(function (card) {
             const product = decorevaVariationProducts[card.dataset.variationProduct];
             if (!product) return;
 
-            const slider = card.querySelector(".image-slider, .featured-image-box");
-            const image = card.querySelector(".slider-image, .featured-image-box img");
-            const price = card.querySelector(".price, .featured-price");
-            const size = card.querySelector(".size, .featured-size");
+            const slider = card.querySelector(".image-slider");
+            const image = card.querySelector(".slider-image");
+            const price = card.querySelector(".price");
+            const size = card.querySelector(".size");
             const amazon = card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
-            const whatsapp = card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button, .sherawali-whatsapp-button");
+            const whatsapp = card.querySelector(".variation-whatsapp-button, .sherawali-whatsapp-button");
             const buttons = card.querySelectorAll(".variation-button, .sherawali-variation");
 
             function applyVariation(key) {
@@ -4518,50 +4518,21 @@
         });
 
         /* One reusable capture handler for every variation button. */
-        document.addEventListener("click", function (event) {
-            const button = event.target.closest(".variation-button, .sherawali-variation");
-            if (!button) return;
+        const variationContainer = document.querySelector("#collection-products");
 
-            const card = button.closest(".decoreva-variation-card, .featured-variation-card");
-            if (!card) return;
+        if (variationContainer) {
+            variationContainer.addEventListener("click", function (event) {
+                const button = event.target.closest(".variation-button, .sherawali-variation");
+                if (!button || !variationContainer.contains(button)) return;
 
-            const key = button.dataset.variation;
-            const applyVariation = card._decorevaApplyVariation;
+                const card = button.closest(".decoreva-variation-card");
+                if (!card || typeof card._decorevaApplyVariation !== "function") return;
 
-            if (typeof applyVariation === "function") {
                 event.preventDefault();
                 event.stopPropagation();
-                applyVariation(key);
-                return;
-            }
-
-            /* Featured slider clones are created after initialization on resize. */
-            const product = decorevaVariationProducts[card.dataset.variationProduct];
-            const variation = product && product.variations[key];
-            if (!variation) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            const image = card.querySelector(".slider-image, .featured-image-box img");
-            const price = card.querySelector(".price, .featured-price");
-            const size = card.querySelector(".size, .featured-size");
-            const amazon = card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
-            const whatsapp = card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button, .sherawali-whatsapp-button");
-
-            if (image) image.src = variation.images[0];
-            if (price) price.textContent = variation.price;
-            if (size) size.textContent = variation.size;
-            if (amazon) amazon.href = variation.amazon;
-            if (whatsapp) {
-                whatsapp.href = "https://wa.me/919582899547?text=" +
-                    encodeURIComponent("Hello DECOREVA, I want to buy " + variation.whatsapp);
-            }
-
-            card.querySelectorAll(".variation-button, .sherawali-variation").forEach(function (item) {
-                item.classList.toggle("active", item.dataset.variation === key);
-            });
-        }, true);
+                card._decorevaApplyVariation(button.dataset.variation);
+            }, true);
+        }
 
     });
     
