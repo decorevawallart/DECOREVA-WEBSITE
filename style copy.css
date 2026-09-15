@@ -2069,7 +2069,7 @@ card/image system. No repeated Collection image overrides.
     width:20%;
     height:80px;
     pointer-events:none;
-    z-index:30;
+    z-index:1;
     background:linear-gradient(
         90deg,
         transparent,
@@ -2087,7 +2087,7 @@ card/image system. No repeated Collection image overrides.
     position:absolute;
     inset:0;
     pointer-events:none;
-    z-index:25;
+    z-index:2;
     background:
         repeating-linear-gradient(
             90deg,
@@ -2100,7 +2100,7 @@ card/image system. No repeated Collection image overrides.
 
 .decoreva-offer-track{
     position:relative;
-    z-index:40;
+    z-index:3;
     display:inline-flex;
     align-items:center;
     gap:13px;
@@ -2112,8 +2112,13 @@ card/image system. No repeated Collection image overrides.
     font-weight:700;
     letter-spacing:.35px;
     line-height:1;
-    animation:decorevaOfferMove 25s linear infinite;
+    animation:decorevaOfferMove 28s linear infinite;
     will-change:transform;
+    transform:translate3d(0,0,0);
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:geometricPrecision;
 }
 
 .offer-chevron{
@@ -2121,8 +2126,10 @@ card/image system. No repeated Collection image overrides.
     font:900 22px/1 Arial,Helvetica,sans-serif;
     letter-spacing:-6px;
     margin-right:2px;
-    text-shadow:0 0 8px rgba(240,207,131,.50);
-    animation:decorevaChevronPulse 1.7s ease-in-out infinite;
+    text-shadow:none;
+    opacity:1;
+    animation:none;
+    transform:translateZ(0);
 }
 
 .offer-festival-badge{
@@ -2132,7 +2139,7 @@ card/image system. No repeated Collection image overrides.
     color:#e7c77f;
     font:700 13px/1 Arial,Helvetica,sans-serif;
     letter-spacing:.35px;
-    text-shadow:0 0 8px rgba(214,179,106,.22);
+    text-shadow:none;
 }
 
 .festival-ganesh{
@@ -2150,7 +2157,18 @@ card/image system. No repeated Collection image overrides.
         0 0 0 2px rgba(214,179,106,.10),
         0 0 13px rgba(214,179,106,.30),
         inset 0 1px rgba(255,240,190,.18);
-    font:800 17px/1 Georgia,serif;
+    font-family:"Nirmala UI","Noto Sans Devanagari","Mangal",Arial,sans-serif;
+    font-size:17px;
+    font-weight:700;
+    font-style:normal;
+    letter-spacing:0;
+    white-space:nowrap;
+    line-height:1;
+    text-align:center;
+    text-shadow:none;
+    transform:rotate(-5deg) translateZ(0);
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
     animation:decorevaFestivalGlow 2.8s ease-in-out infinite;
 }
 
@@ -2160,20 +2178,21 @@ card/image system. No repeated Collection image overrides.
     color:#e7c77f;
     font:700 13px/1 Arial,Helvetica,sans-serif;
     letter-spacing:.35px;
-    text-shadow:0 0 7px rgba(214,179,106,.18);
+    text-shadow:none;
 }
 
 .offer-main-text strong{
     color:#f8da91;
     font-weight:800;
     margin:0 4px;
-    text-shadow:0 0 10px rgba(240,207,131,.52);
+    text-shadow:none;
 }
 
 .offer-divider{
-    color:#b28a3c;
+    color:#d6ae59;
     font:700 12px/1 Arial,Helvetica,sans-serif;
-    text-shadow:0 0 7px rgba(214,179,106,.35);
+    text-shadow:none;
+    opacity:1;
 }
 
 .decoreva-offer-code{
@@ -2193,7 +2212,7 @@ card/image system. No repeated Collection image overrides.
 }
 
 .decoreva-offer-code .code-label{
-    color:#b89247;
+    color:#d2b56f;
     font:700 9px/1 Arial,Helvetica,sans-serif;
     letter-spacing:.9px;
 }
@@ -2202,9 +2221,7 @@ card/image system. No repeated Collection image overrides.
     color:#ffe5a4;
     font:800 13px/1 Arial,Helvetica,sans-serif;
     letter-spacing:1px;
-    text-shadow:
-        0 0 7px rgba(240,207,131,.70),
-        0 0 13px rgba(214,179,106,.30);
+    text-shadow:none;
 }
 
 .decoreva-offer-shop{
@@ -2214,21 +2231,22 @@ card/image system. No repeated Collection image overrides.
     text-decoration:none;
     font:800 13px/1 Arial,Helvetica,sans-serif;
     letter-spacing:.35px;
-    text-shadow:0 0 8px rgba(214,179,106,.32);
+    text-shadow:none;
     transition:.2s ease;
 }
 
 .decoreva-offer-shop:hover{
     color:#fff3c4;
-    text-shadow:0 0 13px rgba(240,207,131,.75);
+    text-shadow:none;
 }
 
 .offer-star-burst{
     color:#f2d68f;
     font:700 11px/1 Arial,Helvetica,sans-serif;
     letter-spacing:5px;
-    opacity:.75;
-    animation:decorevaStarTwinkle 1.8s ease-in-out infinite;
+    opacity:.85;
+    text-shadow:none;
+    animation:none;
 }
 
 /* Festive gift boxes: multiple boxes appear in the moving banner */
@@ -2387,7 +2405,7 @@ card/image system. No repeated Collection image overrides.
     .decoreva-offer-track{
         gap:9px;
         font-size:10px;
-        animation-duration:19s;
+        animation-duration:22s;
     }
 
     .offer-festival-badge,
@@ -2433,4 +2451,366 @@ card/image system. No repeated Collection image overrides.
         font-size:18px;
     }
 }
+/* =========================================================
+   DECOREVA HERO — 4 BANNER SLIDER
+   ========================================================= */
 
+.hero {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    line-height: 0;
+}
+
+.hero-slider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1717 / 450;
+    overflow: hidden;
+    background: #eee0ca;
+}
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateX(100%);
+    transition: transform 0.65s ease-in-out;
+    z-index: 1;
+}
+
+.hero-slide.active {
+    transform: translateX(0);
+    z-index: 2;
+}
+
+.hero-slide.hero-leaving {
+    transform: translateX(-100%);
+    z-index: 2;
+}
+
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Arrows */
+.hero-prev,
+.hero-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(214,164,77,.85);
+    border-radius: 50%;
+    background: rgba(35,25,15,.68);
+    color: #fff;
+    font-size: 30px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: .25s ease;
+    padding: 0;
+}
+
+.hero-prev {
+    left: 18px;
+}
+
+.hero-next {
+    right: 18px;
+}
+
+.hero-prev:hover,
+.hero-next:hover {
+    background: rgba(169,111,18,.92);
+    transform: translateY(-50%) scale(1.06);
+}
+
+/* Dots */
+.hero-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hero-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.hero-dot.active {
+    width: 24px;
+    border-radius: 20px;
+    background: #d4a33e;
+    border-color: #d4a33e;
+}
+
+.hero-content {
+    display: none !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .hero-prev,
+    .hero-next {
+        width: 32px;
+        height: 32px;
+        font-size: 23px;
+    }
+
+    .hero-prev {
+        left: 8px;
+    }
+
+    .hero-next {
+        right: 8px;
+    }
+
+    .hero-dots {
+        bottom: 8px;
+        gap: 6px;
+    }
+
+    .hero-dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .hero-dot.active {
+        width: 18px;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA — FINAL DESKTOP HERO FIT
+   Restore original offer-strip styling and make the complete
+   2070 × 760 banner visible on desktop.
+   Mobile is intentionally untouched.
+   ========================================================= */
+
+@media (min-width:761px){
+
+    /* Give the desktop viewport enough vertical room for the
+       complete banner without changing the banner artwork. */
+    nav{
+        min-height:50px !important;
+        height:50px !important;
+        padding:5px 8px !important;
+        box-sizing:border-box !important;
+    }
+
+    .logo-box{
+        min-height:70px !important;
+        height:70px !important;
+        gap:10px !important;
+        box-sizing:border-box !important;
+    }
+
+    .brand-logo{
+        width:68px !important;
+        height:68px !important;
+        flex:0 0 68px !important;
+    }
+
+    .brand-text h1{
+        font-size:30px !important;
+        letter-spacing:3px !important;
+    }
+
+    .brand-text p{
+        margin-top:4px !important;
+        font-size:10px !important;
+        letter-spacing:1px !important;
+    }
+
+    .decoreva-offer-strip{
+        height:40px !important;
+        box-sizing:border-box !important;
+    }
+
+    .decoreva-offer-track{
+        font-size:12px !important;
+    }
+
+    /* Exact image ratio: 2070 × 760. */
+    .hero,
+    .hero-slider{
+        width:100% !important;
+        max-width:100% !important;
+        height:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+        aspect-ratio:2070 / 760 !important;
+        overflow:hidden !important;
+        margin:0 !important;
+        padding:0 !important;
+        box-sizing:border-box !important;
+        position:relative !important;
+    }
+
+    .hero-slide{
+        position:absolute !important;
+        inset:0 !important;
+        width:100% !important;
+        height:100% !important;
+        margin:0 !important;
+        padding:0 !important;
+    }
+
+    .hero-slide img{
+        width:100% !important;
+        height:100% !important;
+        max-width:none !important;
+        max-height:none !important;
+        display:block !important;
+        margin:0 !important;
+        padding:0 !important;
+        object-fit:contain !important;
+        object-position:center center !important;
+    }
+
+    .hero-dots{
+        bottom:10px !important;
+        z-index:30 !important;
+    }
+
+    .hero-prev,
+    .hero-next{
+        z-index:30 !important;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA FINAL — OFFER BELOW HERO + FULL DESKTOP BANNER
+   ========================================================= */
+
+.decoreva-offer-strip{
+    background:
+        radial-gradient(circle at 18% 50%,rgba(214,179,106,.14),transparent 17%),
+        radial-gradient(circle at 52% 50%,rgba(214,179,106,.08),transparent 24%),
+        radial-gradient(circle at 84% 50%,rgba(214,179,106,.14),transparent 17%),
+        #070707 !important;
+    border-top:1px solid rgba(214,179,106,.40) !important;
+    border-bottom:1px solid #d6b36a !important;
+}
+
+.featured-heading p{
+    display:none !important;
+}
+
+@media (min-width:761px){
+    .hero,
+    .hero-slider{
+        width:100% !important;
+        height:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+        aspect-ratio:2070 / 760 !important;
+        overflow:hidden !important;
+    }
+
+    .hero-slide{
+        width:100% !important;
+        height:100% !important;
+        inset:0 !important;
+    }
+
+    .hero-slide img{
+        width:100% !important;
+        height:100% !important;
+        object-fit:contain !important;
+        object-position:center center !important;
+        display:block !important;
+    }
+
+    .hero-dots{
+        bottom:10px !important;
+        z-index:30 !important;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA — DESKTOP WHITE GAP / BANNER POSITION FIX
+   The fixed desktop nav is 50px high, while an older rule
+   reserves 56px of body top padding. The extra 6px creates
+   the visible white line/gap below the navigation.
+   ========================================================= */
+
+@media (min-width:761px){
+
+    body{
+        padding-top:50px !important;
+    }
+
+    nav{
+        height:50px !important;
+        min-height:50px !important;
+        box-sizing:border-box !important;
+    }
+
+    header{
+        margin-top:0 !important;
+    }
+
+    .hero{
+        margin-top:0 !important;
+        padding-top:0 !important;
+    }
+
+    .hero-slider{
+        margin-top:0 !important;
+        padding-top:0 !important;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA — DESKTOP OFFER STRIP OVERLAPS BANNER
+   Keep the banner fully visible and let the offer strip sit
+   slightly over its bottom edge.
+   Mobile is intentionally untouched.
+   ========================================================= */
+
+@media (min-width:761px){
+
+    .decoreva-offer-strip{
+        position:relative !important;
+        z-index:50 !important;
+        margin-top:-22px !important;
+        margin-bottom:0 !important;
+    }
+
+    .hero,
+    .hero-slider{
+        position:relative !important;
+        z-index:1 !important;
+    }
+}
