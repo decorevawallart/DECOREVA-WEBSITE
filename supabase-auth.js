@@ -70,6 +70,74 @@
             box.classList.toggle("error", !!isError);
         }
 
+        function showAuthToast(message) {
+            let toast = document.getElementById("decoreva-auth-toast");
+
+            if (!toast) {
+                toast = document.createElement("div");
+                toast.id = "decoreva-auth-toast";
+                toast.setAttribute("role", "status");
+                toast.setAttribute("aria-live", "polite");
+
+                toast.innerHTML =
+                    '<span class="decoreva-auth-toast-icon" aria-hidden="true">✓</span>' +
+                    '<span class="decoreva-auth-toast-text"></span>';
+
+                toast.style.cssText =
+                    "position:fixed;top:145px;left:50%;z-index:999999;" +
+                    "width:max-content;max-width:calc(100vw - 32px);" +
+                    "display:flex;align-items:center;gap:11px;" +
+                    "padding:11px 18px 11px 12px;" +
+                    "border:1px solid rgba(181,128,28,.28);border-radius:8px;" +
+                    "background:#fff;color:#24170f;" +
+                    "font:600 14px/1.35 Arial,sans-serif;" +
+                    "box-shadow:0 8px 28px rgba(0,0,0,.16);" +
+                    "opacity:0;visibility:hidden;" +
+                    "transform:translate(-50%,-10px);" +
+                    "transition:opacity .25s ease,transform .25s ease,visibility .25s ease;" +
+                    "pointer-events:none;";
+
+                const icon = toast.querySelector(".decoreva-auth-toast-icon");
+                if (icon) {
+                    icon.style.cssText =
+                        "width:24px;height:24px;flex:0 0 24px;" +
+                        "display:flex;align-items:center;justify-content:center;" +
+                        "border-radius:50%;background:#b47a18;color:#fff;" +
+                        "font:bold 15px/1 Arial,sans-serif;";
+                }
+
+                const textBox = toast.querySelector(".decoreva-auth-toast-text");
+                if (textBox) {
+                    textBox.style.cssText =
+                        "display:block;letter-spacing:.1px;";
+                }
+
+                const mobileStyle = document.createElement("style");
+                mobileStyle.id = "decoreva-auth-toast-mobile-style";
+                mobileStyle.textContent =
+                    "@media (max-width:600px) {" +
+                    "#decoreva-auth-toast { top:118px; max-width:calc(100vw - 24px);" +
+                    "padding:10px 14px 10px 10px; font-size:13px; } }";
+                document.head.appendChild(mobileStyle);
+                document.body.appendChild(toast);
+            }
+
+            const textBox = toast.querySelector(".decoreva-auth-toast-text");
+            if (textBox) textBox.textContent = message;
+            else toast.textContent = message;
+
+            toast.style.opacity = "1";
+            toast.style.visibility = "visible";
+            toast.style.transform = "translate(-50%,0)";
+
+            clearTimeout(window.__decorevaAuthToastTimer);
+            window.__decorevaAuthToastTimer = setTimeout(function () {
+                toast.style.opacity = "0";
+                toast.style.visibility = "hidden";
+                toast.style.transform = "translate(-50%,-10px)";
+            }, 1000);
+        }
+
         function setMode(mode) {
             const signup = mode === "signup";
             const forgot = mode === "forgot";
@@ -223,6 +291,17 @@
             const result = await supabase.auth.getSession();
             const session = result.data ? result.data.session : null;
 
+            /* Always restore the original two-line Logout row.
+               This prevents a previous click from leaving only "LOG OUT". */
+            if (logout) {
+                logout.disabled = false;
+                logout.hidden = true;
+                logout.innerHTML =
+                    '<span>Logout</span><small>Sign out of your account</small>';
+                logout.setAttribute("type", "button");
+                logout.setAttribute("data-profile-menu", "logout");
+            }
+
             if (session && session.user) {
                 const name = session.user.user_metadata?.full_name || session.user.email || "Customer";
                 const phone = session.user.user_metadata?.phone || "";
@@ -231,16 +310,25 @@
                 if (title) title.textContent = "Hello " + firstName;
                 if (sub) sub.textContent = phone || session.user.email || "Welcome back to DECOREVA";
                 if (button) button.hidden = true;
-                if (logout) logout.hidden = false;
+
+                if (logout) {
+                    logout.hidden = false;
+                    logout.disabled = false;
+                }
             } else {
                 if (title) title.textContent = "Welcome to DECOREVA";
                 if (sub) sub.textContent = "Login or sign up to manage your orders and account.";
+
                 if (button) {
                     button.hidden = false;
                     button.textContent = "LOGIN / SIGNUP";
                     button.setAttribute("aria-label", "Login or sign up");
                 }
-                if (logout) logout.hidden = true;
+
+                if (logout) {
+                    logout.hidden = true;
+                    logout.disabled = false;
+                }
             }
         }
 
@@ -287,8 +375,11 @@
                 event.stopImmediatePropagation();
                 profileLogoutButton.disabled = true;
 
-                supabase.auth.signOut().then(function (result) {
+                supabase.auth.signOut().then(async function (result) {
                     if (result.error) throw result.error;
+                    profileLogoutButton.disabled = false;
+                    profileLogoutButton.innerHTML =
+                        '<span>Logout</span><small>Sign out of your account</small>';
                     const panel = document.getElementById("decoreva-profile-panel");
                     if (panel) {
                         panel.classList.remove("open");
@@ -297,7 +388,8 @@
                         panel.style.visibility = "";
                         panel.style.pointerEvents = "";
                     }
-                    refreshAuthButton();
+                    await refreshAuthButton();
+                    showAuthToast("You are logged out successfully.");
                 }).catch(function (error) {
                     console.error("DECOREVA Profile logout:", error);
                     profileLogoutButton.disabled = false;
@@ -321,11 +413,14 @@
                 logoutButton.disabled = true;
                 showMessage("Logging out...");
 
-                supabase.auth.signOut().then(function (result) {
+                supabase.auth.signOut().then(async function (result) {
                     if (result.error) throw result.error;
                     showMessage("Logged out successfully.");
-                    refreshAuthButton();
-                    setTimeout(closeAuthModal, 500);
+                    await refreshAuthButton();
+                    setTimeout(function () {
+                        closeAuthModal();
+                        showAuthToast("You are logged out successfully.");
+                    }, 500);
                 }).catch(function (error) {
                     console.error("DECOREVA Auth logout:", error);
                     showMessage(error?.message || "Unable to log out.", true);
@@ -435,7 +530,10 @@
                         await saveProfile(result.data.user, name, phone);
                         showMessage("Account created successfully.");
                         await refreshAuthButton();
-                        setTimeout(closeAuthModal, 700);
+                        setTimeout(function () {
+                            closeAuthModal();
+                            showAuthToast("Your DECOREVA account is ready. You are logged in!");
+                        }, 700);
                     } else {
                         showMessage("Account created. Please check your email to confirm your account.");
                     }
@@ -453,7 +551,10 @@
 
                     showMessage("Login successful.");
                     await refreshAuthButton();
-                    setTimeout(closeAuthModal, 500);
+                    setTimeout(function () {
+                        closeAuthModal();
+                        showAuthToast("You are logged in successfully. Welcome back to DECOREVA!");
+                    }, 500);
                 }
             } catch (error) {
                 console.error("DECOREVA Auth:", error);
@@ -467,82 +568,65 @@
             if (event.key === "Escape") closeAuthModal();
         });
 
+        function openPasswordResetMode() {
+            const modal = ensureAuthModal();
+            setMode("reset");
+            modal.classList.add("open");
+            modal.setAttribute("aria-hidden", "false");
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.overflow = "hidden";
+
+            setTimeout(function () {
+                const newPassword = document.getElementById("decoreva-auth-new-password");
+                if (newPassword) newPassword.focus();
+            }, 50);
+        }
+
+        function isRecoveryUrl() {
+            try {
+                const url = new URL(window.location.href);
+                const queryType = (url.searchParams.get("type") || "").toLowerCase();
+                if (queryType === "recovery") return true;
+
+                const hash = (url.hash || "").replace(/^#/, "");
+                if (!hash) return false;
+
+                const hashParams = new URLSearchParams(hash);
+                return (hashParams.get("type") || "").toLowerCase() === "recovery";
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function checkPasswordRecoveryOnLoad() {
+            if (!isRecoveryUrl()) return;
+
+            const result = await supabase.auth.getSession();
+            const session = result.data ? result.data.session : null;
+
+            if (session && session.user) {
+                openPasswordResetMode();
+            } else {
+                setTimeout(async function () {
+                    const retry = await supabase.auth.getSession();
+                    const retrySession = retry.data ? retry.data.session : null;
+                    if (retrySession && retrySession.user && isRecoveryUrl()) {
+                        openPasswordResetMode();
+                    }
+                }, 500);
+            }
+        }
+
         supabase.auth.onAuthStateChange(function (event) {
             refreshAuthButton();
 
             if (event === "PASSWORD_RECOVERY") {
-                /*
-                 * Password recovery: Supabase has already exchanged the
-                 * recovery link for a session. Show ONLY the reset fields.
-                 * This is intentionally isolated from the normal login,
-                 * signup and profile flows.
-                 */
-                const modal = ensureAuthModal();
-                const form = document.getElementById("decoreva-auth-form");
-
-                if (form) {
-                    form.hidden = false;
-                    form.dataset.mode = "reset";
-                }
-
-                setMode("reset");
-
-                modal.classList.add("open");
-                modal.setAttribute("aria-hidden", "false");
-                document.documentElement.style.overflow = "hidden";
-                document.body.style.overflow = "hidden";
-
-                setTimeout(function () {
-                    const newPassword =
-                        document.getElementById("decoreva-auth-new-password");
-                    if (newPassword) newPassword.focus();
-                }, 100);
+                openPasswordResetMode();
             }
         });
 
-        /*
-         * Recovery links can land on the page with a valid session after
-         * the auth event has already fired. Check the current session once
-         * on page load so the reset form is not missed.
-         */
-        (async function detectPasswordRecoverySession() {
-            try {
-                const hash = window.location.hash || "";
-
-                if (!hash.includes("access_token=") &&
-                    !hash.includes("type=recovery")) {
-                    return;
-                }
-
-                const result = await supabase.auth.getSession();
-
-                if (result.data && result.data.session) {
-                    const modal = ensureAuthModal();
-                    const form = document.getElementById("decoreva-auth-form");
-
-                    if (form) {
-                        form.hidden = false;
-                        form.dataset.mode = "reset";
-                    }
-
-                    setMode("reset");
-                    modal.classList.add("open");
-                    modal.setAttribute("aria-hidden", "false");
-                    document.documentElement.style.overflow = "hidden";
-                    document.body.style.overflow = "hidden";
-
-                    setTimeout(function () {
-                        const newPassword =
-                            document.getElementById("decoreva-auth-new-password");
-                        if (newPassword) newPassword.focus();
-                    }, 100);
-                }
-            } catch (error) {
-                console.error("DECOREVA Auth: password recovery detection failed.", error);
-            }
-        })();
-
         refreshAuthButton();
+        checkPasswordRecoveryOnLoad();
 
         window.decorevaSupabaseAuth = {
             open: openAuthModal,
