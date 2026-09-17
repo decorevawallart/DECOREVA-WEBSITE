@@ -3606,15 +3606,15 @@
        Targeted addition: local customer profile and address book.
        ========================================================= */
     .decoreva-profile-panel{position:fixed;inset:0;z-index:100001;visibility:hidden;pointer-events:none;}
-    .decoreva-profile-panel.open{visibility:visible;pointer-events:auto;transition-delay:0s;}
-    .decoreva-profile-overlay{position:absolute;inset:0;background:transparent;opacity:0;transition:.18s ease;}
+    .decoreva-profile-panel.open{visibility:visible;pointer-events:auto;}
+    .decoreva-profile-overlay{position:absolute;inset:0;background:rgba(25,16,8,.42);opacity:0;transition:.25s ease;}
     .decoreva-profile-panel.open .decoreva-profile-overlay{opacity:1;}
-    .decoreva-profile-card{position:absolute;top:68px;right:18px;width:min(360px,calc(100vw - 28px));height:auto;max-height:calc(100vh - 82px);display:flex;flex-direction:column;background:#fffdf8;border:1px solid #e4d7c7;border-radius:8px;box-shadow:0 14px 35px rgba(0,0,0,.20),0 2px 8px rgba(52,35,23,.10);transform:translateY(-8px) scale(.985);transform-origin:top right;transition:.18s ease;overflow:hidden;}
-    .decoreva-profile-panel.open .decoreva-profile-card{transform:translateY(0) scale(1);}
-    .decoreva-profile-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;background:linear-gradient(180deg,#2b1b10,#1f130b);color:#f4e4c2;border-bottom:1px solid #b8862c;}
+    .decoreva-profile-card{position:absolute;top:0;right:0;width:min(430px,94vw);height:100%;display:flex;flex-direction:column;background:#fffdf8;box-shadow:-12px 0 35px rgba(0,0,0,.22);transform:translateX(100%);transition:.28s ease;overflow:hidden;}
+    .decoreva-profile-panel.open .decoreva-profile-card{transform:translateX(0);}
+    .decoreva-profile-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 18px 13px;background:linear-gradient(180deg,#2b1b10,#1f130b);color:#f4e4c2;border-bottom:1px solid #b8862c;}
     .decoreva-profile-head strong{display:block;font:700 21px/1 Georgia,"Times New Roman",serif;}
     .decoreva-profile-head span{display:block;margin-top:4px;font-size:10px;color:#d9c6a0;}
-    .decoreva-profile-body{flex:1;overflow:auto;padding:10px;background:#fffdf8;}
+    .decoreva-profile-body{flex:1;overflow:auto;padding:14px;background:#fffdf8;}
     .decoreva-profile-summary{display:flex;flex-direction:column;gap:3px;margin-bottom:12px;padding:12px;border:1px solid rgba(184,134,44,.22);border-radius:9px;background:#fffaf1;color:#342317;}
     .decoreva-profile-summary strong{font-size:13px;}
     .decoreva-profile-summary span{font-size:10px;color:#756758;}
@@ -4035,10 +4035,10 @@
     .decoreva-checkout-item-actions button:hover{color:#a96f12 !important;}
 
     /* Larger profile typography, closer to a mainstream shopping account page. */
-    .decoreva-profile-head strong{font-size:20px !important;}
-    .decoreva-profile-head span{font-size:10px !important;}
-    .decoreva-profile-body{padding:10px !important;}
-    .decoreva-profile-summary{padding:12px !important;}
+    .decoreva-profile-head strong{font-size:23px !important;}
+    .decoreva-profile-head span{font-size:11px !important;}
+    .decoreva-profile-body{padding:18px !important;}
+    .decoreva-profile-summary{padding:15px !important;}
     .decoreva-profile-summary strong{font-size:16px !important;}
     .decoreva-profile-summary span{font-size:12px !important;line-height:1.45 !important;}
     .decoreva-profile-section{padding:15px !important;margin-bottom:15px !important;}
@@ -4723,14 +4723,6 @@
     .decoreva-profile-menu button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border:0;border-bottom:1px solid #eee4d7;background:#fff;text-align:left;cursor:pointer;color:#211207;}
     .decoreva-profile-menu button:last-child{border-bottom:0;}
     .decoreva-profile-menu button:hover{background:#fffaf1;}
-    .decoreva-profile-account-actions{margin:0;border-top:1px solid #e8dccb;background:#fff;}
-    .decoreva-profile-account-actions button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 15px;border:0;border-bottom:1px solid #eee4d7;background:#fff;text-align:left;cursor:pointer;color:#211207;}
-    .decoreva-profile-account-actions button:last-child{border-bottom:0;}
-    .decoreva-profile-account-actions button:hover{background:#fffaf1;}
-    .decoreva-profile-account-actions button span{font-size:13px;font-weight:700;}
-    .decoreva-profile-account-actions button small{font-size:10px;color:#756758;text-align:right;}
-    .decoreva-profile-account-actions button[hidden]{display:none!important;}
-
     .decoreva-profile-menu span{font-size:14px;font-weight:700;}
     .decoreva-profile-menu small{font-size:11px;color:#756758;text-align:right;}
     .decoreva-profile-section-title strong{font-size:15px !important;}
@@ -4807,35 +4799,34 @@
        personal details and addresses open only when requested.
        ========================================================= */
     .decoreva-profile-welcome{
-        margin:0 0 10px;
-        padding:14px 15px 15px;
+        margin:0 0 14px;
+        padding:18px 20px 20px;
         border:1px solid #eadfce;
         background:#fff;
         text-align:left;
     }
     .decoreva-profile-welcome strong{
         display:block;
-        margin:0 0 4px;
+        margin:0 0 6px;
         color:#3a2a1f;
         font:700 16px/1.25 Arial,Helvetica,sans-serif;
     }
     .decoreva-profile-welcome span{
         display:block;
-        margin:0;
+        margin:0 0 14px;
         color:#6f6258;
-        font:400 11px/1.45 Arial,Helvetica,sans-serif;
+        font:400 12px/1.45 Arial,Helvetica,sans-serif;
     }
     .decoreva-profile-welcome button{
         display:inline-block;
-        min-width:132px;
-        min-height:36px;
-        margin-top:12px;
-        padding:0 14px;
+        min-width:150px;
+        min-height:40px;
+        padding:0 16px;
         border:1px solid #b8862c;
-        border-radius:3px;
+        border-radius:2px;
         background:#fff;
         color:#b06f00;
-        font:700 11px/34px Arial,Helvetica,sans-serif;
+        font:700 12px/38px Arial,Helvetica,sans-serif;
         letter-spacing:.2px;
         cursor:pointer;
     }
@@ -4846,8 +4837,7 @@
     .decoreva-profile-menu button span{font-size:14px !important;}
     .decoreva-profile-menu button small{font-size:11px !important;}
     @media(max-width:760px){
-        .decoreva-profile-card{top:58px;right:10px;width:min(350px,calc(100vw - 20px));max-height:calc(100vh - 70px);}
-        .decoreva-profile-welcome{padding:14px 15px 15px;}
+        .decoreva-profile-welcome{padding:16px 17px 18px;}
         .decoreva-profile-welcome strong{font-size:15px;}
         .decoreva-profile-welcome span{font-size:12px;}
         .decoreva-profile-menu button span{font-size:14px !important;}
@@ -5201,12 +5191,9 @@
     background:#f5ead6;
     color:#7c4f17;
 }
-/* =========================================================
-   DECOREVA — Supabase Auth
-   Clean customer-friendly Login / Signup / Password Reset
-   Only Auth CSS below is changed. Existing site CSS above
-   remains untouched.
-   ========================================================= */
+/* DECOREVA — Supabase Auth modal
+   STEP 9 — add at the END of style.css
+*/
 
 .decoreva-auth-modal{
     position:fixed;
@@ -5215,7 +5202,7 @@
     display:none;
     align-items:center;
     justify-content:center;
-    padding:18px;
+    padding:20px;
 }
 
 .decoreva-auth-modal.open{
@@ -5225,73 +5212,59 @@
 .decoreva-auth-overlay{
     position:absolute;
     inset:0;
-    background:rgba(24,15,8,.68);
-    backdrop-filter:blur(2px);
+    background:rgba(0,0,0,.65);
 }
 
 .decoreva-auth-card{
     position:relative;
     z-index:1;
-    width:min(410px,100%);
-    max-height:92vh;
+    width:min(430px,100%);
+    max-height:90vh;
     overflow:auto;
-    box-sizing:border-box;
-    background:#fffdf8;
-    border:1px solid rgba(201,149,46,.35);
-    border-radius:16px;
-    box-shadow:0 24px 70px rgba(0,0,0,.32);
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+    padding:0;
 }
 
 .decoreva-auth-head{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
-    gap:14px;
-    padding:19px 20px;
-    background:linear-gradient(180deg,#2b1b10,#1f130b);
+    gap:16px;
+    padding:18px 20px;
+    background:#24170d;
     color:#fff;
-    border-bottom:1px solid #b8862c;
 }
 
 .decoreva-auth-head strong{
     display:block;
-    color:#f4e4c2;
-    font:700 21px/1.2 Georgia,"Times New Roman",serif;
+    font-size:20px;
 }
 
 .decoreva-auth-head span{
     display:block;
-    margin-top:5px;
-    color:#d9c6a0;
-    font-size:11px;
-    line-height:1.35;
+    margin-top:4px;
+    font-size:13px;
+    opacity:.9;
 }
 
 .decoreva-auth-close{
-    width:34px;
-    height:34px;
-    flex:0 0 34px;
     border:0;
-    border-radius:50%;
     background:rgba(255,255,255,.12);
     color:#fff;
-    font-size:23px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    font-size:24px;
     line-height:1;
     cursor:pointer;
-    transition:.2s ease;
-}
-
-.decoreva-auth-close:hover{
-    background:rgba(255,255,255,.22);
-    transform:scale(1.05);
 }
 
 .decoreva-auth-message{
-    min-height:18px;
+    min-height:20px;
     padding:14px 20px 0;
-    color:#756758;
-    font-size:12px;
-    line-height:1.45;
+    font-size:13px;
 }
 
 .decoreva-auth-message.error{
@@ -5300,127 +5273,48 @@
 
 #decoreva-auth-form{
     display:grid;
-    gap:11px;
-    padding:15px 20px 12px;
+    gap:12px;
+    padding:16px 20px;
 }
 
 #decoreva-auth-form input{
     width:100%;
-    height:44px;
     box-sizing:border-box;
-    padding:0 13px;
+    padding:12px 13px;
     border:1px solid #d8c9ba;
-    border-radius:9px;
+    border-radius:7px;
+    font:inherit;
     outline:none;
-    background:#fff;
-    color:#342317;
-    font:400 13px/1 Arial,Helvetica,sans-serif;
-    transition:.2s ease;
-}
-
-#decoreva-auth-form input::placeholder{
-    color:#8a7867;
 }
 
 #decoreva-auth-form input:focus{
     border-color:#b8862b;
-    box-shadow:0 0 0 3px rgba(184,134,44,.10);
-}
-
-#decoreva-auth-forgot{
-    justify-self:end;
-    margin:-3px 1px 1px 0;
-    padding:2px 0;
-    border:0;
-    background:transparent;
-    color:#9a6818;
-    font-size:11px;
-    font-weight:700;
-    cursor:pointer;
-}
-
-#decoreva-auth-forgot:hover{
-    color:#704812;
-    text-decoration:underline;
-}
-
-#decoreva-auth-forgot:disabled{
-    opacity:.55;
-    cursor:not-allowed;
 }
 
 #decoreva-auth-submit{
-    width:100%;
-    height:44px;
-    margin-top:2px;
-    padding:0 14px;
-    border:1px solid #c08b27;
-    border-radius:9px;
-    background:linear-gradient(135deg,#a96f12,#d2a13b 48%,#a96f12);
+    border:0;
+    border-radius:7px;
+    padding:12px;
+    background:#b8862b;
     color:#fff;
-    font-size:13px;
-    font-weight:800;
+    font-weight:700;
     cursor:pointer;
-    box-shadow:0 7px 18px rgba(91,54,5,.20);
-    transition:.2s ease;
-}
-
-#decoreva-auth-submit:hover{
-    transform:translateY(-1px);
-    filter:brightness(1.04);
 }
 
 #decoreva-auth-submit:disabled{
     opacity:.6;
     cursor:not-allowed;
-    transform:none;
 }
 
 #decoreva-auth-switch{
     display:block;
-    width:calc(100% - 40px);
-    margin:0 20px 18px;
-    padding:8px 0;
+    margin:0 20px 20px;
+    padding:10px;
     border:0;
     background:transparent;
     color:#9a6818;
-    font-size:12px;
-    font-weight:700;
-    text-align:center;
+    font-weight:600;
     cursor:pointer;
-}
-
-#decoreva-auth-switch:hover{
-    color:#704812;
-    text-decoration:underline;
-}
-
-#decoreva-auth-logout{
-    display:block;
-    width:calc(100% - 40px);
-    height:44px;
-    margin:15px 20px 20px;
-    padding:0 14px;
-    border:1px solid #c08b27;
-    border-radius:9px;
-    background:linear-gradient(135deg,#a96f12,#d2a13b 48%,#a96f12);
-    color:#fff;
-    font-size:13px;
-    font-weight:800;
-    cursor:pointer;
-    box-shadow:0 7px 18px rgba(91,54,5,.20);
-    transition:.2s ease;
-}
-
-#decoreva-auth-logout:hover{
-    transform:translateY(-1px);
-    filter:brightness(1.04);
-}
-
-#decoreva-auth-logout:disabled{
-    opacity:.6;
-    cursor:not-allowed;
-    transform:none;
 }
 
 @media (max-width:600px){
@@ -5430,45 +5324,5 @@
 
     .decoreva-auth-card{
         width:100%;
-        max-height:90vh;
-        border-radius:14px;
     }
-
-    .decoreva-auth-head{
-        padding:16px;
-    }
-
-    .decoreva-auth-head strong{
-        font-size:19px;
-    }
-
-    .decoreva-auth-message{
-        padding:12px 16px 0;
-        font-size:11px;
-    }
-
-    #decoreva-auth-form{
-        padding:14px 16px 10px;
-    }
-
-    #decoreva-auth-switch,
-    #decoreva-auth-logout{
-        width:calc(100% - 32px);
-        margin-left:16px;
-        margin-right:16px;
-    }
-
-    #decoreva-auth-switch{
-        margin-bottom:15px;
-    }
-
-    #decoreva-auth-logout{
-        margin-top:14px;
-        margin-bottom:16px;
-    }
-}
-
-/* DECOREVA AUTH — preserve native hidden behavior */
-#decoreva-auth-modal [hidden]{
-    display:none !important;
 }

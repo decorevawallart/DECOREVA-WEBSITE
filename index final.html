@@ -197,7 +197,11 @@
 <meta property="og:image" content="https://decorevawallart.in/images/decoreva-logo.webp">
 <meta property="og:site_name" content="DECOREVA Wall Art">
 <meta property="og:locale" content="en_IN">
-
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="supabase-auth.js"></script>
 </head>
 
 
@@ -260,6 +264,24 @@ rel="noopener">
 <i class="fab fa-instagram"></i>
 Instagram
 </a>
+
+
+<div class="decoreva-nav-actions" aria-label="Account and shopping">
+    <button type="button" class="decoreva-nav-action" id="decoreva-profile-nav" aria-label="Profile">
+        <i class="fas fa-user" aria-hidden="true"></i>
+        <span>Profile</span>
+    </button>
+    <button type="button" class="decoreva-nav-action" id="decoreva-wishlist-nav" aria-label="Wishlist">
+        <i class="far fa-heart" aria-hidden="true"></i>
+        <span>Wishlist</span>
+        <b id="decoreva-wishlist-count" class="decoreva-nav-count">0</b>
+    </button>
+    <button type="button" class="decoreva-nav-action" id="decoreva-nav-cart" aria-label="Cart">
+        <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+        <span>Cart</span>
+        <b id="decoreva-cart-nav-count" class="decoreva-nav-count">0</b>
+    </button>
+</div>
 
 </nav>
 

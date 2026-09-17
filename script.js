@@ -4778,12 +4778,49 @@
                 }
 
 
-                function closeProfile() {
+                function closeProfile(callback) {
                     const panel = document.querySelector("#decoreva-profile-panel");
-                    if (!panel) return;
-                    panel.classList.remove("open");
-                    panel.setAttribute("aria-hidden", "true");
+                    if (!panel) {
+                        if (typeof callback === "function") callback();
+                        return;
+                    }
+
+                    const card = panel.querySelector(".decoreva-profile-card");
+
+                    if (panel._decorevaProfileCloseTimer) {
+                        clearTimeout(panel._decorevaProfileCloseTimer);
+                        panel._decorevaProfileCloseTimer = null;
+                    }
+
+                    if (!panel.classList.contains("open")) {
+                        if (typeof callback === "function") callback();
+                        return;
+                    }
+
+                    if (card) {
+                        card.style.transition = "transform .18s ease";
+                        void card.offsetWidth;
+                        card.style.transform = "translateY(-8px) scale(.985)";
+                    }
+
+                    panel._decorevaProfileCloseTimer = window.setTimeout(function () {
+                        panel.classList.remove("open");
+                        panel.setAttribute("aria-hidden", "true");
+
+                        if (card) {
+                            card.style.transition = "";
+                            card.style.transform = "";
+                        }
+
+                        panel._decorevaProfileCloseTimer = null;
+
+                        if (typeof callback === "function") {
+                            callback();
+                        }
+                    }, 180);
                 }
+
+                window.decorevaCloseProfile = closeProfile;
 
                 function addToCart(card) {
                     const data = getCardData(card);
@@ -5527,8 +5564,8 @@
                             </div>
                             <div class="decoreva-profile-body">
                                 <div class="decoreva-profile-welcome">
-                                    <strong>Welcome</strong>
-                                    <span>To access your account and manage orders</span>
+                                    <strong id="decoreva-profile-welcome-title">Welcome to DECOREVA</strong>
+                                    <span id="decoreva-profile-welcome-sub">Login or sign up to manage your orders and account.</span>
                                     <button type="button" id="decoreva-profile-login">LOGIN / SIGNUP</button>
                                 </div>
                                 <nav class="decoreva-profile-menu" aria-label="My account">
@@ -5538,6 +5575,10 @@
                                     <button type="button" data-profile-menu="addresses"><span>Saved Addresses</span><small>Manage addresses</small></button>
                                     <button type="button" data-profile-menu="contact"><span>Contact Us</span><small>WhatsApp & Instagram</small></button>
                                 </nav>
+                                <div class="decoreva-profile-account-actions">
+                                    <button type="button" id="decoreva-profile-edit" data-profile-menu="personal"><span>Edit Profile</span><small>Personal details</small></button>
+                                    <button type="button" id="decoreva-profile-logout" hidden><span>Logout</span><small>Sign out of your account</small></button>
+                                </div>
                                 <section id="decoreva-profile-personal-section" class="decoreva-profile-section" hidden>
                                     <div class="decoreva-profile-section-title"><strong>Personal Details</strong><span>Save your details for faster checkout.</span></div>
                                     <input id="decoreva-profile-name" type="text" placeholder="Full name" autocomplete="name">
@@ -6171,6 +6212,12 @@
                         } else if (action === "coupons") {
                             closeProfile();
                             openCouponModal();
+                        } else if (action === "personal") {
+                            const section = document.querySelector("#decoreva-profile-personal-section");
+                            if (section) {
+                                section.hidden = false;
+                                section.scrollIntoView({behavior:"smooth", block:"start"});
+                            }
                         } else if (action === "addresses") {
                             const section = document.querySelector("#decoreva-profile-address-section");
                             if (section) {
@@ -6188,14 +6235,15 @@
                     }
 
                     if (event.target.closest("#decoreva-profile-login")) {
+                        /*
+                         * Guest LOGIN / SIGNUP belongs to Supabase Auth.
+                         * Do not open Personal Details here — that used to
+                         * consume the click and fight with supabase-auth.js.
+                         * Close the drawer immediately and let the Auth
+                         * listener handle the same click.
+                         */
                         event.preventDefault();
-                        const section = document.querySelector("#decoreva-profile-personal-section");
-                        if (section) {
-                            section.hidden = false;
-                            section.scrollIntoView({behavior:"smooth", block:"start"});
-                            const mobile = document.querySelector("#decoreva-profile-mobile");
-                            if (!profile.name && mobile) mobile.focus({preventScroll:true});
-                        }
+                        closeProfile();
                         return;
                     }
 
