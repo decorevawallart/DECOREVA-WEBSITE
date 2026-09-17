@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DECOREVA Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+:root{--bg:#f5f1ea;--card:#fff;--ink:#24170e;--gold:#b98220;--line:#e5d8c5;--muted:#74675a;--danger:#a33a2b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:#20140d;color:#fff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:5}
+.brand{font-family:Georgia,serif;font-size:24px;letter-spacing:2px}.brand small{display:block;font:11px Arial;color:#d8b36a;letter-spacing:1px;margin-top:4px}
+button{border:1px solid #d4b16a;background:#fff8ea;color:#5b3a0c;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}
+button:hover{filter:brightness(.97)}.danger{background:#fff;color:var(--danger);border-color:#e0b2aa}
+main{max-width:1400px;margin:0 auto;padding:24px}
+#login{max-width:460px;margin:80px auto;background:var(--card);padding:30px;border-radius:16px;border:1px solid var(--line);box-shadow:0 8px 30px #00000010}
+h1,h2{font-family:Georgia,serif}.sub{color:var(--muted);font-size:14px}.hidden{display:none!important}
+.field{margin:14px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+input,select{width:100%;padding:12px;border:1px solid #d8cbb8;border-radius:8px;background:#fff;font-size:14px}
+#loginMsg,#dashMsg{margin-top:12px;font-size:14px}.error{color:var(--danger)}.ok{color:#2c6a3c}
+.topline{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:118px}
+.stat .label{font-size:12px;color:var(--muted);font-weight:700}.stat .value{font-size:29px;font-weight:800;margin-top:12px}.stat .note{font-size:11px;color:var(--muted);margin-top:6px}
+.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;overflow:hidden}
+.panel h2{font-size:20px;margin:0 0 14px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 9px;border-bottom:1px solid #eee5d8;text-align:left;vertical-align:top}th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#f5e5c7;font-size:11px;font-weight:700}.guest{background:#eee}.admin{color:#fff;background:var(--gold)}
+.mini{font-size:12px;color:var(--muted)}.scroll{overflow:auto;max-height:420px}
+.barrow{display:grid;grid-template-columns:140px 1fr 60px;gap:10px;align-items:center;margin:12px 0;font-size:12px}.bar{height:10px;background:#eadfce;border-radius:99px;overflow:hidden}.fill{height:100%;background:var(--gold)}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:600px){main{padding:14px}.cards{grid-template-columns:repeat(2,1fr)}header{padding:14px}.brand{font-size:19px}.stat{padding:14px}.stat .value{font-size:24px}}
+</style>
+
+<style>
+/* Admin extensions */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tabs button{background:#fff;border-color:var(--line)}
+.tabs button.active{background:var(--gold);color:#fff;border-color:var(--gold)}
+.section{display:none}.section.active{display:block}
+.stat .value.small{font-size:22px}
+.order-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.order-actions select{width:auto;min-width:125px;padding:8px}
+.clickable{cursor:pointer}
+.muted{color:var(--muted)}
+.customer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.customer-card{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fff}
+.customer-card strong{display:block;margin-bottom:5px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.detail-box{background:#faf7f1;border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px;white-space:pre-wrap}
+.status-pending{background:#f5e5c7}.status-confirmed{background:#dcefdc}.status-processing{background:#e2e8f7}.status-shipped{background:#e5def2}.status-delivered{background:#d9f1e5}.status-cancelled{background:#f5d9d5}
+@media(max-width:900px){.customer-grid{grid-template-columns:1fr 1fr}.kpi-row{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.customer-grid,.kpi-row{grid-template-columns:1fr}.tabs{overflow:auto;flex-wrap:nowrap}.tabs button{white-space:nowrap}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="brand">DECOREVA <small>ADMIN DASHBOARD</small></div>
+  <div>
+    <span id="adminEmail" style="font-size:12px;margin-right:10px"></span>
+    <button id="refreshBtn" class="hidden">Refresh</button>
+    <button id="logoutBtn" class="hidden">Logout</button>
+  </div>
+</header>
+
+<section id="login">
+  <h1>Admin Login</h1>
+  <p class="sub">Private DECOREVA dashboard. Only an approved admin account can view business data.</p>
+  <form id="loginForm">
+    <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+    <button type="submit">LOGIN</button>
+  </form>
+  <div id="loginMsg"></div>
+</section>
+
+<main id="dashboard" class="hidden">
+  <div class="topline">
+    <div><h1>DECOREVA Overview</h1><div class="sub">Visitors, customers and orders from Supabase</div></div>
+    <div><label class="mini">Period&nbsp;</label><select id="period"><option value="today">Today</option><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="all">All time</option></select></div>
+  </div>
+
+  <div class="cards">
+    <div class="stat"><div class="label">TOTAL VISITS</div><div class="value" id="totalVisits">—</div><div class="note">page/event records</div></div>
+    <div class="stat"><div class="label">UNIQUE VISITORS</div><div class="value" id="uniqueVisitors">—</div><div class="note">unique browser IDs</div></div>
+    <div class="stat"><div class="label">LOGGED-IN</div><div class="value" id="loggedIn">—</div><div class="note">visits linked to users</div></div>
+    <div class="stat"><div class="label">GUEST</div><div class="value" id="guests">—</div><div class="note">visits without login</div></div>
+    <div class="stat"><div class="label">CUSTOMERS</div><div class="value" id="customers">—</div><div class="note">profiles</div></div>
+    <div class="stat"><div class="label">ORDERS</div><div class="value" id="orders">—</div><div class="note">order requests</div></div>
+  </div>
+
+  <div id="dashMsg"></div>
+
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="ordersSection">Orders</button>
+    <button class="tab-btn" data-tab="customersSection">Customers</button>
+    <button class="tab-btn" data-tab="visitorsSection">Visitors</button>
+  </div>
+
+  <section id="overview" class="section active">
+    <div class="kpi-row">
+      <div class="stat"><div class="label">SALES VALUE</div><div class="value small" id="salesValue">₹0</div><div class="note">orders in selected period</div></div>
+      <div class="stat"><div class="label">PENDING</div><div class="value small" id="pendingOrders">0</div><div class="note">orders awaiting action</div></div>
+      <div class="stat"><div class="label">DELIVERED</div><div class="value small" id="deliveredOrders">0</div><div class="note">delivered orders</div></div>
+      <div class="stat"><div class="label">AVG ORDER</div><div class="value small" id="avgOrder">₹0</div><div class="note">average order value</div></div>
+    </div>
+
+    <div class="grid2">
+      <section class="panel">
+        <div class="panel-head"><h2>Visitor Breakdown</h2><span class="mini" id="periodLabel"></span></div>
+        <div class="barrow"><span>Logged-in</span><div class="bar"><div id="loggedBar" class="fill" style="width:0%"></div></div><strong id="loggedPct">0%</strong></div>
+        <div class="barrow"><span>Guest</span><div class="bar"><div id="guestBar" class="fill" style="width:0%"></div></div><strong id="guestPct">0%</strong></div>
+        <div style="margin-top:24px"><h2>Top Pages</h2><div id="pages"></div></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Recent Orders</h2><span class="mini">latest 10</span></div>
+        <div class="scroll"><table><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
+      </section>
+    </div>
+  </section>
+
+  <section id="ordersSection" class="section">
+    <section class="panel">
+      <div class="panel-head"><h2>Order Management</h2><span class="mini">Change status → WhatsApp message opens ready to send</span></div>
+      <div class="toolbar">
+        <input id="orderSearch" placeholder="Search order number or customer..." style="max-width:360px">
+        <select id="orderStatusFilter" style="max-width:180px">
+          <option value="">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option>
+          <option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="scroll"><table><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status / Action</th></tr></thead><tbody id="allOrdersTable"></tbody></table></div>
+      <div id="orderDetail" class="detail-box hidden"></div>
+    </section>
+  </section>
+
+  <section id="customersSection" class="section">
+    <section class="panel">
+      <div class="panel-head"><h2>Customers</h2><span class="mini" id="customerCountLabel"></span></div>
+      <div class="toolbar"><input id="customerSearch" placeholder="Search customer name, phone or email..." style="max-width:420px"></div>
+      <div id="customersGrid" class="customer-grid"></div>
+    </section>
+  </section>
+
+  <section id="visitorsSection" class="section">
+    <section class="panel">
+      <div class="panel-head"><h2>Visitor Analytics</h2><span class="mini">latest 100 records for selected period</span></div>
+      <div class="scroll"><table><thead><tr><th>Time</th><th>Visitor</th><th>Type</th><th>Page</th><th>Product</th></tr></thead><tbody id="visitorsTable"></tbody></table></div>
+    </section>
+  </section>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+let sb=null,currentUser=null,allOrders=[],allCustomers=[],allVisits=[];
+
+function $(id){return document.getElementById(id)}
+function msg(text,cls){$("loginMsg").textContent=text||"";$("loginMsg").className=cls||""}
+function dashMsg(text,cls){$("dashMsg").textContent=text||"";$("dashMsg").className=cls||""}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function formatNumber(n){return Number(n||0).toLocaleString("en-IN")}
+function money(n){return "₹"+formatNumber(Number(n||0))}
+function sinceValue(){
+  const p=$("period").value;if(p==="all")return null;
+  const d=new Date();if(p==="today")d.setHours(0,0,0,0);else d.setDate(d.getDate()-Number(p));return d.toISOString();
+}
+function showDashboard(){
+  $("login").classList.add("hidden");$("dashboard").classList.remove("hidden");
+  $("refreshBtn").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");
+  $("adminEmail").textContent=currentUser?.email||"";
+}
+function showLogin(){
+  $("dashboard").classList.add("hidden");$("login").classList.remove("hidden");
+  $("refreshBtn").classList.add("hidden");$("logoutBtn").classList.add("hidden");$("adminEmail").textContent="";
+}
+async function isAdmin(user){
+  const r=await sb.from("profiles").select("is_admin").eq("id",user.id).maybeSingle();
+  if(r.error)throw r.error;return !!(r.data&&r.data.is_admin===true);
+}
+function statusClass(s){return "badge status-"+String(s||"pending").toLowerCase()}
+function statusOptions(current){
+  return ["pending","confirmed","processing","shipped","delivered","cancelled"].map(s=>`<option value="${s}" ${s===current?"selected":""}>${s[0].toUpperCase()+s.slice(1)}</option>`).join("");
+}
+async function loadDashboard(){
+  dashMsg("Loading…","");
+  try{
+    const since=sinceValue();
+    let vq=sb.from("site_visits").select("id,visitor_id,user_id,page_path,product_key,created_at").order("created_at",{ascending:false}).limit(5000);
+    if(since)vq=vq.gte("created_at",since);
+    const vr=await vq;if(vr.error)throw vr.error;allVisits=vr.data||[];
+    $("totalVisits").textContent=formatNumber(allVisits.length);
+    $("uniqueVisitors").textContent=formatNumber(new Set(allVisits.map(x=>x.visitor_id).filter(Boolean)).size);
+    const logged=allVisits.filter(x=>x.user_id).length,guest=allVisits.length-logged,total=allVisits.length||1;
+    const lp=Math.round(logged/total*100),gp=100-lp;
+    $("loggedIn").textContent=formatNumber(logged);$("guests").textContent=formatNumber(guest);
+    $("loggedBar").style.width=lp+"%";$("guestBar").style.width=gp+"%";
+    $("loggedPct").textContent=lp+"%";$("guestPct").textContent=gp+"%";
+    $("periodLabel").textContent=$("period").selectedOptions[0].textContent;
+    const pages={};allVisits.forEach(x=>{const k=x.page_path||"/";pages[k]=(pages[k]||0)+1});
+    const top=Object.entries(pages).sort((a,b)=>b[1]-a[1]).slice(0,7),max=top[0]?.[1]||1;
+    $("pages").innerHTML=top.length?top.map(([k,n])=>`<div class="barrow"><span>${esc(k)}</span><div class="bar"><div class="fill" style="width:${Math.round(n/max*100)}%"></div></div><strong>${n}</strong></div>`).join(""):'<div class="mini">No page data.</div>';
+
+    const pr=await sb.from("profiles").select("id,full_name,phone",{count:"exact"});
+    if(pr.error)throw pr.error;allCustomers=pr.data||[];$("customers").textContent=formatNumber(pr.count||0);
+    $("customerCountLabel").textContent=formatNumber(allCustomers.length)+" customers";renderCustomers();
+
+    let oq=sb.from("orders").select("id,order_number,status,customer_name,customer_phone,delivery_address,subtotal,delivery_charge,discount,total,coupon_code,coupon,created_at,updated_at").order("created_at",{ascending:false}).limit(500);
+    if(since)oq=oq.gte("created_at",since);
+    const or=await oq;if(or.error)throw or.error;allOrders=or.data||[];
+    $("orders").textContent=formatNumber(allOrders.length);renderOrders();
+    const sales=allOrders.reduce((a,o)=>a+Number(o.total||0),0);
+    $("salesValue").textContent=money(sales);
+    $("pendingOrders").textContent=formatNumber(allOrders.filter(o=>o.status==="pending").length);
+    $("deliveredOrders").textContent=formatNumber(allOrders.filter(o=>o.status==="delivered").length);
+    $("avgOrder").textContent=money(allOrders.length?sales/allOrders.length:0);
+    $("ordersTable").innerHTML=allOrders.slice(0,10).map(o=>`<tr><td><strong>${esc(o.order_number)}</strong><br><span class="mini">${new Date(o.created_at).toLocaleString("en-IN")}</span></td><td>${esc(o.customer_name)}</td><td>${money(o.total)}</td><td><span class="${statusClass(o.status)}">${esc(o.status)}</span></td></tr>`).join("")||'<tr><td colspan="4">No orders.</td></tr>';
+    renderVisitors();
+    dashMsg("Updated successfully.","ok");
+  }catch(e){console.error(e);dashMsg("Dashboard data could not be loaded: "+(e.message||"Unknown error"),"error")}
+}
+function renderVisitors(){
+  $("visitorsTable").innerHTML=allVisits.slice(0,100).map(x=>`<tr><td>${new Date(x.created_at).toLocaleString("en-IN")}</td><td title="${esc(x.visitor_id)}">${esc((x.visitor_id||"").slice(0,12))}…</td><td>${x.user_id?'<span class="badge admin">Logged-in</span>':'<span class="badge guest">Guest</span>'}</td><td>${esc(x.page_path)}</td><td>${esc(x.product_key||"—")}</td></tr>`).join("")||'<tr><td colspan="5">No visitors.</td></tr>';
+}
+function renderOrders(){
+  const q=($("orderSearch").value||"").toLowerCase().trim(),f=$("orderStatusFilter").value;
+  const rows=allOrders.filter(o=>(!f||o.status===f)&&(!q||String(o.order_number||"").toLowerCase().includes(q)||String(o.customer_name||"").toLowerCase().includes(q)||String(o.customer_phone||"").includes(q)));
+  $("allOrdersTable").innerHTML=rows.map(o=>`<tr>
+    <td><strong class="clickable" data-order="${esc(o.id)}">${esc(o.order_number)}</strong><br><span class="mini">${new Date(o.created_at).toLocaleString("en-IN")}</span></td>
+    <td>${esc(o.customer_name)}<br><span class="mini">${esc(o.customer_phone)}</span></td>
+    <td>${money(o.total)}</td>
+    <td><div class="order-actions"><select class="status-select" data-id="${esc(o.id)}">${statusOptions(o.status)}</select><button data-open-order="${esc(o.id)}">Details</button></div></td>
+  </tr>`).join("")||'<tr><td colspan="4">No matching orders.</td></tr>';
+}
+function renderCustomers(){
+  const q=($("customerSearch").value||"").toLowerCase().trim();
+  const rows=allCustomers.filter(c=>!q||String(c.full_name||"").toLowerCase().includes(q)||String(c.phone||"").includes(q));
+  $("customersGrid").innerHTML=rows.map(c=>{
+    const orders=allOrders.filter(o=>o.customer_name===c.full_name||String(o.customer_phone||"")===String(c.phone||""));
+    const spend=orders.reduce((a,o)=>a+Number(o.total||0),0);
+    return `<div class="customer-card"><strong>${esc(c.full_name||"Customer")}</strong><div class="mini">${esc(c.phone||"No phone")}</div><p><b>${orders.length}</b> orders &nbsp; <b>${money(spend)}</b> spent</p><div class="mini">Customer ID: ${esc(c.id)}</div></div>`;
+  }).join("")||'<div class="mini">No customers found.</div>';
+}
+async function openOrder(id){
+  const o=allOrders.find(x=>x.id===id);if(!o)return;
+  const r=await sb.from("order_items").select("product_name,variation,quantity,unit_price").eq("order_id",id);
+  if(r.error){dashMsg("Could not load order items: "+r.error.message,"error");return}
+  const items=r.data||[];
+  $("orderDetail").classList.remove("hidden");
+  $("orderDetail").innerHTML=`<strong>${esc(o.order_number)}</strong>
+Customer: ${esc(o.customer_name)} | ${esc(o.customer_phone)}
+Address:
+${esc(o.delivery_address||"")}
+Items:
+${items.map(i=>`• ${esc(i.product_name)}${i.variation?" - "+esc(i.variation):""} × ${esc(i.quantity)} @ ${money(i.unit_price)}`).join("\n")||"No items found."}
+
+Subtotal: ${money(o.subtotal)}   Delivery: ${money(o.delivery_charge)}   Discount: ${money(o.discount)}
+Total: ${money(o.total)}   Coupon: ${esc(o.coupon_code||o.coupon||"—")}`;
+  $("orderDetail").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function getIndiaWhatsAppNumber(phone){
+  const digits=String(phone||"").replace(/\\D/g,"");
+  if(!digits)return "";
+  if(digits.length===10)return "91"+digits;
+  if(digits.length===12 && digits.startsWith("91"))return digits;
+  return digits;
+}
+
+function getOrderStatusWhatsAppMessage(order,status){
+  const statusMessages={
+    confirmed:"Your DECOREVA order has been confirmed. Thank you for shopping with us!",
+    processing:"Your DECOREVA order is now being processed. We will keep you updated.",
+    shipped:"Good news! Your DECOREVA order has been shipped. Thank you for shopping with us!",
+    delivered:"Your DECOREVA order has been delivered. We hope you love your DECOREVA purchase!",
+    cancelled:"Your DECOREVA order has been cancelled. If you have any questions, please contact us."
+  };
+  const message=statusMessages[status] || ("Your DECOREVA order status is now "+status+".");
+  return "Hello "+(order.customer_name||"Customer")+",\n\n"+message+
+    "\n\nOrder Number: "+(order.order_number||"")+
+    "\nTotal: "+money(order.total)+
+    "\n\nDECOREVA";
+}
+
+function openOrderStatusWhatsApp(order,status){
+  if(!order || !order.customer_phone){
+    dashMsg("Status updated, but customer phone number is missing.","error");
+    return;
+  }
+
+  const number=getIndiaWhatsAppNumber(order.customer_phone);
+  if(!number){
+    dashMsg("Status updated, but customer WhatsApp number is invalid.","error");
+    return;
+  }
+
+  const text=getOrderStatusWhatsAppMessage(order,status);
+  const url="https://wa.me/"+number+"?text="+encodeURIComponent(text);
+  const opened=window.open(url,"_blank","noopener,noreferrer");
+
+  if(!opened){
+    dashMsg("Status updated. WhatsApp popup was blocked by the browser. Allow popups for this site and try again.","error");
+  }else{
+    dashMsg("Status updated successfully. WhatsApp message is ready to send to the customer.","ok");
+  }
+}
+
+async function updateOrderStatus(id,status){
+  const o=allOrders.find(x=>x.id===id);
+  if(!o)return;
+
+  const r=await sb.from("orders").update({status}).eq("id",id);
+  if(r.error){
+    dashMsg("Status update failed: "+r.error.message,"error");
+    await loadDashboard();
+    return;
+  }
+
+  o.status=status;
+  renderOrders();
+
+  // WhatsApp opens with a pre-filled status message.
+  // The admin must press Send in WhatsApp; this does not send automatically.
+  openOrderStatusWhatsApp(o,status);
+}
+document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  btn.classList.add("active");$(btn.dataset.tab).classList.add("active");
+}));
+$("orderSearch").addEventListener("input",renderOrders);
+$("orderStatusFilter").addEventListener("change",renderOrders);
+$("customerSearch").addEventListener("input",renderCustomers);
+$("allOrdersTable").addEventListener("change",e=>{if(e.target.matches(".status-select"))updateOrderStatus(e.target.dataset.id,e.target.value)});
+$("allOrdersTable").addEventListener("click",e=>{const b=e.target.closest("[data-open-order]");if(b)openOrder(b.dataset.openOrder);});
+async function init(){
+  if(!window.supabase||typeof SUPABASE_URL==="undefined"||typeof SUPABASE_PUBLISHABLE_KEY==="undefined"){msg("Supabase configuration is missing. Make sure this file is in the same folder as config.js.","error");return}
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  const r=await sb.auth.getSession(),s=r.data?.session;
+  if(s?.user){try{if(await isAdmin(s.user)){currentUser=s.user;showDashboard();loadDashboard()}else{await sb.auth.signOut();msg("This account is not authorized as DECOREVA admin.","error")}}catch(e){msg("Admin verification failed: "+e.message,"error")}}
+  sb.auth.onAuthStateChange(async(_event,session)=>{
+    if(session?.user){try{if(await isAdmin(session.user)){currentUser=session.user;showDashboard();loadDashboard()}else{await sb.auth.signOut();showLogin();msg("This account is not authorized as DECOREVA admin.","error")}}catch(e){showLogin();msg("Admin verification failed: "+e.message,"error")}}
+    else{currentUser=null;showLogin()}
+  });
+}
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();msg("Signing in…","");
+  const r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+  if(r.error){msg(r.error.message,"error");return}msg("","");
+});
+$("logoutBtn").addEventListener("click",async()=>{await sb.auth.signOut()});
+$("refreshBtn").addEventListener("click",loadDashboard);
+$("period").addEventListener("change",loadDashboard);
+init();
+})();
+</script>
+</body>
+</html>
