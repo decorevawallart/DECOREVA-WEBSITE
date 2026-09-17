@@ -611,7 +611,7 @@
                 }
             );
         }
-    function clearAllCollectionFilters() {
+    function clearAllCollectionFilters(shouldScrollToCollection = true) {
         if (productSearch) {
             productSearch.value = "";
         }
@@ -619,6 +619,7 @@
             originalProductOrder.forEach(function (card) {
                 productsContainer.appendChild(card);
             });
+            decorevaProducts = originalProductOrder.slice();
         }
         if (customSortButton) {
             const label =
@@ -639,12 +640,19 @@
         if (customSort) {
             customSort.classList.remove("open");
         }
+        document
+            .querySelectorAll(".decoreva-pagination")
+            .forEach(function (nav) {
+                nav.style.display = "flex";
+            });
         if (typeof decorevaShowPage === "function") {
             decorevaShowPage(1);
         }
-        requestAnimationFrame(function () {
-            scrollToCollectionTitle("smooth");
-        });
+        if (shouldScrollToCollection) {
+            requestAnimationFrame(function () {
+                scrollToCollectionTitle("smooth");
+            });
+        }
     }
     const collectionControls =
         document.querySelector(".collection-controls");
@@ -1184,6 +1192,7 @@
                             scrollToCollectionTitle("smooth");
                         });
                     } else if (id === "#home") {
+                        clearAllCollectionFilters(false);
                         document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
                             nav.style.display = "flex";
                         });
@@ -1233,6 +1242,7 @@
                     "click",
                     function (event) {
                         event.preventDefault();
+                        clearAllCollectionFilters(false);
                         history.replaceState(
                             null,
                             "",

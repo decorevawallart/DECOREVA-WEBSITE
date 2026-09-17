@@ -1,143 +1,5 @@
         document.addEventListener("DOMContentLoaded", function () {
             "use strict";
-
-            /* ================= DECOREVA VISITOR TRACKING ================= */
-            const DECOREVA_VISITOR_ID_KEY = "decorevaVisitorId";
-            const DECOREVA_TRACKED_PAGE_KEY = "decorevaTrackedPage";
-
-            function getDecorevaVisitorId() {
-                let visitorId = "";
-                try {
-                    visitorId = localStorage.getItem(DECOREVA_VISITOR_ID_KEY) || "";
-                } catch (error) {
-                    console.warn("DECOREVA visitor storage read error:", error);
-                }
-
-                if (!visitorId) {
-                    if (window.crypto && typeof window.crypto.randomUUID === "function") {
-                        visitorId = window.crypto.randomUUID();
-                    } else if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-                        const bytes = new Uint8Array(16);
-                        window.crypto.getRandomValues(bytes);
-                        visitorId = Array.from(bytes, function (byte) {
-                            return byte.toString(16).padStart(2, "0");
-                        }).join("");
-                    } else {
-                        visitorId = "visitor-" + Date.now() + "-" + Math.random().toString(36).slice(2, 12);
-                    }
-
-                    try {
-                        localStorage.setItem(DECOREVA_VISITOR_ID_KEY, visitorId);
-                    } catch (error) {
-                        console.warn("DECOREVA visitor storage write error:", error);
-                    }
-                }
-
-                return visitorId;
-            }
-
-            async function getDecorevaTrackingUser() {
-                if (!window.decorevaSupabase || !window.decorevaSupabase.auth) {
-                    return null;
-                }
-
-                try {
-                    const result = await window.decorevaSupabase.auth.getUser();
-                    return result && result.data ? result.data.user || null : null;
-                } catch (error) {
-                    console.warn("DECOREVA visitor auth check error:", error);
-                    return null;
-                }
-            }
-
-            function getDecorevaTrackingPageKey() {
-                return window.location.pathname + window.location.search + window.location.hash;
-            }
-
-            async function trackDecorevaVisit(productKey) {
-                if (!window.decorevaSupabase) {
-                    console.warn("DECOREVA visitor tracking: Supabase client unavailable.");
-                    return false;
-                }
-
-                const visitorId = getDecorevaVisitorId();
-                if (!visitorId) return false;
-
-                const pageKey = getDecorevaTrackingPageKey();
-                const isProductView = !!productKey;
-
-                /* Prevent repeated refreshes of the same page from creating
-                   multiple visitor rows during one browser session. */
-                if (!isProductView) {
-                    try {
-                        if (sessionStorage.getItem(DECOREVA_TRACKED_PAGE_KEY) === pageKey) {
-                            return true;
-                        }
-                    } catch (error) {
-                        console.warn("DECOREVA visitor session storage read error:", error);
-                    }
-                }
-
-                const user = await getDecorevaTrackingUser();
-
-                const payload = {
-                    visitor_id: visitorId,
-                    user_id: user ? user.id : null,
-                    page_path: pageKey,
-                    product_key: productKey ? String(productKey) : null,
-                    referrer: document.referrer || null
-                };
-
-                try {
-                    const result = await window.decorevaSupabase
-                        .from("site_visits")
-                        .insert(payload);
-
-                    if (result.error) {
-                        console.error("DECOREVA visitor tracking error:", result.error);
-                        return false;
-                    }
-
-                    if (!isProductView) {
-                        try {
-                            sessionStorage.setItem(DECOREVA_TRACKED_PAGE_KEY, pageKey);
-                        } catch (error) {
-                            console.warn("DECOREVA visitor session storage write error:", error);
-                        }
-                    }
-
-                    return true;
-                } catch (error) {
-                    console.error("DECOREVA visitor tracking exception:", error);
-                    return false;
-                }
-            }
-
-            window.decorevaTrackVisit = trackDecorevaVisit;
-
-            /* Track the current page. Logged-in users are linked through
-               user_id; guests are stored with user_id = NULL. */
-            trackDecorevaVisit();
-
-            /* Track product-card views when a visitor opens/clicks a product.
-               This does not interfere with existing card/slider behaviour. */
-            document.addEventListener("click", function (event) {
-                const card = event.target.closest("#collection-products .card, .featured-slider .featured-slide");
-                if (!card) return;
-
-                const productKey =
-                    card.dataset.productKey ||
-                    card.dataset.productId ||
-                    card.getAttribute("data-product-key") ||
-                    card.getAttribute("data-product-id") ||
-                    card.getAttribute("data-variation-product") ||
-                    "";
-
-                if (productKey) {
-                    trackDecorevaVisit(productKey);
-                }
-            }, true);
-
             function getSliderImages(slider) {
                 if (!slider) return [];
                 try {
@@ -4289,8 +4151,8 @@
 
                     if (checkout) {
                         checkout.disabled = cart.length === 0;
-                        checkout.textContent = "Place Order on WhatsApp";
-                        checkout.setAttribute("aria-label", "Place Order on WhatsApp");
+                        checkout.textContent = "Order on WhatsApp";
+                        checkout.setAttribute("aria-label", "Order on WhatsApp");
                     }
 
                     if (document.querySelector("#decoreva-similar-products")) renderSimilarProducts();
@@ -4412,280 +4274,6 @@
                     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
                 }
 
-                const decorevaAddressSupabase = window.decorevaSupabase || null;
-                let decorevaOrderInProgress = false;
-
-                function generateDecorevaOrderNumber() {
-                    const now = new Date();
-                    const datePart = now.getFullYear().toString() +
-                        String(now.getMonth() + 1).padStart(2, "0") +
-                        String(now.getDate()).padStart(2, "0");
-
-                    let randomPart = "";
-                    if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-                        const bytes = new Uint8Array(4);
-                        window.crypto.getRandomValues(bytes);
-                        randomPart = Array.from(bytes, function (byte) {
-                            return byte.toString(16).padStart(2, "0");
-                        }).join("").toUpperCase();
-                    } else {
-                        randomPart = Math.random().toString(16).slice(2, 10).toUpperCase();
-                    }
-
-                    return "DEC-" + datePart + "-" + randomPart;
-                }
-
-                function buildDeliveryAddressText(address) {
-                    if (!address) return "";
-                    return [
-                        address.name || "",
-                        "Mobile: " + (address.mobile || ""),
-                        address.line || "",
-                        (address.city || "") + ", " + (address.state || "") + " - " + (address.pincode || "")
-                    ].filter(Boolean).join("\n");
-                }
-
-                async function createSupabaseOrder() {
-                    if (!cart.length || !deliveryAddress) {
-                        throw new Error("Cart or delivery address is missing.");
-                    }
-
-                    if (!decorevaAddressSupabase) {
-                        throw new Error("Supabase is not available on this page.");
-                    }
-
-                    const user = await getDecorevaAuthUser();
-                    if (!user) {
-                        const loginMessage = document.querySelector("#decoreva-address-message");
-                        if (loginMessage) {
-                            loginMessage.dataset.userMessage = "1";
-                            loginMessage.textContent = "Please login or signup before placing your order.";
-                            loginMessage.className = "decoreva-address-message error";
-                        }
-                        return null;
-                    }
-
-                    const orderNumber = generateDecorevaOrderNumber();
-                    const subtotal = subtotalAmount();
-                    const discount = discountAmount();
-                    const delivery = deliveryCharge();
-                    const total = finalAmount();
-                    const coupon = effectiveCouponCode() || null;
-
-                    const orderPayload = {
-                        user_id: user.id,
-                        order_number: orderNumber,
-                        status: "pending",
-                        customer_name: deliveryAddress.name,
-                        customer_phone: deliveryAddress.mobile,
-                        delivery_address: buildDeliveryAddressText(deliveryAddress),
-                        subtotal: subtotal,
-                        delivery_charge: delivery,
-                        discount: discount,
-                        total: total,
-                        coupon: coupon
-                    };
-
-                    const orderResult = await decorevaAddressSupabase
-                        .from("orders")
-                        .insert(orderPayload)
-                        .select("id, order_number")
-                        .single();
-
-                    if (orderResult.error) {
-                        console.error("DECOREVA order create error:", orderResult.error);
-                        throw orderResult.error;
-                    }
-
-                    const orderId = orderResult.data && orderResult.data.id;
-                    if (!orderId) {
-                        throw new Error("Supabase did not return the created order ID.");
-                    }
-
-                    const itemPayload = cart.map(function (item) {
-                        return {
-                            order_id: orderId,
-                            product_key: String(item.productId || item.id || ""),
-                            product_name: String(item.title || "DECOREVA Product"),
-                            variation: String(item.variationName || item.variationKey || ""),
-                            quantity: Math.max(1, Number(item.quantity || 1)),
-                            unit_price: Math.max(0, Number(item.price || 0))
-                        };
-                    });
-
-                    const itemsResult = await decorevaAddressSupabase
-                        .from("order_items")
-                        .insert(itemPayload);
-
-                    if (itemsResult.error) {
-                        console.error("DECOREVA order items create error:", itemsResult.error);
-
-                        try {
-                            await decorevaAddressSupabase
-                                .from("orders")
-                                .delete()
-                                .eq("id", orderId)
-                                .eq("user_id", user.id);
-                        } catch (cleanupError) {
-                            console.warn("DECOREVA order cleanup error:", cleanupError);
-                        }
-
-                        throw itemsResult.error;
-                    }
-
-                    return {
-                        id: orderId,
-                        orderNumber: orderResult.data.order_number || orderNumber,
-                        userId: user.id
-                    };
-                }
-
-                async function getDecorevaAuthUser() {
-                    if (!decorevaAddressSupabase || !decorevaAddressSupabase.auth) return null;
-                    try {
-                        const result = await decorevaAddressSupabase.auth.getUser();
-                        return result.data && result.data.user ? result.data.user : null;
-                    } catch (error) {
-                        console.warn("DECOREVA address auth check:", error);
-                        return null;
-                    }
-                }
-
-                function mapSupabaseAddress(row) {
-                    return {
-                        id: row.id,
-                        label: String(row.label || "HOME"),
-                        name: String(row.recipient_name || ""),
-                        mobile: String(row.phone || ""),
-                        line: String(row.address_line || ""),
-                        city: String(row.city || ""),
-                        state: String(row.state || ""),
-                        pincode: String(row.pincode || ""),
-                        default: !!row.is_default
-                    };
-                }
-
-                async function loadSupabaseAddresses() {
-                    const user = await getDecorevaAuthUser();
-                    if (!user || !decorevaAddressSupabase) return false;
-
-                    const result = await decorevaAddressSupabase
-                        .from("saved_addresses")
-                        .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
-                        .eq("user_id", user.id)
-                        .order("is_default", { ascending: false })
-                        .order("created_at", { ascending: true });
-
-                    if (result.error) {
-                        console.error("DECOREVA saved addresses load error:", result.error);
-                        return false;
-                    }
-
-                    profile.addresses = Array.isArray(result.data)
-                        ? result.data.map(mapSupabaseAddress)
-                        : [];
-
-                    saveProfile();
-                    return true;
-                }
-
-                async function saveSupabaseAddress(address, editIndex) {
-                    const user = await getDecorevaAuthUser();
-                    if (!user || !decorevaAddressSupabase) return false;
-
-                    const payload = {
-                        user_id: user.id,
-                        label: address.label,
-                        recipient_name: address.name,
-                        phone: address.mobile,
-                        address_line: address.line,
-                        city: address.city,
-                        state: address.state,
-                        pincode: address.pincode,
-                        is_default: !!address.default
-                    };
-
-                    if (address.default) {
-                        const clearDefaults = await decorevaAddressSupabase
-                            .from("saved_addresses")
-                            .update({ is_default: false })
-                            .eq("user_id", user.id);
-
-                        if (clearDefaults.error) throw clearDefaults.error;
-                    }
-
-                    const existing = Number.isInteger(editIndex) && profile.addresses[editIndex]
-                        ? profile.addresses[editIndex]
-                        : null;
-
-                    let result;
-
-                    if (existing && existing.id) {
-                        result = await decorevaAddressSupabase
-                            .from("saved_addresses")
-                            .update(payload)
-                            .eq("id", existing.id)
-                            .eq("user_id", user.id)
-                            .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
-                            .single();
-                    } else {
-                        result = await decorevaAddressSupabase
-                            .from("saved_addresses")
-                            .insert(payload)
-                            .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
-                            .single();
-                    }
-
-                    if (result.error) throw result.error;
-
-                    await loadSupabaseAddresses();
-                    return true;
-                }
-
-                async function deleteSupabaseAddress(address) {
-                    const user = await getDecorevaAuthUser();
-                    if (!user || !decorevaAddressSupabase || !address || !address.id) return false;
-
-                    const result = await decorevaAddressSupabase
-                        .from("saved_addresses")
-                        .delete()
-                        .eq("id", address.id)
-                        .eq("user_id", user.id);
-
-                    if (result.error) throw result.error;
-
-                    await loadSupabaseAddresses();
-
-                    if (profile.addresses.length && !profile.addresses.some(function (item) { return item.default; })) {
-                        await setSupabaseDefaultAddress(profile.addresses[0]);
-                    }
-
-                    return true;
-                }
-
-                async function setSupabaseDefaultAddress(address) {
-                    const user = await getDecorevaAuthUser();
-                    if (!user || !decorevaAddressSupabase || !address || !address.id) return false;
-
-                    let result = await decorevaAddressSupabase
-                        .from("saved_addresses")
-                        .update({ is_default: false })
-                        .eq("user_id", user.id);
-
-                    if (result.error) throw result.error;
-
-                    result = await decorevaAddressSupabase
-                        .from("saved_addresses")
-                        .update({ is_default: true })
-                        .eq("id", address.id)
-                        .eq("user_id", user.id);
-
-                    if (result.error) throw result.error;
-
-                    await loadSupabaseAddresses();
-                    return true;
-                }
-
                 function escapeProfileText(value) {
                     return String(value || "").replace(/[&<>\"]/g, function (char) {
                         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char];
@@ -4762,19 +4350,12 @@
                     if (form) { form.hidden = true; form.dataset.editIndex = ""; }
                 }
 
-                async function openProfile() {
+                function openProfile() {
                     const panel = document.querySelector("#decoreva-profile-panel");
                     if (!panel) return;
-
                     renderProfile();
                     panel.classList.add("open");
                     panel.setAttribute("aria-hidden", "false");
-
-                    const user = await getDecorevaAuthUser();
-                    if (user && decorevaAddressSupabase) {
-                        await loadSupabaseAddresses();
-                        renderProfile();
-                    }
                 }
 
 
@@ -4953,117 +4534,52 @@
                     }, 40);
                 }
 
-                async function whatsappCheckout() {
-                    if (!cart.length || !deliveryAddress || decorevaOrderInProgress) return;
+                function whatsappCheckout() {
+                    if (!cart.length || !deliveryAddress) return;
 
-                    decorevaOrderInProgress = true;
+                    const lines = ["Hello DECOREVA, I want to order:", ""];
 
-                    const button = document.querySelector("#decoreva-cart-whatsapp");
-                    const paymentButton = document.querySelector("#decoreva-payment-order");
-                    const message = document.querySelector("#decoreva-address-message");
-                    const originalButtonText = button ? button.textContent : "Order on WhatsApp";
-                    const originalPaymentText = paymentButton ? paymentButton.textContent : "Place Order on WhatsApp";
+                    cart.forEach(function (item, index) {
+                        let line = (index + 1) + ". " + item.title;
+                        if (item.variationName) line += " - " + item.variationName;
+                        line += " × " + item.quantity + " = " + money(item.price * item.quantity);
+                        lines.push(line);
+                    });
 
-                    if (button) {
-                        button.disabled = true;
-                        button.textContent = "Saving Order...";
+                    lines.push("", "Total MRP: " + money(subtotalAmount()));
+
+                    if (appliedCoupon) {
+                        lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
+                        lines.push("Discount on MRP: - " + money(discountAmount()));
                     }
-                    if (paymentButton) {
-                        paymentButton.disabled = true;
-                        paymentButton.textContent = "Saving Order...";
-                    }
 
-                    try {
-                        const order = await createSupabaseOrder();
-
-                        if (!order) {
-                            if (button) {
-                                button.disabled = false;
-                                button.textContent = originalButtonText;
-                            }
-                            if (paymentButton) {
-                                paymentButton.disabled = false;
-                                paymentButton.textContent = originalPaymentText;
-                            }
-                            return;
-                        }
-
-                        const lines = [
-                            "Hello DECOREVA, I want to order:",
+                    lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
+                    if (deliveryAddress) {
+                        lines.push(
                             "",
-                            "Order Number: " + order.orderNumber,
-                            ""
-                        ];
-
-                        cart.forEach(function (item, index) {
-                            let line = (index + 1) + ". " + item.title;
-                            if (item.variationName) line += " - " + item.variationName;
-                            line += " × " + item.quantity + " = " + money(item.price * item.quantity);
-                            lines.push(line);
-                        });
-
-                        lines.push("", "Total MRP: " + money(subtotalAmount()));
-
-                        if (appliedCoupon) {
-                            lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
-                            lines.push("Discount on MRP: - " + money(discountAmount()));
-                        }
-
-                        lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
-                        if (deliveryAddress) {
-                            lines.push(
-                                "",
-                                "Delivery Address:",
-                                deliveryAddress.name,
-                                "Mobile: " + deliveryAddress.mobile,
-                                deliveryAddress.line,
-                                deliveryAddress.city + ", " + deliveryAddress.state + " - " + deliveryAddress.pincode
-                            );
-                        }
-                        lines.push("", "Please confirm availability and payment details.");
-
-                        const whatsappUrl =
-                            "https://wa.me/919582899547?text=" +
-                            encodeURIComponent(lines.join("\n"));
-
-                        window.open(
-                            whatsappUrl,
-                            "_blank",
-                            "noopener,noreferrer"
+                            "Delivery Address:",
+                            deliveryAddress.name,
+                            "Mobile: " + deliveryAddress.mobile,
+                            deliveryAddress.line,
+                            deliveryAddress.city + ", " + deliveryAddress.state + " - " + deliveryAddress.pincode
                         );
-
-                        showOrderConfirmation(order.orderNumber);
-
-                        if (message) {
-                            message.dataset.userMessage = "1";
-                            message.textContent = "Order " + order.orderNumber + " saved. WhatsApp opened for confirmation.";
-                            message.className = "decoreva-address-message success";
-                        }
-                    } catch (error) {
-                        console.error("DECOREVA order submission error:", error);
-
-                        if (message) {
-                            message.dataset.userMessage = "1";
-                            message.textContent = "Could not save your order. Please try again. Your WhatsApp order was not opened.";
-                            message.className = "decoreva-address-message error";
-                        }
-
-                        alert("We could not save your order. Please try again.");
-                    } finally {
-                        decorevaOrderInProgress = false;
-
-                        if (button) {
-                            button.disabled = !cart.length;
-                            button.textContent = originalButtonText;
-                        }
-                        if (paymentButton) {
-                            paymentButton.disabled = false;
-                            paymentButton.textContent = originalPaymentText;
-                        }
                     }
+                    lines.push("", "Please confirm availability and payment details.");
+
+                    const whatsappUrl =
+                        "https://wa.me/919582899547?text=" +
+                        encodeURIComponent(lines.join("\n"));
+
+                    window.open(
+                        whatsappUrl,
+                        "_blank",
+                        "noopener,noreferrer"
+                    );
+
+                    showOrderConfirmation();
                 }
 
-                function showOrderConfirmation(orderNumber) {
+                function showOrderConfirmation() {
                     let confirmation = document.querySelector("#decoreva-order-confirmation");
                     if (!confirmation) {
                         confirmation = document.createElement("div");
@@ -5073,19 +4589,12 @@
                             <div class="decoreva-order-confirmation-overlay"></div>
                             <div class="decoreva-order-confirmation-card" role="dialog" aria-modal="true" aria-label="Order confirmation">
                                 <div class="decoreva-order-confirmation-icon">✓</div>
-                                <strong>Order Request Saved</strong>
-                                <p class="decoreva-order-confirmation-text"></p>
+                                <strong>Order Placed Successfully</strong>
+                                <p>Your order details have been opened in WhatsApp. Please send the message to DECOREVA to confirm your order.</p>
                                 <button type="button" id="decoreva-order-confirmation-close">Continue Shopping</button>
                             </div>`;
                         document.body.appendChild(confirmation);
                     }
-
-                    const confirmationText = confirmation.querySelector(".decoreva-order-confirmation-text");
-                    if (confirmationText) {
-                        confirmationText.textContent =
-                            "Order " + (orderNumber || "") + " has been saved. Your order details are open in WhatsApp. Please send the message to DECOREVA to confirm your order.";
-                    }
-
                     confirmation.classList.add("open");
                 }
 
@@ -5466,7 +4975,7 @@
                                 <div class="decoreva-cart-summary-row" id="decoreva-cart-discount-row" hidden><span>Discount on MRP</span><strong id="decoreva-cart-discount">- ₹0</strong></div>
                                 <div class="decoreva-cart-summary-row"><span>Delivery</span><strong id="decoreva-cart-delivery">₹0</strong></div>
                                 <div class="decoreva-cart-total-row"><span>Total Amount</span><strong id="decoreva-cart-total">₹0</strong></div>
-                                <button type="button" id="decoreva-cart-whatsapp">Place Order on WhatsApp</button>
+                                <button type="button" id="decoreva-cart-whatsapp">Order on WhatsApp</button>
                             </div>
                         </div>`;
                     document.body.appendChild(drawer);
@@ -5560,7 +5069,7 @@
                                         <div id="decoreva-profile-address-message" class="decoreva-profile-message"></div>
                                     </div>
                                 </section>
-                                <p class="decoreva-profile-note">Your profile and saved addresses are securely linked to your account when you are logged in.</p>
+                                <p class="decoreva-profile-note">Your profile and saved addresses are stored only on this device.</p>
                             </div>
                         </div>
                     `;
@@ -5657,7 +5166,7 @@
                     openProfile();
                 });
 
-                document.addEventListener("click", async function (event) {
+                document.addEventListener("click", function (event) {
                     const cartButton = event.target.closest(".decoreva-add-cart");
                     if (cartButton) {
                         event.preventDefault();
@@ -5849,53 +5358,6 @@
                         return;
                     }
 
-
-                    if (event.target.closest("#decoreva-payment-order")) {
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        const address = document.querySelector("#decoreva-checkout-address");
-                        if (!address || !cart.length) return;
-
-                        const get = function (id) {
-                            const el = document.querySelector(id);
-                            return el ? el.value.trim() : "";
-                        };
-
-                        const complete =
-                            !!get("#decoreva-address-name") &&
-                            /^\\d{10}$/.test(get("#decoreva-address-mobile")) &&
-                            !!get("#decoreva-address-line") &&
-                            !!get("#decoreva-address-city") &&
-                            !!get("#decoreva-address-state") &&
-                            /^\\d{6}$/.test(get("#decoreva-address-pincode"));
-
-                        if (!complete) {
-                            const addressMessage = document.querySelector("#decoreva-address-message");
-                            if (addressMessage) {
-                                addressMessage.dataset.userMessage = "1";
-                                addressMessage.textContent = "Please fill all delivery address details before placing your order.";
-                                addressMessage.className = "decoreva-address-message error";
-                            }
-                            checkoutStep = "address";
-                            updateCheckoutStepUI();
-                            address.scrollIntoView({behavior:"smooth", block:"start"});
-                            return;
-                        }
-
-                        deliveryAddress = {
-                            name: get("#decoreva-address-name"),
-                            mobile: get("#decoreva-address-mobile"),
-                            line: get("#decoreva-address-line"),
-                            city: get("#decoreva-address-city"),
-                            state: get("#decoreva-address-state"),
-                            pincode: get("#decoreva-address-pincode")
-                        };
-
-                        localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(deliveryAddress));
-                        whatsappCheckout();
-                        return;
-                    }
 
                     if (event.target.closest("#decoreva-cart-whatsapp")) {
                         event.preventDefault();
@@ -6151,9 +5613,9 @@
 
                 /* =========================================================
                    DECOREVA — PROFILE + SAVED ADDRESSES
-                   Supabase-backed for logged-in customers; local fallback for guests.
+                   Local-device profile, no login/payment backend required.
                    ========================================================= */
-                document.addEventListener("click", async function (event) {
+                document.addEventListener("click", function (event) {
                     const profileMenu = event.target.closest("[data-profile-menu]");
                     if (profileMenu) {
                         event.preventDefault();
@@ -6240,38 +5702,11 @@
                         const action = addressAction.dataset.profileAddressAction;
                         if (action === "edit") { showProfileAddressForm(index); return; }
                         if (action === "delete") {
-                            const selectedAddress = profile.addresses[index];
-
-                            if (selectedAddress && selectedAddress.id && decorevaAddressSupabase) {
-                                try {
-                                    await deleteSupabaseAddress(selectedAddress);
-                                    renderProfile();
-                                } catch (error) {
-                                    console.error("DECOREVA saved address delete error:", error);
-                                    alert("Could not delete this address. Please try again.");
-                                }
-                                return;
-                            }
-
                             profile.addresses.splice(index, 1);
                             if (profile.addresses.length && !profile.addresses.some(a => a.default)) profile.addresses[0].default = true;
                             saveProfile(); renderProfile(); return;
                         }
-
                         if (action === "default") {
-                            const selectedAddress = profile.addresses[index];
-
-                            if (selectedAddress && selectedAddress.id && decorevaAddressSupabase) {
-                                try {
-                                    await setSupabaseDefaultAddress(selectedAddress);
-                                    renderProfile();
-                                } catch (error) {
-                                    console.error("DECOREVA saved address default error:", error);
-                                    alert("Could not change the default address. Please try again.");
-                                }
-                                return;
-                            }
-
                             profile.addresses.forEach((a, i) => a.default = i === index);
                             saveProfile(); renderProfile();
                             return;
@@ -6298,44 +5733,13 @@
                         }
                         const form = document.querySelector("#decoreva-profile-address-form");
                         const editIndex = form && form.dataset.editIndex !== "" ? Number(form.dataset.editIndex) : -1;
-                        const existingAddress = editIndex >= 0 && profile.addresses[editIndex]
-                            ? profile.addresses[editIndex]
-                            : null;
-
-                        address.default = existingAddress
-                            ? !!existingAddress.default
-                            : profile.addresses.length === 0;
-
-                        if (existingAddress && existingAddress.id) {
-                            address.id = existingAddress.id;
-                        }
-
-                        const currentUser = await getDecorevaAuthUser();
-
-                        if (currentUser && decorevaAddressSupabase) {
-                            try {
-                                const saved = await saveSupabaseAddress(address, editIndex);
-                                if (!saved) throw new Error("Supabase address save unavailable.");
-
-                                hideProfileAddressForm();
-                                renderProfile();
-                                return;
-                            } catch (error) {
-                                console.error("DECOREVA saved address save error:", error);
-                                if (message) {
-                                    message.textContent = "Could not save address to your account. Please try again.";
-                                    message.className = "decoreva-profile-message error";
-                                }
-                                return;
-                            }
-                        }
-
                         if (editIndex >= 0 && profile.addresses[editIndex]) {
+                            address.default = !!profile.addresses[editIndex].default;
                             profile.addresses[editIndex] = address;
                         } else {
+                            address.default = profile.addresses.length === 0;
                             profile.addresses.push(address);
                         }
-
                         saveProfile();
                         hideProfileAddressForm();
                         renderProfile();
@@ -6400,29 +5804,36 @@
             /* =========================================================
                DECOREVA — LIKE + RATING + REVIEWS
                SAFE ADD-ON
-               - Reviews + ratings use Supabase
-               - Likes remain on the existing localStorage system for now
+               - No MutationObserver
                - No changes to cart/wishlist/variation/slider logic
                - Uses one-time initialization + delegated clicks
+               - Local browser storage for this first version
                ========================================================= */
             (function () {
                 "use strict";
 
+                const DECOREVA_RATINGS_KEY = "decoreva_ratings_v1";
                 const DECOREVA_LIKES_KEY = "decoreva_likes_v1";
-                const supabaseClient = window.decorevaSupabase || null;
 
                 let ratings = {};
                 let likes = {};
-                let reviewsLoaded = false;
-                let reviewsLoadingPromise = null;
-                let supabaseLikesLoaded = false;
-                let supabaseLikedKeys = {};
+
+                try {
+                    const saved = JSON.parse(localStorage.getItem(DECOREVA_RATINGS_KEY) || "{}");
+                    ratings = saved && typeof saved === "object" ? saved : {};
+                } catch (error) {
+                    ratings = {};
+                }
 
                 try {
                     const saved = JSON.parse(localStorage.getItem(DECOREVA_LIKES_KEY) || "{}");
                     likes = saved && typeof saved === "object" ? saved : {};
                 } catch (error) {
                     likes = {};
+                }
+
+                function saveRatings() {
+                    localStorage.setItem(DECOREVA_RATINGS_KEY, JSON.stringify(ratings));
                 }
 
                 function saveLikes() {
@@ -6473,53 +5884,6 @@
                     }
 
                     return output;
-                }
-
-                async function loadSupabaseReviews() {
-                    if (!supabaseClient) {
-                        console.warn("DECOREVA: Supabase client not available for reviews.");
-                        return;
-                    }
-
-                    if (reviewsLoaded) return;
-                    if (reviewsLoadingPromise) return reviewsLoadingPromise;
-
-                    reviewsLoadingPromise = (async function () {
-                        try {
-                            const result = await supabaseClient
-                                .from("product_reviews")
-                                .select("id, product_key, user_id, rating, review_text, created_at")
-                                .order("created_at", { ascending: true });
-
-                            if (result.error) {
-                                console.error("DECOREVA reviews load error:", result.error);
-                                return;
-                            }
-
-                            ratings = {};
-
-                            (result.data || []).forEach(function (review) {
-                                if (!review || !review.product_key) return;
-
-                                getRecord(review.product_key).reviews.push({
-                                    id: review.id,
-                                    user_id: review.user_id,
-                                    rating: Number(review.rating || 0),
-                                    text: review.review_text || "",
-                                    date: review.created_at || ""
-                                });
-                            });
-
-                            reviewsLoaded = true;
-                            updateAllRatingRows();
-                        } catch (error) {
-                            console.error("DECOREVA reviews load exception:", error);
-                        } finally {
-                            reviewsLoadingPromise = null;
-                        }
-                    })();
-
-                    return reviewsLoadingPromise;
                 }
 
                 function createRatingRow(card) {
@@ -6580,10 +5944,7 @@
                     const ratingLabel = row.querySelector(".decoreva-rating-text");
 
                     if (likeButton) {
-                        const liked = supabaseLikesLoaded
-                            ? !!supabaseLikedKeys[key]
-                            : row.dataset.liked === "1";
-                        row.dataset.liked = liked ? "1" : "";
+                        const liked = row.dataset.liked === "1";
                         likeButton.innerHTML =
                             (liked ? "♥" : "♡") +
                             ' <span>Like</span> <b>' +
@@ -6613,75 +5974,20 @@
                     }
                 }
 
-                function updateAllRatingRows() {
-                    document.querySelectorAll(
-                        "#collection-products .card, .featured-slider .featured-slide"
-                    ).forEach(function (card) {
+                function initializeRatingRows() {
+                    const selector =
+                        "#collection-products .card, " +
+                        ".featured-slider .featured-slide";
+
+                    document.querySelectorAll(selector).forEach(function (card) {
                         createRatingRow(card);
                         updateRatingRow(card);
                     });
                 }
 
-                function initializeRatingRows() {
-                    updateAllRatingRows();
-                    loadSupabaseReviews();
-                    loadSupabaseLikes(false);
-                }
-
-                async function getCurrentUser() {
-                    if (!supabaseClient || !supabaseClient.auth) return null;
-
-                    try {
-                        const result = await supabaseClient.auth.getUser();
-                        return result && result.data ? result.data.user : null;
-                    } catch (error) {
-                        console.error("DECOREVA auth check error:", error);
-                        return null;
-                    }
-                }
-
-                async function loadSupabaseLikes(force) {
-                    if (!supabaseClient) return false;
-                    if (supabaseLikesLoaded && !force) return true;
-
-                    try {
-                        const result = await supabaseClient
-                            .from("product_likes")
-                            .select("product_key, user_id");
-
-                        if (result.error) {
-                            console.error("DECOREVA likes load error:", result.error);
-                            return false;
-                        }
-
-                        const counts = {};
-                        const likedKeys = {};
-                        const user = await getCurrentUser();
-
-                        (result.data || []).forEach(function (like) {
-                            if (!like || !like.product_key) return;
-                            counts[like.product_key] = Number(counts[like.product_key] || 0) + 1;
-                            if (user && like.user_id === user.id) {
-                                likedKeys[like.product_key] = true;
-                            }
-                        });
-
-                        likes = counts;
-                        supabaseLikedKeys = likedKeys;
-                        supabaseLikesLoaded = true;
-                        updateAllRatingRows();
-                        return true;
-                    } catch (error) {
-                        console.error("DECOREVA likes load exception:", error);
-                        return false;
-                    }
-                }
-
-                async function openReviewModal(card) {
+                function openReviewModal(card) {
                     const key = getCardKey(card);
                     if (!key) return;
-
-                    await loadSupabaseReviews();
 
                     const title = card.querySelector("h3");
                     const productName = title
@@ -6723,6 +6029,7 @@
 
                     modal.dataset.ratingKey = key;
                     modal.dataset.ratingCardKey = key;
+
                     modal.querySelector(".decoreva-review-product").textContent = productName;
 
                     const average = getAverage(record);
@@ -6743,7 +6050,8 @@
                         empty.textContent = "No reviews yet.";
                         list.appendChild(empty);
                     } else {
-                        record.reviews.slice().reverse().forEach(function (review) {
+                        record.reviews.slice().reverse().forEach(function (review, reversedIndex) {
+                            const originalReviewIndex = record.reviews.length - 1 - reversedIndex;
                             const item = document.createElement("div");
                             item.className = "decoreva-review-item";
 
@@ -6751,7 +6059,7 @@
                             top.className = "decoreva-review-item-top";
 
                             const name = document.createElement("strong");
-                            name.textContent = "Customer";
+                            name.textContent = review.name || "Customer";
 
                             const stars = document.createElement("span");
                             stars.textContent = starText(review.rating);
@@ -6759,43 +6067,25 @@
                             const text = document.createElement("p");
                             text.textContent = review.text || "";
 
+                            const deleteButton = document.createElement("button");
+                            deleteButton.type = "button";
+                            deleteButton.className = "decoreva-review-delete";
+                            deleteButton.textContent = "Delete";
+                            deleteButton.dataset.reviewDeleteIndex = String(originalReviewIndex);
+                            deleteButton.setAttribute("aria-label", "Delete this review");
+
                             top.appendChild(name);
                             top.appendChild(stars);
                             item.appendChild(top);
                             item.appendChild(text);
+                            item.appendChild(deleteButton);
                             list.appendChild(item);
                         });
                     }
 
-                    const user = await getCurrentUser();
-                    const form = modal.querySelector(".decoreva-review-form");
-                    const nameInput = form.querySelector(".decoreva-review-name");
-                    const textInput = form.querySelector(".decoreva-review-text");
-                    const submitButton = form.querySelector(".decoreva-review-submit");
-
-                    if (!user) {
-                        nameInput.value = "";
-                        nameInput.disabled = true;
-                        textInput.value = "";
-                        textInput.disabled = true;
-                        submitButton.disabled = true;
-                        submitButton.textContent = "Login to Review";
-                    } else {
-                        nameInput.disabled = false;
-                        textInput.disabled = false;
-                        submitButton.disabled = false;
-                        submitButton.textContent = "Submit Review";
-
-                        try {
-                            const metadata = user.user_metadata || {};
-                            nameInput.value = String(metadata.full_name || "");
-                        } catch (error) {
-                            nameInput.value = "";
-                        }
-                    }
-
                     const starsInput = modal.querySelector(".decoreva-review-stars-input");
                     starsInput.replaceChildren();
+
                     let selectedRating = 0;
 
                     for (let i = 1; i <= 5; i++) {
@@ -6805,7 +6095,6 @@
                         button.textContent = "★";
                         button.dataset.value = String(i);
                         button.setAttribute("aria-label", i + " star");
-                        button.disabled = !user;
 
                         button.addEventListener("click", function () {
                             selectedRating = i;
@@ -6818,15 +6107,13 @@
                         starsInput.appendChild(button);
                     }
 
-                    form.onsubmit = async function (event) {
+                    const form = modal.querySelector(".decoreva-review-form");
+
+                    form.onsubmit = function (event) {
                         event.preventDefault();
 
-                        const currentUser = await getCurrentUser();
-                        if (!currentUser) {
-                            alert("Please login to submit a review.");
-                            return;
-                        }
-
+                        const nameInput = form.querySelector(".decoreva-review-name");
+                        const textInput = form.querySelector(".decoreva-review-text");
                         const name = nameInput.value.trim();
                         const text = textInput.value.trim();
 
@@ -6835,63 +6122,26 @@
                             return;
                         }
 
-                        if (!name || !text) {
-                            alert("Please enter your name and review.");
-                            return;
-                        }
+                        if (!name || !text) return;
 
-                        if (!supabaseClient) {
-                            alert("Review service is temporarily unavailable. Please try again.");
-                            return;
-                        }
+                        getRecord(key).reviews.push({
+                            name: name,
+                            rating: selectedRating,
+                            text: text,
+                            date: new Date().toISOString()
+                        });
 
-                        submitButton.disabled = true;
-                        submitButton.textContent = "Submitting...";
+                        saveRatings();
 
-                        try {
-                            const result = await supabaseClient
-                                .from("product_reviews")
-                                .insert({
-                                    product_key: key,
-                                    user_id: currentUser.id,
-                                    rating: selectedRating,
-                                    review_text: text
-                                })
-                                .select("id, product_key, user_id, rating, review_text, created_at")
-                                .single();
-
-                            if (result.error) {
-                                console.error("DECOREVA review insert error:", result.error);
-                                alert("Could not submit your review. Please try again.");
-                                return;
+                        document.querySelectorAll(
+                            "#collection-products .card, .featured-slider .featured-slide"
+                        ).forEach(function (item) {
+                            if (getCardKey(item) === key) {
+                                updateRatingRow(item);
                             }
+                        });
 
-                            const newReview = result.data;
-                            getRecord(key).reviews.push({
-                                id: newReview.id,
-                                user_id: newReview.user_id,
-                                rating: Number(newReview.rating || 0),
-                                text: newReview.review_text || "",
-                                date: newReview.created_at || ""
-                            });
-
-                            reviewsLoaded = true;
-                            updateAllRatingRows();
-                            nameInput.value = String(currentUser.user_metadata?.full_name || name);
-                            textInput.value = "";
-                            selectedRating = 0;
-                            starsInput.querySelectorAll("button").forEach(function (item) {
-                                item.classList.remove("active");
-                            });
-
-                            await openReviewModal(card);
-                        } catch (error) {
-                            console.error("DECOREVA review submit exception:", error);
-                            alert("Could not submit your review. Please try again.");
-                        } finally {
-                            submitButton.disabled = false;
-                            submitButton.textContent = "Submit Review";
-                        }
+                        openReviewModal(card);
                     };
 
                     modal.classList.add("open");
@@ -6913,7 +6163,7 @@
                     }
                 }
 
-                document.addEventListener("click", async function (event) {
+                document.addEventListener("click", function (event) {
                     const likeButton = event.target.closest(".decoreva-like-button");
 
                     if (likeButton) {
@@ -6925,48 +6175,6 @@
                         const key = getCardKey(card);
 
                         if (!card || !row || !key) return;
-
-                        const currentUser = await getCurrentUser();
-
-                        if (currentUser && supabaseClient) {
-                            const loaded = await loadSupabaseLikes(true);
-                            if (!loaded) {
-                                alert("Like service is temporarily unavailable. Please try again.");
-                                return;
-                            }
-
-                            const liked = !!supabaseLikedKeys[key];
-
-                            try {
-                                if (liked) {
-                                    const result = await supabaseClient
-                                        .from("product_likes")
-                                        .delete()
-                                        .eq("user_id", currentUser.id)
-                                        .eq("product_key", key);
-
-                                    if (result.error) throw result.error;
-                                    delete supabaseLikedKeys[key];
-                                } else {
-                                    const result = await supabaseClient
-                                        .from("product_likes")
-                                        .insert({
-                                            product_key: key,
-                                            user_id: currentUser.id
-                                        });
-
-                                    if (result.error) throw result.error;
-                                    supabaseLikedKeys[key] = true;
-                                }
-
-                                await loadSupabaseLikes(true);
-                            } catch (error) {
-                                console.error("DECOREVA like update error:", error);
-                                alert("Could not update your like. Please try again.");
-                            }
-
-                            return;
-                        }
 
                         const liked = row.dataset.liked === "1";
 
@@ -6991,6 +6199,46 @@
 
                         const card = ratingButton.closest(".card, .featured-slide");
                         if (card) openReviewModal(card);
+                        return;
+                    }
+
+                    const deleteReviewButton = event.target.closest(".decoreva-review-delete");
+
+                    if (deleteReviewButton) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        const modal = deleteReviewButton.closest("#decoreva-review-modal");
+                        const key = modal ? modal.dataset.ratingKey : "";
+                        const index = Number(deleteReviewButton.dataset.reviewDeleteIndex);
+
+                        if (!key || !Number.isInteger(index)) return;
+
+                        const record = getRecord(key);
+                        if (!record.reviews[index]) return;
+
+                        if (!window.confirm("Delete this review?")) return;
+
+                        record.reviews.splice(index, 1);
+                        saveRatings();
+
+                        let reviewCard = null;
+                        document.querySelectorAll(
+                            "#collection-products .card, .featured-slider .featured-slide"
+                        ).forEach(function (itemCard) {
+                            if (!reviewCard && getCardKey(itemCard) === key) {
+                                reviewCard = itemCard;
+                            }
+                            if (getCardKey(itemCard) === key) {
+                                updateRatingRow(itemCard);
+                            }
+                        });
+
+                        if (reviewCard) {
+                            openReviewModal(reviewCard);
+                        } else {
+                            closeReviewModal();
+                        }
                         return;
                     }
 
@@ -7020,4 +6268,3 @@
                 });
             })();
         });
-

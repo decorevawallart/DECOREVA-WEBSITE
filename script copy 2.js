@@ -3849,6 +3849,25 @@
             let cart = [];
             let wishlist = [];
             let appliedCoupon = "";
+            let couponModalOpen = false;
+            let checkoutStep = "cart";
+            let couponPreviewCode = "";
+            let deliveryAddress = JSON.parse(localStorage.getItem("decorevaDeliveryAddress") || "null");
+            const PROFILE_KEY = "decoreva_profile_v1";
+            let profile = { name: "", mobile: "", email: "", addresses: [] };
+            try {
+                const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
+                if (savedProfile && typeof savedProfile === "object") {
+                    profile = {
+                        name: String(savedProfile.name || ""),
+                        mobile: String(savedProfile.mobile || ""),
+                        email: String(savedProfile.email || ""),
+                        addresses: Array.isArray(savedProfile.addresses) ? savedProfile.addresses : []
+                    };
+                }
+            } catch (error) {
+                profile = { name: "", mobile: "", email: "", addresses: [] };
+            }
 
             try {
                 cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
@@ -3956,8 +3975,12 @@
                 }, 0);
             }
 
+            function effectiveCouponCode() {
+                return couponPreviewCode || appliedCoupon || "";
+            }
+
             function discountAmount() {
-                const rate = COUPONS[appliedCoupon] || 0;
+                const rate = COUPONS[effectiveCouponCode()] || 0;
                 return Math.round(subtotalAmount() * rate / 100);
             }
 
@@ -4079,10 +4102,17 @@
                     remove.dataset.cartAction = "remove";
                     remove.dataset.cartIndex = String(index);
 
+                    const wishlistButton = document.createElement("button");
+                    wishlistButton.type = "button";
+                    wishlistButton.textContent = "Move to Wishlist";
+                    wishlistButton.dataset.cartAction = "wishlist";
+                    wishlistButton.dataset.cartIndex = String(index);
+
                     controls.appendChild(minus);
                     controls.appendChild(qty);
                     controls.appendChild(plus);
                     controls.appendChild(remove);
+                    controls.appendChild(wishlistButton);
                     info.appendChild(controls);
 
                     row.appendChild(img);
@@ -4104,15 +4134,32 @@
                 if (total) total.textContent = money(finalAmount());
 
                 if (couponInput) couponInput.value = appliedCoupon;
-                if (couponMessage && appliedCoupon) {
-                    couponMessage.textContent = appliedCoupon + " applied — 10% off";
-                    couponMessage.className = "decoreva-coupon-message success";
-                } else if (couponMessage) {
-                    couponMessage.textContent = "";
-                    couponMessage.className = "decoreva-coupon-message";
+                if (couponMessage) {
+                    couponMessage.textContent = appliedCoupon ? appliedCoupon + " applied — 10% off" : "";
+                    couponMessage.className = appliedCoupon
+                        ? "decoreva-coupon-message success"
+                        : "decoreva-coupon-message";
                 }
 
-                if (checkout) checkout.disabled = cart.length === 0;
+                const couponAppliedLabel = document.querySelector("#decoreva-coupon-applied-label");
+                if (couponAppliedLabel) {
+                    couponAppliedLabel.textContent = appliedCoupon ? appliedCoupon + " applied" : (couponPreviewCode ? couponPreviewCode + " checked — 10% OFF" : "");
+                    couponAppliedLabel.hidden = !(appliedCoupon || couponPreviewCode);
+                }
+                const couponTrigger = document.querySelector("#decoreva-open-coupon");
+                if (couponTrigger) couponTrigger.textContent = "Apply Coupon";
+
+                if (checkout) {
+                    checkout.disabled = cart.length === 0;
+                    checkout.textContent = "Order on WhatsApp";
+                    checkout.setAttribute("aria-label", "Order on WhatsApp");
+                }
+
+                if (document.querySelector("#decoreva-similar-products")) renderSimilarProducts();
+                if (checkoutStep !== "cart") {
+                    renderCheckoutSummary();
+                    updateAddressContinueState();
+                }
 
                 updateCartCount();
             }
@@ -4173,20 +4220,35 @@
             }
 
             function openCart() {
-                const drawer = document.querySelector("#decoreva-cart-drawer");
-                if (!drawer) return;
-                renderCart();
-                drawer.classList.add("open");
-                document.body.classList.add("decoreva-cart-open");
-                drawer.setAttribute("aria-hidden", "false");
+                openCartDrawer();
             }
 
             function closeCart() {
                 const drawer = document.querySelector("#decoreva-cart-drawer");
                 if (!drawer) return;
+                checkoutStep = "cart";
+                drawer.classList.remove("decoreva-checkout-mode");
                 drawer.classList.remove("open");
-                document.body.classList.remove("decoreva-cart-open");
+                document.body.classList.remove("decoreva-cart-open", "decoreva-checkout-open");
+                document.body.style.overflow = "";
+                document.documentElement.style.overflow = "";
                 drawer.setAttribute("aria-hidden", "true");
+            }
+
+            function openCartDrawer() {
+                const drawer = document.querySelector("#decoreva-cart-drawer");
+                if (!drawer) return;
+                checkoutStep = "cart";
+                drawer.classList.add("decoreva-checkout-mode");
+                renderCart();
+                updateCheckoutStepUI();
+                const steps = drawer.querySelector(".decoreva-checkout-steps");
+                if (steps) { steps.hidden = false; steps.style.display = "flex"; }
+                drawer.classList.add("open");
+                document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
+                document.body.style.overflow = "hidden";
+                document.documentElement.style.overflow = "hidden";
+                drawer.setAttribute("aria-hidden", "false");
             }
 
             function openWishlist() {
@@ -4195,6 +4257,8 @@
                 renderWishlist();
                 drawer.classList.add("open");
                 drawer.setAttribute("aria-hidden", "false");
+                document.body.classList.add("decoreva-wishlist-open");
+                document.body.style.overflow = "hidden";
             }
 
             function closeWishlist() {
@@ -4202,14 +4266,98 @@
                 if (!drawer) return;
                 drawer.classList.remove("open");
                 drawer.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("decoreva-wishlist-open");
+                if (!document.body.classList.contains("decoreva-cart-open")) document.body.style.overflow = "";
+            }
+
+            function saveProfile() {
+                localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            }
+
+            function escapeProfileText(value) {
+                return String(value || "").replace(/[&<>\"]/g, function (char) {
+                    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char];
+                });
+            }
+
+            function renderProfile() {
+                const panel = document.querySelector("#decoreva-profile-panel");
+                if (!panel) return;
+                const name = document.querySelector("#decoreva-profile-name");
+                const mobile = document.querySelector("#decoreva-profile-mobile");
+                const email = document.querySelector("#decoreva-profile-email");
+                const status = document.querySelector("#decoreva-profile-message");
+                const addressList = document.querySelector("#decoreva-profile-addresses");
+                const summary = document.querySelector("#decoreva-profile-summary");
+                if (name && !name.value) name.value = profile.name;
+                if (mobile && !mobile.value) mobile.value = profile.mobile;
+                if (email && !email.value) email.value = profile.email;
+                if (summary) {
+                    summary.innerHTML = profile.name
+                        ? '<strong>' + escapeProfileText(profile.name) + '</strong><span>' + escapeProfileText(profile.mobile || "") + (profile.email ? ' • ' + escapeProfileText(profile.email) : '') + '</span>'
+                        : '<strong>Guest Customer</strong><span>Create your profile and save your delivery details on this device.</span>';
+                }
+                if (addressList) {
+                    addressList.replaceChildren();
+                    if (!profile.addresses.length) {
+                        const empty = document.createElement("div");
+                        empty.className = "decoreva-profile-address-empty";
+                        empty.textContent = "No saved addresses yet.";
+                        addressList.appendChild(empty);
+                    } else {
+                        profile.addresses.forEach(function (address, index) {
+                            const card = document.createElement("div");
+                            card.className = "decoreva-profile-address-card" + (address.default ? " default" : "");
+                            card.innerHTML = '<div class="decoreva-profile-address-top"><strong>' + escapeProfileText(address.label || "HOME") + '</strong>' + (address.default ? '<span>DEFAULT</span>' : '') + '</div>' +
+                                '<div class="decoreva-profile-address-name">' + escapeProfileText(address.name || profile.name) + '</div>' +
+                                '<div class="decoreva-profile-address-text">' + escapeProfileText(address.line) + '<br>' + escapeProfileText(address.city) + ', ' + escapeProfileText(address.state) + ' - ' + escapeProfileText(address.pincode) + '<br>Mobile: ' + escapeProfileText(address.mobile || profile.mobile) + '</div>' +
+                                '<div class="decoreva-profile-address-actions">' +
+                                (!address.default ? '<button type="button" data-profile-address-action="default" data-profile-address-index="' + index + '">Set Default</button>' : '') +
+                                '<button type="button" data-profile-address-action="edit" data-profile-address-index="' + index + '">Edit</button>' +
+                                '<button type="button" data-profile-address-action="delete" data-profile-address-index="' + index + '">Delete</button>' +
+                                '</div>';
+                            addressList.appendChild(card);
+                        });
+                    }
+                }
+                if (status && !status.dataset.persistent) status.textContent = "";
+            }
+
+            function showProfileAddressForm(index) {
+                const form = document.querySelector("#decoreva-profile-address-form");
+                if (!form) return;
+                form.hidden = false;
+                form.dataset.editIndex = Number.isInteger(index) ? String(index) : "";
+                const address = Number.isInteger(index) && profile.addresses[index] ? profile.addresses[index] : {};
+                const set = function (id, value) { const el = document.querySelector(id); if (el) el.value = value || ""; };
+                set("#decoreva-profile-address-label", address.label || "HOME");
+                set("#decoreva-profile-address-name", address.name || profile.name);
+                set("#decoreva-profile-address-mobile", address.mobile || profile.mobile);
+                set("#decoreva-profile-address-line", address.line);
+                set("#decoreva-profile-address-city", address.city);
+                set("#decoreva-profile-address-state", address.state);
+                set("#decoreva-profile-address-pincode", address.pincode);
+                const msg = document.querySelector("#decoreva-profile-address-message");
+                if (msg) msg.textContent = "";
+                const title = document.querySelector("#decoreva-profile-address-form-title");
+                if (title) title.textContent = Number.isInteger(index) ? "Edit Address" : "Add New Address";
+                const save = document.querySelector("#decoreva-profile-address-save");
+                if (save) save.textContent = Number.isInteger(index) ? "Update Address" : "Save Address";
+            }
+
+            function hideProfileAddressForm() {
+                const form = document.querySelector("#decoreva-profile-address-form");
+                if (form) { form.hidden = true; form.dataset.editIndex = ""; }
             }
 
             function openProfile() {
                 const panel = document.querySelector("#decoreva-profile-panel");
                 if (!panel) return;
+                renderProfile();
                 panel.classList.add("open");
                 panel.setAttribute("aria-hidden", "false");
             }
+
 
             function closeProfile() {
                 const panel = document.querySelector("#decoreva-profile-panel");
@@ -4236,7 +4384,23 @@
                 saveCart();
                 updateCartCount();
                 renderCart();
-                openCart();
+
+                /* Adding a product must not open checkout automatically.
+                   Customer can open the cart from the navigation cart icon. */
+                const addButton = document.querySelector(".decoreva-add-cart");
+                if (addButton) {
+                    const notice = document.createElement("div");
+                    notice.className = "decoreva-cart-added-notice";
+                    notice.textContent = "Added to cart";
+                    document.body.appendChild(notice);
+                    setTimeout(function () {
+                        notice.classList.add("show");
+                    }, 10);
+                    setTimeout(function () {
+                        notice.classList.remove("show");
+                        setTimeout(function () { notice.remove(); }, 220);
+                    }, 1500);
+                }
             }
 
             function toggleWishlist(card) {
@@ -4269,6 +4433,7 @@
                     appliedCoupon = "";
                     saveCoupon();
                     message.textContent = "";
+                    message.className = "decoreva-coupon-message";
                     renderCart();
                     return;
                 }
@@ -4279,18 +4444,98 @@
                     message.textContent = "Invalid coupon code.";
                     message.className = "decoreva-coupon-message error";
                     renderCart();
-                    message.textContent = "Invalid coupon code.";
-                    message.className = "decoreva-coupon-message error";
                     return;
                 }
 
                 appliedCoupon = code;
+                couponPreviewCode = "";
                 saveCoupon();
+                message.textContent = code + " applied — 10% off";
+                message.className = "decoreva-coupon-message success";
                 renderCart();
+                renderCheckoutSummary();
+                closeCouponModal();
+            }
+
+            function openCouponModal() {
+                const modal = document.querySelector("#decoreva-coupon-modal");
+                if (!modal) return;
+                const input = document.querySelector("#decoreva-coupon-input");
+                const message = document.querySelector("#decoreva-coupon-message");
+                if (input) input.value = appliedCoupon || couponPreviewCode || "";
+                if (message && !appliedCoupon && !couponPreviewCode) {
+                    message.textContent = "";
+                    message.className = "decoreva-coupon-message";
+                }
+                modal.classList.add("open");
+                modal.setAttribute("aria-hidden", "false");
+                couponModalOpen = true;
+                window.setTimeout(function () { if (input) input.focus(); }, 50);
+            }
+
+            function closeCouponModal() {
+                const modal = document.querySelector("#decoreva-coupon-modal");
+                if (!modal) return;
+                modal.classList.remove("open");
+                modal.setAttribute("aria-hidden", "true");
+                couponModalOpen = false;
+                if (couponPreviewCode && couponPreviewCode !== appliedCoupon) {
+                    couponPreviewCode = "";
+                    renderCart();
+                    renderCheckoutSummary();
+                }
+            }
+
+            function beginWhatsAppCheckout() {
+                if (!cart.length) return;
+
+                /* Checkout intentionally starts with a blank address.
+                   Saved profile addresses are kept only in Profile and are
+                   not auto-applied here. */
+                deliveryAddress = null;
+                checkoutStep = "address";
+
+                const drawer = document.querySelector("#decoreva-cart-drawer");
+                if (drawer) {
+                    drawer.classList.add("decoreva-checkout-mode");
+                    drawer.classList.add("open");
+                    drawer.setAttribute("aria-hidden", "false");
+                }
+
+                document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
+                document.body.style.overflow = "hidden";
+                document.documentElement.style.overflow = "hidden";
+
+                updateCheckoutStepUI();
+
+                [
+                    "#decoreva-address-name",
+                    "#decoreva-address-mobile",
+                    "#decoreva-address-line",
+                    "#decoreva-address-city",
+                    "#decoreva-address-state",
+                    "#decoreva-address-pincode"
+                ].forEach(function (id) {
+                    const el = document.querySelector(id);
+                    if (el) el.value = "";
+                });
+
+                updateAddressContinueState();
+
+                window.setTimeout(function () {
+                    const address = document.querySelector("#decoreva-checkout-address");
+                    const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+                    if (address && panel) {
+                        panel.scrollTo({
+                            top: Math.max(0, address.offsetTop - 18),
+                            behavior: "smooth"
+                        });
+                    }
+                }, 40);
             }
 
             function whatsappCheckout() {
-                if (!cart.length) return;
+                if (!cart.length || !deliveryAddress) return;
 
                 const lines = ["Hello DECOREVA, I want to order:", ""];
 
@@ -4301,26 +4546,367 @@
                     lines.push(line);
                 });
 
-                lines.push("", "Subtotal: " + money(subtotalAmount()));
+                lines.push("", "Total MRP: " + money(subtotalAmount()));
 
                 if (appliedCoupon) {
                     lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
-                    lines.push("Discount: - " + money(discountAmount()));
+                    lines.push("Discount on MRP: - " + money(discountAmount()));
                 }
 
-                lines.push(
-                    "Delivery: " + money(deliveryCharge()),
-                    "Total: " + money(finalAmount()),
-                    "",
-                    "Please confirm availability and delivery details."
-                );
+                lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
+                if (deliveryAddress) {
+                    lines.push(
+                        "",
+                        "Delivery Address:",
+                        deliveryAddress.name,
+                        "Mobile: " + deliveryAddress.mobile,
+                        deliveryAddress.line,
+                        deliveryAddress.city + ", " + deliveryAddress.state + " - " + deliveryAddress.pincode
+                    );
+                }
+                lines.push("", "Please confirm availability and payment details.");
+
+                const whatsappUrl =
+                    "https://wa.me/919582899547?text=" +
+                    encodeURIComponent(lines.join("\n"));
 
                 window.open(
-                    "https://wa.me/919582899547?text=" +
-                    encodeURIComponent(lines.join("\n")),
+                    whatsappUrl,
                     "_blank",
                     "noopener,noreferrer"
                 );
+
+                showOrderConfirmation();
+            }
+
+            function showOrderConfirmation() {
+                let confirmation = document.querySelector("#decoreva-order-confirmation");
+                if (!confirmation) {
+                    confirmation = document.createElement("div");
+                    confirmation.id = "decoreva-order-confirmation";
+                    confirmation.className = "decoreva-order-confirmation";
+                    confirmation.innerHTML = `
+                        <div class="decoreva-order-confirmation-overlay"></div>
+                        <div class="decoreva-order-confirmation-card" role="dialog" aria-modal="true" aria-label="Order confirmation">
+                            <div class="decoreva-order-confirmation-icon">✓</div>
+                            <strong>Order Placed Successfully</strong>
+                            <p>Your order details have been opened in WhatsApp. Please send the message to DECOREVA to confirm your order.</p>
+                            <button type="button" id="decoreva-order-confirmation-close">Continue Shopping</button>
+                        </div>`;
+                    document.body.appendChild(confirmation);
+                }
+                confirmation.classList.add("open");
+            }
+
+            function renderCheckoutSavedAddresses() {
+                /* Saved addresses are managed from My Profile only.
+                   Checkout intentionally does not display or auto-select them. */
+                return;
+            }
+
+            function fillCheckoutAddress(address) {
+                if (!address) return;
+                const values = {
+                    "#decoreva-address-name": address.name || profile.name,
+                    "#decoreva-address-mobile": address.mobile || profile.mobile,
+                    "#decoreva-address-line": address.line || "",
+                    "#decoreva-address-city": address.city || "",
+                    "#decoreva-address-state": address.state || "",
+                    "#decoreva-address-pincode": address.pincode || ""
+                };
+                Object.keys(values).forEach(function (id) { const el = document.querySelector(id); if (el) el.value = values[id]; });
+            }
+
+            function updateAddressContinueState() {
+                const button = document.querySelector("#decoreva-save-address");
+                if (!button) return;
+                const get = function (id) { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
+                const valid = /^\d{10}$/.test(get("#decoreva-address-mobile")) &&
+                    /^\d{6}$/.test(get("#decoreva-address-pincode")) &&
+                    !!get("#decoreva-address-name") && !!get("#decoreva-address-line") &&
+                    !!get("#decoreva-address-city") && !!get("#decoreva-address-state");
+                button.disabled = !valid;
+                button.setAttribute("aria-disabled", valid ? "false" : "true");
+                const message = document.querySelector("#decoreva-address-message");
+                if (!valid && !deliveryAddress) {
+                    if (message && !message.dataset.userMessage) {
+                        message.textContent = "Please fill all delivery address details before continuing.";
+                        message.className = "decoreva-address-message warning";
+                    }
+                } else if (valid && message && message.classList.contains("warning")) {
+                    message.textContent = "Address complete. Continue to review your order.";
+                    message.className = "decoreva-address-message success";
+                }
+            }
+
+            function renderCheckoutItems() {
+                const box = document.querySelector("#decoreva-checkout-items");
+                if (!box) return;
+                box.replaceChildren();
+                if (!cart.length) return;
+
+                const head = document.createElement("div");
+                head.className = "decoreva-checkout-items-head";
+                head.innerHTML = "<strong>Items in your order</strong><span>" + totalItems() + (totalItems() === 1 ? " item" : " items") + "</span>";
+                box.appendChild(head);
+
+                cart.forEach(function(item, index){
+                    const row = document.createElement("div");
+                    row.className = "decoreva-checkout-item";
+
+                    const img = document.createElement("img");
+                    img.src = item.image || "";
+                    img.alt = item.title;
+                    img.loading = "lazy";
+
+                    const info = document.createElement("div");
+                    info.className = "decoreva-checkout-item-info";
+
+                    const title = document.createElement("strong");
+                    title.textContent = item.title;
+                    info.appendChild(title);
+
+                    const variation = document.createElement("span");
+                    variation.textContent = (item.variationName ? item.variationName + " • " : "") + "Qty: " + item.quantity;
+                    info.appendChild(variation);
+
+                    const price = document.createElement("b");
+                    price.textContent = money(item.price * item.quantity);
+                    info.appendChild(price);
+
+                    const actions = document.createElement("div");
+                    actions.className = "decoreva-checkout-item-actions";
+
+                    const remove = document.createElement("button");
+                    remove.type = "button";
+                    remove.textContent = "Remove";
+                    remove.dataset.checkoutItemAction = "remove";
+                    remove.dataset.checkoutItemIndex = String(index);
+
+                    const wishlistButton = document.createElement("button");
+                    wishlistButton.type = "button";
+                    wishlistButton.textContent = "Move to Wishlist";
+                    wishlistButton.dataset.checkoutItemAction = "wishlist";
+                    wishlistButton.dataset.checkoutItemIndex = String(index);
+
+                    actions.appendChild(remove);
+                    actions.appendChild(wishlistButton);
+                    info.appendChild(actions);
+
+                    row.appendChild(img);
+                    row.appendChild(info);
+                    box.appendChild(row);
+                });
+
+                const delivery = document.createElement("div");
+                delivery.className = "decoreva-checkout-delivery-note";
+                delivery.innerHTML = '<strong>Delivery estimate</strong><span>Delivery details will be confirmed with you on WhatsApp.</span>';
+                box.appendChild(delivery);
+            }
+
+            function renderSimilarProducts() {
+                const box = document.querySelector("#decoreva-similar-products");
+                if (!box) return;
+                box.replaceChildren();
+                if (!cart.length) { box.hidden = true; return; }
+
+                const cartTitles = cart.map(function(item){
+                    return String(item.title || "").trim().toLowerCase();
+                });
+                const seen = {};
+                const candidates = Array.from(document.querySelectorAll(
+                    "#collection-products .card, .featured-slider .featured-slide"
+                )).map(function(card){
+                    const heading = card.querySelector("h3");
+                    const title = heading ? heading.textContent.trim().replace(/\s+/g," ") : "";
+                    const lower = title.toLowerCase();
+                    if (!title || cartTitles.indexOf(lower) !== -1 || seen[lower]) return null;
+                    seen[lower] = true;
+
+                    const image = card.querySelector("img.slider-image, img");
+                    const src = image ? (image.getAttribute("data-src") || image.getAttribute("src") || "") : "";
+                    const priceEl = card.querySelector(".price");
+                    const price = priceEl ? priceEl.textContent.trim().replace(/\s+/g," ") : "";
+                    return {title:title, src:src, price:price};
+                }).filter(Boolean);
+
+                if (!candidates.length) { box.hidden = true; return; }
+                box.hidden = false;
+
+                const head = document.createElement("div");
+                head.className = "decoreva-similar-head";
+                head.innerHTML = "<strong>You May Also Like</strong><span>More from DECOREVA</span>";
+                box.appendChild(head);
+
+                const grid = document.createElement("div");
+                grid.className = "decoreva-similar-grid decoreva-all-products-grid";
+
+                candidates.forEach(function(item){
+                    const card = document.createElement("article");
+                    card.className = "decoreva-similar-card";
+
+                    const img = document.createElement("img");
+                    img.src = item.src;
+                    img.alt = item.title;
+                    img.loading = "lazy";
+
+                    const info = document.createElement("div");
+                    info.className = "decoreva-similar-card-info";
+
+                    const title = document.createElement("strong");
+                    title.textContent = item.title;
+
+                    const price = document.createElement("span");
+                    price.textContent = item.price || "View product";
+
+                    const view = document.createElement("button");
+                    view.type = "button";
+                    view.textContent = "VIEW PRODUCT";
+                    view.dataset.similarProductTitle = item.title;
+
+                    info.appendChild(title);
+                    info.appendChild(price);
+                    info.appendChild(view);
+                    card.appendChild(img);
+                    card.appendChild(info);
+                    grid.appendChild(card);
+                });
+
+                box.appendChild(grid);
+            }
+
+            function renderPaymentReview() {
+                const box=document.querySelector("#decoreva-payment-review");
+                if(!box) return;
+                box.innerHTML="";
+                const address=deliveryAddress || {};
+                const addressCard=document.createElement("div");
+                addressCard.className="decoreva-review-address";
+                addressCard.innerHTML='<div><strong>Deliver to</strong><span>' + escapeProfileText(address.name || "") + (address.pincode ? ", " + escapeProfileText(address.pincode) : "") + '</span></div><p>' + escapeProfileText(address.line || "") + '<br>' + escapeProfileText(address.city || "") + (address.state ? ", " + escapeProfileText(address.state) : "") + (address.pincode ? " - " + escapeProfileText(address.pincode) : "") + '<br>Mobile: ' + escapeProfileText(address.mobile || "") + '</p><button type="button" data-checkout-step="address">CHANGE ADDRESS</button>';
+                box.appendChild(addressCard);
+                const items=document.createElement("div"); items.className="decoreva-review-items";
+                const h=document.createElement("strong"); h.textContent="Items"; items.appendChild(h);
+                cart.forEach(function(item){
+                    const row=document.createElement("div"); row.className="decoreva-review-item";
+                    row.innerHTML='<span>' + escapeProfileText(item.title + (item.variationName ? " — " + item.variationName : "")) + ' × ' + item.quantity + '</span><b>' + money(item.price * item.quantity) + '</b>';
+                    items.appendChild(row);
+                });
+                box.appendChild(items);
+                const price=document.createElement("div"); price.className="decoreva-review-price";
+                price.innerHTML='<div><span>Total MRP</span><b>' + money(subtotalAmount()) + '</b></div>' + (discountAmount() ? '<div><span>Discount on MRP</span><b>- ' + money(discountAmount()) + '</b></div>' : '') + '<div><span>Delivery</span><b>' + money(deliveryCharge()) + '</b></div><div class="final"><span>Total Amount</span><b>' + money(finalAmount()) + '</b></div>';
+                box.appendChild(price);
+            }
+
+            function renderCheckoutSummary() {
+                const box = document.querySelector("#decoreva-checkout-summary");
+                if (!box) return;
+                box.innerHTML = "";
+                const title = document.createElement("strong");
+                title.textContent = "Order Summary";
+                box.appendChild(title);
+                const couponRow = document.createElement("div");
+                couponRow.className = "decoreva-checkout-coupon-row";
+                couponRow.innerHTML = '<span>Coupon</span><button type="button" id="decoreva-checkout-coupon-button">Apply Coupon</button>';
+                box.appendChild(couponRow);
+                if (appliedCoupon) {
+                    const applied = document.createElement("div");
+                    applied.className = "decoreva-checkout-applied-coupon";
+                    applied.innerHTML = '<span>' + escapeProfileText(appliedCoupon) + ' applied — 10% OFF</span><button type="button" id="decoreva-checkout-remove-coupon">Remove</button>';
+                    box.appendChild(applied);
+                }
+                cart.forEach(function (item) {
+                    const row = document.createElement("div");
+                    row.className = "decoreva-checkout-summary-item";
+                    const left = document.createElement("span");
+                    left.textContent = item.title + (item.variationName ? " — " + item.variationName : "") + " × " + item.quantity;
+                    const right = document.createElement("b");
+                    right.textContent = money(item.price * item.quantity);
+                    row.appendChild(left);
+                    row.appendChild(right);
+                    box.appendChild(row);
+                });
+                const rows = [
+                    ["Total MRP", money(subtotalAmount())],
+                    ...(discountAmount() ? [["Discount on MRP", "- " + money(discountAmount())]] : []),
+                    ["Delivery", money(deliveryCharge())],
+                    ["Total Amount", money(finalAmount())]
+                ];
+                rows.forEach(function (pair, index) {
+                    const row = document.createElement("div");
+                    row.className = "decoreva-checkout-summary-total" + (index === rows.length - 1 ? " final" : "");
+                    const left = document.createElement("span");
+                    left.textContent = pair[0];
+                    const right = document.createElement("strong");
+                    right.textContent = pair[1];
+                    row.appendChild(left);
+                    row.appendChild(right);
+                    box.appendChild(row);
+                });
+                const coupon = document.createElement("div");
+                const summaryCoupon = effectiveCouponCode();
+                coupon.className = "decoreva-checkout-summary-coupon" + (summaryCoupon ? " applied" : " none");
+                coupon.textContent = summaryCoupon
+                    ? "Coupon: " + summaryCoupon + (appliedCoupon ? " applied — 10% OFF" : " checked — 10% OFF")
+                    : "Coupon: No coupon applied";
+                box.appendChild(coupon);
+            }
+
+            function updateCheckoutStepUI() {
+                const drawer = document.querySelector("#decoreva-cart-drawer");
+                if (!drawer) return;
+
+                /* Single-page checkout: Cart, price summary and Delivery Address stay visible together. */
+                checkoutStep = cart.length ? (checkoutStep === "address" ? "address" : "cart") : "cart";
+                drawer.classList.add("decoreva-checkout-mode");
+
+                const checkoutSteps = drawer.querySelector(".decoreva-checkout-steps");
+                if (checkoutSteps) { checkoutSteps.hidden = false; checkoutSteps.style.display = "flex"; }
+
+                const cartHeadTitle = drawer.querySelector(".decoreva-cart-head strong");
+                const cartHeadLabel = drawer.querySelector("#decoreva-cart-item-label");
+                if (cartHeadTitle) cartHeadTitle.textContent = "Your Cart";
+                if (cartHeadLabel) cartHeadLabel.textContent = totalItems() + (totalItems() === 1 ? " item" : " items");
+
+                renderCheckoutSummary();
+                renderCheckoutItems();
+                renderSimilarProducts();
+
+                const address = document.querySelector("#decoreva-checkout-address");
+                const payment = document.querySelector("#decoreva-checkout-payment");
+                if (address) address.hidden = cart.length === 0;
+                if (payment) payment.hidden = true;
+
+                const cartItems = document.querySelector("#decoreva-cart-items");
+                const cartEmpty = document.querySelector("#decoreva-cart-empty");
+                const footer = document.querySelector(".decoreva-cart-footer");
+                if (cartItems) cartItems.hidden = false;
+                if (cartEmpty) cartEmpty.hidden = cart.length !== 0;
+                if (footer) footer.hidden = cart.length === 0;
+
+                /* The cart already contains the order items; don't duplicate them below the address. */
+                const checkoutItems = document.querySelector("#decoreva-checkout-items");
+                if (checkoutItems) checkoutItems.hidden = true;
+
+                /* Keep one price/coupon box only: the cart footer on the right. */
+                const checkoutSummary = document.querySelector("#decoreva-checkout-summary");
+                if (checkoutSummary) checkoutSummary.hidden = true;
+
+                if (cart.length) {
+                    const a = deliveryAddress || {};
+                    [["#decoreva-address-name", a.name], ["#decoreva-address-mobile", a.mobile],
+                     ["#decoreva-address-line", a.line], ["#decoreva-address-city", a.city],
+                     ["#decoreva-address-state", a.state], ["#decoreva-address-pincode", a.pincode]]
+                    .forEach(function (pair) {
+                        const el = document.querySelector(pair[0]);
+                        if (el && !el.value) el.value = pair[1] || "";
+                    });
+                    updateAddressContinueState();
+                }
+
+                drawer.querySelectorAll("[data-checkout-step]").forEach(function (button) {
+                    const step = button.dataset.checkoutStep;
+                    button.classList.toggle("active", step === checkoutStep || (step === "payment" && false));
+                });
             }
 
             function buildCartUI() {
@@ -4346,29 +4932,79 @@
                 drawer.innerHTML = `
                     <div class="decoreva-cart-overlay" data-cart-close="true"></div>
                     <div class="decoreva-cart-panel" role="dialog" aria-modal="true" aria-label="Shopping cart">
+                        <div class="decoreva-checkout-steps" aria-label="Checkout progress">
+                            <button type="button" class="active" data-checkout-step="cart">CART</button>
+                            <i aria-hidden="true"></i>
+                            <button type="button" data-checkout-step="address">ADDRESS</button>
+                            <i aria-hidden="true"></i>
+                            <button type="button" data-checkout-step="payment">PAYMENT</button>
+                        </div>
+                        <div id="decoreva-checkout-address" class="decoreva-checkout-section" hidden>
+                            <div class="decoreva-checkout-section-head"><strong>Delivery Address</strong><span>Where should we deliver your order?</span></div>
+                            <div id="decoreva-checkout-summary" class="decoreva-checkout-summary"></div>
+                            <input id="decoreva-address-name" type="text" placeholder="Full name" autocomplete="name">
+                            <input id="decoreva-address-mobile" type="tel" placeholder="Mobile number" inputmode="numeric" autocomplete="tel">
+                            <textarea id="decoreva-address-line" rows="2" placeholder="House / Street / Area"></textarea>
+                            <div class="decoreva-address-grid">
+                                <input id="decoreva-address-city" type="text" placeholder="City">
+                                <input id="decoreva-address-state" type="text" placeholder="State">
+                                <input id="decoreva-address-pincode" type="text" placeholder="PIN code" inputmode="numeric" maxlength="6">
+                            </div>
+                            <div id="decoreva-checkout-items" class="decoreva-checkout-items"></div>
+                            <div id="decoreva-similar-products" class="decoreva-similar-products" hidden></div>
+                            <div id="decoreva-address-message" class="decoreva-address-message"></div>
+                        </div>
+                        <div id="decoreva-checkout-payment" class="decoreva-checkout-section" hidden>
+                            <div class="decoreva-checkout-section-head"><strong>Review &amp; Place Order</strong><span>Check your delivery details and order before confirming.</span></div>
+                            <div id="decoreva-payment-review" class="decoreva-payment-review"></div>
+                            <button type="button" id="decoreva-payment-order">Place Order on WhatsApp</button>
+                        </div>
                         <div class="decoreva-cart-head">
-                            <div><strong>Your Cart</strong><span id="decoreva-cart-item-label">0 items</span></div>
+                            <div class="decoreva-cart-head-title"><strong>Your Cart</strong><span id="decoreva-cart-item-label">0 items</span></div>
                             <button type="button" class="decoreva-cart-close" data-cart-close="true" aria-label="Close cart">×</button>
                         </div>
                         <div id="decoreva-cart-empty" class="decoreva-cart-empty">Your cart is empty.</div>
                         <div id="decoreva-cart-items" class="decoreva-cart-items"></div>
                         <div class="decoreva-cart-footer">
-                            <div class="decoreva-coupon-box">
-                                <div class="decoreva-coupon-title">Have a coupon?</div>
-                                <div class="decoreva-coupon-row">
-                                    <input id="decoreva-coupon-input" type="text" maxlength="20" placeholder="Enter coupon code" autocomplete="off">
-                                    <button type="button" id="decoreva-coupon-apply">Apply</button>
-                                </div>
-                                <div id="decoreva-coupon-message" class="decoreva-coupon-message"></div>
+                            <div class="decoreva-coupon-summary-row">
+                                <span>Coupon Discount</span>
+                                <button type="button" id="decoreva-open-coupon">${appliedCoupon ? "Remove Coupon" : "Apply Coupon"}</button>
                             </div>
-                            <div class="decoreva-cart-summary-row"><span>Subtotal</span><strong id="decoreva-cart-subtotal">₹0</strong></div>
-                            <div class="decoreva-cart-summary-row" id="decoreva-cart-discount-row" hidden><span>Discount</span><strong id="decoreva-cart-discount">- ₹0</strong></div>
+                            <div id="decoreva-coupon-applied-label" class="decoreva-coupon-applied-label" hidden></div>
+                            <div class="decoreva-cart-summary-row"><span>Total MRP</span><strong id="decoreva-cart-subtotal">₹0</strong></div>
+                            <div class="decoreva-cart-summary-row" id="decoreva-cart-discount-row" hidden><span>Discount on MRP</span><strong id="decoreva-cart-discount">- ₹0</strong></div>
                             <div class="decoreva-cart-summary-row"><span>Delivery</span><strong id="decoreva-cart-delivery">₹0</strong></div>
-                            <div class="decoreva-cart-total-row"><span>Total</span><strong id="decoreva-cart-total">₹0</strong></div>
-                            <button type="button" id="decoreva-cart-whatsapp"><i class="fab fa-whatsapp"></i> Order on WhatsApp</button>
+                            <div class="decoreva-cart-total-row"><span>Total Amount</span><strong id="decoreva-cart-total">₹0</strong></div>
+                            <button type="button" id="decoreva-cart-whatsapp">Order on WhatsApp</button>
                         </div>
                     </div>`;
                 document.body.appendChild(drawer);
+
+                const couponModal = document.createElement("div");
+                couponModal.id = "decoreva-coupon-modal";
+                couponModal.className = "decoreva-coupon-modal";
+                couponModal.setAttribute("aria-hidden", "true");
+                couponModal.innerHTML = `
+                    <div class="decoreva-coupon-modal-overlay" data-coupon-close="true"></div>
+                    <div class="decoreva-coupon-modal-panel" role="dialog" aria-modal="true" aria-label="Apply Coupon">
+                        <div class="decoreva-coupon-modal-head">
+                            <strong>APPLY COUPON</strong>
+                            <button type="button" class="decoreva-coupon-modal-close" data-coupon-close="true" aria-label="Close coupon">×</button>
+                        </div>
+                        <div class="decoreva-coupon-modal-body">
+                            <div class="decoreva-coupon-modal-input-row">
+                                <input id="decoreva-coupon-input" type="text" maxlength="20" placeholder="Enter coupon code" autocomplete="off">
+                                <button type="button" id="decoreva-coupon-check">CHECK</button>
+                            </div>
+                            <div id="decoreva-coupon-message" class="decoreva-coupon-message"></div>
+                            <div class="decoreva-coupon-modal-empty">Use <strong>WELCOME10</strong> for 10% off.</div>
+                        </div>
+                        <div class="decoreva-coupon-modal-footer">
+                            <div><span>Maximum savings:</span><strong>10% OFF</strong></div>
+                            <button type="button" id="decoreva-coupon-apply">APPLY</button>
+                        </div>
+                    </div>`;
+                document.body.appendChild(couponModal);
 
                 const wishlistDrawer = document.createElement("aside");
                 wishlistDrawer.id = "decoreva-wishlist-drawer";
@@ -4394,12 +5030,47 @@
                 profilePanel.innerHTML = `
                     <div class="decoreva-profile-overlay" data-profile-close="true"></div>
                     <div class="decoreva-profile-card" role="dialog" aria-modal="true" aria-label="DECOREVA Profile">
-                        <button type="button" class="decoreva-cart-close" data-profile-close="true" aria-label="Close profile">×</button>
-                        <div class="decoreva-profile-icon"><i class="fas fa-user" aria-hidden="true"></i></div>
-                        <h3>Welcome to DECOREVA</h3>
-                        <p class="decoreva-profile-guest">Guest Customer</p>
-                        <p class="decoreva-profile-note">Your cart and wishlist are saved on this device.</p>
-                        <button type="button" class="decoreva-profile-close-btn" data-profile-close="true">Continue Shopping</button>
+                        <div class="decoreva-profile-head">
+                            <div><strong>My Profile</strong><span>Profile & Saved Addresses</span></div>
+                            <button type="button" class="decoreva-cart-close" data-profile-close="true" aria-label="Close profile">×</button>
+                        </div>
+                        <div class="decoreva-profile-body">
+                            <div class="decoreva-profile-welcome">
+                                <strong>Welcome</strong>
+                                <span>To access your account and manage orders</span>
+                                <button type="button" id="decoreva-profile-login">LOGIN / SIGNUP</button>
+                            </div>
+                            <nav class="decoreva-profile-menu" aria-label="My account">
+                                <button type="button" data-profile-menu="orders"><span>My Orders</span><small>Orders & order requests</small></button>
+                                <button type="button" data-profile-menu="wishlist"><span>Wishlist</span><small>View saved products</small></button>
+                                <button type="button" data-profile-menu="coupons"><span>Coupons</span><small>Available offers</small></button>
+                                <button type="button" data-profile-menu="addresses"><span>Saved Addresses</span><small>Manage addresses</small></button>
+                                <button type="button" data-profile-menu="contact"><span>Contact Us</span><small>WhatsApp & Instagram</small></button>
+                            </nav>
+                            <section id="decoreva-profile-personal-section" class="decoreva-profile-section" hidden>
+                                <div class="decoreva-profile-section-title"><strong>Personal Details</strong><span>Save your details for faster checkout.</span></div>
+                                <input id="decoreva-profile-name" type="text" placeholder="Full name" autocomplete="name">
+                                <input id="decoreva-profile-mobile" type="tel" placeholder="Mobile number" inputmode="numeric" maxlength="10" autocomplete="tel">
+                                <input id="decoreva-profile-email" type="email" placeholder="Email address (optional)" autocomplete="email">
+                                <button type="button" id="decoreva-profile-save">Save Profile</button>
+                                <div id="decoreva-profile-message" class="decoreva-profile-message"></div>
+                            </section>
+                            <section id="decoreva-profile-address-section" class="decoreva-profile-section" hidden>
+                                <div class="decoreva-profile-section-title profile-address-title"><div><strong>Saved Addresses</strong><span>Use a saved address during checkout.</span></div><button type="button" id="decoreva-profile-add-address">+ Add New</button></div>
+                                <div id="decoreva-profile-addresses"></div>
+                                <div id="decoreva-profile-address-form" class="decoreva-profile-address-form" hidden data-edit-index="">
+                                    <strong id="decoreva-profile-address-form-title">Add New Address</strong>
+                                    <select id="decoreva-profile-address-label"><option value="HOME">HOME</option><option value="OFFICE">OFFICE</option><option value="OTHER">OTHER</option></select>
+                                    <input id="decoreva-profile-address-name" type="text" placeholder="Full name">
+                                    <input id="decoreva-profile-address-mobile" type="tel" placeholder="Mobile number" inputmode="numeric" maxlength="10">
+                                    <textarea id="decoreva-profile-address-line" rows="2" placeholder="House / Street / Area"></textarea>
+                                    <div class="decoreva-profile-address-grid"><input id="decoreva-profile-address-city" type="text" placeholder="City"><input id="decoreva-profile-address-state" type="text" placeholder="State"><input id="decoreva-profile-address-pincode" type="text" placeholder="PIN code" inputmode="numeric" maxlength="6"></div>
+                                    <div class="decoreva-profile-address-form-actions"><button type="button" id="decoreva-profile-address-cancel">Cancel</button><button type="button" id="decoreva-profile-address-save">Save Address</button></div>
+                                    <div id="decoreva-profile-address-message" class="decoreva-profile-message"></div>
+                                </div>
+                            </section>
+                            <p class="decoreva-profile-note">Your profile and saved addresses are stored only on this device.</p>
+                        </div>
                     </div>
                 `;
                 document.body.appendChild(profilePanel);
@@ -4408,6 +5079,69 @@
             buildCartUI();
             renderCart();
             renderWishlist();
+            updateCheckoutStepUI();
+
+            /* Direct checkout/coupon controls for reliable clicks. */
+            const checkoutDrawer = document.querySelector("#decoreva-cart-drawer");
+            if (checkoutDrawer) {
+                checkoutDrawer.querySelectorAll("[data-checkout-step]").forEach(function (button) {
+                    button.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const step = button.dataset.checkoutStep;
+
+                        if (step === "payment") {
+                            const address = document.querySelector("#decoreva-checkout-address");
+                            const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+                            if (address && panel) panel.scrollTo({ top: Math.max(0, address.offsetTop - 20), behavior: "smooth" });
+                            return;
+                        }
+                        checkoutStep = step === "address" ? "address" : "cart";
+                        updateCheckoutStepUI();
+                        const target = step === "address"
+                            ? document.querySelector("#decoreva-checkout-address")
+                            : document.querySelector("#decoreva-cart-items");
+                        const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+                        if (target && panel) panel.scrollTo({ top: Math.max(0, target.offsetTop - 20), behavior: "smooth" });
+                    });
+                });
+            }
+
+            const couponCheckButton = document.querySelector("#decoreva-coupon-check");
+            if (couponCheckButton) {
+                couponCheckButton.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+
+                    const input = document.querySelector("#decoreva-coupon-input");
+                    const message = document.querySelector("#decoreva-coupon-message");
+                    const code = input ? input.value.trim().toUpperCase() : "";
+                    if (!message) return;
+
+                    if (!code) {
+                        couponPreviewCode = "";
+                        message.textContent = "Please enter a coupon code.";
+                        message.className = "decoreva-coupon-message warning";
+                        renderCart();
+                        renderCheckoutSummary();
+                    } else if (!COUPONS[code]) {
+                        couponPreviewCode = "";
+                        message.textContent = "Invalid coupon code.";
+                        message.className = "decoreva-coupon-message error";
+                        renderCart();
+                        renderCheckoutSummary();
+                    } else if (appliedCoupon === code) {
+                        message.textContent = code + " is already applied.";
+                        message.className = "decoreva-coupon-message success";
+                    } else {
+                        couponPreviewCode = code;
+                        message.textContent = "Coupon code is valid — 10% discount preview shown below. Click APPLY to keep it.";
+                        message.className = "decoreva-coupon-message success";
+                        renderCart();
+                        renderCheckoutSummary();
+                    }
+                });
+            }
 
             /* Direct handlers for the top-right shopping navigation. */
             const navCart = document.querySelector("#decoreva-nav-cart");
@@ -4470,6 +5204,55 @@
                     return;
                 }
 
+                if (event.target.closest("#decoreva-order-confirmation-close")) {
+                    event.preventDefault();
+                    const confirmation = document.querySelector("#decoreva-order-confirmation");
+                    if (confirmation) confirmation.classList.remove("open");
+                    return;
+                }
+
+                /* DECOREVA CART ITEM ACTIONS — FIX
+                   Handles +, −, Remove and Move to Wishlist for the
+                   dynamically rendered cart items. */
+                const cartAction = event.target.closest("[data-cart-action]");
+                if (cartAction) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const index = Number(cartAction.dataset.cartIndex);
+                    const action = cartAction.dataset.cartAction;
+
+                    if (!Number.isInteger(index) || !cart[index]) return;
+
+                    if (action === "plus") {
+                        cart[index].quantity = Number(cart[index].quantity || 0) + 1;
+                    } else if (action === "minus") {
+                        cart[index].quantity = Math.max(1, Number(cart[index].quantity || 1) - 1);
+                    } else if (action === "remove") {
+                        cart.splice(index, 1);
+                    } else if (action === "wishlist") {
+                        const item = cart[index];
+
+                        if (!wishlist.some(function(saved) {
+                            return saved.id === item.id;
+                        })) {
+                            wishlist.push(item);
+                            saveWishlist();
+                        }
+
+                        cart.splice(index, 1);
+                    } else {
+                        return;
+                    }
+
+                    saveCart();
+                    updateCartCount();
+                    updateWishlistCount();
+                    renderCart();
+                    renderWishlist();
+                    return;
+                }
+
                 if (event.target.closest("[data-cart-close]")) {
                     event.preventDefault();
                     closeCart();
@@ -4488,24 +5271,221 @@
                     return;
                 }
 
+                if (event.target.closest("#decoreva-open-coupon, #decoreva-checkout-coupon-button")) {
+                    event.preventDefault();
+                    openCouponModal();
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-checkout-remove-coupon")) {
+                    event.preventDefault();
+                    appliedCoupon = "";
+                    couponPreviewCode = "";
+                    saveCoupon();
+                    renderCart();
+                    renderCheckoutSummary();
+                    return;
+                }
+
+                if (event.target.closest("[data-coupon-close]")) {
+                    event.preventDefault();
+                    closeCouponModal();
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-coupon-check")) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const input = document.querySelector("#decoreva-coupon-input");
+                    const message = document.querySelector("#decoreva-coupon-message");
+                    const code = input ? input.value.trim().toUpperCase() : "";
+                    if (!message) return;
+
+                    if (!code) {
+                        couponPreviewCode = "";
+                        message.textContent = "Please enter a coupon code.";
+                        message.className = "decoreva-coupon-message warning";
+                        renderCart();
+                        renderCheckoutSummary();
+                    } else if (!COUPONS[code]) {
+                        couponPreviewCode = "";
+                        message.textContent = "Invalid coupon code.";
+                        message.className = "decoreva-coupon-message error";
+                        renderCart();
+                        renderCheckoutSummary();
+                    } else if (appliedCoupon === code) {
+                        message.textContent = code + " is already applied.";
+                        message.className = "decoreva-coupon-message success";
+                    } else {
+                        couponPreviewCode = code;
+                        message.textContent = "Coupon code is valid — 10% discount preview shown below. Click APPLY to keep it.";
+                        message.className = "decoreva-coupon-message success";
+                        renderCart();
+                        renderCheckoutSummary();
+                    }
+                    return;
+                }
+
                 if (event.target.closest("#decoreva-coupon-apply")) {
                     event.preventDefault();
                     applyCoupon();
                     return;
                 }
 
-                const action = event.target.closest("[data-cart-action]");
-                if (action) {
+                const stepButton = event.target.closest("[data-checkout-step]");
+                if (stepButton) {
                     event.preventDefault();
-                    const index = Number(action.dataset.cartIndex);
-                    if (!Number.isInteger(index) || !cart[index]) return;
-                    if (action.dataset.cartAction === "plus") cart[index].quantity += 1;
-                    if (action.dataset.cartAction === "minus") cart[index].quantity -= 1;
-                    if (action.dataset.cartAction === "remove" || cart[index].quantity <= 0) {
-                        cart.splice(index, 1);
+                    event.stopPropagation();
+                    const step = stepButton.dataset.checkoutStep;
+
+                    if (step === "payment") {
+                        const address = document.querySelector("#decoreva-checkout-address");
+                        const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+                        if (address && panel) panel.scrollTo({ top: Math.max(0, address.offsetTop - 18), behavior: "smooth" });
+                        return;
                     }
-                    saveCart();
-                    renderCart();
+
+                    checkoutStep = step === "address" ? "address" : "cart";
+                    const d = document.querySelector("#decoreva-cart-drawer");
+                    if (d) d.classList.add("decoreva-checkout-mode");
+                    document.body.classList.add("decoreva-checkout-open");
+                    updateCheckoutStepUI();
+                    const target = step === "address"
+                        ? document.querySelector("#decoreva-checkout-address")
+                        : document.querySelector("#decoreva-cart-items");
+                    const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+                    if (target && panel) panel.scrollTo({ top: Math.max(0, target.offsetTop - 18), behavior: "smooth" });
+                    return;
+                }
+
+
+                if (event.target.closest("#decoreva-cart-whatsapp")) {
+                    event.preventDefault();
+
+                    const drawer = document.querySelector("#decoreva-cart-drawer");
+                    const addressSection = document.querySelector("#decoreva-checkout-address");
+                    if (!drawer || !addressSection || !cart.length) return;
+
+                    const get = function (id) {
+                        const el = document.querySelector(id);
+                        return el ? el.value.trim() : "";
+                    };
+
+                    const address = {
+                        name: get("#decoreva-address-name"),
+                        mobile: get("#decoreva-address-mobile"),
+                        line: get("#decoreva-address-line"),
+                        city: get("#decoreva-address-city"),
+                        state: get("#decoreva-address-state"),
+                        pincode: get("#decoreva-address-pincode")
+                    };
+
+                    const complete =
+                        !!address.name &&
+                        /^\d{10}$/.test(address.mobile) &&
+                        !!address.line &&
+                        !!address.city &&
+                        !!address.state &&
+                        /^\d{6}$/.test(address.pincode);
+
+                    /* Always use the single right-side Order on WhatsApp button.
+                       If address is missing, take the customer to the address
+                       fields instead of doing nothing. */
+                    checkoutStep = "address";
+                    drawer.classList.add("decoreva-checkout-mode", "open");
+                    drawer.setAttribute("aria-hidden", "false");
+                    document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
+                    document.body.style.overflow = "hidden";
+                    document.documentElement.style.overflow = "hidden";
+                    updateCheckoutStepUI();
+
+                    const message = document.querySelector("#decoreva-address-message");
+
+                    if (!complete) {
+                        if (message) {
+                            message.dataset.userMessage = "1";
+                            message.textContent =
+                                "Please fill all delivery address details before ordering on WhatsApp.";
+                            message.className = "decoreva-address-message error";
+                        }
+
+                        requestAnimationFrame(function () {
+                            addressSection.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
+
+                            const firstMissing = [
+                                "#decoreva-address-name",
+                                "#decoreva-address-mobile",
+                                "#decoreva-address-line",
+                                "#decoreva-address-city",
+                                "#decoreva-address-state",
+                                "#decoreva-address-pincode"
+                            ]
+                                .map(function (id) {
+                                    return document.querySelector(id);
+                                })
+                                .find(function (el) {
+                                    return el && !el.value.trim();
+                                });
+
+                            if (firstMissing) {
+                                firstMissing.focus({ preventScroll: true });
+                            }
+                        });
+                        return;
+                    }
+
+                    deliveryAddress = address;
+                    localStorage.setItem(
+                        "decorevaDeliveryAddress",
+                        JSON.stringify(address)
+                    );
+
+                    profile.name = address.name || profile.name;
+                    profile.mobile = address.mobile || profile.mobile;
+
+                    const exists = profile.addresses.some(function (saved) {
+                        return (
+                            saved.line === address.line &&
+                            saved.pincode === address.pincode
+                        );
+                    });
+
+                    if (!exists) {
+                        profile.addresses.push({
+                            label: "HOME",
+                            name: address.name,
+                            mobile: address.mobile,
+                            line: address.line,
+                            city: address.city,
+                            state: address.state,
+                            pincode: address.pincode,
+                            default: profile.addresses.length === 0
+                        });
+                        saveProfile();
+                    }
+
+                    if (message) {
+                        message.dataset.userMessage = "1";
+                        message.textContent =
+                            "Address saved. Opening WhatsApp to place your order.";
+                        message.className = "decoreva-address-message success";
+                    }
+
+                    whatsappCheckout();
+                }
+            }, true);
+
+            /* Robust drawer + item actions. These use event delegation so
+               dynamically rendered wishlist/cart/recommendation buttons always work. */
+            document.addEventListener("click", function (event) {
+                const navWish = event.target.closest("#decoreva-wishlist-nav");
+                if (navWish) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openWishlist();
                     return;
                 }
 
@@ -4522,9 +5502,44 @@
                     return;
                 }
 
-                if (event.target.closest("#decoreva-cart-whatsapp")) {
+                const checkoutAction = event.target.closest("[data-checkout-item-action]");
+                if (checkoutAction) {
                     event.preventDefault();
-                    whatsappCheckout();
+                    const index = Number(checkoutAction.dataset.checkoutItemIndex);
+                    if (!Number.isInteger(index) || !cart[index]) return;
+                    const action = checkoutAction.dataset.checkoutItemAction;
+                    if (action === "remove") {
+                        cart.splice(index, 1);
+                    } else if (action === "wishlist") {
+                        const item = cart[index];
+                        if (!wishlist.some(function(saved){ return saved.id === item.id; })) {
+                            wishlist.push(item);
+                            saveWishlist();
+                        }
+                        cart.splice(index, 1);
+                    }
+                    saveCart();
+                    renderCart();
+                    renderWishlist();
+                    return;
+                }
+
+                const similarView = event.target.closest("[data-similar-product-title]");
+                if (similarView) {
+                    event.preventDefault();
+                    const title = String(similarView.dataset.similarProductTitle || "").trim().toLowerCase();
+                    const target = Array.from(document.querySelectorAll("#collection-products .card, .featured-slider .featured-slide"))
+                        .find(function(card){
+                            const heading = card.querySelector("h3");
+                            return heading && heading.textContent.trim().replace(/\s+/g," ").toLowerCase() === title;
+                        });
+                    closeCart();
+                    if (target) {
+                        setTimeout(function(){
+                            target.scrollIntoView({behavior:"smooth", block:"center"});
+                        }, 60);
+                    }
+                    return;
                 }
             }, true);
 
@@ -4533,8 +5548,34 @@
                     closeCart();
                     closeWishlist();
                     closeProfile();
+                    closeCouponModal();
                 }
             });
+
+            document.addEventListener("input", function (event) {
+                if (!event.target.matches("#decoreva-address-name, #decoreva-address-mobile, #decoreva-address-line, #decoreva-address-city, #decoreva-address-state, #decoreva-address-pincode")) return;
+                const message = document.querySelector("#decoreva-address-message");
+                if (message) message.dataset.userMessage = "";
+                updateAddressContinueState();
+            });
+
+            document.addEventListener("input", function (event) {
+                if (!event.target.matches("#decoreva-coupon-input")) return;
+                const message = document.querySelector("#decoreva-coupon-message");
+                if (!message) return;
+                if (event.target.value.trim() && event.target.value.trim().toUpperCase() !== appliedCoupon) {
+                    message.textContent = "Please apply coupon code";
+                    message.className = "decoreva-coupon-message warning";
+                } else if (!event.target.value.trim()) {
+                    message.textContent = "";
+                    message.className = "decoreva-coupon-message";
+                    if (appliedCoupon) {
+                        appliedCoupon = "";
+                        saveCoupon();
+                        renderCart();
+                    }
+                }
+            }, true);
 
             function addCardButtons() {
                 document.querySelectorAll("#collection-products .card, .featured-slide").forEach(function (card) {
@@ -4568,6 +5609,175 @@
             window.setTimeout(function () {
                 updateCartCount();
                 updateWishlistCount();
+            }, 0);
+
+            /* =========================================================
+               DECOREVA — PROFILE + SAVED ADDRESSES
+               Local-device profile, no login/payment backend required.
+               ========================================================= */
+            document.addEventListener("click", function (event) {
+                const profileMenu = event.target.closest("[data-profile-menu]");
+                if (profileMenu) {
+                    event.preventDefault();
+                    const action = profileMenu.dataset.profileMenu;
+                    if (action === "orders") {
+                        const msg = document.querySelector("#decoreva-profile-message");
+                        if (msg) {
+                            msg.textContent = "Orders are confirmed through WhatsApp after you send the order message.";
+                            msg.className = "decoreva-profile-message success";
+                            msg.dataset.persistent = "true";
+                        }
+                    } else if (action === "wishlist") {
+                        closeProfile();
+                        openWishlist();
+                    } else if (action === "coupons") {
+                        closeProfile();
+                        openCouponModal();
+                    } else if (action === "addresses") {
+                        const section = document.querySelector("#decoreva-profile-address-section");
+                        if (section) {
+                            section.hidden = false;
+                            section.scrollIntoView({behavior:"smooth", block:"start"});
+                        }
+                    } else if (action === "contact") {
+                        closeProfile();
+                        setTimeout(function(){
+                            const contact = document.querySelector("#contact");
+                            if (contact) contact.scrollIntoView({behavior:"smooth", block:"start"});
+                        }, 80);
+                    }
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-profile-login")) {
+                    event.preventDefault();
+                    const section = document.querySelector("#decoreva-profile-personal-section");
+                    if (section) {
+                        section.hidden = false;
+                        section.scrollIntoView({behavior:"smooth", block:"start"});
+                        const mobile = document.querySelector("#decoreva-profile-mobile");
+                        if (!profile.name && mobile) mobile.focus({preventScroll:true});
+                    }
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-profile-save")) {
+                    event.preventDefault();
+                    const get = id => { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
+                    const name = get("#decoreva-profile-name");
+                    const mobile = get("#decoreva-profile-mobile");
+                    const email = get("#decoreva-profile-email");
+                    const message = document.querySelector("#decoreva-profile-message");
+                    if (!name || !/^\d{10}$/.test(mobile)) {
+                        if (message) { message.textContent = "Please enter your name and valid 10-digit mobile number."; message.className = "decoreva-profile-message error"; }
+                        return;
+                    }
+                    profile.name = name;
+                    profile.mobile = mobile;
+                    profile.email = email;
+                    saveProfile();
+                    if (message) { message.textContent = "Profile saved successfully."; message.className = "decoreva-profile-message success"; message.dataset.persistent = "true"; }
+                    renderProfile();
+                    if (message) { message.textContent = "Profile saved successfully."; message.className = "decoreva-profile-message success"; message.dataset.persistent = "true"; }
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-profile-add-address")) {
+                    event.preventDefault();
+                    showProfileAddressForm();
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-profile-address-cancel")) {
+                    event.preventDefault();
+                    hideProfileAddressForm();
+                    return;
+                }
+
+                const addressAction = event.target.closest("[data-profile-address-action]");
+                if (addressAction) {
+                    event.preventDefault();
+                    const index = Number(addressAction.dataset.profileAddressIndex);
+                    if (!Number.isInteger(index) || !profile.addresses[index]) return;
+                    const action = addressAction.dataset.profileAddressAction;
+                    if (action === "edit") { showProfileAddressForm(index); return; }
+                    if (action === "delete") {
+                        profile.addresses.splice(index, 1);
+                        if (profile.addresses.length && !profile.addresses.some(a => a.default)) profile.addresses[0].default = true;
+                        saveProfile(); renderProfile(); return;
+                    }
+                    if (action === "default") {
+                        profile.addresses.forEach((a, i) => a.default = i === index);
+                        saveProfile(); renderProfile();
+                        return;
+                    }
+                }
+
+                if (event.target.closest("#decoreva-profile-address-save")) {
+                    event.preventDefault();
+                    const get = id => { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
+                    const address = {
+                        label: get("#decoreva-profile-address-label") || "HOME",
+                        name: get("#decoreva-profile-address-name") || profile.name,
+                        mobile: get("#decoreva-profile-address-mobile") || profile.mobile,
+                        line: get("#decoreva-profile-address-line"),
+                        city: get("#decoreva-profile-address-city"),
+                        state: get("#decoreva-profile-address-state"),
+                        pincode: get("#decoreva-profile-address-pincode"),
+                        default: false
+                    };
+                    const message = document.querySelector("#decoreva-profile-address-message");
+                    if (!address.name || !/^\d{10}$/.test(address.mobile) || !address.line || !address.city || !address.state || !/^\d{6}$/.test(address.pincode)) {
+                        if (message) { message.textContent = "Please fill all details with a valid 10-digit mobile and 6-digit PIN."; message.className = "decoreva-profile-message error"; }
+                        return;
+                    }
+                    const form = document.querySelector("#decoreva-profile-address-form");
+                    const editIndex = form && form.dataset.editIndex !== "" ? Number(form.dataset.editIndex) : -1;
+                    if (editIndex >= 0 && profile.addresses[editIndex]) {
+                        address.default = !!profile.addresses[editIndex].default;
+                        profile.addresses[editIndex] = address;
+                    } else {
+                        address.default = profile.addresses.length === 0;
+                        profile.addresses.push(address);
+                    }
+                    saveProfile();
+                    hideProfileAddressForm();
+                    renderProfile();
+                    return;
+                }
+
+                if (event.target.closest("#decoreva-profile-panel") && event.target.closest(".decoreva-profile-card") === null) {
+                    return;
+                }
+            }, true);
+
+            /* Keep checkout address and profile addresses synchronized. */
+            const originalAddressMessage = document.querySelector("#decoreva-address-message");
+            window.setTimeout(function () {
+                const addressButton = document.querySelector("#decoreva-save-address");
+                if (addressButton && !addressButton.dataset.profileSync) {
+                    addressButton.dataset.profileSync = "true";
+                    addressButton.addEventListener("click", function () {
+                        window.setTimeout(function () {
+                            if (!deliveryAddress) return;
+                            const exists = profile.addresses.some(function (a) {
+                                return a.line === deliveryAddress.line && a.pincode === deliveryAddress.pincode;
+                            });
+                            if (!exists) {
+                                profile.name = deliveryAddress.name || profile.name;
+                                profile.mobile = deliveryAddress.mobile || profile.mobile;
+                                if (!profile.addresses.length) {
+                                    profile.addresses.push({
+                                        label: "HOME", name: deliveryAddress.name, mobile: deliveryAddress.mobile,
+                                        line: deliveryAddress.line, city: deliveryAddress.city, state: deliveryAddress.state,
+                                        pincode: deliveryAddress.pincode, default: true
+                                    });
+                                    saveProfile();
+                                }
+                            }
+                        }, 0);
+                    }, false);
+                }
             }, 0);
 
             window.addEventListener("storage", function (event) {

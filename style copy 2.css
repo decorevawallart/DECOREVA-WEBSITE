@@ -3002,3 +3002,1844 @@ card/image system. No repeated Collection image overrides.
     }
 
 }
+
+
+/* =========================================================
+   DECOREVA — ADD TO CART
+   Small targeted cart UI; existing product styling untouched.
+   ========================================================= */
+.decoreva-add-cart{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:40;
+    width:34px;
+    height:34px;
+    min-width:34px;
+    min-height:34px;
+    margin:0;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(214,164,77,.85);
+    border-radius:50%;
+    background:rgba(255,253,248,.94);
+    color:#a96f12;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    box-shadow:0 5px 14px rgba(52,35,23,.18);
+    transition:.22s ease;
+}
+.decoreva-add-cart:hover{transform:translateY(-2px) scale(1.04);background:#b77a13;color:#fff;}
+.featured-slide .decoreva-add-cart{top:10px;right:10px;z-index:50;}
+.decoreva-cart-button{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:9998;
+    width:48px;
+    height:48px;
+    border:1px solid #d6a44d;
+    border-radius:50%;
+    background:linear-gradient(135deg,#a96f12,#d4a33e 48%,#a96f12);
+    color:#fff;
+    font-size:18px;
+    cursor:pointer;
+    box-shadow:0 10px 24px rgba(52,35,23,.25);
+}
+.decoreva-cart-button span{
+    position:absolute;
+    top:-5px;
+    right:-4px;
+    min-width:19px;
+    height:19px;
+    padding:0 5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #fffdf8;
+    border-radius:20px;
+    background:#2b1b10;
+    color:#fff;
+    font-size:9px;
+    font-weight:800;
+    line-height:1;
+}
+.decoreva-cart-drawer{position:fixed;inset:0;z-index:99999;visibility:hidden;pointer-events:none;}
+.decoreva-cart-drawer.open{visibility:visible;pointer-events:auto;}
+.decoreva-cart-overlay{position:absolute;inset:0;background:rgba(25,16,8,.42);opacity:0;transition:.25s ease;}
+.decoreva-cart-drawer.open .decoreva-cart-overlay{opacity:1;}
+.decoreva-cart-panel{position:absolute;top:0;right:0;width:min(390px,92vw);height:100%;display:flex;flex-direction:column;background:#fffdf8;box-shadow:-12px 0 35px rgba(0,0,0,.20);transform:translateX(100%);transition:.28s ease;}
+.decoreva-cart-drawer.open .decoreva-cart-panel{transform:translateX(0);}
+.decoreva-cart-head{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;background:linear-gradient(180deg,#2b1b10,#1f130b);color:#f4e4c2;border-bottom:1px solid #b8862c;}
+.decoreva-cart-head strong{display:block;font:700 21px/1 Georgia,"Times New Roman",serif;}
+.decoreva-cart-head span{display:block;margin-top:4px;font-size:11px;color:#d9c6a0;}
+.decoreva-cart-close{width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.10);color:#fff;font-size:24px;line-height:1;cursor:pointer;}
+.decoreva-cart-empty{padding:40px 20px;text-align:center;color:#756758;font-size:13px;}
+.decoreva-cart-empty[hidden]{display:none;}
+.decoreva-cart-items{flex:1;overflow:auto;padding:12px;}
+.decoreva-cart-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(184,134,44,.18);}
+.decoreva-cart-item img{width:62px;height:62px;flex:0 0 62px;object-fit:cover;border-radius:9px;background:#f2e5d2;}
+.decoreva-cart-item-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px;color:#342317;}
+.decoreva-cart-item-info strong{font-size:12px;line-height:1.25;}
+.decoreva-cart-item-info>span{font-size:10px;color:#756758;}
+.decoreva-cart-item-info>span:last-of-type{color:#a66f1d;font-weight:700;}
+.decoreva-cart-item-controls{display:flex;align-items:center;gap:7px;margin-top:5px;}
+.decoreva-cart-item-controls button{border:1px solid rgba(184,134,44,.45);background:#fffaf1;color:#6d4b17;border-radius:6px;cursor:pointer;}
+.decoreva-cart-item-controls button[data-cart-action="minus"],.decoreva-cart-item-controls button[data-cart-action="plus"]{width:24px;height:24px;padding:0;font-size:15px;line-height:1;}
+.decoreva-cart-item-controls span{min-width:15px;text-align:center;font-size:11px;font-weight:700;}
+.decoreva-cart-item-controls button[data-cart-action="remove"]{height:24px;padding:0 7px;font-size:9px;}
+.decoreva-cart-footer{padding:14px 16px 18px;border-top:1px solid rgba(184,134,44,.22);background:#fffaf1;}
+.decoreva-cart-footer>div{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:#756758;font-size:12px;}
+.decoreva-cart-footer strong{color:#a66f1d;font-size:20px;}
+#decoreva-cart-whatsapp{width:100%;height:40px;border:1px solid #d6a44d;border-radius:9px;background:linear-gradient(135deg,#a96f12,#d4a33e 48%,#a96f12);color:#fff;font-size:12px;font-weight:800;cursor:pointer;}
+#decoreva-cart-whatsapp i{margin-right:5px;}
+@media(max-width:760px){
+    .decoreva-add-cart{width:31px;height:31px;min-width:31px;min-height:31px;top:8px;right:8px;font-size:13px;}
+    .featured-slide .decoreva-add-cart{top:8px;right:8px;}
+    .decoreva-cart-button{right:14px;bottom:14px;width:44px;height:44px;font-size:17px;}
+}
+
+
+/* =========================================================
+   DECOREVA — TOP-RIGHT PROFILE / WISHLIST / CART
+   Polished e-commerce navigation — targeted styling only.
+   ========================================================= */
+.decoreva-nav-actions{
+    position:fixed;
+    top:0;
+    right:14px;
+    height:50px;
+    z-index:100002;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:0 2px;
+    margin:0;
+    visibility:visible;
+    opacity:1;
+}
+.decoreva-nav-action{
+    position:relative;
+    width:78px;
+    height:44px;
+    padding:3px 7px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    border:1px solid transparent;
+    border-radius:8px;
+    background:transparent;
+    color:#f4e4c2;
+    cursor:pointer;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:10px;
+    font-weight:700;
+    line-height:1;
+    transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.decoreva-nav-action i{
+    font-size:17px;
+    line-height:1;
+}
+.decoreva-nav-action:hover{
+    color:#e5b04a;
+    background:rgba(255,255,255,.075);
+    border-color:rgba(214,164,77,.38);
+    transform:translateY(-1px);
+}
+.decoreva-nav-action:active{transform:translateY(0);}
+.decoreva-nav-action:focus-visible{
+    outline:2px solid #d6a33f;
+    outline-offset:2px;
+}
+.decoreva-nav-count{
+    position:absolute;
+    top:3px;
+    right:14px;
+    min-width:16px;
+    height:16px;
+    padding:0 4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #2b1b10;
+    border-radius:20px;
+    background:#d6a33f;
+    color:#2b1b10;
+    font-size:8px;
+    font-weight:800;
+    line-height:1;
+    box-sizing:border-box;
+}
+
+/* Wishlist heart on product cards */
+.decoreva-wishlist{
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:40;
+    width:34px;
+    height:34px;
+    min-width:34px;
+    min-height:34px;
+    margin:0;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(214,164,77,.85);
+    border-radius:50%;
+    background:rgba(255,253,248,.94);
+    color:#a96f12;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    box-shadow:0 5px 14px rgba(52,35,23,.18);
+    transition:.22s ease;
+}
+.decoreva-wishlist:hover,
+.decoreva-wishlist.active{
+    background:#b77a13;
+    color:#fff;
+    transform:translateY(-2px) scale(1.04);
+}
+.featured-slide .decoreva-wishlist{top:10px;left:10px;z-index:50;}
+
+/* Coupon area inside cart */
+.decoreva-coupon-box{
+    margin:0 0 10px;
+    padding:9px 10px;
+    border:1px solid rgba(184,134,44,.25);
+    border-radius:9px;
+    background:#fffdf8;
+}
+.decoreva-coupon-title{
+    margin-bottom:6px;
+    color:#6d4b17;
+    font-size:10px;
+    font-weight:800;
+}
+.decoreva-coupon-row{
+    display:flex;
+    gap:6px;
+}
+.decoreva-coupon-row input{
+    flex:1;
+    min-width:0;
+    height:32px;
+    padding:0 9px;
+    border:1px solid rgba(184,134,44,.35);
+    border-radius:7px;
+    background:#fff;
+    color:#342317;
+    font-size:11px;
+    outline:none;
+    box-sizing:border-box;
+}
+.decoreva-coupon-row input:focus{border-color:#b8862c;box-shadow:0 0 0 2px rgba(184,134,44,.10);}
+.decoreva-coupon-row button{
+    height:32px;
+    padding:0 12px;
+    border:1px solid #c9952e;
+    border-radius:7px;
+    background:#fff8e9;
+    color:#7a5316;
+    font-size:10px;
+    font-weight:800;
+    cursor:pointer;
+}
+.decoreva-coupon-message{min-height:12px;margin-top:5px;font-size:9px;color:#756758;}
+.decoreva-coupon-message.success{color:#8a611b;font-weight:700;}
+
+@media(max-width:1100px){
+    .decoreva-nav-actions{right:8px;gap:2px;}
+    .decoreva-nav-action{width:68px;}
+    .decoreva-nav-count{right:9px;}
+}
+@media(max-width:760px){
+    nav{
+        justify-content:flex-start!important;
+        padding-right:212px!important;
+    }
+    .decoreva-nav-actions{
+        position:fixed;
+        top:0;
+        right:2px;
+        height:45px;
+        gap:1px;
+        padding:0 2px;
+        background:linear-gradient(180deg,#3a2818,#2a1b10);
+        border-left:1px solid rgba(184,134,44,.35);
+    }
+    .decoreva-nav-action{
+        width:58px;
+        height:40px;
+        padding:3px 2px;
+        gap:2px;
+        border-radius:7px;
+        font-size:8px;
+    }
+    .decoreva-nav-action i{font-size:14px;}
+    .decoreva-nav-count{
+        top:1px;
+        right:4px;
+        min-width:14px;
+        height:14px;
+        font-size:7px;
+    }
+    .decoreva-wishlist{width:31px;height:31px;min-width:31px;min-height:31px;top:8px;left:8px;font-size:13px;}
+    .featured-slide .decoreva-wishlist{top:8px;left:8px;}
+    .decoreva-profile-card{top:54px;right:8px;}
+}
+
+
+/* =========================================================
+   DECOREVA — FINAL CART COUPON + DELIVERY POLISH
+   Only fixes coupon layout and keeps ₹60 delivery visible.
+   ========================================================= */
+.decoreva-cart-footer > .decoreva-coupon-box{
+    display:block !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 0 12px !important;
+    padding:10px 11px !important;
+}
+.decoreva-coupon-title{
+    display:block !important;
+    margin:0 0 7px !important;
+    line-height:1.2 !important;
+}
+.decoreva-coupon-row{
+    display:flex !important;
+    align-items:center !important;
+    width:100% !important;
+    gap:7px !important;
+}
+.decoreva-coupon-row input{
+    flex:1 1 auto !important;
+    width:auto !important;
+}
+.decoreva-coupon-row button{
+    flex:0 0 auto !important;
+}
+.decoreva-coupon-message{
+    display:block !important;
+    width:100% !important;
+    margin:6px 0 0 !important;
+    line-height:1.25 !important;
+}
+.decoreva-cart-summary-row{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+}
+
+
+/* =========================================================
+   DECOREVA — COUPON BOX FINAL CLEAN LAYOUT
+   Targeted fix only: coupon title/message no longer share
+   the footer flex row with the input. Delivery/total untouched.
+   ========================================================= */
+.decoreva-cart-footer > .decoreva-coupon-box,
+.decoreva-cart-footer .decoreva-coupon-box{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto auto auto !important;
+    align-items:stretch !important;
+    justify-content:stretch !important;
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 0 12px !important;
+    padding:11px 12px !important;
+    box-sizing:border-box !important;
+    gap:0 !important;
+}
+.decoreva-cart-footer .decoreva-coupon-box .decoreva-coupon-title{
+    display:block !important;
+    width:100% !important;
+    margin:0 0 8px !important;
+    padding:0 !important;
+    line-height:1.25 !important;
+    text-align:left !important;
+}
+.decoreva-cart-footer .decoreva-coupon-box .decoreva-coupon-row{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    width:100% !important;
+    margin:0 !important;
+    gap:7px !important;
+    align-items:center !important;
+}
+.decoreva-cart-footer .decoreva-coupon-box .decoreva-coupon-row input{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    box-sizing:border-box !important;
+}
+.decoreva-cart-footer .decoreva-coupon-box .decoreva-coupon-row button{
+    display:block !important;
+    width:auto !important;
+    min-width:56px !important;
+    box-sizing:border-box !important;
+}
+.decoreva-cart-footer .decoreva-coupon-box .decoreva-coupon-message{
+    display:block !important;
+    width:100% !important;
+    min-height:12px !important;
+    margin:6px 0 0 !important;
+    padding:0 !important;
+    line-height:1.25 !important;
+    text-align:left !important;
+}
+
+
+/* =========================================================
+   DECOREVA — MYNTRA-STYLE COUPON SUMMARY + MODAL
+   Targeted cart-only change. Existing site styles untouched.
+   ========================================================= */
+.decoreva-coupon-summary-row{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    padding:12px 0 !important;
+    margin:0 !important;
+    border-bottom:1px solid rgba(184,134,44,.16) !important;
+    color:#342317 !important;
+    font-size:12px !important;
+}
+.decoreva-coupon-summary-row span{font-weight:500 !important;}
+#decoreva-open-coupon{
+    border:0 !important;
+    background:none !important;
+    color:#a96f12 !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+    cursor:pointer !important;
+    padding:3px 0 !important;
+}
+#decoreva-open-coupon:hover{text-decoration:underline !important;}
+.decoreva-coupon-applied-label{
+    margin:6px 0 2px !important;
+    color:#8a611b !important;
+    font-size:10px !important;
+    font-weight:700 !important;
+}
+.decoreva-coupon-modal{
+    position:fixed !important;
+    inset:0 !important;
+    z-index:2147483648 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+}
+.decoreva-coupon-modal.open{visibility:visible !important;pointer-events:auto !important;}
+.decoreva-coupon-modal-overlay{
+    position:absolute !important;
+    inset:0 !important;
+    background:rgba(25,16,8,.58) !important;
+    opacity:0 !important;
+    transition:.22s ease !important;
+}
+.decoreva-coupon-modal.open .decoreva-coupon-modal-overlay{opacity:1 !important;}
+.decoreva-coupon-modal-panel{
+    position:relative !important;
+    z-index:1 !important;
+    width:min(500px,92vw) !important;
+    min-height:330px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    background:#fffdf8 !important;
+    border-radius:4px !important;
+    box-shadow:0 18px 55px rgba(0,0,0,.28) !important;
+    transform:translateY(18px) scale(.98) !important;
+    opacity:0 !important;
+    transition:.22s ease !important;
+    overflow:hidden !important;
+}
+.decoreva-coupon-modal.open .decoreva-coupon-modal-panel{transform:none !important;opacity:1 !important;}
+.decoreva-coupon-modal-head{
+    height:58px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    padding:0 18px !important;
+    border-bottom:1px solid #e8e0d4 !important;
+    color:#342317 !important;
+}
+.decoreva-coupon-modal-head strong{font-size:13px !important;letter-spacing:.2px !important;}
+.decoreva-coupon-modal-close{
+    width:34px !important;height:34px !important;border:0 !important;background:none !important;
+    color:#342317 !important;font-size:27px !important;line-height:1 !important;cursor:pointer !important;
+}
+.decoreva-coupon-modal-body{flex:1 !important;padding:24px !important;background:#fffdf8 !important;}
+.decoreva-coupon-modal-input-row{display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;gap:8px !important;}
+.decoreva-coupon-modal-input-row input{
+    width:100% !important;height:44px !important;box-sizing:border-box !important;
+    border:1px solid #d8d0c4 !important;border-radius:4px !important;background:#fff !important;
+    padding:0 13px !important;color:#342317 !important;font-size:13px !important;outline:none !important;
+}
+.decoreva-coupon-modal-input-row input:focus{border-color:#b8862c !important;box-shadow:0 0 0 2px rgba(184,134,44,.10) !important;}
+#decoreva-coupon-check{
+    height:44px !important;padding:0 16px !important;border:0 !important;background:none !important;
+    color:#b8862c !important;font-size:12px !important;font-weight:800 !important;cursor:pointer !important;
+}
+.decoreva-coupon-modal-empty{
+    margin-top:30px !important;padding-top:28px !important;border-top:1px solid #eee7de !important;
+    text-align:center !important;color:#756758 !important;font-size:12px !important;
+}
+.decoreva-coupon-modal-empty strong{color:#8a611b !important;}
+.decoreva-coupon-modal-footer{
+    display:flex !important;align-items:center !important;justify-content:space-between !important;
+    gap:18px !important;padding:14px 18px !important;background:#fff !important;border-top:1px solid #e8e0d4 !important;
+}
+.decoreva-coupon-modal-footer div{display:flex !important;flex-direction:column !important;gap:3px !important;color:#756758 !important;font-size:10px !important;}
+.decoreva-coupon-modal-footer div strong{color:#342317 !important;font-size:13px !important;}
+#decoreva-coupon-apply{
+    min-width:150px !important;height:40px !important;border:1px solid #b8862c !important;border-radius:3px !important;
+    background:linear-gradient(135deg,#b77a13,#d4a33e) !important;color:#fff !important;
+    font-size:12px !important;font-weight:800 !important;cursor:pointer !important;
+}
+.decoreva-coupon-message.warning{color:#a96f12 !important;font-weight:700 !important;}
+.decoreva-coupon-message.error{color:#a13b22 !important;font-weight:700 !important;}
+@media(max-width:760px){
+    .decoreva-coupon-modal-panel{width:94vw !important;min-height:320px !important;}
+    .decoreva-coupon-modal-body{padding:18px !important;}
+    #decoreva-coupon-apply{min-width:120px !important;}
+}
+
+
+/* =========================================================
+   DECOREVA — CART CHECKOUT PROGRESS
+   Cart is the current step. Address and Payment are shown
+   as upcoming steps for the future checkout flow.
+   ========================================================= */
+.decoreva-checkout-steps{
+    flex:0 0 auto !important;
+    height:42px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    padding:0 12px !important;
+    box-sizing:border-box !important;
+    background:#fffaf1 !important;
+    border-bottom:1px solid rgba(184,134,44,.18) !important;
+    color:#8a7765 !important;
+    font-size:9px !important;
+    font-weight:800 !important;
+    letter-spacing:1.2px !important;
+}
+.decoreva-checkout-steps span{
+    white-space:nowrap !important;
+    color:#9b8a78 !important;
+}
+.decoreva-checkout-steps span.active{
+    color:#a96f12 !important;
+}
+.decoreva-checkout-steps i{
+    display:block !important;
+    width:30px !important;
+    height:1px !important;
+    border-top:1px dashed rgba(120,92,54,.55) !important;
+    flex:0 0 30px !important;
+}
+.decoreva-cart-total-row span{
+    font-weight:800 !important;
+}
+.decoreva-cart-total-row strong{
+    font-size:20px !important;
+}
+@media(max-width:760px){
+    .decoreva-checkout-steps{
+        height:40px !important;
+        gap:6px !important;
+        font-size:8px !important;
+        letter-spacing:1px !important;
+    }
+    .decoreva-checkout-steps i{
+        width:22px !important;
+        flex-basis:22px !important;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA — CHECKOUT STEPS + ADDRESS / PAYMENT
+   Targeted addition only.
+   ========================================================= */
+.decoreva-checkout-steps{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px 8px;background:#211207;border-bottom:1px solid rgba(214,179,106,.28);}
+.decoreva-checkout-steps button{border:0;background:transparent;color:#b9aa97;font:800 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.7px;padding:3px 0;cursor:pointer;}
+.decoreva-checkout-steps button.active{color:#d6a33d;}
+.decoreva-checkout-steps i{width:28px;height:1px;background:rgba(214,179,106,.45);display:block;}
+.decoreva-checkout-section{padding:14px 16px;background:#fffaf1;border-bottom:1px solid rgba(184,134,44,.18);}
+.decoreva-checkout-section-head{display:flex;flex-direction:column;gap:3px;margin-bottom:10px;color:#342317;}
+.decoreva-checkout-section-head strong{font-size:14px;}
+.decoreva-checkout-section-head span{font-size:10px;color:#756758;}
+.decoreva-checkout-section input,.decoreva-checkout-section textarea{width:100%;box-sizing:border-box;border:1px solid rgba(184,134,44,.38);border-radius:7px;background:#fff;color:#342317;padding:9px 10px;margin-bottom:8px;font:400 11px/1.3 Arial,Helvetica,sans-serif;outline:none;}
+.decoreva-checkout-section textarea{resize:vertical;min-height:58px;}
+.decoreva-checkout-section input:focus,.decoreva-checkout-section textarea:focus{border-color:#b8862c;box-shadow:0 0 0 2px rgba(184,134,44,.08);}
+.decoreva-address-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.decoreva-address-grid input{min-width:0;}
+#decoreva-save-address,#decoreva-payment-order{width:100%;height:38px;border:1px solid #d6a44d;border-radius:8px;background:linear-gradient(135deg,#a96f12,#d4a33e 48%,#a96f12);color:#fff;font-size:11px;font-weight:800;cursor:pointer;}
+.decoreva-address-message{min-height:14px;margin-top:6px;font-size:10px;font-weight:700;}
+.decoreva-address-message.error{color:#a13b22;}
+.decoreva-payment-option{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(184,134,44,.22);border-radius:8px;padding:11px;background:#fff;margin-bottom:10px;}
+.decoreva-payment-option i{font-size:20px;color:#a96f12;margin-top:1px;}
+.decoreva-payment-option div{display:flex;flex-direction:column;gap:3px;}
+.decoreva-payment-option strong{font-size:11px;color:#342317;}
+.decoreva-payment-option span{font-size:10px;line-height:1.4;color:#756758;}
+@media(max-width:760px){.decoreva-checkout-steps{padding:9px 10px 7px;gap:7px}.decoreva-checkout-steps i{width:20px}.decoreva-checkout-steps button{font-size:9px}.decoreva-address-grid{grid-template-columns:1fr}.decoreva-checkout-section{padding:12px}.decoreva-checkout-section input,.decoreva-checkout-section textarea{font-size:12px;}}
+
+/* =========================================================
+   DECOREVA — PROFILE + SAVED ADDRESSES
+   Targeted addition: local customer profile and address book.
+   ========================================================= */
+.decoreva-profile-panel{position:fixed;inset:0;z-index:100001;visibility:hidden;pointer-events:none;}
+.decoreva-profile-panel.open{visibility:visible;pointer-events:auto;}
+.decoreva-profile-overlay{position:absolute;inset:0;background:rgba(25,16,8,.42);opacity:0;transition:.25s ease;}
+.decoreva-profile-panel.open .decoreva-profile-overlay{opacity:1;}
+.decoreva-profile-card{position:absolute;top:0;right:0;width:min(430px,94vw);height:100%;display:flex;flex-direction:column;background:#fffdf8;box-shadow:-12px 0 35px rgba(0,0,0,.22);transform:translateX(100%);transition:.28s ease;overflow:hidden;}
+.decoreva-profile-panel.open .decoreva-profile-card{transform:translateX(0);}
+.decoreva-profile-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 18px 13px;background:linear-gradient(180deg,#2b1b10,#1f130b);color:#f4e4c2;border-bottom:1px solid #b8862c;}
+.decoreva-profile-head strong{display:block;font:700 21px/1 Georgia,"Times New Roman",serif;}
+.decoreva-profile-head span{display:block;margin-top:4px;font-size:10px;color:#d9c6a0;}
+.decoreva-profile-body{flex:1;overflow:auto;padding:14px;background:#fffdf8;}
+.decoreva-profile-summary{display:flex;flex-direction:column;gap:3px;margin-bottom:12px;padding:12px;border:1px solid rgba(184,134,44,.22);border-radius:9px;background:#fffaf1;color:#342317;}
+.decoreva-profile-summary strong{font-size:13px;}
+.decoreva-profile-summary span{font-size:10px;color:#756758;}
+.decoreva-profile-section{margin-bottom:13px;padding:13px;border:1px solid rgba(184,134,44,.20);border-radius:9px;background:#fffaf1;}
+.decoreva-profile-section-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;color:#342317;}
+.decoreva-profile-section-title>div{display:flex;flex-direction:column;gap:2px;}
+.decoreva-profile-section-title strong{font-size:13px;}
+.decoreva-profile-section-title span{font-size:9px;color:#756758;line-height:1.4;}
+.decoreva-profile-section input,.decoreva-profile-section textarea,.decoreva-profile-section select{width:100%;box-sizing:border-box;margin-bottom:8px;border:1px solid rgba(184,134,44,.38);border-radius:7px;background:#fff;color:#342317;padding:9px 10px;outline:none;font:400 11px/1.3 Arial,Helvetica,sans-serif;}
+.decoreva-profile-section textarea{resize:vertical;min-height:56px;}
+.decoreva-profile-section input:focus,.decoreva-profile-section textarea:focus,.decoreva-profile-section select:focus{border-color:#b8862c;box-shadow:0 0 0 2px rgba(184,134,44,.08);}
+#decoreva-profile-save,#decoreva-profile-add-address,#decoreva-profile-address-save{border:1px solid #d6a44d;border-radius:7px;background:linear-gradient(135deg,#a96f12,#d4a33e 48%,#a96f12);color:#fff;font-size:10px;font-weight:800;cursor:pointer;}
+#decoreva-profile-save{width:100%;height:37px;}
+#decoreva-profile-add-address{height:30px;padding:0 10px;white-space:nowrap;}
+.decoreva-profile-message{min-height:13px;margin-top:5px;font-size:9px;font-weight:700;color:#756758;}
+.decoreva-profile-message.error{color:#a13b22;}.decoreva-profile-message.success{color:#5e7c35;}
+.decoreva-profile-address-empty{padding:14px 4px;text-align:center;color:#8a7765;font-size:10px;}
+.decoreva-profile-address-card{margin-bottom:8px;padding:10px;border:1px solid rgba(184,134,44,.22);border-radius:8px;background:#fff;}
+.decoreva-profile-address-card.default{border-color:#d1a24d;box-shadow:0 2px 9px rgba(184,134,44,.08);}
+.decoreva-profile-address-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;color:#6d4b17;font-size:10px;}
+.decoreva-profile-address-top span{padding:3px 6px;border-radius:12px;background:#f0dfb7;color:#8a611b;font-size:7px;font-weight:800;letter-spacing:.5px;}
+.decoreva-profile-address-name{font-size:11px;font-weight:800;color:#342317;margin-bottom:2px;}
+.decoreva-profile-address-text{font-size:10px;line-height:1.45;color:#756758;}
+.decoreva-profile-address-actions{display:flex;gap:5px;margin-top:7px;}
+.decoreva-profile-address-actions button{height:26px;padding:0 7px;border:1px solid rgba(184,134,44,.38);border-radius:6px;background:#fffaf1;color:#6d4b17;font-size:8px;font-weight:700;cursor:pointer;}
+.decoreva-profile-address-form{margin-top:9px;padding-top:10px;border-top:1px dashed rgba(184,134,44,.28);}
+.decoreva-profile-address-form>strong{display:block;margin-bottom:8px;color:#342317;font-size:11px;}
+.decoreva-profile-address-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.decoreva-profile-address-form-actions{display:flex;gap:7px;margin-top:2px;}
+.decoreva-profile-address-form-actions button{flex:1;height:36px;border-radius:7px;cursor:pointer;font-size:10px;font-weight:800;}
+#decoreva-profile-address-cancel{border:1px solid rgba(184,134,44,.38);background:#fff;color:#6d4b17;}
+#decoreva-profile-address-save{background:linear-gradient(135deg,#a96f12,#d4a33e 48%,#a96f12);}
+.decoreva-profile-note{margin:3px 2px 0;color:#8a7765;font-size:9px;line-height:1.45;text-align:center;}
+@media(max-width:760px){
+    .decoreva-profile-card{width:94vw;max-width:430px;}
+    .decoreva-profile-body{padding:12px;}
+    .decoreva-profile-address-grid{grid-template-columns:1fr;gap:0;}
+    .decoreva-profile-section input,.decoreva-profile-section textarea,.decoreva-profile-section select{font-size:12px;}
+}
+
+/* Force checkout progress to remain visible in the cart drawer. */
+.decoreva-cart-drawer .decoreva-checkout-steps{display:none!important;visibility:hidden!important;opacity:0!important;}
+.decoreva-cart-drawer.open .decoreva-checkout-steps{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;flex:0 0 auto!important;}
+.decoreva-cart-drawer.open .decoreva-checkout-steps button{display:block!important;visibility:visible!important;opacity:1!important;}
+.decoreva-address-message.success{color:#5e7c35;}
+.decoreva-saved-addresses-title{margin:0 0 7px;color:#6d4b17;font-size:10px;font-weight:800;}
+.decoreva-checkout-saved-address{width:100%;margin:0 0 7px;padding:8px 10px;border:1px solid rgba(184,134,44,.25);border-radius:8px;background:#fff;text-align:left;cursor:pointer;color:#342317;}
+.decoreva-checkout-saved-address.default{border-color:#d1a24d;background:#fffaf1;}
+.decoreva-checkout-saved-address strong{display:block;color:#6d4b17;font-size:9px;}
+.decoreva-checkout-saved-address strong span{margin-left:4px;color:#8a611b;font-size:7px;}
+.decoreva-checkout-saved-address small{display:block;margin-top:2px;color:#756758;font-size:9px;}
+
+
+
+/* =========================================================
+   DECOREVA — CART / ADDRESS / REVIEW CHECKOUT
+   Single consolidated checkout block.
+   ========================================================= */
+.decoreva-cart-drawer.decoreva-checkout-mode,
+.decoreva-cart-drawer.decoreva-cart-open{z-index:2147483647 !important;}
+
+/* CART PAGE */
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-panel{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    max-width:none !important;
+    height:100vh !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(320px,380px) !important;
+    grid-template-rows:auto auto minmax(0,1fr) !important;
+    grid-template-areas:"steps steps" "head head" "items footer" !important;
+    overflow:hidden !important;
+    transform:none !important;
+    border-radius:0 !important;
+}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-checkout-steps{grid-area:steps !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-head{grid-area:head !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) #decoreva-cart-items,
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) #decoreva-cart-empty{grid-area:items !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-footer{grid-area:footer !important;min-height:0 !important;overflow-y:auto !important;border-left:1px solid rgba(184,134,44,.18) !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-head{padding:14px 22px !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-head strong{font-size:21px !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-items{padding:16px 5vw 30px !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-item{max-width:820px !important;margin:0 auto 10px !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-item-controls{display:flex !important;align-items:center !important;flex-wrap:wrap !important;gap:7px !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-item-controls button[data-cart-action="wishlist"]{padding:0 !important;border:0 !important;background:transparent !important;color:#555 !important;font-size:9px !important;font-weight:700 !important;cursor:pointer !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-item-controls button[data-cart-action="wishlist"]:hover{color:#a96f12 !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-footer{padding:18px 24px 30px !important;background:#fff !important;}
+.decoreva-cart-drawer:not(.decoreva-checkout-mode) #decoreva-cart-whatsapp{height:44px !important;font-size:11px !important;}
+
+/* CHECKOUT PAGE: panel itself scrolls, so address scrolling does not depend on a nested section. */
+body.decoreva-checkout-open{overflow:hidden !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-panel{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    max-width:none !important;
+    height:100vh !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    transform:none !important;
+    border-radius:0 !important;
+    background:#f5f5f5 !important;
+    -webkit-overflow-scrolling:touch !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps{
+    position:sticky !important;top:0 !important;z-index:20 !important;flex:0 0 56px !important;
+    height:56px !important;background:#fff !important;border-bottom:1px solid #eee !important;
+    color:#777 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps button{color:#777 !important;font-size:10px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps button.active{color:#a96f12 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{
+    position:sticky !important;top:56px !important;z-index:19 !important;flex:0 0 auto !important;
+    padding:14px 6vw !important;background:#211207 !important;color:#f4e4c2 !important;
+    border-bottom:1px solid rgba(184,134,44,.35) !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head strong{font-size:21px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head span{font-size:9px !important;color:#d9c6a0 !important;}
+
+/* Inactive checkout section is always removed from layout. */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address[hidden],
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment[hidden]{display:none !important;}
+
+/* ADDRESS */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(300px,380px) !important;
+    grid-template-areas:
+        "head summary"
+        "saved summary"
+        "name summary"
+        "mobile summary"
+        "line summary"
+        "city summary"
+        "items summary"
+        "button summary"
+        "message summary" !important;
+    column-gap:28px !important;
+    align-content:start !important;
+    flex:0 0 auto !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-width:1180px !important;
+    width:100% !important;
+    margin:0 auto !important;
+    box-sizing:border-box !important;
+    padding:28px 6vw 46px !important;
+    overflow:visible !important;
+    background:#f5f5f5 !important;
+    border:0 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head{grid-area:head !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-summary{grid-area:summary !important;align-self:start !important;position:sticky !important;top:88px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-saved-addresses{grid-area:saved !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-name{grid-area:name !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-mobile{grid-area:mobile !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-line{grid-area:line !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-address-grid{grid-area:city !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-items{grid-area:items !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-save-address{grid-area:button !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-message{grid-area:message !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-section-head{display:flex !important;flex-direction:column !important;gap:3px !important;margin:0 0 14px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-section-head strong{font-size:16px !important;color:#282c3f !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-section-head span{font-size:9px !important;color:#777 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{
+    width:100% !important;box-sizing:border-box !important;height:42px !important;margin:0 0 10px !important;
+    padding:0 11px !important;border:1px solid #d6d6d6 !important;border-radius:2px !important;
+    background:#fff !important;color:#282c3f !important;font-size:11px !important;outline:none !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{height:68px !important;padding:10px 11px !important;resize:vertical !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input:focus,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea:focus{border-color:#b8862c !important;box-shadow:0 0 0 1px rgba(184,134,44,.15) !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-address-grid{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:8px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-address-grid input{margin:0 !important;min-width:0 !important;}
+
+/* SUMMARY / COUPONS / PRICE DETAILS */
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-summary{
+    padding:18px !important;border:1px solid #e5e5e5 !important;border-radius:2px !important;
+    background:#fff !important;box-shadow:none !important;color:#282c3f !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-summary>strong{display:block;margin-bottom:16px !important;font-size:13px !important;}
+.decoreva-checkout-coupon-row{display:flex !important;align-items:center !important;justify-content:space-between !important;padding:0 0 13px !important;border-bottom:1px solid #eee !important;}
+.decoreva-checkout-coupon-row span{font-size:11px !important;color:#282c3f !important;}
+.decoreva-checkout-coupon-row button{height:28px !important;padding:0 12px !important;border:1px solid #d6a44d !important;background:#fff !important;color:#a96f12 !important;font-size:9px !important;font-weight:800 !important;cursor:pointer !important;}
+.decoreva-checkout-summary-item{display:flex !important;justify-content:space-between !important;gap:12px !important;padding:9px 0 !important;border-bottom:1px solid #eee !important;font-size:10px !important;color:#282c3f !important;}
+.decoreva-checkout-summary-item span{min-width:0 !important;line-height:1.35 !important;}
+.decoreva-checkout-summary-item b{white-space:nowrap !important;}
+.decoreva-checkout-summary-total{display:flex !important;justify-content:space-between !important;gap:10px !important;padding:8px 0 !important;font-size:10px !important;color:#555 !important;}
+.decoreva-checkout-summary-total.final{margin-top:5px !important;padding-top:13px !important;border-top:1px solid #ddd !important;font-size:12px !important;color:#282c3f !important;}
+.decoreva-checkout-summary-total.final strong{font-size:18px !important;color:#282c3f !important;}
+.decoreva-checkout-summary-coupon{margin-top:8px !important;font-size:9px !important;color:#5e7c35 !important;}
+.decoreva-checkout-summary-coupon.none{color:#777 !important;}
+
+/* SAVED ADDRESSES */
+.decoreva-saved-addresses-title{margin:0 0 7px !important;color:#282c3f !important;font-size:10px !important;font-weight:800 !important;}
+.decoreva-checkout-saved-address{width:100% !important;margin:0 0 7px !important;padding:10px !important;border:1px solid #ddd !important;border-radius:2px !important;background:#fff !important;text-align:left !important;cursor:pointer !important;color:#282c3f !important;}
+.decoreva-checkout-saved-address.default{border-color:#d1a24d !important;background:#fffaf1 !important;}
+.decoreva-checkout-saved-address strong{display:block !important;font-size:9px !important;}
+.decoreva-checkout-saved-address small{display:block !important;margin-top:3px !important;font-size:9px !important;color:#777 !important;}
+
+/* FIXED CHECKOUT ORDER + SCROLL
+   The cart header must come before the address section in the visual flow.
+   The full checkout panel is the single vertical scroll container. */
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps{order:0 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{order:1 !important;position:sticky !important;top:0 !important;z-index:30 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address{order:2 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment{order:2 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-empty,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-items,
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-footer{order:3 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-panel{overflow-y:auto !important;overflow-x:hidden !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){overflow-y:auto !important;overflow-x:hidden !important;}
+
+/* ITEMS ON ADDRESS PAGE */
+.decoreva-checkout-items{margin-top:2px !important;padding:15px !important;border:1px solid #e5e5e5 !important;background:#fff !important;}
+.decoreva-checkout-items-head{display:flex !important;justify-content:space-between !important;align-items:center !important;margin-bottom:10px !important;color:#282c3f !important;}
+.decoreva-checkout-items-head strong{font-size:12px !important;}
+.decoreva-checkout-items-head span{font-size:9px !important;color:#777 !important;}
+.decoreva-checkout-item{display:flex !important;gap:11px !important;padding:10px 0 !important;border-top:1px solid #eee !important;}
+.decoreva-checkout-item img{width:58px !important;height:58px !important;object-fit:contain !important;border:1px solid #eee !important;background:#fff !important;flex:0 0 58px !important;}
+.decoreva-checkout-item-info{display:flex !important;flex-direction:column !important;gap:4px !important;min-width:0 !important;}
+.decoreva-checkout-item-info strong{font-size:10px !important;color:#282c3f !important;line-height:1.35 !important;}
+.decoreva-checkout-item-info span{font-size:9px !important;color:#777 !important;}
+.decoreva-checkout-item-info b{font-size:10px !important;color:#282c3f !important;}
+.decoreva-checkout-item-actions{display:flex !important;align-items:center !important;gap:14px !important;margin-top:4px !important;}
+.decoreva-checkout-item-actions button{padding:0 !important;border:0 !important;background:transparent !important;color:#555 !important;font-size:9px !important;font-weight:700 !important;cursor:pointer !important;}
+.decoreva-checkout-item-actions button:hover{color:#a96f12 !important;}
+.decoreva-checkout-item-actions button+button{position:relative !important;}
+.decoreva-checkout-item-actions button+button:before{content:"" !important;position:absolute !important;left:-8px !important;top:1px !important;width:1px !important;height:11px !important;background:#ddd !important;}
+.decoreva-checkout-delivery-note{display:flex !important;flex-direction:column !important;gap:3px !important;margin-top:8px !important;padding-top:10px !important;border-top:1px solid #eee !important;}
+.decoreva-checkout-delivery-note strong{font-size:10px !important;color:#282c3f !important;}
+.decoreva-checkout-delivery-note span{font-size:9px !important;color:#777 !important;}
+
+/* CONTINUE / MESSAGE */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-save-address,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-payment-order{
+    width:100% !important;height:44px !important;border:0 !important;border-radius:2px !important;
+    background:#ff3f6c !important;color:#fff !important;font-size:11px !important;font-weight:800 !important;cursor:pointer !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-save-address:disabled{background:#d8d8d8 !important;color:#fff !important;cursor:not-allowed !important;}
+.decoreva-address-message{min-height:14px !important;margin:5px 0 0 !important;font-size:9px !important;font-weight:700 !important;}
+.decoreva-address-message.warning{color:#a96f12 !important;}
+.decoreva-address-message.error{color:#a13b22 !important;}
+.decoreva-address-message.success{color:#5e7c35 !important;}
+
+/* REVIEW / ORDER PAGE */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment:not([hidden]){
+    display:block !important;flex:0 0 auto !important;min-height:0 !important;height:auto !important;
+    padding:28px 6vw 46px !important;background:#f5f5f5 !important;border:0 !important;
+}
+.decoreva-payment-review{max-width:760px !important;margin:0 auto 16px !important;}
+.decoreva-review-address,.decoreva-review-items,.decoreva-review-price{
+    margin-bottom:12px !important;padding:16px !important;border:1px solid #e5e5e5 !important;background:#fff !important;
+}
+.decoreva-review-address>div{display:flex !important;gap:6px !important;align-items:center !important;flex-wrap:wrap !important;}
+.decoreva-review-address>div strong{font-size:11px !important;color:#282c3f !important;}
+.decoreva-review-address>div span{font-size:11px !important;color:#282c3f !important;}
+.decoreva-review-address p{margin:7px 0 10px !important;font-size:10px !important;line-height:1.5 !important;color:#555 !important;}
+.decoreva-review-address button{height:30px !important;padding:0 11px !important;border:1px solid #ff3f6c !important;background:#fff !important;color:#ff3f6c !important;font-size:9px !important;font-weight:800 !important;cursor:pointer !important;}
+.decoreva-review-items>strong{display:block !important;margin-bottom:9px !important;font-size:12px !important;color:#282c3f !important;}
+.decoreva-review-item{display:flex !important;justify-content:space-between !important;gap:12px !important;padding:8px 0 !important;border-top:1px solid #eee !important;font-size:10px !important;color:#555 !important;}
+.decoreva-review-item b{color:#282c3f !important;white-space:nowrap !important;}
+.decoreva-review-price>div{display:flex !important;justify-content:space-between !important;padding:8px 0 !important;font-size:10px !important;color:#555 !important;}
+.decoreva-review-price>div.final{margin-top:4px !important;padding-top:12px !important;border-top:1px solid #ddd !important;font-size:12px !important;color:#282c3f !important;}
+.decoreva-review-price>div.final b{font-size:18px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-payment-order{display:block !important;max-width:760px !important;margin:0 auto !important;}
+
+/* Mobile */
+@media(max-width:760px){
+    .decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-panel{display:flex !important;flex-direction:column !important;overflow:hidden !important;}
+    .decoreva-cart-drawer:not(.decoreva-checkout-mode) #decoreva-cart-items{flex:1 1 auto !important;overflow-y:auto !important;}
+    .decoreva-cart-drawer:not(.decoreva-checkout-mode) .decoreva-cart-footer{flex:0 0 auto !important;max-height:45vh !important;overflow-y:auto !important;border-left:0 !important;border-top:1px solid #eee !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps{flex-basis:48px !important;height:48px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{top:48px !important;padding:11px 16px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head strong{font-size:19px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){
+        display:flex !important;flex-direction:column !important;width:100% !important;max-width:none !important;padding:20px 14px 36px !important;overflow-y:auto !important;overflow-x:hidden !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-summary{position:relative !important;top:auto !important;order:2 !important;width:100% !important;box-sizing:border-box !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head{order:1 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-saved-addresses{order:3 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-name{order:4 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-mobile{order:5 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-line{order:6 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-address-grid{order:7 !important;grid-template-columns:1fr !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-items{order:8 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-save-address{order:9 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-address-message{order:10 !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input,
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{font-size:12px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment:not([hidden]){padding:20px 14px 36px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-section-head strong{font-size:15px !important;}
+}
+
+
+/* =========================================================
+   DECOREVA V7 — FINAL CART / ADDRESS UX
+   Myntra-inspired functional styling: larger readable text,
+   reliable address scrolling, text-style item actions and Home.
+   ========================================================= */
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-panel{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100vh !important;
+    max-width:none !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+    min-height:0 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps{
+    order:0 !important;
+    flex:0 0 56px !important;
+    height:56px !important;
+    min-height:56px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{
+    order:1 !important;
+    flex:0 0 auto !important;
+    min-height:72px !important;
+    padding:14px 6vw !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:18px !important;
+    position:relative !important;
+    top:auto !important;
+    z-index:30 !important;
+}
+.decoreva-cart-head-title{min-width:0 !important;display:flex !important;flex-direction:column !important;gap:4px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head-title strong{font-size:24px !important;line-height:1.1 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head-title span{font-size:11px !important;line-height:1.2 !important;}
+.decoreva-checkout-back{
+    margin-left:auto !important;
+    flex:0 0 auto !important;
+    height:36px !important;
+    padding:0 14px !important;
+    border:1px solid rgba(184,134,44,.55) !important;
+    border-radius:3px !important;
+    background:#fff !important;
+    color:#6d4b17 !important;
+    font:700 11px/1 Arial,Helvetica,sans-serif !important;
+    letter-spacing:.15px !important;
+    cursor:pointer !important;
+}
+.decoreva-checkout-back:hover{background:#fff8e9 !important;color:#a96f12 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){
+    order:2 !important;
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+    scrollbar-gutter:stable !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment:not([hidden]){
+    order:2 !important;
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    height:auto !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head strong{font-size:19px !important;line-height:1.25 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head span{font-size:11px !important;line-height:1.4 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{
+    font-size:13px !important;
+    line-height:1.35 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input{height:44px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{height:74px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-summary{font-size:12px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-summary>strong{font-size:15px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-summary-item{font-size:11px !important;line-height:1.45 !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-summary-total{font-size:12px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-summary-total.final{font-size:14px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-summary-total.final strong{font-size:20px !important;}
+
+/* Myntra-style item actions: clean text links with a separator. */
+.decoreva-checkout-item-actions{
+    display:flex !important;
+    align-items:center !important;
+    gap:0 !important;
+    margin-top:7px !important;
+}
+.decoreva-checkout-item-actions button{
+    height:24px !important;
+    padding:0 14px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    color:#282c3f !important;
+    font:700 11px/24px Arial,Helvetica,sans-serif !important;
+    letter-spacing:.15px !important;
+    cursor:pointer !important;
+    text-transform:uppercase !important;
+}
+.decoreva-checkout-item-actions button:first-child{padding-left:0 !important;}
+.decoreva-checkout-item-actions button+button{position:relative !important;}
+.decoreva-checkout-item-actions button+button:before{
+    content:"" !important;
+    position:absolute !important;
+    left:0 !important;
+    top:5px !important;
+    width:1px !important;
+    height:14px !important;
+    background:#d5d5d5 !important;
+}
+.decoreva-checkout-item-actions button:hover{color:#a96f12 !important;}
+
+/* Larger profile typography, closer to a mainstream shopping account page. */
+.decoreva-profile-head strong{font-size:23px !important;}
+.decoreva-profile-head span{font-size:11px !important;}
+.decoreva-profile-body{padding:18px !important;}
+.decoreva-profile-summary{padding:15px !important;}
+.decoreva-profile-summary strong{font-size:16px !important;}
+.decoreva-profile-summary span{font-size:12px !important;line-height:1.45 !important;}
+.decoreva-profile-section{padding:15px !important;margin-bottom:15px !important;}
+.decoreva-profile-section-title strong{font-size:16px !important;}
+.decoreva-profile-section-title span{font-size:11px !important;}
+.decoreva-profile-section input,.decoreva-profile-section textarea,.decoreva-profile-section select{font-size:13px !important;min-height:42px !important;padding:10px 12px !important;}
+.decoreva-profile-section textarea{min-height:72px !important;}
+.decoreva-profile-address-top{font-size:12px !important;}
+.decoreva-profile-address-top span{font-size:9px !important;}
+.decoreva-profile-address-name{font-size:14px !important;}
+.decoreva-profile-address-text{font-size:12px !important;line-height:1.55 !important;}
+.decoreva-profile-address-actions button{height:32px !important;font-size:10px !important;padding:0 10px !important;}
+.decoreva-profile-note{font-size:11px !important;line-height:1.5 !important;}
+.decoreva-profile-message{font-size:11px !important;}
+
+@media(max-width:760px){
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps{flex-basis:50px !important;height:50px !important;min-height:50px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{min-height:68px !important;padding:12px 16px !important;gap:9px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head-title strong{font-size:21px !important;}
+    .decoreva-checkout-back{height:34px !important;padding:0 10px !important;font-size:10px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){display:flex !important;flex-direction:column !important;flex:1 1 auto !important;min-height:0 !important;overflow-y:auto !important;overflow-x:hidden !important;padding:20px 14px 36px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input{height:44px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{height:78px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head strong{font-size:18px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head span{font-size:11px !important;}
+    .decoreva-checkout-item-actions button{font-size:10px !important;padding:0 11px !important;}
+    .decoreva-profile-body{padding:14px !important;}
+    .decoreva-profile-section input,.decoreva-profile-section textarea,.decoreva-profile-section select{font-size:13px !important;}
+}
+
+
+/* =========================================================
+   DECOREVA V10 — ONE-PAGE CART + ADDRESS CHECKOUT
+   Cart items and price/coupon summary first, then address,
+   all inside one checkout page with one scrollbar.
+   ========================================================= */
+html:has(body.decoreva-checkout-open),
+body.decoreva-checkout-open{
+    overflow:hidden !important;
+    height:100% !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100vh !important;
+    overflow:hidden !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-panel{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    max-width:none !important;
+    height:100vh !important;
+    min-height:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(320px,380px) !important;
+    grid-template-rows:auto auto auto auto !important;
+    grid-template-areas:
+        "steps steps"
+        "head head"
+        "items footer"
+        "address footer" !important;
+    align-content:start !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    transform:none !important;
+    border-radius:0 !important;
+    background:#f5f5f5 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-checkout-steps{
+    grid-area:steps !important;
+    position:sticky !important;
+    top:0 !important;
+    z-index:50 !important;
+    flex:none !important;
+    min-height:56px !important;
+    height:56px !important;
+    background:#fff !important;
+    border-bottom:1px solid #eee !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{
+    grid-area:head !important;
+    position:relative !important;
+    top:auto !important;
+    z-index:40 !important;
+    min-height:72px !important;
+    padding:14px 6vw !important;
+    display:flex !important;
+    align-items:center !important;
+    background:#211207 !important;
+    color:#f4e4c2 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head-title strong{
+    font-size:24px !important;
+    line-height:1.15 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head-title span{
+    font-size:11px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-empty,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-items{
+    grid-area:items !important;
+    min-width:0 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-empty{
+    align-self:start !important;
+    padding:28px 6vw !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-items{
+    padding:18px 5vw 28px !important;
+    overflow:visible !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item{
+    max-width:900px !important;
+    margin:0 auto 10px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-footer{
+    grid-area:footer !important;
+    align-self:start !important;
+    position:sticky !important;
+    top:74px !important;
+    min-width:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding:20px 24px 24px !important;
+    background:#fff !important;
+    border-left:1px solid #e5e5e5 !important;
+    border-top:0 !important;
+    box-sizing:border-box !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-whatsapp{
+    width:100% !important;
+    height:46px !important;
+    margin-top:14px !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){
+    grid-area:address !important;
+    display:block !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding:28px 5vw 44px !important;
+    box-sizing:border-box !important;
+    background:#f5f5f5 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address[hidden],
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment[hidden]{
+    display:none !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-payment{display:none !important;}
+/* One price/coupon box only: keep the cart footer summary, hide duplicate address summary. */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-summary{display:none !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-items{display:none !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head strong{
+    font-size:20px !important;
+    line-height:1.3 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address>.decoreva-checkout-section-head span{
+    font-size:12px !important;
+    line-height:1.5 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input,
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{
+    font-size:13px !important;
+    line-height:1.4 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address input{height:46px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address textarea{height:78px !important;}
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-save-address{
+    display:block !important;
+    width:100% !important;
+    min-height:48px !important;
+    margin:18px 0 0 !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+}
+/* Similar products stay after the address on the same page. */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-similar-products{margin-top:24px !important;}
+@media(max-width:760px){
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-panel{
+        grid-template-columns:minmax(0,1fr) !important;
+        grid-template-rows:auto auto auto auto auto !important;
+        grid-template-areas:
+            "steps"
+            "head"
+            "items"
+            "footer"
+            "address" !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-footer{
+        position:relative !important;
+        top:auto !important;
+        border-left:0 !important;
+        border-top:1px solid #e5e5e5 !important;
+        padding:18px 16px 22px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-items{padding:14px 16px 20px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-checkout-address:not([hidden]){padding:24px 16px 40px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head{padding:12px 16px !important;}
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-head-title strong{font-size:21px !important;}
+}
+
+
+/* V11 — prevent the hidden checkout drawer from leaking its progress bar over the main navigation. */
+.decoreva-cart-drawer:not(.open) .decoreva-checkout-steps{display:none!important;visibility:hidden!important;opacity:0!important;}
+@media (min-width:761px){
+    body:not(.decoreva-checkout-open) #main-nav{display:flex!important;visibility:visible!important;opacity:1!important;}
+}
+
+
+/* =========================================================
+   DECOREVA V12 — CART PRODUCT + RECOMMENDATIONS
+   Larger shopping-style cart item, Myntra-inspired actions,
+   and two DECOREVA recommendation sections below address.
+   ========================================================= */
+
+/* Larger selected/cart product on the one-page checkout. */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-items{
+    padding:24px 5vw 34px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item{
+    width:100% !important;
+    max-width:900px !important;
+    min-height:150px !important;
+    margin:0 auto 14px !important;
+    padding:16px !important;
+    gap:18px !important;
+    box-sizing:border-box !important;
+    background:#fff !important;
+    border:1px solid #e5e5e5 !important;
+    border-radius:2px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item img{
+    width:125px !important;
+    height:145px !important;
+    flex:0 0 125px !important;
+    object-fit:contain !important;
+    border-radius:2px !important;
+    background:#fafafa !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-info{
+    justify-content:flex-start !important;
+    gap:7px !important;
+    padding:2px 0 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-info strong{
+    font-size:16px !important;
+    line-height:1.35 !important;
+    color:#282c3f !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-info>span{
+    font-size:13px !important;
+    line-height:1.45 !important;
+    color:#696e79 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-info>span:last-of-type{
+    color:#282c3f !important;
+    font-size:14px !important;
+    font-weight:700 !important;
+}
+
+/* Quantity controls stay compact; Remove / Wishlist become shopping text links. */
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls{
+    display:flex !important;
+    align-items:center !important;
+    gap:0 !important;
+    margin-top:12px !important;
+    flex-wrap:wrap !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="minus"],
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="plus"]{
+    width:30px !important;
+    height:30px !important;
+    padding:0 !important;
+    border:1px solid #d9d9d9 !important;
+    background:#fff !important;
+    border-radius:2px !important;
+    font-size:16px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls span{
+    min-width:34px !important;
+    font-size:13px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="remove"],
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="wishlist"]{
+    width:auto !important;
+    height:30px !important;
+    margin-left:18px !important;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    border-radius:0 !important;
+    color:#282c3f !important;
+    font:700 11px/30px Arial,Helvetica,sans-serif !important;
+    text-transform:uppercase !important;
+    letter-spacing:.2px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="wishlist"]{
+    position:relative !important;
+    margin-left:26px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="wishlist"]:before{
+    content:"" !important;
+    position:absolute !important;
+    left:-13px !important;
+    top:8px !important;
+    width:1px !important;
+    height:14px !important;
+    background:#d8d8d8 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="remove"]:hover,
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="wishlist"]:hover{
+    color:#a96f12 !important;
+}
+
+/* Recommendation area: two DECOREVA product rows below the address. */
+.decoreva-cart-drawer.decoreva-checkout-mode #decoreva-similar-products{
+    display:block !important;
+    width:100% !important;
+    max-width:1100px !important;
+    margin:34px auto 0 !important;
+    padding:0 !important;
+    box-sizing:border-box !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-head{
+    display:flex !important;
+    align-items:baseline !important;
+    justify-content:space-between !important;
+    gap:16px !important;
+    margin:26px 0 14px !important;
+    padding-bottom:10px !important;
+    border-bottom:1px solid #e5e5e5 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-head strong{
+    font-size:18px !important;
+    line-height:1.3 !important;
+    color:#282c3f !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-head span{
+    font-size:11px !important;
+    color:#777 !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-grid{
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:14px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card{
+    min-width:0 !important;
+    background:#fff !important;
+    border:1px solid #e5e5e5 !important;
+    border-radius:2px !important;
+    overflow:hidden !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card>img{
+    display:block !important;
+    width:100% !important;
+    height:210px !important;
+    object-fit:contain !important;
+    background:#fafafa !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card-info{
+    padding:12px !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card-info strong{
+    display:block !important;
+    min-height:38px !important;
+    font-size:13px !important;
+    line-height:1.4 !important;
+    color:#282c3f !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card-info span{
+    display:block !important;
+    margin-top:5px !important;
+    font-size:13px !important;
+    font-weight:700 !important;
+    color:#282c3f !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card-info button{
+    width:100% !important;
+    height:36px !important;
+    margin-top:10px !important;
+    border:1px solid #d5d5d5 !important;
+    background:#fff !important;
+    color:#282c3f !important;
+    font:700 10px/34px Arial,Helvetica,sans-serif !important;
+    letter-spacing:.3px !important;
+    cursor:pointer !important;
+}
+.decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card-info button:hover{
+    border-color:#b8862c !important;
+    color:#a96f12 !important;
+}
+
+@media(max-width:760px){
+    .decoreva-cart-drawer.decoreva-checkout-mode #decoreva-cart-items{
+        padding:16px 16px 26px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item{
+        min-height:0 !important;
+        padding:12px !important;
+        gap:12px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item img{
+        width:105px !important;
+        height:120px !important;
+        flex-basis:105px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-info strong{
+        font-size:14px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-info>span{
+        font-size:11px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="remove"],
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-cart-item-controls button[data-cart-action="wishlist"]{
+        font-size:10px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-head{
+        margin-left:0 !important;
+        margin-right:0 !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-head strong{
+        font-size:16px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:10px !important;
+    }
+    .decoreva-cart-drawer.decoreva-checkout-mode .decoreva-similar-card>img{
+        height:170px !important;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA V13 — CART CTA / ADD-TO-CART BEHAVIOUR
+   ========================================================= */
+
+/* "Proceed to Buy" is the cart-stage CTA. */
+#decoreva-cart-whatsapp{
+    width:100% !important;
+    min-height:48px !important;
+    border-radius:4px !important;
+    background:#b97b12 !important;
+    color:#fff !important;
+    border:0 !important;
+    font:700 13px/48px Arial,Helvetica,sans-serif !important;
+    text-transform:none !important;
+    cursor:pointer !important;
+}
+#decoreva-cart-whatsapp:hover{
+    background:#9e670b !important;
+}
+
+/* Small confirmation after adding a product; cart does not open automatically. */
+.decoreva-cart-added-notice{
+    position:fixed !important;
+    left:50% !important;
+    bottom:28px !important;
+    z-index:2147483647 !important;
+    transform:translate(-50%,12px) !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+    padding:10px 18px !important;
+    border-radius:3px !important;
+    background:#2b2119 !important;
+    color:#fff !important;
+    font:600 13px/1.2 Arial,Helvetica,sans-serif !important;
+    box-shadow:0 6px 20px rgba(0,0,0,.18) !important;
+    transition:opacity .2s ease,transform .2s ease !important;
+}
+.decoreva-cart-added-notice.show{
+    opacity:1 !important;
+    transform:translate(-50%,0) !important;
+}
+
+@media(max-width:760px){
+    #decoreva-cart-whatsapp{
+        min-height:46px !important;
+        font-size:12px !important;
+        line-height:46px !important;
+    }
+}
+
+
+/* =========================================================
+   DECOREVA V14 — WHATSAPP ORDER CONFIRMATION + COUPON LAYER
+   ========================================================= */
+
+.decoreva-coupon-modal{
+    z-index:2147483648 !important;
+}
+
+.decoreva-order-confirmation{
+    position:fixed !important;
+    inset:0 !important;
+    z-index:2147483649 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+}
+.decoreva-order-confirmation.open{
+    visibility:visible !important;
+    pointer-events:auto !important;
+}
+.decoreva-order-confirmation-overlay{
+    position:absolute !important;
+    inset:0 !important;
+    background:rgba(25,16,8,.62) !important;
+}
+.decoreva-order-confirmation-card{
+    position:relative !important;
+    z-index:1 !important;
+    width:min(440px,92vw) !important;
+    padding:30px 28px 26px !important;
+    box-sizing:border-box !important;
+    background:#fffdf8 !important;
+    border-radius:5px !important;
+    text-align:center !important;
+    box-shadow:0 20px 60px rgba(0,0,0,.30) !important;
+}
+.decoreva-order-confirmation-icon{
+    width:48px !important;
+    height:48px !important;
+    margin:0 auto 14px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:50% !important;
+    background:#b8862c !important;
+    color:#fff !important;
+    font-size:25px !important;
+    font-weight:800 !important;
+}
+.decoreva-order-confirmation-card strong{
+    display:block !important;
+    color:#342317 !important;
+    font:700 21px/1.25 Georgia,"Times New Roman",serif !important;
+}
+.decoreva-order-confirmation-card p{
+    margin:10px 0 22px !important;
+    color:#5f554b !important;
+    font:400 13px/1.55 Arial,Helvetica,sans-serif !important;
+}
+#decoreva-order-confirmation-close{
+    width:100% !important;
+    height:44px !important;
+    border:0 !important;
+    border-radius:4px !important;
+    background:linear-gradient(135deg,#b77a13,#d4a33e) !important;
+    color:#fff !important;
+    font:700 13px/44px Arial,Helvetica,sans-serif !important;
+    cursor:pointer !important;
+}
+@media(max-width:760px){
+    .decoreva-order-confirmation-card{
+        width:92vw !important;
+        padding:25px 20px 22px !important;
+    }
+    .decoreva-order-confirmation-card strong{font-size:19px !important;}
+    .decoreva-order-confirmation-card p{font-size:12px !important;}
+}
+
+
+/* V15 — checkout action label is controlled by checkout stage.
+   Keep the final WhatsApp action prominent and readable. */
+#decoreva-cart-whatsapp{
+    min-height:46px !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+}
+
+
+/* V16 — single final checkout action.
+   The old bottom address "Order on WhatsApp" button is removed.
+   The Order Summary contains the only final ordering button. */
+#decoreva-cart-whatsapp{
+    display:block !important;
+    width:100% !important;
+    min-height:48px !important;
+    margin-top:18px !important;
+    border:0 !important;
+    border-radius:4px !important;
+    background:#b8862c !important;
+    color:#fff !important;
+    font:800 13px/48px Arial,Helvetica,sans-serif !important;
+    text-align:center !important;
+    cursor:pointer !important;
+}
+#decoreva-cart-whatsapp:hover{
+    background:#9f6d16 !important;
+}
+
+
+/* V17 — checkout never displays or auto-selects saved profile addresses. */
+#decoreva-checkout-saved-addresses{
+    display:none !important;
+}
+
+
+/* =========================================================
+   V18 — CART HEADER POLISH
+   ========================================================= */
+
+.decoreva-cart-drawer .decoreva-cart-head{
+    position:relative !important;
+}
+
+.decoreva-cart-drawer .decoreva-cart-head [data-cart-close]{
+    position:absolute !important;
+    right:14px !important;
+    top:50% !important;
+    transform:translateY(-50%) !important;
+    margin:0 !important;
+}
+
+.decoreva-cart-drawer .decoreva-cart-head h2{
+    margin-right:55px !important;
+}
+
+.decoreva-cart-drawer .decoreva-cart-head p{
+    margin-right:55px !important;
+    font-size:11px !important;
+    line-height:1.4 !important;
+    opacity:.92 !important;
+}
+
+@media(max-width:760px){
+    .decoreva-cart-drawer .decoreva-cart-head [data-cart-close]{
+        right:10px !important;
+    }
+    .decoreva-cart-drawer .decoreva-cart-head h2,
+    .decoreva-cart-drawer .decoreva-cart-head p{
+        margin-right:48px !important;
+    }
+}
+
+
+/* =========================================================
+   V19 — WISHLIST + PROFILE ACCOUNT MENU + ALL PRODUCTS
+   ========================================================= */
+.decoreva-side-drawer{
+    position:fixed !important;
+    inset:0 !important;
+    z-index:2147483646 !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+}
+.decoreva-side-drawer.open{visibility:visible !important;pointer-events:auto !important;}
+.decoreva-side-overlay{position:absolute;inset:0;background:rgba(20,13,8,.42);opacity:0;transition:opacity .2s ease;}
+.decoreva-side-drawer.open .decoreva-side-overlay{opacity:1;}
+.decoreva-side-panel{
+    position:absolute;top:0;right:0;width:min(430px,94vw);height:100%;
+    display:flex;flex-direction:column;background:#fffdf8;
+    box-shadow:-12px 0 35px rgba(0,0,0,.22);
+    transform:translateX(100%);transition:transform .25s ease;
+}
+.decoreva-side-drawer.open .decoreva-side-panel{transform:translateX(0);}
+.decoreva-side-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;background:#211207;color:#f4e4c2;border-bottom:1px solid #b8862c;}
+.decoreva-side-head strong{display:block;font:700 21px/1 Georgia,"Times New Roman",serif;}
+.decoreva-side-head span{display:block;margin-top:5px;font-size:12px;color:#d9c6a0;}
+.decoreva-side-items{flex:1;overflow:auto;padding:14px 18px;}
+.decoreva-side-empty{padding:50px 20px;text-align:center;color:#756758;font-size:14px;}
+.decoreva-wishlist-item{display:grid;grid-template-columns:82px minmax(0,1fr);gap:13px;padding:13px 0;border-bottom:1px solid #eadfce;}
+.decoreva-wishlist-item img{width:82px;height:82px;object-fit:contain;border:1px solid #eadfce;background:#fff;}
+.decoreva-wishlist-info{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.decoreva-wishlist-info strong{font-size:14px;color:#211207;line-height:1.35;}
+.decoreva-wishlist-info span{font-size:12px;color:#756758;}
+.decoreva-wishlist-info b{font-size:14px;color:#211207;}
+.decoreva-wishlist-info button{align-self:flex-start;border:0;background:none;color:#b0192e;font-size:12px;font-weight:800;padding:3px 0;cursor:pointer;}
+
+.decoreva-profile-menu{margin:0 0 15px;border:1px solid #e8dccb;background:#fff;border-radius:8px;overflow:hidden;}
+.decoreva-profile-menu button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border:0;border-bottom:1px solid #eee4d7;background:#fff;text-align:left;cursor:pointer;color:#211207;}
+.decoreva-profile-menu button:last-child{border-bottom:0;}
+.decoreva-profile-menu button:hover{background:#fffaf1;}
+.decoreva-profile-menu span{font-size:14px;font-weight:700;}
+.decoreva-profile-menu small{font-size:11px;color:#756758;text-align:right;}
+.decoreva-profile-section-title strong{font-size:15px !important;}
+.decoreva-profile-section-title span{font-size:11px !important;}
+.decoreva-profile-section input,.decoreva-profile-section textarea,.decoreva-profile-section select{font-size:13px !important;min-height:42px;}
+.decoreva-profile-address-name{font-size:13px !important;}
+.decoreva-profile-address-text{font-size:12px !important;}
+.decoreva-profile-address-actions button{font-size:10px !important;height:30px !important;}
+.decoreva-profile-note{font-size:11px !important;}
+
+.decoreva-all-products-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;}
+.decoreva-all-products-grid .decoreva-similar-card-info strong{font-size:13px !important;line-height:1.35;}
+.decoreva-all-products-grid .decoreva-similar-card-info span{font-size:12px !important;}
+.decoreva-all-products-grid .decoreva-similar-card-info button{font-size:10px !important;}
+@media(max-width:900px){.decoreva-all-products-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}}
+@media(max-width:650px){
+    .decoreva-side-panel{width:94vw;}
+    .decoreva-all-products-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+    .decoreva-profile-menu span{font-size:13px;}
+    .decoreva-profile-menu small{font-size:10px;}
+}
+
+
+/* =========================================================
+   V20 — PROFILE MENU FIX
+   The profile account menu uses <nav>, so the site's global
+   navigation CSS was incorrectly making it horizontal.
+   Keep the main site navigation unchanged.
+   ========================================================= */
+
+nav.decoreva-profile-menu{
+    position:relative !important;
+    top:auto !important;
+    left:auto !important;
+    z-index:auto !important;
+    width:100% !important;
+    min-height:0 !important;
+    height:auto !important;
+    display:block !important;
+    align-items:initial !important;
+    justify-content:initial !important;
+    gap:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    background:#fff !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+}
+
+nav.decoreva-profile-menu button{
+    position:relative !important;
+    top:auto !important;
+    left:auto !important;
+    flex:none !important;
+    min-height:46px !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:13px 15px !important;
+    box-sizing:border-box !important;
+}
+
+nav.decoreva-profile-menu button span{
+    display:block !important;
+}
+
+nav.decoreva-profile-menu button small{
+    display:block !important;
+}
+
+
+/* =========================================================
+   V21 — PROFILE WELCOME / LOGIN-SIGNUP, MYNTRA-STYLE
+   Keep the drawer clean: welcome + compact account menu first;
+   personal details and addresses open only when requested.
+   ========================================================= */
+.decoreva-profile-welcome{
+    margin:0 0 14px;
+    padding:18px 20px 20px;
+    border:1px solid #eadfce;
+    background:#fff;
+    text-align:left;
+}
+.decoreva-profile-welcome strong{
+    display:block;
+    margin:0 0 6px;
+    color:#3a2a1f;
+    font:700 16px/1.25 Arial,Helvetica,sans-serif;
+}
+.decoreva-profile-welcome span{
+    display:block;
+    margin:0 0 14px;
+    color:#6f6258;
+    font:400 12px/1.45 Arial,Helvetica,sans-serif;
+}
+.decoreva-profile-welcome button{
+    display:inline-block;
+    min-width:150px;
+    min-height:40px;
+    padding:0 16px;
+    border:1px solid #b8862c;
+    border-radius:2px;
+    background:#fff;
+    color:#b06f00;
+    font:700 12px/38px Arial,Helvetica,sans-serif;
+    letter-spacing:.2px;
+    cursor:pointer;
+}
+.decoreva-profile-welcome button:hover{
+    background:#fffaf1;
+}
+.decoreva-profile-section[hidden]{display:none !important;}
+.decoreva-profile-menu button span{font-size:14px !important;}
+.decoreva-profile-menu button small{font-size:11px !important;}
+@media(max-width:760px){
+    .decoreva-profile-welcome{padding:16px 17px 18px;}
+    .decoreva-profile-welcome strong{font-size:15px;}
+    .decoreva-profile-welcome span{font-size:12px;}
+    .decoreva-profile-menu button span{font-size:14px !important;}
+    .decoreva-profile-menu button small{font-size:10px !important;}
+}

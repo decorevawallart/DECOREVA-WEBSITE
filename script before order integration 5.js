@@ -1,143 +1,5 @@
         document.addEventListener("DOMContentLoaded", function () {
             "use strict";
-
-            /* ================= DECOREVA VISITOR TRACKING ================= */
-            const DECOREVA_VISITOR_ID_KEY = "decorevaVisitorId";
-            const DECOREVA_TRACKED_PAGE_KEY = "decorevaTrackedPage";
-
-            function getDecorevaVisitorId() {
-                let visitorId = "";
-                try {
-                    visitorId = localStorage.getItem(DECOREVA_VISITOR_ID_KEY) || "";
-                } catch (error) {
-                    console.warn("DECOREVA visitor storage read error:", error);
-                }
-
-                if (!visitorId) {
-                    if (window.crypto && typeof window.crypto.randomUUID === "function") {
-                        visitorId = window.crypto.randomUUID();
-                    } else if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-                        const bytes = new Uint8Array(16);
-                        window.crypto.getRandomValues(bytes);
-                        visitorId = Array.from(bytes, function (byte) {
-                            return byte.toString(16).padStart(2, "0");
-                        }).join("");
-                    } else {
-                        visitorId = "visitor-" + Date.now() + "-" + Math.random().toString(36).slice(2, 12);
-                    }
-
-                    try {
-                        localStorage.setItem(DECOREVA_VISITOR_ID_KEY, visitorId);
-                    } catch (error) {
-                        console.warn("DECOREVA visitor storage write error:", error);
-                    }
-                }
-
-                return visitorId;
-            }
-
-            async function getDecorevaTrackingUser() {
-                if (!window.decorevaSupabase || !window.decorevaSupabase.auth) {
-                    return null;
-                }
-
-                try {
-                    const result = await window.decorevaSupabase.auth.getUser();
-                    return result && result.data ? result.data.user || null : null;
-                } catch (error) {
-                    console.warn("DECOREVA visitor auth check error:", error);
-                    return null;
-                }
-            }
-
-            function getDecorevaTrackingPageKey() {
-                return window.location.pathname + window.location.search + window.location.hash;
-            }
-
-            async function trackDecorevaVisit(productKey) {
-                if (!window.decorevaSupabase) {
-                    console.warn("DECOREVA visitor tracking: Supabase client unavailable.");
-                    return false;
-                }
-
-                const visitorId = getDecorevaVisitorId();
-                if (!visitorId) return false;
-
-                const pageKey = getDecorevaTrackingPageKey();
-                const isProductView = !!productKey;
-
-                /* Prevent repeated refreshes of the same page from creating
-                   multiple visitor rows during one browser session. */
-                if (!isProductView) {
-                    try {
-                        if (sessionStorage.getItem(DECOREVA_TRACKED_PAGE_KEY) === pageKey) {
-                            return true;
-                        }
-                    } catch (error) {
-                        console.warn("DECOREVA visitor session storage read error:", error);
-                    }
-                }
-
-                const user = await getDecorevaTrackingUser();
-
-                const payload = {
-                    visitor_id: visitorId,
-                    user_id: user ? user.id : null,
-                    page_path: pageKey,
-                    product_key: productKey ? String(productKey) : null,
-                    referrer: document.referrer || null
-                };
-
-                try {
-                    const result = await window.decorevaSupabase
-                        .from("site_visits")
-                        .insert(payload);
-
-                    if (result.error) {
-                        console.error("DECOREVA visitor tracking error:", result.error);
-                        return false;
-                    }
-
-                    if (!isProductView) {
-                        try {
-                            sessionStorage.setItem(DECOREVA_TRACKED_PAGE_KEY, pageKey);
-                        } catch (error) {
-                            console.warn("DECOREVA visitor session storage write error:", error);
-                        }
-                    }
-
-                    return true;
-                } catch (error) {
-                    console.error("DECOREVA visitor tracking exception:", error);
-                    return false;
-                }
-            }
-
-            window.decorevaTrackVisit = trackDecorevaVisit;
-
-            /* Track the current page. Logged-in users are linked through
-               user_id; guests are stored with user_id = NULL. */
-            trackDecorevaVisit();
-
-            /* Track product-card views when a visitor opens/clicks a product.
-               This does not interfere with existing card/slider behaviour. */
-            document.addEventListener("click", function (event) {
-                const card = event.target.closest("#collection-products .card, .featured-slider .featured-slide");
-                if (!card) return;
-
-                const productKey =
-                    card.dataset.productKey ||
-                    card.dataset.productId ||
-                    card.getAttribute("data-product-key") ||
-                    card.getAttribute("data-product-id") ||
-                    card.getAttribute("data-variation-product") ||
-                    "";
-
-                if (productKey) {
-                    trackDecorevaVisit(productKey);
-                }
-            }, true);
-
             function getSliderImages(slider) {
                 if (!slider) return [];
                 try {
@@ -4289,8 +4151,8 @@
 
                     if (checkout) {
                         checkout.disabled = cart.length === 0;
-                        checkout.textContent = "Place Order on WhatsApp";
-                        checkout.setAttribute("aria-label", "Place Order on WhatsApp");
+                        checkout.textContent = "Order on WhatsApp";
+                        checkout.setAttribute("aria-label", "Order on WhatsApp");
                     }
 
                     if (document.querySelector("#decoreva-similar-products")) renderSimilarProducts();
@@ -4413,132 +4275,6 @@
                 }
 
                 const decorevaAddressSupabase = window.decorevaSupabase || null;
-                let decorevaOrderInProgress = false;
-
-                function generateDecorevaOrderNumber() {
-                    const now = new Date();
-                    const datePart = now.getFullYear().toString() +
-                        String(now.getMonth() + 1).padStart(2, "0") +
-                        String(now.getDate()).padStart(2, "0");
-
-                    let randomPart = "";
-                    if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-                        const bytes = new Uint8Array(4);
-                        window.crypto.getRandomValues(bytes);
-                        randomPart = Array.from(bytes, function (byte) {
-                            return byte.toString(16).padStart(2, "0");
-                        }).join("").toUpperCase();
-                    } else {
-                        randomPart = Math.random().toString(16).slice(2, 10).toUpperCase();
-                    }
-
-                    return "DEC-" + datePart + "-" + randomPart;
-                }
-
-                function buildDeliveryAddressText(address) {
-                    if (!address) return "";
-                    return [
-                        address.name || "",
-                        "Mobile: " + (address.mobile || ""),
-                        address.line || "",
-                        (address.city || "") + ", " + (address.state || "") + " - " + (address.pincode || "")
-                    ].filter(Boolean).join("\n");
-                }
-
-                async function createSupabaseOrder() {
-                    if (!cart.length || !deliveryAddress) {
-                        throw new Error("Cart or delivery address is missing.");
-                    }
-
-                    if (!decorevaAddressSupabase) {
-                        throw new Error("Supabase is not available on this page.");
-                    }
-
-                    const user = await getDecorevaAuthUser();
-                    if (!user) {
-                        const loginMessage = document.querySelector("#decoreva-address-message");
-                        if (loginMessage) {
-                            loginMessage.dataset.userMessage = "1";
-                            loginMessage.textContent = "Please login or signup before placing your order.";
-                            loginMessage.className = "decoreva-address-message error";
-                        }
-                        return null;
-                    }
-
-                    const orderNumber = generateDecorevaOrderNumber();
-                    const subtotal = subtotalAmount();
-                    const discount = discountAmount();
-                    const delivery = deliveryCharge();
-                    const total = finalAmount();
-                    const coupon = effectiveCouponCode() || null;
-
-                    const orderPayload = {
-                        user_id: user.id,
-                        order_number: orderNumber,
-                        status: "pending",
-                        customer_name: deliveryAddress.name,
-                        customer_phone: deliveryAddress.mobile,
-                        delivery_address: buildDeliveryAddressText(deliveryAddress),
-                        subtotal: subtotal,
-                        delivery_charge: delivery,
-                        discount: discount,
-                        total: total,
-                        coupon: coupon
-                    };
-
-                    const orderResult = await decorevaAddressSupabase
-                        .from("orders")
-                        .insert(orderPayload)
-                        .select("id, order_number")
-                        .single();
-
-                    if (orderResult.error) {
-                        console.error("DECOREVA order create error:", orderResult.error);
-                        throw orderResult.error;
-                    }
-
-                    const orderId = orderResult.data && orderResult.data.id;
-                    if (!orderId) {
-                        throw new Error("Supabase did not return the created order ID.");
-                    }
-
-                    const itemPayload = cart.map(function (item) {
-                        return {
-                            order_id: orderId,
-                            product_key: String(item.productId || item.id || ""),
-                            product_name: String(item.title || "DECOREVA Product"),
-                            variation: String(item.variationName || item.variationKey || ""),
-                            quantity: Math.max(1, Number(item.quantity || 1)),
-                            unit_price: Math.max(0, Number(item.price || 0))
-                        };
-                    });
-
-                    const itemsResult = await decorevaAddressSupabase
-                        .from("order_items")
-                        .insert(itemPayload);
-
-                    if (itemsResult.error) {
-                        console.error("DECOREVA order items create error:", itemsResult.error);
-
-                        try {
-                            await decorevaAddressSupabase
-                                .from("orders")
-                                .delete()
-                                .eq("id", orderId)
-                                .eq("user_id", user.id);
-                        } catch (cleanupError) {
-                            console.warn("DECOREVA order cleanup error:", cleanupError);
-                        }
-
-                        throw itemsResult.error;
-                    }
-
-                    return {
-                        id: orderId,
-                        orderNumber: orderResult.data.order_number || orderNumber,
-                        userId: user.id
-                    };
-                }
 
                 async function getDecorevaAuthUser() {
                     if (!decorevaAddressSupabase || !decorevaAddressSupabase.auth) return null;
@@ -4953,117 +4689,52 @@
                     }, 40);
                 }
 
-                async function whatsappCheckout() {
-                    if (!cart.length || !deliveryAddress || decorevaOrderInProgress) return;
+                function whatsappCheckout() {
+                    if (!cart.length || !deliveryAddress) return;
 
-                    decorevaOrderInProgress = true;
+                    const lines = ["Hello DECOREVA, I want to order:", ""];
 
-                    const button = document.querySelector("#decoreva-cart-whatsapp");
-                    const paymentButton = document.querySelector("#decoreva-payment-order");
-                    const message = document.querySelector("#decoreva-address-message");
-                    const originalButtonText = button ? button.textContent : "Order on WhatsApp";
-                    const originalPaymentText = paymentButton ? paymentButton.textContent : "Place Order on WhatsApp";
+                    cart.forEach(function (item, index) {
+                        let line = (index + 1) + ". " + item.title;
+                        if (item.variationName) line += " - " + item.variationName;
+                        line += " × " + item.quantity + " = " + money(item.price * item.quantity);
+                        lines.push(line);
+                    });
 
-                    if (button) {
-                        button.disabled = true;
-                        button.textContent = "Saving Order...";
+                    lines.push("", "Total MRP: " + money(subtotalAmount()));
+
+                    if (appliedCoupon) {
+                        lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
+                        lines.push("Discount on MRP: - " + money(discountAmount()));
                     }
-                    if (paymentButton) {
-                        paymentButton.disabled = true;
-                        paymentButton.textContent = "Saving Order...";
-                    }
 
-                    try {
-                        const order = await createSupabaseOrder();
-
-                        if (!order) {
-                            if (button) {
-                                button.disabled = false;
-                                button.textContent = originalButtonText;
-                            }
-                            if (paymentButton) {
-                                paymentButton.disabled = false;
-                                paymentButton.textContent = originalPaymentText;
-                            }
-                            return;
-                        }
-
-                        const lines = [
-                            "Hello DECOREVA, I want to order:",
+                    lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
+                    if (deliveryAddress) {
+                        lines.push(
                             "",
-                            "Order Number: " + order.orderNumber,
-                            ""
-                        ];
-
-                        cart.forEach(function (item, index) {
-                            let line = (index + 1) + ". " + item.title;
-                            if (item.variationName) line += " - " + item.variationName;
-                            line += " × " + item.quantity + " = " + money(item.price * item.quantity);
-                            lines.push(line);
-                        });
-
-                        lines.push("", "Total MRP: " + money(subtotalAmount()));
-
-                        if (appliedCoupon) {
-                            lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
-                            lines.push("Discount on MRP: - " + money(discountAmount()));
-                        }
-
-                        lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
-                        if (deliveryAddress) {
-                            lines.push(
-                                "",
-                                "Delivery Address:",
-                                deliveryAddress.name,
-                                "Mobile: " + deliveryAddress.mobile,
-                                deliveryAddress.line,
-                                deliveryAddress.city + ", " + deliveryAddress.state + " - " + deliveryAddress.pincode
-                            );
-                        }
-                        lines.push("", "Please confirm availability and payment details.");
-
-                        const whatsappUrl =
-                            "https://wa.me/919582899547?text=" +
-                            encodeURIComponent(lines.join("\n"));
-
-                        window.open(
-                            whatsappUrl,
-                            "_blank",
-                            "noopener,noreferrer"
+                            "Delivery Address:",
+                            deliveryAddress.name,
+                            "Mobile: " + deliveryAddress.mobile,
+                            deliveryAddress.line,
+                            deliveryAddress.city + ", " + deliveryAddress.state + " - " + deliveryAddress.pincode
                         );
-
-                        showOrderConfirmation(order.orderNumber);
-
-                        if (message) {
-                            message.dataset.userMessage = "1";
-                            message.textContent = "Order " + order.orderNumber + " saved. WhatsApp opened for confirmation.";
-                            message.className = "decoreva-address-message success";
-                        }
-                    } catch (error) {
-                        console.error("DECOREVA order submission error:", error);
-
-                        if (message) {
-                            message.dataset.userMessage = "1";
-                            message.textContent = "Could not save your order. Please try again. Your WhatsApp order was not opened.";
-                            message.className = "decoreva-address-message error";
-                        }
-
-                        alert("We could not save your order. Please try again.");
-                    } finally {
-                        decorevaOrderInProgress = false;
-
-                        if (button) {
-                            button.disabled = !cart.length;
-                            button.textContent = originalButtonText;
-                        }
-                        if (paymentButton) {
-                            paymentButton.disabled = false;
-                            paymentButton.textContent = originalPaymentText;
-                        }
                     }
+                    lines.push("", "Please confirm availability and payment details.");
+
+                    const whatsappUrl =
+                        "https://wa.me/919582899547?text=" +
+                        encodeURIComponent(lines.join("\n"));
+
+                    window.open(
+                        whatsappUrl,
+                        "_blank",
+                        "noopener,noreferrer"
+                    );
+
+                    showOrderConfirmation();
                 }
 
-                function showOrderConfirmation(orderNumber) {
+                function showOrderConfirmation() {
                     let confirmation = document.querySelector("#decoreva-order-confirmation");
                     if (!confirmation) {
                         confirmation = document.createElement("div");
@@ -5073,19 +4744,12 @@
                             <div class="decoreva-order-confirmation-overlay"></div>
                             <div class="decoreva-order-confirmation-card" role="dialog" aria-modal="true" aria-label="Order confirmation">
                                 <div class="decoreva-order-confirmation-icon">✓</div>
-                                <strong>Order Request Saved</strong>
-                                <p class="decoreva-order-confirmation-text"></p>
+                                <strong>Order Placed Successfully</strong>
+                                <p>Your order details have been opened in WhatsApp. Please send the message to DECOREVA to confirm your order.</p>
                                 <button type="button" id="decoreva-order-confirmation-close">Continue Shopping</button>
                             </div>`;
                         document.body.appendChild(confirmation);
                     }
-
-                    const confirmationText = confirmation.querySelector(".decoreva-order-confirmation-text");
-                    if (confirmationText) {
-                        confirmationText.textContent =
-                            "Order " + (orderNumber || "") + " has been saved. Your order details are open in WhatsApp. Please send the message to DECOREVA to confirm your order.";
-                    }
-
                     confirmation.classList.add("open");
                 }
 
@@ -5466,7 +5130,7 @@
                                 <div class="decoreva-cart-summary-row" id="decoreva-cart-discount-row" hidden><span>Discount on MRP</span><strong id="decoreva-cart-discount">- ₹0</strong></div>
                                 <div class="decoreva-cart-summary-row"><span>Delivery</span><strong id="decoreva-cart-delivery">₹0</strong></div>
                                 <div class="decoreva-cart-total-row"><span>Total Amount</span><strong id="decoreva-cart-total">₹0</strong></div>
-                                <button type="button" id="decoreva-cart-whatsapp">Place Order on WhatsApp</button>
+                                <button type="button" id="decoreva-cart-whatsapp">Order on WhatsApp</button>
                             </div>
                         </div>`;
                     document.body.appendChild(drawer);
@@ -5849,53 +5513,6 @@
                         return;
                     }
 
-
-                    if (event.target.closest("#decoreva-payment-order")) {
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        const address = document.querySelector("#decoreva-checkout-address");
-                        if (!address || !cart.length) return;
-
-                        const get = function (id) {
-                            const el = document.querySelector(id);
-                            return el ? el.value.trim() : "";
-                        };
-
-                        const complete =
-                            !!get("#decoreva-address-name") &&
-                            /^\\d{10}$/.test(get("#decoreva-address-mobile")) &&
-                            !!get("#decoreva-address-line") &&
-                            !!get("#decoreva-address-city") &&
-                            !!get("#decoreva-address-state") &&
-                            /^\\d{6}$/.test(get("#decoreva-address-pincode"));
-
-                        if (!complete) {
-                            const addressMessage = document.querySelector("#decoreva-address-message");
-                            if (addressMessage) {
-                                addressMessage.dataset.userMessage = "1";
-                                addressMessage.textContent = "Please fill all delivery address details before placing your order.";
-                                addressMessage.className = "decoreva-address-message error";
-                            }
-                            checkoutStep = "address";
-                            updateCheckoutStepUI();
-                            address.scrollIntoView({behavior:"smooth", block:"start"});
-                            return;
-                        }
-
-                        deliveryAddress = {
-                            name: get("#decoreva-address-name"),
-                            mobile: get("#decoreva-address-mobile"),
-                            line: get("#decoreva-address-line"),
-                            city: get("#decoreva-address-city"),
-                            state: get("#decoreva-address-state"),
-                            pincode: get("#decoreva-address-pincode")
-                        };
-
-                        localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(deliveryAddress));
-                        whatsappCheckout();
-                        return;
-                    }
 
                     if (event.target.closest("#decoreva-cart-whatsapp")) {
                         event.preventDefault();
