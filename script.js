@@ -4843,20 +4843,29 @@
 
                     /* Adding a product must not open checkout automatically.
                        Customer can open the cart from the navigation cart icon. */
-                    const addButton = document.querySelector(".decoreva-add-cart");
-                    if (addButton) {
-                        const notice = document.createElement("div");
-                        notice.className = "decoreva-cart-added-notice";
-                        notice.textContent = "Added to cart";
-                        document.body.appendChild(notice);
-                        setTimeout(function () {
-                            notice.classList.add("show");
-                        }, 10);
-                        setTimeout(function () {
-                            notice.classList.remove("show");
-                            setTimeout(function () { notice.remove(); }, 220);
-                        }, 1500);
-                    }
+                    showShopToast("Added to Cart");
+                }
+
+                function showShopToast(message) {
+                    const oldToast = document.querySelector(".decoreva-shop-toast");
+                    if (oldToast) oldToast.remove();
+
+                    const toast = document.createElement("div");
+                    toast.className = "decoreva-shop-toast";
+                    toast.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
+                    toast.querySelector("span").textContent = message;
+                    document.body.appendChild(toast);
+
+                    requestAnimationFrame(function () {
+                        toast.classList.add("show");
+                    });
+
+                    window.setTimeout(function () {
+                        toast.classList.remove("show");
+                        window.setTimeout(function () {
+                            if (toast.parentNode) toast.remove();
+                        }, 170);
+                    }, 1050);
                 }
 
                 function toggleWishlist(card) {
@@ -4869,8 +4878,10 @@
 
                     if (index >= 0) {
                         wishlist.splice(index, 1);
+                        showShopToast("Removed from Wishlist");
                     } else {
                         wishlist.push(data);
+                        showShopToast("Added to Wishlist");
                     }
 
                     saveWishlist();
@@ -5606,6 +5617,13 @@
                         </div>
                     `;
                     document.body.appendChild(profilePanel);
+
+                    /* Sync the Profile login/logout UI after the panel exists.
+                       This is intentionally limited to the Supabase auth UI. */
+                    if (window.decorevaSupabaseAuth &&
+                        typeof window.decorevaSupabaseAuth.refresh === "function") {
+                        window.decorevaSupabaseAuth.refresh();
+                    }
                 }
 
                 buildCartUI();
