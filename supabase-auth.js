@@ -471,19 +471,76 @@
             refreshAuthButton();
 
             if (event === "PASSWORD_RECOVERY") {
+                /*
+                 * Password recovery: Supabase has already exchanged the
+                 * recovery link for a session. Show ONLY the reset fields.
+                 * This is intentionally isolated from the normal login,
+                 * signup and profile flows.
+                 */
                 const modal = ensureAuthModal();
+                const form = document.getElementById("decoreva-auth-form");
+
+                if (form) {
+                    form.hidden = false;
+                    form.dataset.mode = "reset";
+                }
+
                 setMode("reset");
+
                 modal.classList.add("open");
                 modal.setAttribute("aria-hidden", "false");
                 document.documentElement.style.overflow = "hidden";
                 document.body.style.overflow = "hidden";
 
                 setTimeout(function () {
-                    const newPassword = document.getElementById("decoreva-auth-new-password");
+                    const newPassword =
+                        document.getElementById("decoreva-auth-new-password");
                     if (newPassword) newPassword.focus();
-                }, 50);
+                }, 100);
             }
         });
+
+        /*
+         * Recovery links can land on the page with a valid session after
+         * the auth event has already fired. Check the current session once
+         * on page load so the reset form is not missed.
+         */
+        (async function detectPasswordRecoverySession() {
+            try {
+                const hash = window.location.hash || "";
+
+                if (!hash.includes("access_token=") &&
+                    !hash.includes("type=recovery")) {
+                    return;
+                }
+
+                const result = await supabase.auth.getSession();
+
+                if (result.data && result.data.session) {
+                    const modal = ensureAuthModal();
+                    const form = document.getElementById("decoreva-auth-form");
+
+                    if (form) {
+                        form.hidden = false;
+                        form.dataset.mode = "reset";
+                    }
+
+                    setMode("reset");
+                    modal.classList.add("open");
+                    modal.setAttribute("aria-hidden", "false");
+                    document.documentElement.style.overflow = "hidden";
+                    document.body.style.overflow = "hidden";
+
+                    setTimeout(function () {
+                        const newPassword =
+                            document.getElementById("decoreva-auth-new-password");
+                        if (newPassword) newPassword.focus();
+                    }, 100);
+                }
+            } catch (error) {
+                console.error("DECOREVA Auth: password recovery detection failed.", error);
+            }
+        })();
 
         refreshAuthButton();
 
