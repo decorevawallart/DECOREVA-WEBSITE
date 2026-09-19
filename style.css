@@ -5017,6 +5017,77 @@
         .decoreva-profile-menu button small{font-size:10px !important;}
     }
 
+
+    /* =========================================================
+       DECOREVA — DESKTOP PROFILE MENU BALANCE
+       Small visual polish only. Mobile remains unchanged.
+       ========================================================= */
+    @media (min-width:761px){
+        .decoreva-profile-card{
+            top:72px !important;
+            right:18px !important;
+            width:390px !important;
+            max-width:calc(100vw - 36px) !important;
+            max-height:calc(100vh - 90px) !important;
+            border-radius:10px !important;
+            box-shadow:0 18px 48px rgba(0,0,0,.28),0 3px 12px rgba(52,35,23,.12) !important;
+        }
+
+        .decoreva-profile-head{
+            min-height:68px !important;
+            padding:14px 16px !important;
+        }
+
+        .decoreva-profile-head strong{
+            font-size:22px !important;
+        }
+
+        .decoreva-profile-body{
+            padding:10px !important;
+        }
+
+        .decoreva-profile-welcome{
+            padding:15px 16px 14px !important;
+        }
+
+        .decoreva-profile-menu,
+        .decoreva-profile-account-actions{
+            width:100% !important;
+            box-sizing:border-box !important;
+        }
+
+        .decoreva-profile-menu button,
+        .decoreva-profile-account-actions button{
+            min-height:53px !important;
+            padding:10px 15px !important;
+            box-sizing:border-box !important;
+        }
+
+        .decoreva-profile-menu button span,
+        .decoreva-profile-account-actions button span{
+            flex:1 1 auto !important;
+            min-width:0 !important;
+            text-align:left !important;
+        }
+
+        .decoreva-profile-menu button small,
+        .decoreva-profile-account-actions button small{
+            flex:0 0 auto !important;
+            max-width:155px !important;
+            text-align:right !important;
+            white-space:nowrap !important;
+        }
+
+        .decoreva-profile-menu button:hover,
+        .decoreva-profile-account-actions button:hover{
+            padding-left:18px !important;
+        }
+
+        .decoreva-profile-note{
+            padding:8px 16px 12px !important;
+        }
+    }
+
     /* =========================================================
        DECOREVA — LIKE + RATING + REVIEWS
        Isolated add-on. Existing layout rules remain unchanged.

@@ -1,13 +1,99 @@
         document.addEventListener("DOMContentLoaded", function () {
             "use strict";
 
-            /* =========================================================
-               DECOREVA — HIDE THE OLD PAGE BEFORE BROWSER REFRESH
-               The previous fixes hid only the NEW document. During a
-               browser refresh Chrome can keep the OLD document visible
-               until the new HTML/JS finishes loading. If Cart/Wishlist
-               is the saved section, hide the old document on unload too.
-               ========================================================= */
+            /* DECOREVA — DESKTOP PROFILE PANEL PROFESSIONAL POLISH
+               Desktop only. Mobile profile layout remains unchanged. */
+            if (!document.getElementById("decoreva-desktop-profile-polish")) {
+                const desktopProfileStyle = document.createElement("style");
+                desktopProfileStyle.id = "decoreva-desktop-profile-polish";
+                desktopProfileStyle.textContent = `
+                    @media (min-width: 761px) {
+                        #decoreva-profile-panel .decoreva-profile-card {
+                            width: 380px !important;
+                            max-width: calc(100vw - 40px) !important;
+                            max-height: calc(100vh - 120px) !important;
+                            border-radius: 10px !important;
+                            overflow: hidden !important;
+                            box-shadow: 0 18px 50px rgba(0,0,0,.32) !important;
+                            border: 1px solid rgba(201,149,46,.22) !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-head {
+                            min-height: 66px !important;
+                            padding: 13px 16px !important;
+                            box-sizing: border-box !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-head strong {
+                            font-size: 22px !important;
+                            line-height: 1.15 !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-head span {
+                            margin-top: 3px !important;
+                            font-size: 10px !important;
+                            letter-spacing: .15px !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-body {
+                            max-height: calc(100vh - 186px) !important;
+                            overflow-y: auto !important;
+                            scrollbar-width: thin !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-welcome {
+                            padding: 15px 16px !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-menu {
+                            margin: 0 10px 8px !important;
+                            border: 1px solid #eadfce !important;
+                            border-radius: 8px !important;
+                            overflow: hidden !important;
+                            background: #fff !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-menu button {
+                            min-height: 52px !important;
+                            padding: 9px 14px !important;
+                            box-sizing: border-box !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: space-between !important;
+                            gap: 14px !important;
+                            transition: background .16s ease, padding-left .16s ease !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-menu button + button {
+                            border-top: 1px solid #eee5d8 !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-menu button:hover {
+                            background: #faf5eb !important;
+                            padding-left: 17px !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-menu button span {
+                            font-size: 13px !important;
+                            font-weight: 800 !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-menu button small {
+                            font-size: 10px !important;
+                            white-space: nowrap !important;
+                            opacity: .9 !important;
+                        }
+
+                        #decoreva-profile-panel .decoreva-profile-note {
+                            padding: 8px 18px 13px !important;
+                            font-size: 10px !important;
+                            line-height: 1.4 !important;
+                        }
+                    }
+                `;
+                document.head.appendChild(desktopProfileStyle);
+            }
+
             window.addEventListener("beforeunload", function () {
                 try {
                     const savedPanelBeforeRefresh = sessionStorage.getItem("decoreva_open_panel");
@@ -16,14 +102,10 @@
                         document.documentElement.style.visibility = "hidden";
                     }
                 } catch (error) {
-                    /* Ignore storage restrictions; normal site behavior continues. */
                 }
             });
-
-            /* ================= DECOREVA VISITOR TRACKING ================= */
             const DECOREVA_VISITOR_ID_KEY = "decorevaVisitorId";
             const DECOREVA_TRACKED_PAGE_KEY = "decorevaTrackedPage";
-
             function getDecorevaVisitorId() {
                 let visitorId = "";
                 try {
@@ -31,7 +113,6 @@
                 } catch (error) {
                     console.warn("DECOREVA visitor storage read error:", error);
                 }
-
                 if (!visitorId) {
                     if (window.crypto && typeof window.crypto.randomUUID === "function") {
                         visitorId = window.crypto.randomUUID();
@@ -44,22 +125,18 @@
                     } else {
                         visitorId = "visitor-" + Date.now() + "-" + Math.random().toString(36).slice(2, 12);
                     }
-
                     try {
                         localStorage.setItem(DECOREVA_VISITOR_ID_KEY, visitorId);
                     } catch (error) {
                         console.warn("DECOREVA visitor storage write error:", error);
                     }
                 }
-
                 return visitorId;
             }
-
             async function getDecorevaTrackingUser() {
                 if (!window.decorevaSupabase || !window.decorevaSupabase.auth) {
                     return null;
                 }
-
                 try {
                     const result = await window.decorevaSupabase.auth.getUser();
                     return result && result.data ? result.data.user || null : null;
@@ -68,25 +145,18 @@
                     return null;
                 }
             }
-
             function getDecorevaTrackingPageKey() {
                 return window.location.pathname + window.location.search + window.location.hash;
             }
-
             async function trackDecorevaVisit(productKey) {
                 if (!window.decorevaSupabase) {
                     console.warn("DECOREVA visitor tracking: Supabase client unavailable.");
                     return false;
                 }
-
                 const visitorId = getDecorevaVisitorId();
                 if (!visitorId) return false;
-
                 const pageKey = getDecorevaTrackingPageKey();
                 const isProductView = !!productKey;
-
-                /* Prevent repeated refreshes of the same page from creating
-                   multiple visitor rows during one browser session. */
                 if (!isProductView) {
                     try {
                         if (sessionStorage.getItem(DECOREVA_TRACKED_PAGE_KEY) === pageKey) {
@@ -96,9 +166,7 @@
                         console.warn("DECOREVA visitor session storage read error:", error);
                     }
                 }
-
                 const user = await getDecorevaTrackingUser();
-
                 const payload = {
                     visitor_id: visitorId,
                     user_id: user ? user.id : null,
@@ -106,17 +174,14 @@
                     product_key: productKey ? String(productKey) : null,
                     referrer: document.referrer || null
                 };
-
                 try {
                     const result = await window.decorevaSupabase
                         .from("site_visits")
                         .insert(payload);
-
                     if (result.error) {
                         console.error("DECOREVA visitor tracking error:", result.error);
                         return false;
                     }
-
                     if (!isProductView) {
                         try {
                             sessionStorage.setItem(DECOREVA_TRACKED_PAGE_KEY, pageKey);
@@ -124,26 +189,17 @@
                             console.warn("DECOREVA visitor session storage write error:", error);
                         }
                     }
-
                     return true;
                 } catch (error) {
                     console.error("DECOREVA visitor tracking exception:", error);
                     return false;
                 }
             }
-
             window.decorevaTrackVisit = trackDecorevaVisit;
-
-            /* Track the current page. Logged-in users are linked through
-               user_id; guests are stored with user_id = NULL. */
             trackDecorevaVisit();
-
-            /* Track product-card views when a visitor opens/clicks a product.
-               This does not interfere with existing card/slider behaviour. */
             document.addEventListener("click", function (event) {
                 const card = event.target.closest("#collection-products .card, .featured-slider .featured-slide");
                 if (!card) return;
-
                 const productKey =
                     card.dataset.productKey ||
                     card.dataset.productId ||
@@ -151,12 +207,10 @@
                     card.getAttribute("data-product-id") ||
                     card.getAttribute("data-variation-product") ||
                     "";
-
                 if (productKey) {
                     trackDecorevaVisit(productKey);
                 }
             }, true);
-
             function getSliderImages(slider) {
                 if (!slider) return [];
                 try {
@@ -1324,25 +1378,16 @@
                         );
                     });
             }
-            /* =========================================================
-               DECOREVA — MOBILE BURGER AUTO-CLOSE
-               On phone view, close the burger menu when the user clicks
-               anywhere on the page. Desktop behaviour is untouched.
-               The burger button itself is excluded so it can still toggle.
-               ========================================================= */
             document.addEventListener(
                 "click",
                 function (event) {
                     if (window.innerWidth > 760) return;
                     if (!nav || !nav.classList.contains("mobile-open")) return;
-
                     if (event.target.closest(".mobile-menu-toggle")) {
                         return;
                     }
-
                     nav.classList.remove("mobile-open");
                     document.body.classList.remove("menu-open");
-
                     if (menuButton) {
                         menuButton.setAttribute(
                             "aria-expanded",
@@ -1352,7 +1397,6 @@
                 },
                 true
             );
-
             document
                 .querySelectorAll("#main-nav a[href^='#']")
                 .forEach(function (link) {
@@ -3928,7 +3972,6 @@
                 const variationName = button ? button.textContent.trim() : key.replace(/-/g, " ");
                 return productName + " - " + variationName;
             }
-
             document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function (card) {
                 card.classList.add("sherawali-variation-card");
                 const options = card.querySelector(".variation-options");
@@ -4015,15 +4058,8 @@
                     item.classList.toggle("active", item.dataset.variation === key);
                 });
             }, true);
-
-
-            /* =========================================================
-               DECOREVA — CART + WISHLIST
-               Client-side • variation-aware • WhatsApp checkout
-               ========================================================= */
             (function () {
                 "use strict";
-
                 const CART_KEY = "decoreva_cart_v1";
                 const WISHLIST_KEY = "decoreva_wishlist_v1";
                 const COUPON_KEY = "decoreva_coupon_v1";
@@ -4031,23 +4067,14 @@
                 const COUPONS = {
                     "WELCOME10": 10
                 };
-
                 let cart = [];
                 let wishlist = [];
                 let appliedCoupon = "";
                 let couponModalOpen = false;
                 let checkoutStep = "cart";
-                /* Cart checkout gate: the first click only opens/validates the address.
-                   WhatsApp is allowed only after the customer has reached checkout
-                   and all address fields are valid. */
                 let checkoutAddressUnlocked = false;
-                /* Remember the real page position before the cart drawer locks
-                   the document. window.scrollY can become 0 while the drawer
-                   is open, so it must be captured at OPEN time. */
                 let cartUnderlyingScrollY = 0;
                 let couponPreviewCode = "";
-                /* Checkout address is session-only and starts blank.
-                   Never restore a previous guest/customer address automatically. */
                 let deliveryAddress = null;
                 const PROFILE_KEY = "decoreva_profile_v1";
                 let profile = { name: "", mobile: "", email: "", addresses: [] };
@@ -4064,36 +4091,30 @@
                 } catch (error) {
                     profile = { name: "", mobile: "", email: "", addresses: [] };
                 }
-
                 try {
                     cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
                     if (!Array.isArray(cart)) cart = [];
                 } catch (error) {
                     cart = [];
                 }
-
                 try {
                     wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY) || "[]");
                     if (!Array.isArray(wishlist)) wishlist = [];
                 } catch (error) {
                     wishlist = [];
                 }
-
                 try {
                     appliedCoupon = String(localStorage.getItem(COUPON_KEY) || "").toUpperCase();
                     if (!COUPONS[appliedCoupon]) appliedCoupon = "";
                 } catch (error) {
                     appliedCoupon = "";
                 }
-
                 function saveCart() {
                     localStorage.setItem(CART_KEY, JSON.stringify(cart));
                 }
-
                 function saveWishlist() {
                     localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
                 }
-
                 function saveCoupon() {
                     if (appliedCoupon) {
                         localStorage.setItem(COUPON_KEY, appliedCoupon);
@@ -4101,18 +4122,14 @@
                         localStorage.removeItem(COUPON_KEY);
                     }
                 }
-
                 function money(value) {
                     return "₹" + Number(value || 0).toLocaleString("en-IN");
                 }
-
                 function numericPrice(text) {
                     return parseFloat(String(text || "").replace(/[^\d.]/g, "")) || 0;
                 }
-
                 function getCardData(card) {
                     if (!card) return null;
-
                     const titleEl = card.querySelector("h3");
                     const imageEl = card.querySelector(".slider-image, .featured-image-box img");
                     const priceEl = card.querySelector(".price, .featured-price");
@@ -4120,13 +4137,11 @@
                     const productId = card.dataset.variationProduct ||
                         ((titleEl ? titleEl.textContent.trim() : "DECOREVA Product") + "|" +
                          (imageEl ? imageEl.currentSrc || imageEl.src : ""));
-
                     let variationKey = "";
                     let variationName = "";
                     let price = numericPrice(priceEl ? priceEl.textContent : "");
                     let size = sizeEl ? sizeEl.textContent.trim() : "";
                     let image = imageEl ? (imageEl.currentSrc || imageEl.src) : "";
-
                     const activeVariation = card.querySelector(".variation-button.active, .sherawali-variation.active");
                     if (card.dataset.variationProduct && typeof decorevaVariationProducts !== "undefined") {
                         const product = decorevaVariationProducts[card.dataset.variationProduct];
@@ -4146,7 +4161,6 @@
                             }
                         }
                     }
-
                     return {
                         id: productId + (variationKey ? "|" + variationKey : ""),
                         productId: productId,
@@ -4158,36 +4172,29 @@
                         image: image
                     };
                 }
-
                 function totalItems() {
                     return cart.reduce(function (sum, item) {
                         return sum + Number(item.quantity || 0);
                     }, 0);
                 }
-
                 function subtotalAmount() {
                     return cart.reduce(function (sum, item) {
                         return sum + Number(item.price || 0) * Number(item.quantity || 0);
                     }, 0);
                 }
-
                 function effectiveCouponCode() {
                     return couponPreviewCode || appliedCoupon || "";
                 }
-
                 function discountAmount() {
                     const rate = COUPONS[effectiveCouponCode()] || 0;
                     return Math.round(subtotalAmount() * rate / 100);
                 }
-
                 function deliveryCharge() {
                     return cart.length ? DELIVERY_CHARGE : 0;
                 }
-
                 function finalAmount() {
                     return Math.max(0, subtotalAmount() - discountAmount() + deliveryCharge());
                 }
-
                 function updateCartCount() {
                     try {
                         const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
@@ -4199,7 +4206,6 @@
                         count.hidden = false;
                     });
                 }
-
                 function updateWishlistCount() {
                     try {
                         const saved = JSON.parse(localStorage.getItem(WISHLIST_KEY) || "[]");
@@ -4211,7 +4217,6 @@
                         count.hidden = false;
                     });
                 }
-
                 function updateWishlistButtons() {
                     document.querySelectorAll(".decoreva-wishlist").forEach(function (button) {
                         const card = button.closest(".card, .featured-slide");
@@ -4227,7 +4232,6 @@
                         button.title = saved ? "Remove from Wishlist" : "Add to Wishlist";
                     });
                 }
-
                 function renderCart() {
                     const list = document.querySelector("#decoreva-cart-items");
                     const total = document.querySelector("#decoreva-cart-total");
@@ -4240,18 +4244,12 @@
                     const couponInput = document.querySelector("#decoreva-coupon-input");
                     const couponMessage = document.querySelector("#decoreva-coupon-message");
                     const checkout = document.querySelector("#decoreva-cart-whatsapp");
-
                     if (!list || !total || !empty) return;
-
                     list.replaceChildren();
-
-                    /* Never render zero-quantity items. */
                     cart = cart.filter(function (item) {
                         return Number(item.quantity || 0) > 0;
                     });
-
                     empty.hidden = true;
-
                     cart.forEach(function (item, index) {
                         const row = document.createElement("div");
                         row.className = "decoreva-cart-item";
@@ -4261,86 +4259,69 @@
                         row.setAttribute("tabindex", "0");
                         row.setAttribute("aria-label", "View " + item.title + " in Collection");
                         row.style.cursor = "pointer";
-
                         const img = document.createElement("img");
                         img.src = item.image || "";
                         img.alt = item.title;
                         img.loading = "lazy";
-
                         const info = document.createElement("div");
                         info.className = "decoreva-cart-item-info";
-
                         const name = document.createElement("strong");
                         name.textContent = item.title;
                         info.appendChild(name);
-
                         if (item.variationName) {
                             const variation = document.createElement("span");
                             variation.textContent = item.variationName;
                             info.appendChild(variation);
                         }
-
                         const price = document.createElement("span");
                         price.textContent = money(item.price) + " × " + item.quantity;
                         info.appendChild(price);
-
                         const controls = document.createElement("div");
                         controls.className = "decoreva-cart-item-controls";
-
                         const minus = document.createElement("button");
                         minus.type = "button";
                         minus.textContent = "−";
                         minus.setAttribute("aria-label", "Decrease quantity");
                         minus.dataset.cartAction = "minus";
                         minus.dataset.cartIndex = String(index);
-
                         const qty = document.createElement("span");
                         qty.textContent = String(item.quantity);
-
                         const plus = document.createElement("button");
                         plus.type = "button";
                         plus.textContent = "+";
                         plus.setAttribute("aria-label", "Increase quantity");
                         plus.dataset.cartAction = "plus";
                         plus.dataset.cartIndex = String(index);
-
                         const remove = document.createElement("button");
                         remove.type = "button";
                         remove.textContent = "Remove";
                         remove.dataset.cartAction = "remove";
                         remove.dataset.cartIndex = String(index);
-
                         const wishlistButton = document.createElement("button");
                         wishlistButton.type = "button";
                         wishlistButton.textContent = "Move to Wishlist";
                         wishlistButton.dataset.cartAction = "wishlist";
                         wishlistButton.dataset.cartIndex = String(index);
-
                         controls.appendChild(minus);
                         controls.appendChild(qty);
                         controls.appendChild(plus);
                         controls.appendChild(remove);
                         controls.appendChild(wishlistButton);
                         info.appendChild(controls);
-
                         row.appendChild(img);
                         row.appendChild(info);
                         list.appendChild(row);
                     });
-
                     const count = totalItems();
                     if (label) {
                         label.textContent = count + (count === 1 ? " item" : " items");
                     }
-
                     if (subtotal) subtotal.textContent = money(subtotalAmount());
-
                     const discountValue = discountAmount();
                     if (discount) discount.textContent = "- " + money(discountValue);
                     if (discountRow) discountRow.hidden = !discountValue;
                     if (delivery) delivery.textContent = money(deliveryCharge());
                     if (total) total.textContent = money(finalAmount());
-
                     if (couponInput) couponInput.value = appliedCoupon || couponPreviewCode;
                     if (couponMessage) {
                         if (appliedCoupon) {
@@ -4354,7 +4335,6 @@
                             couponMessage.className = "decoreva-coupon-message";
                         }
                     }
-
                     const couponAppliedLabel = document.querySelector("#decoreva-coupon-applied-label");
                     if (couponAppliedLabel) {
                         couponAppliedLabel.textContent = appliedCoupon
@@ -4362,12 +4342,10 @@
                             : (couponPreviewCode ? couponPreviewCode + " checked — 10% OFF" : "");
                         couponAppliedLabel.hidden = !(appliedCoupon || couponPreviewCode);
                     }
-
                     const couponRemoveButton = document.querySelector("#decoreva-coupon-remove");
                     if (couponRemoveButton) {
                         couponRemoveButton.style.display = appliedCoupon ? "inline-flex" : "none";
                     }
-
                     const couponUseButton = document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
                     if (couponUseButton) {
                         const isWelcomeApplied = appliedCoupon === "WELCOME10";
@@ -4375,44 +4353,30 @@
                         couponUseButton.classList.toggle("applied", isWelcomeApplied);
                         couponUseButton.disabled = isWelcomeApplied;
                     }
-
                     const couponTrigger = document.querySelector("#decoreva-open-coupon");
                     if (couponTrigger) couponTrigger.textContent = appliedCoupon ? "Coupon Applied" : "Apply Coupon";
-
                     if (checkout) {
                         checkout.disabled = cart.length === 0;
                         checkout.textContent = checkoutAddressUnlocked ? "Order on WhatsApp" : "Proceed to Buy";
                         checkout.setAttribute("aria-label", checkoutAddressUnlocked ? "Order on WhatsApp" : "Proceed to Buy");
                     }
-
                     if (cart.length > 0 && document.querySelector("#decoreva-similar-products")) renderSimilarProducts();
                     if (checkoutStep !== "cart" && cart.length > 0) {
                         renderCheckoutSummary();
                         updateAddressContinueState();
                     }
-
                     updateCartCount();
-
-                    /* IMPORTANT — when the last cart item is removed (or its
-                       quantity reaches 0), immediately switch the drawer to
-                       the true empty-cart state. This removes the checkout
-                       steps, address area, similar products and order summary
-                       instead of leaving the old cart/summary visible. */
                     if (typeof updateCheckoutStepUI === "function") {
                         updateCheckoutStepUI();
                     }
                 }
-
                 function renderWishlist() {
                     const list = document.querySelector("#decoreva-wishlist-items");
                     const empty = document.querySelector("#decoreva-wishlist-empty");
                     const label = document.querySelector("#decoreva-wishlist-label");
-
                     if (!list || !empty) return;
-
                     list.replaceChildren();
                     empty.hidden = wishlist.length !== 0;
-
                     wishlist.forEach(function (item, index) {
                         const row = document.createElement("div");
                         row.className = "decoreva-wishlist-item";
@@ -4422,64 +4386,46 @@
                         row.setAttribute("tabindex", "0");
                         row.setAttribute("aria-label", "View " + item.title + " in Collection");
                         row.style.cursor = "pointer";
-
                         const img = document.createElement("img");
                         img.src = item.image || "";
                         img.alt = item.title;
                         img.loading = "lazy";
-
                         const info = document.createElement("div");
                         info.className = "decoreva-wishlist-info";
-
                         const name = document.createElement("strong");
                         name.textContent = item.title;
                         info.appendChild(name);
-
                         if (item.variationName) {
                             const variation = document.createElement("span");
                             variation.textContent = item.variationName;
                             info.appendChild(variation);
                         }
-
                         const price = document.createElement("b");
                         price.textContent = money(item.price);
                         info.appendChild(price);
-
                         const remove = document.createElement("button");
                         remove.type = "button";
                         remove.textContent = "Remove";
                         remove.dataset.wishlistAction = "remove";
                         remove.dataset.wishlistIndex = String(index);
                         info.appendChild(remove);
-
                         row.appendChild(img);
                         row.appendChild(info);
                         list.appendChild(row);
                     });
-
                     if (label) {
                         label.textContent = wishlist.length + (wishlist.length === 1 ? " item" : " items");
                     }
                     updateWishlistCount();
                     updateWishlistButtons();
                 }
-
-                /* =========================================================
-                   DECOREVA — REMEMBER OPEN CART / WISHLIST ON REFRESH
-                   If the customer refreshes while Cart or Wishlist is open,
-                   restore that same section instead of returning to Home.
-                   Closing the section clears the temporary refresh state.
-                   ========================================================= */
                 const DECOREVA_OPEN_PANEL_KEY = "decoreva_open_panel";
-
                 function saveOpenPanelState(panelName) {
                     try {
                         sessionStorage.setItem(DECOREVA_OPEN_PANEL_KEY, panelName);
                     } catch (error) {
-                        /* Ignore storage restrictions; normal site behavior continues. */
                     }
                 }
-
                 function getOpenPanelState() {
                     try {
                         return sessionStorage.getItem(DECOREVA_OPEN_PANEL_KEY) || "";
@@ -4487,49 +4433,29 @@
                         return "";
                     }
                 }
-
                 function clearOpenPanelState() {
                     try {
                         sessionStorage.removeItem(DECOREVA_OPEN_PANEL_KEY);
                     } catch (error) {
-                        /* Ignore storage restrictions; normal site behavior continues. */
                     }
                 }
-
                 function openCart() {
                     checkoutAddressUnlocked = false;
                     openCartDrawer();
                 }
-
                 function closeCart(restoreUnderlyingPosition = true) {
                     const drawer = document.querySelector("#decoreva-cart-drawer");
                     if (!drawer) return;
-
-                    /* Closing the cart must not move the underlying page.
-                       The drawer locks document scrolling, so reading
-                       window.scrollY here is unreliable (it can already be 0).
-                       Use the position captured when the drawer was opened. */
                     const pageScrollY = Number.isFinite(cartUnderlyingScrollY)
                         ? cartUnderlyingScrollY
                         : (window.scrollY || window.pageYOffset || 0);
                     if (document.activeElement && typeof document.activeElement.blur === "function") {
                         document.activeElement.blur();
                     }
-
-                    /* Hide the drawer completely BEFORE changing any
-                       checkout/cart classes. This is important because
-                       removing checkout-mode can otherwise make the Cart
-                       Items layout briefly appear during the close animation.
-                       display:none prevents that flash entirely. */
                     drawer.style.display = "none";
                     drawer.style.visibility = "hidden";
                     drawer.style.pointerEvents = "none";
-
                     checkoutStep = "cart";
-
-                    /* Reset checkout UI before closing so the Delivery Address
-                       section/warning can never remain as the first visible
-                       content when the cart is opened again. */
                     const closingAddress = drawer.querySelector("#decoreva-checkout-address");
                     if (closingAddress) closingAddress.hidden = true;
                     const closingAddressMessage = drawer.querySelector("#decoreva-address-message");
@@ -4538,7 +4464,6 @@
                         closingAddressMessage.className = "decoreva-address-message";
                         closingAddressMessage.dataset.userMessage = "";
                     }
-
                     drawer.classList.remove("decoreva-checkout-mode");
                     drawer.classList.remove("open");
                     document.body.classList.remove("decoreva-cart-open", "decoreva-checkout-open");
@@ -4546,12 +4471,6 @@
                     document.documentElement.style.overflow = "";
                     drawer.setAttribute("aria-hidden", "true");
                     if (getOpenPanelState() === "cart") clearOpenPanelState();
-
-                    /* Restore the exact underlying page position after the
-                       drawer has been removed from the visual state. Normal
-                       cart closing needs this; direct product navigation does
-                       not, because it will immediately position the selected
-                       Collection card instead. */
                     if (restoreUnderlyingPosition) {
                         window.scrollTo(0, pageScrollY);
                         window.requestAnimationFrame(function () {
@@ -4562,40 +4481,21 @@
                         }, 60);
                     }
                 }
-
                 function openCartDrawer() {
                     const drawer = document.querySelector("#decoreva-cart-drawer");
                     if (!drawer) return;
-
-                    /* Capture the underlying page position BEFORE the drawer
-                       locks body/document scrolling. This prevents the page
-                       from jumping to the top when the × button closes it. */
                     cartUnderlyingScrollY = window.scrollY || window.pageYOffset || 0;
-
-                    /* Cart is now the active section. */
                     saveOpenPanelState("cart");
-
                     checkoutStep = "cart";
-
-                    /* Every new cart opening starts clean. An old address
-                       warning must never appear just because the customer
-                       opened the cart again. The warning is created only by
-                       the Proceed to Buy validation when address details
-                       are actually missing/invalid. */
                     const addressMessage = drawer.querySelector("#decoreva-address-message");
                     if (addressMessage) {
                         addressMessage.textContent = "";
                         addressMessage.className = "decoreva-address-message";
                         addressMessage.dataset.userMessage = "";
                     }
-
-                    /* Restore the drawer before opening. Leave display
-                       controlled by the existing CSS rather than forcing a
-                       new layout value. */
                     drawer.style.display = "";
                     drawer.style.visibility = "visible";
                     drawer.style.pointerEvents = "";
-
                     drawer.classList.add("decoreva-checkout-mode");
                     renderCart();
                     updateCheckoutStepUI();
@@ -4607,21 +4507,16 @@
                     document.documentElement.style.overflow = "hidden";
                     drawer.setAttribute("aria-hidden", "false");
                 }
-
                 function openWishlist() {
                     const drawer = document.querySelector("#decoreva-wishlist-drawer");
                     if (!drawer) return;
-
-                    /* Wishlist is now the active section. */
                     saveOpenPanelState("wishlist");
-
                     renderWishlist();
                     drawer.classList.add("open");
                     drawer.setAttribute("aria-hidden", "false");
                     document.body.classList.add("decoreva-wishlist-open");
                     document.body.style.overflow = "hidden";
                 }
-
                 function closeWishlist() {
                     const drawer = document.querySelector("#decoreva-wishlist-drawer");
                     if (!drawer) return;
@@ -4631,20 +4526,16 @@
                     if (!document.body.classList.contains("decoreva-cart-open")) document.body.style.overflow = "";
                     if (getOpenPanelState() === "wishlist") clearOpenPanelState();
                 }
-
                 function saveProfile() {
                     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
                 }
-
                 const decorevaAddressSupabase = window.decorevaSupabase || null;
                 let decorevaOrderInProgress = false;
-
                 function generateDecorevaOrderNumber() {
                     const now = new Date();
                     const datePart = now.getFullYear().toString() +
                         String(now.getMonth() + 1).padStart(2, "0") +
                         String(now.getDate()).padStart(2, "0");
-
                     let randomPart = "";
                     if (window.crypto && typeof window.crypto.getRandomValues === "function") {
                         const bytes = new Uint8Array(4);
@@ -4655,16 +4546,13 @@
                     } else {
                         randomPart = Math.random().toString(16).slice(2, 10).toUpperCase();
                     }
-
                     return "ORD-" + datePart + "-" + randomPart;
                 }
-
                 function formatDecorevaOrderNumber(orderNumber) {
                     const value = String(orderNumber || "").trim();
                     if (!value) return "DECOREVA Order";
                     return value.replace(/^DEC-/i, "ORD-");
                 }
-
                 function buildDeliveryAddressText(address) {
                     if (!address) return "";
                     return [
@@ -4674,28 +4562,20 @@
                         (address.city || "") + ", " + (address.state || "") + " - " + (address.pincode || "")
                     ].filter(Boolean).join("\n");
                 }
-
                 async function createSupabaseOrder() {
                     if (!cart.length || !deliveryAddress) {
                         throw new Error("Cart or delivery address is missing.");
                     }
-
                     if (!decorevaAddressSupabase) {
                         throw new Error("Supabase is not available on this page.");
                     }
-
-                    /* Guest checkout is allowed.
-                       Logged-in customers are linked to their Supabase user;
-                       guests are saved with user_id = null. */
                     const user = await getDecorevaAuthUser();
-
                     const orderNumber = generateDecorevaOrderNumber();
                     const subtotal = subtotalAmount();
                     const discount = discountAmount();
                     const delivery = deliveryCharge();
                     const total = finalAmount();
                     const coupon = effectiveCouponCode() || null;
-
                     const orderPayload = {
                         user_id: user ? user.id : null,
                         order_number: orderNumber,
@@ -4709,26 +4589,8 @@
                         total: total,
                         coupon: coupon
                     };
-
-                    const orderResult = await decorevaAddressSupabase
-                        .from("orders")
-                        .insert(orderPayload)
-                        .select("id, order_number")
-                        .single();
-
-                    if (orderResult.error) {
-                        console.error("DECOREVA order create error:", orderResult.error);
-                        throw orderResult.error;
-                    }
-
-                    const orderId = orderResult.data && orderResult.data.id;
-                    if (!orderId) {
-                        throw new Error("Supabase did not return the created order ID.");
-                    }
-
                     const itemPayload = cart.map(function (item) {
                         return {
-                            order_id: orderId,
                             product_key: String(item.productId || item.id || ""),
                             product_name: String(item.title || "DECOREVA Product"),
                             variation: String(item.variationName || item.variationKey || ""),
@@ -4737,32 +4599,37 @@
                         };
                     });
 
-                    const itemsResult = await decorevaAddressSupabase
-                        .from("order_items")
-                        .insert(itemPayload);
-
-                    if (itemsResult.error) {
-                        console.error("DECOREVA order items create error:", itemsResult.error);
-
-                        try {
-                            await decorevaAddressSupabase
-                                .from("orders")
-                                .delete()
-                                .eq("id", orderId);
-                        } catch (cleanupError) {
-                            console.warn("DECOREVA order cleanup error:", cleanupError);
+                    /*
+                       Guest-safe order creation:
+                       The browser calls one SECURITY DEFINER Supabase function.
+                       That function inserts the order + all order items atomically.
+                       Logged-in users are linked by auth.uid(); guests use NULL.
+                    */
+                    const orderResult = await decorevaAddressSupabase.rpc(
+                        "create_decoreva_order",
+                        {
+                            p_order: orderPayload,
+                            p_items: itemPayload
                         }
+                    );
 
-                        throw itemsResult.error;
+                    if (orderResult.error) {
+                        console.error("DECOREVA order create error:", orderResult.error);
+                        throw orderResult.error;
+                    }
+
+                    const createdOrder = orderResult.data || {};
+                    const orderId = createdOrder.id;
+                    if (!orderId) {
+                        throw new Error("Supabase did not return the created order ID.");
                     }
 
                     return {
                         id: orderId,
-                        orderNumber: orderResult.data.order_number || orderNumber,
-                        userId: user ? user.id : null
+                        orderNumber: createdOrder.order_number || orderNumber,
+                        userId: createdOrder.user_id || (user ? user.id : null)
                     };
                 }
-
                 async function getDecorevaAuthUser() {
                     if (!decorevaAddressSupabase || !decorevaAddressSupabase.auth) return null;
                     try {
@@ -4773,13 +4640,6 @@
                         return null;
                     }
                 }
-
-                /* =========================================================
-                   DECOREVA — MY ORDERS
-                   Logged-in customers see only their own Supabase orders.
-                   Guest orders remain guest records and are not guessed/matched
-                   by phone number.
-                   ========================================================= */
                 function formatDecorevaOrderDate(value) {
                     if (!value) return "Date unavailable";
                     try {
@@ -4791,7 +4651,6 @@
                         });
                     } catch (error) { return "Date unavailable"; }
                 }
-
                 function formatDecorevaOrderMoney(value) {
                     const amount = Number(value);
                     if (!Number.isFinite(amount)) return "₹0";
@@ -4803,19 +4662,16 @@
                         return "₹" + Math.round(amount).toLocaleString("en-IN");
                     }
                 }
-
                 function formatDecorevaOrderStatus(value) {
                     const raw = String(value || "pending").trim().toLowerCase();
                     const label = raw.replace(/[_-]+/g, " ").replace(/\s+/g, " ")
                         .replace(/\b\w/g, function (char) { return char.toUpperCase(); });
                     return { key: raw.replace(/[^a-z0-9_-]/g, ""), label: label || "Pending" };
                 }
-
                 function renderMyOrders(orders, itemsByOrderId) {
                     const list = document.querySelector("#decoreva-profile-orders");
                     if (!list) return;
                     list.replaceChildren();
-
                     if (!Array.isArray(orders) || !orders.length) {
                         const empty = document.createElement("div");
                         empty.className = "decoreva-profile-orders-empty";
@@ -4823,13 +4679,11 @@
                         list.appendChild(empty);
                         return;
                     }
-
                     orders.forEach(function (order) {
                         const card = document.createElement("article");
                         card.className = "decoreva-profile-order-card";
                         const status = formatDecorevaOrderStatus(order.status);
                         const orderItems = Array.isArray(itemsByOrderId[order.id]) ? itemsByOrderId[order.id] : [];
-
                         const itemRows = orderItems.length ? orderItems.map(function (item) {
                             const quantity = Math.max(1, Number(item.quantity || 1));
                             const unitPrice = Math.max(0, Number(item.unit_price || 0));
@@ -4841,10 +4695,8 @@
                                 '<small>Qty: ' + quantity + '</small></div>' +
                                 '<strong>' + formatDecorevaOrderMoney(unitPrice * quantity) + '</strong></div>';
                         }).join("") : '<div class="decoreva-profile-order-item-empty">Order items are not available.</div>';
-
                         const coupon = String(order.coupon || "").trim();
                         const discount = Number(order.discount || 0);
-
                         card.innerHTML =
                             '<div class="decoreva-profile-order-top"><div>' +
                             '<strong>' + escapeProfileText(formatDecorevaOrderNumber(order.order_number)) + '</strong>' +
@@ -4857,65 +4709,53 @@
                             (discount > 0 ? '<span>Discount <strong>−' + formatDecorevaOrderMoney(discount) + '</strong></span>' : '') +
                             (coupon ? '<span>Coupon <strong>' + escapeProfileText(coupon) + '</strong></span>' : '') +
                             '<span class="decoreva-profile-order-total">Total <strong>' + formatDecorevaOrderMoney(order.total) + '</strong></span></div>';
-
                         list.appendChild(card);
                     });
                 }
-
                 async function loadMyOrders() {
                     const section = document.querySelector("#decoreva-profile-orders-section");
                     const list = document.querySelector("#decoreva-profile-orders");
                     if (!section || !list) return;
-
                     section.hidden = false;
                     list.innerHTML = '<div class="decoreva-profile-orders-loading">Loading your orders…</div>';
-
                     const user = await getDecorevaAuthUser();
                     if (!user) {
                         list.innerHTML = '<div class="decoreva-profile-orders-empty"><strong>Please login to view your orders</strong><span>Your logged-in DECOREVA orders are securely linked to your account.</span></div>';
                         return;
                     }
-
                     if (!decorevaAddressSupabase) {
                         list.innerHTML = '<div class="decoreva-profile-orders-empty"><strong>Orders are temporarily unavailable</strong><span>Please try again in a moment.</span></div>';
                         return;
                     }
-
                     try {
                         const ordersResult = await decorevaAddressSupabase
                             .from("orders")
                             .select("id, order_number, status, customer_name, customer_phone, delivery_address, subtotal, delivery_charge, discount, total, coupon, created_at")
                             .eq("user_id", user.id)
                             .order("created_at", { ascending: false });
-
                         if (ordersResult.error) throw ordersResult.error;
                         const orders = Array.isArray(ordersResult.data) ? ordersResult.data : [];
                         if (!orders.length) {
                             renderMyOrders([], {});
                             return;
                         }
-
                         const orderIds = orders.map(function (order) { return order.id; });
                         const itemsResult = await decorevaAddressSupabase
                             .from("order_items")
                             .select("id, order_id, product_key, product_name, variation, quantity, unit_price")
                             .in("order_id", orderIds);
-
                         if (itemsResult.error) throw itemsResult.error;
-
                         const itemsByOrderId = {};
                         (Array.isArray(itemsResult.data) ? itemsResult.data : []).forEach(function (item) {
                             if (!itemsByOrderId[item.order_id]) itemsByOrderId[item.order_id] = [];
                             itemsByOrderId[item.order_id].push(item);
                         });
-
                         renderMyOrders(orders, itemsByOrderId);
                     } catch (error) {
                         console.error("DECOREVA My Orders load error:", error);
                         list.innerHTML = '<div class="decoreva-profile-orders-empty error"><strong>Could not load your orders</strong><span>Please try again. Your other profile features are unchanged.</span></div>';
                     }
                 }
-
                 function mapSupabaseAddress(row) {
                     return {
                         id: row.id,
@@ -4929,35 +4769,28 @@
                         default: !!row.is_default
                     };
                 }
-
                 async function loadSupabaseAddresses() {
                     const user = await getDecorevaAuthUser();
                     if (!user || !decorevaAddressSupabase) return false;
-
                     const result = await decorevaAddressSupabase
                         .from("saved_addresses")
                         .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
                         .eq("user_id", user.id)
                         .order("is_default", { ascending: false })
                         .order("created_at", { ascending: true });
-
                     if (result.error) {
                         console.error("DECOREVA saved addresses load error:", result.error);
                         return false;
                     }
-
                     profile.addresses = Array.isArray(result.data)
                         ? result.data.map(mapSupabaseAddress)
                         : [];
-
                     saveProfile();
                     return true;
                 }
-
                 async function saveSupabaseAddress(address, editIndex) {
                     const user = await getDecorevaAuthUser();
                     if (!user || !decorevaAddressSupabase) return false;
-
                     const payload = {
                         user_id: user.id,
                         label: address.label,
@@ -4969,22 +4802,17 @@
                         pincode: address.pincode,
                         is_default: !!address.default
                     };
-
                     if (address.default) {
                         const clearDefaults = await decorevaAddressSupabase
                             .from("saved_addresses")
                             .update({ is_default: false })
                             .eq("user_id", user.id);
-
                         if (clearDefaults.error) throw clearDefaults.error;
                     }
-
                     const existing = Number.isInteger(editIndex) && profile.addresses[editIndex]
                         ? profile.addresses[editIndex]
                         : null;
-
                     let result;
-
                     if (existing && existing.id) {
                         result = await decorevaAddressSupabase
                             .from("saved_addresses")
@@ -5000,63 +4828,47 @@
                             .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
                             .single();
                     }
-
                     if (result.error) throw result.error;
-
                     await loadSupabaseAddresses();
                     return true;
                 }
-
                 async function deleteSupabaseAddress(address) {
                     const user = await getDecorevaAuthUser();
                     if (!user || !decorevaAddressSupabase || !address || !address.id) return false;
-
                     const result = await decorevaAddressSupabase
                         .from("saved_addresses")
                         .delete()
                         .eq("id", address.id)
                         .eq("user_id", user.id);
-
                     if (result.error) throw result.error;
-
                     await loadSupabaseAddresses();
-
                     if (profile.addresses.length && !profile.addresses.some(function (item) { return item.default; })) {
                         await setSupabaseDefaultAddress(profile.addresses[0]);
                     }
-
                     return true;
                 }
-
                 async function setSupabaseDefaultAddress(address) {
                     const user = await getDecorevaAuthUser();
                     if (!user || !decorevaAddressSupabase || !address || !address.id) return false;
-
                     let result = await decorevaAddressSupabase
                         .from("saved_addresses")
                         .update({ is_default: false })
                         .eq("user_id", user.id);
-
                     if (result.error) throw result.error;
-
                     result = await decorevaAddressSupabase
                         .from("saved_addresses")
                         .update({ is_default: true })
                         .eq("id", address.id)
                         .eq("user_id", user.id);
-
                     if (result.error) throw result.error;
-
                     await loadSupabaseAddresses();
                     return true;
                 }
-
                 function escapeProfileText(value) {
                     return String(value || "").replace(/[&<>\"]/g, function (char) {
                         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char];
                     });
                 }
-
                 function renderProfile() {
                     const panel = document.querySelector("#decoreva-profile-panel");
                     if (!panel) return;
@@ -5099,7 +4911,6 @@
                     }
                     if (status && !status.dataset.persistent) status.textContent = "";
                 }
-
                 function showProfileAddressForm(index) {
                     const form = document.querySelector("#decoreva-profile-address-form");
                     if (!form) return;
@@ -5121,12 +4932,10 @@
                     const save = document.querySelector("#decoreva-profile-address-save");
                     if (save) save.textContent = Number.isInteger(index) ? "Update Address" : "Save Address";
                 }
-
                 function hideProfileAddressForm() {
                     const form = document.querySelector("#decoreva-profile-address-form");
                     if (form) { form.hidden = true; form.dataset.editIndex = ""; }
                 }
-
                 function resetProfileToStart() {
                     const welcome = document.querySelector("#decoreva-profile-panel .decoreva-profile-welcome");
                     const menu = document.querySelector("#decoreva-profile-panel .decoreva-profile-menu");
@@ -5136,36 +4945,29 @@
                     const ordersSection = document.querySelector("#decoreva-profile-orders-section");
                     const status = document.querySelector("#decoreva-profile-message");
                     const card = document.querySelector("#decoreva-profile-panel .decoreva-profile-card");
-
                     if (welcome) welcome.hidden = false;
                     if (menu) menu.hidden = false;
                     if (note) note.hidden = false;
                     if (personalSection) personalSection.hidden = true;
                     if (addressSection) addressSection.hidden = true;
                     if (ordersSection) ordersSection.hidden = true;
-
                     hideProfileAddressForm();
-
                     if (status) {
                         status.textContent = "";
                         status.className = "decoreva-profile-message";
                         delete status.dataset.persistent;
                     }
-
                     if (card) card.scrollTop = 0;
                 }
-
                 async function openProfile() {
                     const panel = document.querySelector("#decoreva-profile-panel");
                     if (!panel) return;
-
                     /* Accessibility: remember the element that opened Profile so
                        focus can leave the panel before aria-hidden="true" is set. */
                     const activeBeforeProfile = document.activeElement;
                     if (activeBeforeProfile && activeBeforeProfile !== panel && !panel.contains(activeBeforeProfile)) {
                         panel._decorevaProfileReturnFocus = activeBeforeProfile;
                     }
-
                     /* MOBILE ONLY:
                        Always close the hamburger navigation before opening
                        the Profile panel. This keeps the two panels from
@@ -5173,40 +4975,30 @@
                     if (window.innerWidth <= 760) {
                         const mobileNav = document.querySelector("#main-nav");
                         const mobileMenuButton = document.querySelector(".mobile-menu-toggle");
-
                         if (mobileNav) {
                             mobileNav.classList.remove("mobile-open");
                         }
-
                         document.body.classList.remove("menu-open");
-
                         if (mobileMenuButton) {
                             mobileMenuButton.setAttribute("aria-expanded", "false");
                         }
                     }
-
                     closeMyOrdersDrawer();
-
                     /* Every time Profile opens, start from the original
                        Profile menu view — not the previously opened section. */
                     resetProfileToStart();
-
                     renderProfile();
                     panel.classList.add("open");
                     panel.setAttribute("aria-hidden", "false");
-
                     const user = await getDecorevaAuthUser();
                     if (user && decorevaAddressSupabase) {
                         await loadSupabaseAddresses();
                         renderProfile();
                     }
                 }
-
-
                 function closeMyOrdersDrawer() {
                     const drawer = document.querySelector("#decoreva-orders-drawer");
                     const section = document.querySelector("#decoreva-profile-orders-section");
-
                     if (drawer) {
                         /* Accessibility: move focus outside the Orders drawer
                            BEFORE setting aria-hidden="true". Chrome otherwise
@@ -5222,49 +5014,39 @@
                                 document.activeElement.blur();
                             }
                         }
-
                         drawer.classList.remove("open");
                         drawer.setAttribute("aria-hidden", "true");
                     }
-
                     if (section) {
                         section.hidden = true;
                     }
-
                     const profileBack = section ? section.querySelector("[data-profile-orders-back]") : null;
                     if (profileBack) profileBack.hidden = false;
-
                     document.body.classList.remove("decoreva-orders-open");
                     if (!document.querySelector(".decoreva-profile-panel.open") && !document.querySelector(".decoreva-side-drawer.open")) {
                         document.body.style.overflow = "";
                     }
                 }
-
                 function closeProfile(callback) {
                     const panel = document.querySelector("#decoreva-profile-panel");
                     if (!panel) {
                         if (typeof callback === "function") callback();
                         return;
                     }
-
                     const card = panel.querySelector(".decoreva-profile-card");
-
                     if (panel._decorevaProfileCloseTimer) {
                         clearTimeout(panel._decorevaProfileCloseTimer);
                         panel._decorevaProfileCloseTimer = null;
                     }
-
                     if (!panel.classList.contains("open")) {
                         if (typeof callback === "function") callback();
                         return;
                     }
-
                     if (card) {
                         card.style.transition = "transform .18s ease";
                         void card.offsetWidth;
                         card.style.transform = "translateY(-8px) scale(.985)";
                     }
-
                     panel._decorevaProfileCloseTimer = window.setTimeout(function () {
                         /* Move focus outside the Profile panel BEFORE hiding it
                            from assistive technology. This removes Chrome's
@@ -5283,74 +5065,50 @@
                                 }
                             }
                         }
-
                         panel.classList.remove("open");
                         panel.setAttribute("aria-hidden", "true");
-
                         if (card) {
                             card.style.transition = "";
                             card.style.transform = "";
                         }
-
-                        /* Reset the Profile to its starting menu state after
-                           every close, so Edit Profile / Saved Addresses do
-                           not remain open when Profile is opened again. */
                         resetProfileToStart();
-
                         panel._decorevaProfileCloseTimer = null;
                         panel._decorevaProfileReturnFocus = null;
-
                         if (typeof callback === "function") {
                             callback();
                         }
                     }, 180);
                 }
-
                 window.decorevaCloseProfile = closeProfile;
-
                 function addToCart(card) {
                     const data = getCardData(card);
                     if (!data || !data.price) return;
-
                     const existing = cart.find(function (item) {
                         return item.id === data.id;
                     });
-
                     if (existing) {
                         existing.quantity += 1;
                     } else {
                         data.quantity = 1;
                         cart.push(data);
                     }
-
                     saveCart();
                     updateCartCount();
                     renderCart();
-
-                    /* Adding a product must not open checkout automatically.
-                       Customer can open the cart from the navigation cart icon. */
                     showShopToast("Added to Cart");
                 }
-
                 function showShopToast(message, duration) {
                     const oldToast = document.querySelector(".decoreva-shop-toast");
                     if (oldToast) oldToast.remove();
-
                     const toast = document.createElement("div");
                     toast.className = "decoreva-shop-toast";
                     toast.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
                     toast.querySelector("span").textContent = message;
-
-                    /* =====================================================
-                       DECOREVA — MOBILE CART/WISHLIST TOAST SIZE
-                       Phone view only. Desktop/tablet styling is untouched.
-                       ===================================================== */
                     const isCartWishlistToast =
                         message === "Added to Cart" ||
                         message === "Removed from Cart" ||
                         message === "Added to Wishlist" ||
                         message === "Removed from Wishlist";
-
                     if (isCartWishlistToast && window.innerWidth <= 760) {
                         toast.style.setProperty("width", "min(250px, calc(100vw - 32px))", "important");
                         toast.style.setProperty("min-width", "0", "important");
@@ -5361,30 +5119,23 @@
                         toast.style.setProperty("font-size", "12px", "important");
                         toast.style.setProperty("line-height", "1.25", "important");
                         toast.style.setProperty("border-radius", "7px", "important");
-
                         const icon = toast.querySelector("i");
                         const messageNode = toast.querySelector("span");
-
                         if (icon) {
                             icon.style.setProperty("font-size", "11px", "important");
                             icon.style.setProperty("width", "18px", "important");
                             icon.style.setProperty("min-width", "18px", "important");
                         }
-
                         if (messageNode) {
                             messageNode.style.setProperty("font-size", "12px", "important");
                             messageNode.style.setProperty("line-height", "1.25", "important");
                         }
                     }
-
                     document.body.appendChild(toast);
-
                     requestAnimationFrame(function () {
                         toast.classList.add("show");
                     });
-
                     duration = Number(duration) > 0 ? Number(duration) : 1050;
-
                     window.setTimeout(function () {
                         toast.classList.remove("show");
                         window.setTimeout(function () {
@@ -5392,73 +5143,48 @@
                         }, 170);
                     }, duration);
                 }
-
-                /* Make the existing site toast available to the Supabase review module. */
                 window.decorevaShowShopToast = showShopToast;
-
                 function showRatingToast(row, message) {
-                    /* FIXED: Like / Unlike toast visibility. */
-                    /* SINGLE Like / Unlike / login toast.
-                       Use the existing site toast, but force the visible state
-                       immediately so Like/Unlike feedback cannot be hidden by
-                       another card/modal click handler. */
                     const oldToast = document.querySelector(".decoreva-shop-toast");
                     if (oldToast) oldToast.remove();
-
                     const toast = document.createElement("div");
                     toast.className = "decoreva-shop-toast show";
                     toast.setAttribute("role", "status");
                     toast.setAttribute("aria-live", "polite");
                     toast.innerHTML =
                         '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
-
                     const messageNode = toast.querySelector("span");
                     if (messageNode) messageNode.textContent = message;
-
-                    /* Inline visibility is intentional here: the rating toast
-                       must remain visible even if another script changes the
-                       toast class during the same click cycle. */
                     toast.style.opacity = "1";
                     toast.style.transform = "translateY(0)";
                     toast.style.visibility = "visible";
                     toast.style.display = "flex";
-
                     document.body.appendChild(toast);
-
                     clearTimeout(window.__decorevaRatingToastTimer);
                     window.__decorevaRatingToastTimer = window.setTimeout(function () {
                         toast.style.opacity = "0";
                         toast.style.transform = "translateY(-8px)";
-
                         window.setTimeout(function () {
                             if (toast.parentNode) toast.remove();
                         }, 180);
                     }, 2200);
                 }
-
                 window.decorevaShowReviewToast = function (message) {
-                    /* Review toasts are anchored to the Review form, directly above
-                       the Submit/Update Review button. Cart/Wishlist keep their
-                       existing global toast position. */
                     const reviewForm = document.querySelector("#decoreva-review-modal.open .decoreva-review-form");
                     if (!reviewForm) {
                         showShopToast(message, 2200);
                         return;
                     }
-
                     const oldToast = reviewForm.querySelector(".decoreva-review-toast");
                     if (oldToast) oldToast.remove();
-
                     const toast = document.createElement("div");
                     toast.className = "decoreva-review-toast";
                     toast.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
                     toast.querySelector("span").textContent = message;
                     reviewForm.appendChild(toast);
-
                     requestAnimationFrame(function () {
                         toast.classList.add("show");
                     });
-
                     window.setTimeout(function () {
                         toast.classList.remove("show");
                         window.setTimeout(function () {
@@ -5466,15 +5192,12 @@
                         }, 180);
                     }, 2200);
                 };
-
                 function toggleWishlist(card) {
                     const data = getCardData(card);
                     if (!data) return;
-
                     const index = wishlist.findIndex(function (item) {
                         return item.id === data.id;
                     });
-
                     if (index >= 0) {
                         wishlist.splice(index, 1);
                         showShopToast("Removed from Wishlist");
@@ -5482,19 +5205,15 @@
                         wishlist.push(data);
                         showShopToast("Added to Wishlist");
                     }
-
                     saveWishlist();
                     updateWishlistCount();
                     renderWishlist();
                 }
-
                 function applyCoupon() {
                     const input = document.querySelector("#decoreva-coupon-input");
                     const message = document.querySelector("#decoreva-coupon-message");
                     if (!input || !message) return;
-
                     const code = input.value.trim().toUpperCase();
-
                     if (!code) {
                         appliedCoupon = "";
                         saveCoupon();
@@ -5503,7 +5222,6 @@
                         renderCart();
                         return;
                     }
-
                     if (!COUPONS[code]) {
                         appliedCoupon = "";
                         saveCoupon();
@@ -5512,7 +5230,6 @@
                         renderCart();
                         return;
                     }
-
                     appliedCoupon = code;
                     couponPreviewCode = "";
                     saveCoupon();
@@ -5520,10 +5237,6 @@
                     message.className = "decoreva-coupon-message success";
                     renderCart();
                     renderCheckoutSummary();
-
-                    /* Keep the coupon modal open so the customer can clearly
-                       see the applied state and the REMOVE button inside the
-                       coupon card. */
                     const appliedInput = document.querySelector("#decoreva-coupon-input");
                     if (appliedInput) {
                         appliedInput.value = code;
@@ -5541,7 +5254,6 @@
                         appliedUseButton.disabled = true;
                     }
                 }
-
                 function openCouponModal() {
                     const modal = document.querySelector("#decoreva-coupon-modal");
                     if (!modal) return;
@@ -5569,7 +5281,6 @@
                     couponModalOpen = true;
                     window.setTimeout(function () { if (input) input.focus(); }, 50);
                 }
-
                 function closeCouponModal() {
                     const modal = document.querySelector("#decoreva-coupon-modal");
                     if (!modal) return;
@@ -5582,29 +5293,20 @@
                         renderCheckoutSummary();
                     }
                 }
-
                 function beginWhatsAppCheckout() {
                     if (!cart.length) return;
-
-                    /* Checkout intentionally starts with a blank address.
-                       Saved profile addresses are kept only in Profile and are
-                       not auto-applied here. */
                     deliveryAddress = null;
                     checkoutStep = "address";
-
                     const drawer = document.querySelector("#decoreva-cart-drawer");
                     if (drawer) {
                         drawer.classList.add("decoreva-checkout-mode");
                         drawer.classList.add("open");
                         drawer.setAttribute("aria-hidden", "false");
                     }
-
                     document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
                     document.body.style.overflow = "hidden";
                     document.documentElement.style.overflow = "hidden";
-
                     updateCheckoutStepUI();
-
                     [
                         "#decoreva-address-name",
                         "#decoreva-address-mobile",
@@ -5616,9 +5318,7 @@
                         const el = document.querySelector(id);
                         if (el) el.value = "";
                     });
-
                     updateAddressContinueState();
-
                     window.setTimeout(function () {
                         const address = document.querySelector("#decoreva-checkout-address");
                         const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
@@ -5630,18 +5330,14 @@
                         }
                     }, 40);
                 }
-
                 async function whatsappCheckout() {
                     if (!cart.length || !deliveryAddress || decorevaOrderInProgress) return;
-
                     decorevaOrderInProgress = true;
-
                     const button = document.querySelector("#decoreva-cart-whatsapp");
                     const paymentButton = document.querySelector("#decoreva-payment-order");
                     const message = document.querySelector("#decoreva-address-message");
                     const originalButtonText = button ? button.textContent : "Order on WhatsApp";
                     const originalPaymentText = paymentButton ? paymentButton.textContent : "Place Order on WhatsApp";
-
                     if (button) {
                         button.disabled = true;
                         button.textContent = "Saving Order...";
@@ -5650,10 +5346,8 @@
                         paymentButton.disabled = true;
                         paymentButton.textContent = "Saving Order...";
                     }
-
                     try {
                         const order = await createSupabaseOrder();
-
                         if (!order) {
                             if (button) {
                                 button.disabled = false;
@@ -5665,28 +5359,23 @@
                             }
                             return;
                         }
-
                         const lines = [
                             "Hello DECOREVA, I want to order:",
                             "",
                             "Order Number: " + order.orderNumber,
                             ""
                         ];
-
                         cart.forEach(function (item, index) {
                             let line = (index + 1) + ". " + item.title;
                             if (item.variationName) line += " - " + item.variationName;
                             line += " × " + item.quantity + " = " + money(item.price * item.quantity);
                             lines.push(line);
                         });
-
                         lines.push("", "Total MRP: " + money(subtotalAmount()));
-
                         if (appliedCoupon) {
                             lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
                             lines.push("Discount on MRP: - " + money(discountAmount()));
                         }
-
                         lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
                         if (deliveryAddress) {
                             lines.push(
@@ -5699,19 +5388,15 @@
                             );
                         }
                         lines.push("", "Please confirm availability and payment details.");
-
                         const whatsappUrl =
                             "https://wa.me/919582899547?text=" +
                             encodeURIComponent(lines.join("\n"));
-
                         window.open(
                             whatsappUrl,
                             "_blank",
                             "noopener,noreferrer"
                         );
-
                         showOrderConfirmation(order.orderNumber);
-
                         if (message) {
                             message.dataset.userMessage = "1";
                             message.textContent = "Order " + order.orderNumber + " saved. WhatsApp opened for confirmation.";
@@ -5719,17 +5404,14 @@
                         }
                     } catch (error) {
                         console.error("DECOREVA order submission error:", error);
-
                         if (message) {
                             message.dataset.userMessage = "1";
                             message.textContent = "Could not save your order. Please try again. Your WhatsApp order was not opened.";
                             message.className = "decoreva-address-message error";
                         }
-
                         alert("We could not save your order. Please try again.");
                     } finally {
                         decorevaOrderInProgress = false;
-
                         if (button) {
                             button.disabled = !cart.length;
                             button.textContent = originalButtonText;
@@ -5740,8 +5422,90 @@
                         }
                     }
                 }
-
                 function showOrderConfirmation(orderNumber) {
+                    /* DECOREVA — compact mobile order confirmation.
+                       Only the confirmation popup is resized; checkout/cart remains unchanged. */
+                    if (!document.getElementById("decoreva-mobile-order-confirmation-compact")) {
+                        const compactStyle = document.createElement("style");
+                        compactStyle.id = "decoreva-mobile-order-confirmation-compact";
+                        compactStyle.textContent = `
+                            @media (max-width: 760px) {
+                                #decoreva-order-confirmation {
+                                    padding: 14px !important;
+                                    box-sizing: border-box !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-card {
+                                    width: min(310px, calc(100vw - 36px)) !important;
+                                    max-width: calc(100vw - 36px) !important;
+                                    margin: 0 auto !important;
+                                    padding: 18px 16px 16px !important;
+                                    box-sizing: border-box !important;
+                                    border-radius: 9px !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-icon {
+                                    width: 46px !important;
+                                    height: 46px !important;
+                                    margin: 0 auto 12px !important;
+                                    font-size: 27px !important;
+                                    line-height: 46px !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-card > strong {
+                                    font-size: 18px !important;
+                                    line-height: 1.2 !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-text {
+                                    margin: 9px 0 15px !important;
+                                    font-size: 11.5px !important;
+                                    line-height: 1.45 !important;
+                                }
+
+                                #decoreva-order-confirmation #decoreva-order-confirmation-close {
+                                    width: 100% !important;
+                                    min-height: 42px !important;
+                                    height: 42px !important;
+                                    padding: 0 12px !important;
+                                    font-size: 12px !important;
+                                    border-radius: 6px !important;
+                                }
+                            }
+
+                            @media (max-width: 400px) {
+                                #decoreva-order-confirmation .decoreva-order-confirmation-card {
+                                    width: calc(100vw - 40px) !important;
+                                    max-width: calc(100vw - 40px) !important;
+                                    padding: 16px 14px 14px !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-icon {
+                                    width: 42px !important;
+                                    height: 42px !important;
+                                    margin-bottom: 10px !important;
+                                    font-size: 24px !important;
+                                    line-height: 42px !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-card > strong {
+                                    font-size: 17px !important;
+                                }
+
+                                #decoreva-order-confirmation .decoreva-order-confirmation-text {
+                                    margin: 8px 0 13px !important;
+                                    font-size: 11px !important;
+                                }
+
+                                #decoreva-order-confirmation #decoreva-order-confirmation-close {
+                                    min-height: 40px !important;
+                                    height: 40px !important;
+                                }
+                            }
+                        `;
+                        document.head.appendChild(compactStyle);
+                    }
+
                     let confirmation = document.querySelector("#decoreva-order-confirmation");
                     if (!confirmation) {
                         confirmation = document.createElement("div");
@@ -5757,41 +5521,26 @@
                             </div>`;
                         document.body.appendChild(confirmation);
                     }
-
                     const confirmationText = confirmation.querySelector(".decoreva-order-confirmation-text");
                     if (confirmationText) {
                         confirmationText.textContent =
                             "Order " + (orderNumber || "") + " has been saved. Your order details are open in WhatsApp. Please send the message to DECOREVA to confirm your order.";
                     }
-
-                    /* =====================================================
-                       DECOREVA — SHOW EMPTY CART BEHIND CONFIRMATION
-                       The order has already been saved and opened in WhatsApp.
-                       Clear the completed cart BEFORE opening the confirmation
-                       modal so the customer sees the true empty-cart state
-                       behind the modal. The modal itself stays open.
-                       ===================================================== */
                     cart = [];
                     saveCart();
                     updateCartCount();
                     renderCart();
-
                     checkoutStep = "cart";
                     checkoutAddressUnlocked = false;
                     deliveryAddress = null;
                     appliedCoupon = "";
                     couponPreviewCode = "";
                     saveCoupon();
-
                     confirmation.classList.add("open");
                 }
-
                 function renderCheckoutSavedAddresses() {
-                    /* Saved addresses are managed from My Profile only.
-                       Checkout intentionally does not display or auto-select them. */
                     return;
                 }
-
                 function fillCheckoutAddress(address) {
                     if (!address) return;
                     const values = {
@@ -5804,8 +5553,6 @@
                     };
                     Object.keys(values).forEach(function (id) { const el = document.querySelector(id); if (el) el.value = values[id]; });
                 }
-
-                /* Premium empty-cart presentation — targeted only to the cart drawer. */
                 (function ensureEmptyCartPremiumStyle() {
                     if (document.getElementById("decoreva-empty-cart-premium-style")) return;
                     const style = document.createElement("style");
@@ -5882,7 +5629,812 @@
                     document.head.appendChild(style);
                 })();
 
-                /* Targeted checkout validation style — no global CSS changes. */
+                (function ensureCheckoutSimilarProductsPremiumStyle() {
+                    if (document.getElementById("decoreva-checkout-similar-products-style")) return;
+                    const style = document.createElement("style");
+                    style.id = "decoreva-checkout-similar-products-style";
+                    style.textContent = `
+                        #decoreva-cart-drawer .decoreva-similar-products {
+                            width: 100% !important;
+                            max-width: none !important;
+                            box-sizing: border-box !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-head {
+                            width: 100% !important;
+                            box-sizing: border-box !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-grid {
+                            width: 100% !important;
+                            max-width: none !important;
+                            display: grid !important;
+                            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                            gap: 14px !important;
+                            box-sizing: border-box !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card {
+                            width: 100% !important;
+                            min-width: 0 !important;
+                            box-sizing: border-box !important;
+                            overflow: hidden !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            background: #fff !important;
+                            border: 1px solid rgba(139,106,50,.18) !important;
+                            border-radius: 8px !important;
+                            box-shadow: 0 2px 9px rgba(62,42,20,.07) !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-image {
+                            width: 100% !important;
+                            aspect-ratio: 1 / 1 !important;
+                            min-height: 0 !important;
+                            overflow: hidden !important;
+                            background: #f7f1e7 !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-image img {
+                            display: block !important;
+                            width: 100% !important;
+                            height: 100% !important;
+                            max-width: none !important;
+                            object-fit: cover !important;
+                            object-position: center !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-info {
+                            width: 100% !important;
+                            min-width: 0 !important;
+                            box-sizing: border-box !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            align-items: stretch !important;
+                            gap: 7px !important;
+                            padding: 11px 10px 10px !important;
+                            background: #fff !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-info strong {
+                            display: block !important;
+                            min-height: 34px !important;
+                            color: #3f2d1c !important;
+                            font-size: 12px !important;
+                            line-height: 1.4 !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-info > span {
+                            display: block !important;
+                            color: #9a6b13 !important;
+                            font-size: 13px !important;
+                            font-weight: 800 !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-info button {
+                            width: 100% !important;
+                            min-height: 34px !important;
+                            margin-top: 1px !important;
+                            border: 0 !important;
+                            border-radius: 5px !important;
+                            background: #c98b18 !important;
+                            color: #fff !important;
+                            font-size: 10px !important;
+                            font-weight: 800 !important;
+                            letter-spacing: .2px !important;
+                            cursor: pointer !important;
+                        }
+                        #decoreva-cart-drawer .decoreva-similar-card-info button:hover {
+                            background: #b77a13 !important;
+                        }
+                        @media (max-width: 900px) {
+                            #decoreva-cart-drawer .decoreva-similar-grid {
+                                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                            }
+                        }
+                        @media (max-width: 650px) {
+                            #decoreva-cart-drawer .decoreva-similar-grid {
+                                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                                gap: 14px !important;
+                            }
+                            #decoreva-cart-drawer .decoreva-similar-card-info {
+                                padding: 9px 8px 8px !important;
+                            }
+                            #decoreva-cart-drawer .decoreva-similar-card-info strong {
+                                font-size: 11px !important;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                })();
+
+                (function ensureDecorevaMobileCartCheckoutPolish() {
+                    if (document.getElementById("decoreva-mobile-cart-checkout-polish")) return;
+
+                    const style = document.createElement("style");
+                    style.id = "decoreva-mobile-cart-checkout-polish";
+                    style.textContent = `
+                        /* DECOREVA — MOBILE CART / CHECKOUT POLISH ONLY
+                           Desktop and tablet remain untouched. */
+
+                        @media (max-width: 760px) {
+                            #decoreva-cart-drawer,
+                            #decoreva-cart-drawer .decoreva-cart-panel {
+                                width: 100vw !important;
+                                max-width: 100vw !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            /* Cart products: give the product image real mobile space. */
+                            #decoreva-cart-drawer .decoreva-cart-item {
+                                width: 100% !important;
+                                min-width: 0 !important;
+                                box-sizing: border-box !important;
+                                display: grid !important;
+                                grid-template-columns: 138px minmax(0, 1fr) !important;
+                                gap: 14px !important;
+                                align-items: center !important;
+                                padding: 12px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item > img {
+                                display: block !important;
+                                width: 138px !important;
+                                height: 138px !important;
+                                min-width: 138px !important;
+                                max-width: 138px !important;
+                                object-fit: cover !important;
+                                object-position: center !important;
+                                background: #fff !important;
+                                border-radius: 6px !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item-info {
+                                width: 100% !important;
+                                min-width: 0 !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item-info strong {
+                                display: block !important;
+                                line-height: 1.3 !important;
+                                word-break: normal !important;
+                                overflow-wrap: anywhere !important;
+                            }
+
+                            /* Keep quantity controls usable without making the card taller than necessary. */
+                            #decoreva-cart-drawer .decoreva-cart-item-controls {
+                                display: flex !important;
+                                align-items: center !important;
+                                flex-wrap: wrap !important;
+                                gap: 8px !important;
+                            }
+
+                            /* Cart/billing summary: compact, full-width mobile card. */
+                            #decoreva-cart-drawer .decoreva-cart-footer {
+                                width: calc(100% - 24px) !important;
+                                max-width: none !important;
+                                margin: 14px auto 24px !important;
+                                padding: 18px 14px !important;
+                                box-sizing: border-box !important;
+                                border-radius: 12px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-coupon-summary-row,
+                            #decoreva-cart-drawer .decoreva-cart-summary-row,
+                            #decoreva-cart-drawer .decoreva-cart-total-row {
+                                width: 100% !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-coupon-summary-row {
+                                min-height: 38px !important;
+                                margin-bottom: 10px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-summary-row {
+                                min-height: 34px !important;
+                                margin: 0 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-total-row {
+                                min-height: 42px !important;
+                                margin-top: 6px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-cart-whatsapp {
+                                width: 100% !important;
+                                min-height: 48px !important;
+                                margin-top: 12px !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            /* Checkout address/order-summary card: no oversized desktop-style box on phones. */
+                            #decoreva-cart-drawer .decoreva-checkout-summary {
+                                width: 100% !important;
+                                max-width: none !important;
+                                margin: 8px 0 12px !important;
+                                padding: 12px 12px 10px !important;
+                                box-sizing: border-box !important;
+                                border-radius: 12px !important;
+                                background: #fffdf8 !important;
+                                border: 1px solid rgba(181, 132, 39, .16) !important;
+                                box-shadow: 0 4px 14px rgba(76, 48, 15, .07) !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-summary-item,
+                            #decoreva-cart-drawer .decoreva-checkout-summary-total {
+                                width: 100% !important;
+                                min-height: 30px !important;
+                                box-sizing: border-box !important;
+                                margin: 0 !important;
+                                padding: 4px 0 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-summary-total.final {
+                                min-height: 38px !important;
+                                margin-top: 3px !important;
+                                padding-top: 8px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-summary-coupon,
+                            #decoreva-cart-drawer .decoreva-checkout-coupon-row {
+                                min-height: 34px !important;
+                                margin: 0 0 5px !important;
+                                padding: 4px 0 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-coupon-row button {
+                                min-height: 32px !important;
+                                padding: 5px 8px !important;
+                                font-size: 12px !important;
+                            }
+
+                            /* Checkout item images: larger and show the complete product image. */
+                            #decoreva-cart-drawer .decoreva-checkout-item {
+                                width: 100% !important;
+                                min-width: 0 !important;
+                                box-sizing: border-box !important;
+                                display: grid !important;
+                                grid-template-columns: 132px minmax(0, 1fr) !important;
+                                gap: 11px !important;
+                                align-items: center !important;
+                                padding: 9px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-item > img {
+                                display: block !important;
+                                width: 132px !important;
+                                height: 132px !important;
+                                min-width: 132px !important;
+                                max-width: 132px !important;
+                                object-fit: contain !important;
+                                object-position: center !important;
+                                background: #fff !important;
+                                border-radius: 6px !important;
+                            }
+
+                            /* You May Also Like: use the complete source image, not a cropped cover. */
+                            #decoreva-cart-drawer .decoreva-similar-products {
+                                width: 100% !important;
+                                max-width: none !important;
+                                margin: 18px 0 24px !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-similar-grid {
+                                width: 100% !important;
+                                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                                gap: 14px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-similar-card {
+                                width: 100% !important;
+                                min-width: 0 !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-similar-card-image {
+                                width: 100% !important;
+                                aspect-ratio: 1 / 1 !important;
+                                height: auto !important;
+                                overflow: hidden !important;
+                                display: flex !important;
+                                align-items: center !important;
+                                justify-content: center !important;
+                                background: #f7f1e7 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-similar-card-image img {
+                                display: block !important;
+                                width: 100% !important;
+                                height: 100% !important;
+                                max-width: none !important;
+                                max-height: none !important;
+                                object-fit: cover !important;
+                                object-position: center !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-similar-card-info {
+                                width: 100% !important;
+                                min-width: 0 !important;
+                                box-sizing: border-box !important;
+                                padding: 9px 8px 10px !important;
+                            }
+                        }
+
+                        @media (max-width: 400px) {
+                            #decoreva-cart-drawer .decoreva-cart-item {
+                                grid-template-columns: 130px minmax(0, 1fr) !important;
+                                gap: 10px !important;
+                                padding: 9px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item > img {
+                                width: 130px !important;
+                                height: 130px !important;
+                                min-width: 130px !important;
+                                max-width: 130px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-item {
+                                grid-template-columns: 122px minmax(0, 1fr) !important;
+                                gap: 9px !important;
+                                padding: 8px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-checkout-item > img {
+                                width: 122px !important;
+                                height: 122px !important;
+                                min-width: 122px !important;
+                                max-width: 122px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-footer {
+                                width: calc(100% - 20px) !important;
+                                padding: 15px 12px !important;
+                            }
+                        }
+                    `;
+
+                    document.head.appendChild(style);
+                })();
+
+
+                (function ensureDecorevaMobileCheckoutAddressCompact() {
+                    if (document.getElementById("decoreva-mobile-checkout-address-compact")) return;
+
+                    const style = document.createElement("style");
+                    style.id = "decoreva-mobile-checkout-address-compact";
+                    style.textContent = `
+                        /* DECOREVA — MOBILE CHECKOUT ADDRESS COMPACT
+                           Phone only. Desktop/tablet remain unchanged. */
+                        @media (max-width: 760px) {
+                            #decoreva-cart-drawer #decoreva-checkout-address {
+                                padding: 0 10px 14px !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-section-head {
+                                padding: 9px 6px 7px !important;
+                                margin: 0 !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-section-head strong {
+                                display: block !important;
+                                font-size: 19px !important;
+                                line-height: 1.15 !important;
+                                margin: 0 0 3px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-section-head span {
+                                display: block !important;
+                                font-size: 11px !important;
+                                line-height: 1.25 !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-address-message {
+                                margin: 4px 0 6px !important;
+                                padding: 9px 12px !important;
+                                min-height: 0 !important;
+                                border-radius: 9px !important;
+                                font-size: 12px !important;
+                                line-height: 1.35 !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-field {
+                                margin: 0 0 6px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-field > input {
+                                height: 43px !important;
+                                min-height: 43px !important;
+                                padding: 0 38px 0 11px !important;
+                                font-size: 13px !important;
+                                line-height: 1.2 !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-field > textarea {
+                                height: 58px !important;
+                                min-height: 58px !important;
+                                max-height: 58px !important;
+                                padding: 9px 38px 9px 11px !important;
+                                font-size: 13px !important;
+                                line-height: 1.3 !important;
+                                resize: none !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-grid {
+                                display: grid !important;
+                                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                                gap: 6px !important;
+                                margin: 0 !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-grid .decoreva-address-field {
+                                margin: 0 !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-grid .decoreva-address-field:last-child {
+                                grid-column: 1 / -1 !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-clear {
+                                right: 7px !important;
+                                width: 22px !important;
+                                height: 22px !important;
+                                font-size: 18px !important;
+                                line-height: 22px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-clear-textarea {
+                                top: 10px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-summary {
+                                margin: 6px 0 8px !important;
+                                padding: 9px 10px 8px !important;
+                                border-radius: 9px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-items {
+                                margin-top: 8px !important;
+                            }
+                        }
+
+                        @media (max-width: 400px) {
+                            #decoreva-cart-drawer #decoreva-checkout-address {
+                                padding-left: 8px !important;
+                                padding-right: 8px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-section-head strong {
+                                font-size: 18px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-checkout-section-head span {
+                                font-size: 10.5px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-address-message {
+                                font-size: 11.5px !important;
+                                padding: 8px 10px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-field > input {
+                                height: 41px !important;
+                                min-height: 41px !important;
+                                font-size: 12.5px !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-checkout-address .decoreva-address-field > textarea {
+                                height: 54px !important;
+                                min-height: 54px !important;
+                                max-height: 54px !important;
+                                font-size: 12.5px !important;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                })();
+
+                (function ensureDecorevaMobilePhoneFinalLayout() {
+                    if (document.getElementById("decoreva-mobile-phone-final-layout")) return;
+
+                    const style = document.createElement("style");
+                    style.id = "decoreva-mobile-phone-final-layout";
+                    style.textContent = `
+                        /* DECOREVA — FINAL MOBILE PHONE LAYOUT ONLY */
+                        @media (max-width: 760px) {
+                            #decoreva-cart-drawer .decoreva-cart-item {
+                                grid-template-columns: 160px minmax(0, 1fr) !important;
+                                gap: 12px !important;
+                                padding: 10px !important;
+                                min-height: 182px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item > img {
+                                width: 160px !important;
+                                height: 160px !important;
+                                min-width: 160px !important;
+                                max-width: 160px !important;
+                                object-fit: cover !important;
+                                background: #fff !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item-info {
+                                align-self: center !important;
+                            }
+
+                            /* Compact phone summary: same information, much less empty height. */
+                            #decoreva-cart-drawer .decoreva-cart-footer {
+                                width: calc(100% - 18px) !important;
+                                margin: 10px auto 18px !important;
+                                padding: 12px 12px 13px !important;
+                                border-radius: 11px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-coupon-summary-row {
+                                min-height: 31px !important;
+                                margin-bottom: 5px !important;
+                                padding-bottom: 5px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-summary-row {
+                                min-height: 27px !important;
+                                line-height: 1.2 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-total-row {
+                                min-height: 34px !important;
+                                margin-top: 3px !important;
+                                padding-top: 4px !important;
+                            }
+
+                            /* Mobile phone typography: keep money figures compact and balanced. */
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-coupon-summary-row span,
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-cart-summary-row span,
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-cart-total-row span {
+                                font-size: 11px !important;
+                                line-height: 1.25 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-coupon-summary-row strong,
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-cart-summary-row strong {
+                                font-size: 15px !important;
+                                line-height: 1.2 !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-cart-total-row strong {
+                                font-size: 17px !important;
+                                line-height: 1.2 !important;
+                            }
+
+                            #decoreva-cart-drawer #decoreva-cart-whatsapp {
+                                min-height: 43px !important;
+                                height: 43px !important;
+                                margin-top: 7px !important;
+                                border-radius: 7px !important;
+                            }
+
+                        }
+
+                        @media (max-width: 400px) {
+                            #decoreva-cart-drawer .decoreva-cart-item {
+                                grid-template-columns: 155px minmax(0, 1fr) !important;
+                                gap: 10px !important;
+                                min-height: 175px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-item > img {
+                                width: 155px !important;
+                                height: 155px !important;
+                                min-width: 155px !important;
+                                max-width: 155px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-footer {
+                                width: calc(100% - 16px) !important;
+                                padding: 11px 11px 12px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-cart-summary-row strong {
+                                font-size: 14px !important;
+                            }
+
+                            #decoreva-cart-drawer .decoreva-cart-footer .decoreva-cart-total-row strong {
+                                font-size: 16px !important;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                })();
+
+                (function ensureDecorevaMobileProceedButton() {
+                    if (document.getElementById("decoreva-mobile-proceed-button-style")) return;
+
+                    const style = document.createElement("style");
+                    style.id = "decoreva-mobile-proceed-button-style";
+                    style.textContent = `
+                        @media (max-width: 760px) {
+                            #decoreva-cart-drawer #decoreva-cart-whatsapp {
+                                display: flex !important;
+                                align-items: center !important;
+                                justify-content: center !important;
+                                width: min(250px, 82%) !important;
+                                min-width: 0 !important;
+                                max-width: 250px !important;
+                                height: 39px !important;
+                                min-height: 39px !important;
+                                margin: 7px auto 0 !important;
+                                padding: 0 14px !important;
+                                border-radius: 9px !important;
+                                box-sizing: border-box !important;
+                                font-size: 12px !important;
+                                font-weight: 700 !important;
+                                line-height: 1 !important;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                })();
+
+                (function ensureDecorevaPasswordEye() {
+                    if (document.getElementById("decoreva-password-eye-style")) return;
+
+                    const style = document.createElement("style");
+                    style.id = "decoreva-password-eye-style";
+                    style.textContent = `
+                        .decoreva-password-eye-wrap {
+                            position: relative !important;
+                            width: 100% !important;
+                        }
+                        .decoreva-password-eye-wrap > input[type="password"],
+                        .decoreva-password-eye-wrap > input[data-decoreva-password-input] {
+                            padding-right: 48px !important;
+                            box-sizing: border-box !important;
+                        }
+                        .decoreva-password-eye {
+                            position: absolute !important;
+                            top: 50% !important;
+                            right: var(--decoreva-password-eye-right, 8px) !important;
+                            width: 30px !important;
+                            height: 30px !important;
+                            min-width: 30px !important;
+                            min-height: 30px !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            border: 0 !important;
+                            border-radius: 50% !important;
+                            background: transparent !important;
+                            color: #8b6a32 !important;
+                            display: inline-flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            transform: translateY(-50%) !important;
+                            cursor: pointer !important;
+                            z-index: 10 !important;
+                            font-size: 13px !important;
+                            line-height: 1 !important;
+                            box-sizing: border-box !important;
+                            -webkit-tap-highlight-color: transparent !important;
+                        }
+                        .decoreva-password-eye i {
+                            display: block !important;
+                            width: 16px !important;
+                            height: 16px !important;
+                            line-height: 16px !important;
+                            text-align: center !important;
+                            pointer-events: none !important;
+                        }
+                        .decoreva-password-eye:hover {
+                            color: #b77a13 !important;
+                            background: rgba(183,122,19,.08) !important;
+                        }
+                        .decoreva-password-eye:focus-visible {
+                            outline: 2px solid rgba(183,122,19,.30) !important;
+                            outline-offset: 1px !important;
+                            background: rgba(183,122,19,.06) !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+
+                    function addPasswordEye(input) {
+                        if (!input || input.tagName !== "INPUT") return;
+                        if (String(input.type).toLowerCase() !== "password") return;
+                        if (input.dataset.decorevaPasswordEye === "true") return;
+
+                        const parent = input.parentElement;
+                        if (!parent) return;
+
+                        if (!parent.classList.contains("decoreva-password-eye-wrap")) {
+                            parent.classList.add("decoreva-password-eye-wrap");
+                        }
+
+                        function positionPasswordEye() {
+                            if (!button || !input || !parent) return;
+                            const inputRect = input.getBoundingClientRect();
+                            const parentRect = parent.getBoundingClientRect();
+                            if (!inputRect.width || !parentRect.width) return;
+
+                            // Keep the eye INSIDE the actual input even when the
+                            // surrounding form row is wider than the input.
+                            const extraRightSpace = Math.max(
+                                0,
+                                parentRect.right - inputRect.right
+                            );
+                            button.style.setProperty(
+                                "--decoreva-password-eye-right",
+                                Math.max(8, extraRightSpace + 8) + "px"
+                            );
+                        }
+
+                        const button = document.createElement("button");
+                        button.type = "button";
+                        button.className = "decoreva-password-eye";
+                        button.setAttribute("aria-label", "Show password");
+                        button.setAttribute("title", "Show password");
+                        button.setAttribute("aria-pressed", "false");
+                        button.innerHTML = '<i class="fas fa-eye" aria-hidden="true"></i>';
+
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            const showing = input.type === "text";
+                            input.type = showing ? "password" : "text";
+                            button.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+                            button.setAttribute("title", showing ? "Show password" : "Hide password");
+                            button.setAttribute("aria-pressed", showing ? "false" : "true");
+                            button.innerHTML = showing
+                                ? '<i class="fas fa-eye" aria-hidden="true"></i>'
+                                : '<i class="fas fa-eye-slash" aria-hidden="true"></i>';
+                        });
+
+                        input.dataset.decorevaPasswordEye = "true";
+                        input.dataset.decorevaPasswordInput = "true";
+                        parent.appendChild(button);
+
+                        positionPasswordEye();
+
+                        if ("ResizeObserver" in window) {
+                            const eyeResizeObserver = new ResizeObserver(function () {
+                                positionPasswordEye();
+                            });
+                            eyeResizeObserver.observe(parent);
+                            eyeResizeObserver.observe(input);
+                            button._decorevaEyeResizeObserver = eyeResizeObserver;
+                        } else {
+                            window.addEventListener("resize", positionPasswordEye);
+                        }
+                    }
+
+                    function scanPasswordInputs(root) {
+                        if (!root) return;
+                        if (root.nodeType === 1 && root.matches && root.matches('input[type="password"]')) {
+                            addPasswordEye(root);
+                        }
+                        if (root.querySelectorAll) {
+                            root.querySelectorAll('input[type="password"]').forEach(addPasswordEye);
+                        }
+                    }
+
+                    scanPasswordInputs(document);
+
+                    const observer = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            mutation.addedNodes.forEach(function (node) {
+                                if (node.nodeType === 1) scanPasswordInputs(node);
+                            });
+                        });
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
+
+                    document.addEventListener("focusin", function (event) {
+                        const input = event.target;
+                        if (input && input.matches && input.matches('input[type="password"]')) {
+                            addPasswordEye(input);
+                        }
+                    }, true);
+                })();
+
                 (function ensureCheckoutAddressValidationStyle() {
                     if (document.getElementById("decoreva-checkout-address-validation-style")) return;
                     const style = document.createElement("style");
@@ -5902,8 +6454,6 @@
                     `;
                     document.head.appendChild(style);
                 })();
-
-                /* Targeted clear-button styling for checkout address fields. */
                 (function ensureCheckoutAddressClearButtonStyle() {
                     if (document.getElementById("decoreva-checkout-address-clear-style")) return;
                     const style = document.createElement("style");
@@ -5944,7 +6494,6 @@
                             top: 14px;
                             transform: none;
                         }
-
                         #decoreva-address-message {
                             min-height: 0;
                             margin: 12px 0 14px;
@@ -5956,21 +6505,18 @@
                             line-height: 1.5 !important;
                             border-radius: 9px;
                         }
-
                         #decoreva-address-message.error {
                             display: block !important;
                             border: 1px solid #d65b48;
                             background: #fff0ed;
                             color: #a52f1d !important;
                         }
-
                         #decoreva-address-message.warning {
                             display: block !important;
                             border: 1px solid #d65b48;
                             background: #fff0ed;
                             color: #a52f1d !important;
                         }
-
                         #decoreva-address-message.success {
                             display: block !important;
                             border: 1px solid #a8c88a;
@@ -5980,13 +6526,11 @@
                     `;
                     document.head.appendChild(style);
                 })();
-
                 function updateAddressContinueState() {
                     const get = function (id) {
                         const el = document.querySelector(id);
                         return el ? el.value.trim() : "";
                     };
-
                     const fields = [
                         "#decoreva-address-name",
                         "#decoreva-address-mobile",
@@ -5995,7 +6539,6 @@
                         "#decoreva-address-state",
                         "#decoreva-address-pincode"
                     ];
-
                     const valid =
                         !!get("#decoreva-address-name") &&
                         /^\d{10}$/.test(get("#decoreva-address-mobile")) &&
@@ -6003,10 +6546,6 @@
                         !!get("#decoreva-address-city") &&
                         !!get("#decoreva-address-state") &&
                         /^\d{6}$/.test(get("#decoreva-address-pincode"));
-
-                    /* The cart footer button is the single checkout action.
-                       It starts as Proceed to Buy and becomes Order on WhatsApp
-                       only after every delivery field is valid. */
                     const checkoutButton = document.querySelector("#decoreva-cart-whatsapp");
                     if (checkoutButton) {
                         const canPlaceOrder = checkoutAddressUnlocked && valid;
@@ -6015,115 +6554,133 @@
                         checkoutButton.setAttribute("aria-disabled", checkoutButton.disabled ? "true" : "false");
                         checkoutButton.setAttribute("aria-label", canPlaceOrder ? "Order on WhatsApp" : "Proceed to Buy");
                     }
-
-                    /* Highlight every empty/invalid address field in red while
-                       checkout is asking the customer to complete the address. */
                     fields.forEach(function (id) {
                         const el = document.querySelector(id);
                         if (!el) return;
-
                         const value = el.value.trim();
                         const invalid =
                             !value ||
                             (id === "#decoreva-address-mobile" && !/^\d{10}$/.test(value)) ||
                             (id === "#decoreva-address-pincode" && !/^\d{6}$/.test(value));
-
                         el.classList.toggle("decoreva-address-invalid", checkoutStep === "address" && invalid);
                         el.setAttribute("aria-invalid", checkoutStep === "address" && invalid ? "true" : "false");
                     });
-
                     const message = document.querySelector("#decoreva-address-message");
+                    const similarProducts = document.querySelector("#decoreva-similar-products");
+                    const cartFooter = document.querySelector("#decoreva-cart-drawer .decoreva-cart-footer");
+                    const cartPanel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
                     if (valid) {
                         if (message && (message.classList.contains("warning") || message.classList.contains("error"))) {
                             message.textContent = "Address complete. You can now place your order on WhatsApp.";
                             message.className = "decoreva-address-message success";
                             message.dataset.userMessage = "";
                         }
+                        /* Mobile only: after the address is complete, hide You May Also Like
+                           and scroll the checkout panel directly to the final Order on WhatsApp
+                           button. The button is intentionally brought higher on the screen,
+                           just below the fixed CART / ADDRESS / PAYMENT bar. */
+                        if (window.innerWidth <= 760 && checkoutAddressUnlocked && cartPanel) {
+                            if (similarProducts) similarProducts.hidden = true;
+                            if (cartFooter) cartFooter.hidden = false;
+
+                            window.requestAnimationFrame(function () {
+                                window.requestAnimationFrame(function () {
+                                    if (window.innerWidth > 760) return;
+
+                                    const checkoutFooter = document.querySelector("#decoreva-cart-drawer .decoreva-cart-footer");
+                                    const checkoutButton = document.querySelector("#decoreva-cart-whatsapp");
+                                    const steps = document.querySelector("#decoreva-cart-drawer .decoreva-checkout-steps");
+
+                                    if (!checkoutFooter || !checkoutButton) return;
+
+                                    const panelRect = cartPanel.getBoundingClientRect();
+                                    const footerRect = checkoutFooter.getBoundingClientRect();
+                                    const stickyHeight = steps ? steps.getBoundingClientRect().height : 0;
+
+                                    /* Scroll to the TOP of the complete price box, not to the
+                                       WhatsApp button. This keeps Coupon, Total MRP, Delivery,
+                                       Total Amount and the Order on WhatsApp button visible
+                                       together on mobile. */
+                                    const targetTop = Math.max(
+                                        0,
+                                        cartPanel.scrollTop +
+                                            (footerRect.top - panelRect.top) -
+                                            stickyHeight -
+                                            10
+                                    );
+
+                                    cartPanel.scrollTo({
+                                        top: targetTop,
+                                        behavior: "smooth"
+                                    });
+                                });
+                            });
+                        }
                     } else if (message && !message.dataset.userMessage && checkoutAddressUnlocked) {
-                        /* Do NOT show the warning merely because the cart/address
-                           drawer was opened. Show it only after the customer has
-                           actually entered the checkout/address step by pressing
-                           Proceed to Buy. */
+                        if (window.innerWidth <= 760 && similarProducts) similarProducts.hidden = false;
                         message.textContent = "Please complete all required delivery address details.";
                         message.className = "decoreva-address-message warning";
                     } else if (message && !checkoutAddressUnlocked && !message.dataset.userMessage) {
-                        /* Fresh cart opening: keep the address warning hidden. */
                         message.textContent = "";
                         message.className = "decoreva-address-message";
                     }
                 }
-
                 function renderCheckoutItems() {
                     const box = document.querySelector("#decoreva-checkout-items");
                     if (!box) return;
                     box.replaceChildren();
                     if (!cart.length) return;
-
                     const head = document.createElement("div");
                     head.className = "decoreva-checkout-items-head";
                     head.innerHTML = "<strong>Items in your order</strong><span>" + totalItems() + (totalItems() === 1 ? " item" : " items") + "</span>";
                     box.appendChild(head);
-
                     cart.forEach(function(item, index){
                         const row = document.createElement("div");
                         row.className = "decoreva-checkout-item";
-
                         const img = document.createElement("img");
                         img.src = item.image || "";
                         img.alt = item.title;
                         img.loading = "lazy";
-
                         const info = document.createElement("div");
                         info.className = "decoreva-checkout-item-info";
-
                         const title = document.createElement("strong");
                         title.textContent = item.title;
                         info.appendChild(title);
-
                         const variation = document.createElement("span");
                         variation.textContent = (item.variationName ? item.variationName + " • " : "") + "Qty: " + item.quantity;
                         info.appendChild(variation);
-
                         const price = document.createElement("b");
                         price.textContent = money(item.price * item.quantity);
                         info.appendChild(price);
-
                         const actions = document.createElement("div");
                         actions.className = "decoreva-checkout-item-actions";
-
                         const remove = document.createElement("button");
                         remove.type = "button";
                         remove.textContent = "Remove";
                         remove.dataset.checkoutItemAction = "remove";
                         remove.dataset.checkoutItemIndex = String(index);
-
                         const wishlistButton = document.createElement("button");
                         wishlistButton.type = "button";
                         wishlistButton.textContent = "Move to Wishlist";
                         wishlistButton.dataset.checkoutItemAction = "wishlist";
                         wishlistButton.dataset.checkoutItemIndex = String(index);
-
                         actions.appendChild(remove);
                         actions.appendChild(wishlistButton);
                         info.appendChild(actions);
-
                         row.appendChild(img);
                         row.appendChild(info);
                         box.appendChild(row);
                     });
-
                     const delivery = document.createElement("div");
                     delivery.className = "decoreva-checkout-delivery-note";
                     delivery.innerHTML = '<strong>Delivery estimate</strong><span>Delivery details will be confirmed with you on WhatsApp.</span>';
                     box.appendChild(delivery);
                 }
-
                 function renderSimilarProducts() {
                     const box = document.querySelector("#decoreva-similar-products");
                     if (!box) return;
                     box.replaceChildren();
                     if (!cart.length) { box.hidden = true; return; }
-
                     const cartTitles = cart.map(function(item){
                         return String(item.title || "").trim().toLowerCase();
                     });
@@ -6136,59 +6693,49 @@
                         const lower = title.toLowerCase();
                         if (!title || cartTitles.indexOf(lower) !== -1 || seen[lower]) return null;
                         seen[lower] = true;
-
                         const image = card.querySelector("img.slider-image, img");
                         const src = image ? (image.getAttribute("data-src") || image.getAttribute("src") || "") : "";
                         const priceEl = card.querySelector(".price");
                         const price = priceEl ? priceEl.textContent.trim().replace(/\s+/g," ") : "";
                         return {title:title, src:src, price:price};
                     }).filter(Boolean);
-
                     if (!candidates.length) { box.hidden = true; return; }
                     box.hidden = false;
-
                     const head = document.createElement("div");
                     head.className = "decoreva-similar-head";
                     head.innerHTML = "<strong>You May Also Like</strong><span>More from DECOREVA</span>";
                     box.appendChild(head);
-
                     const grid = document.createElement("div");
                     grid.className = "decoreva-similar-grid decoreva-all-products-grid";
-
                     candidates.forEach(function(item){
                         const card = document.createElement("article");
                         card.className = "decoreva-similar-card";
-
+                        const imageBox = document.createElement("div");
+                        imageBox.className = "decoreva-similar-card-image";
                         const img = document.createElement("img");
                         img.src = item.src;
                         img.alt = item.title;
                         img.loading = "lazy";
-
+                        imageBox.appendChild(img);
                         const info = document.createElement("div");
                         info.className = "decoreva-similar-card-info";
-
                         const title = document.createElement("strong");
                         title.textContent = item.title;
-
                         const price = document.createElement("span");
                         price.textContent = item.price || "View product";
-
                         const view = document.createElement("button");
                         view.type = "button";
                         view.textContent = "VIEW PRODUCT";
                         view.dataset.similarProductTitle = item.title;
-
                         info.appendChild(title);
                         info.appendChild(price);
                         info.appendChild(view);
-                        card.appendChild(img);
+                        card.appendChild(imageBox);
                         card.appendChild(info);
                         grid.appendChild(card);
                     });
-
                     box.appendChild(grid);
                 }
-
                 function renderPaymentReview() {
                     const box=document.querySelector("#decoreva-payment-review");
                     if(!box) return;
@@ -6210,7 +6757,6 @@
                     price.innerHTML='<div><span>Total MRP</span><b>' + money(subtotalAmount()) + '</b></div>' + (discountAmount() ? '<div><span>Discount on MRP</span><b>- ' + money(discountAmount()) + '</b></div>' : '') + '<div><span>Delivery</span><b>' + money(deliveryCharge()) + '</b></div><div class="final"><span>Total Amount</span><b>' + money(finalAmount()) + '</b></div>';
                     box.appendChild(price);
                 }
-
                 function renderCheckoutSummary() {
                     const box = document.querySelector("#decoreva-checkout-summary");
                     if (!box) return;
@@ -6264,38 +6810,47 @@
                         : "Coupon: No coupon applied";
                     box.appendChild(coupon);
                 }
-
                 function scrollCheckoutAddressToTop(behavior) {
                     const drawer = document.querySelector("#decoreva-cart-drawer");
                     const address = document.querySelector("#decoreva-checkout-address");
                     const panel = drawer ? drawer.querySelector(".decoreva-cart-panel") : null;
                     const steps = drawer ? drawer.querySelector(".decoreva-checkout-steps") : null;
                     if (!address || !panel) return;
-                    const stickyHeight = steps ? steps.getBoundingClientRect().height : 0;
-                    const targetTop = Math.max(0, address.offsetTop - stickyHeight - 14);
-                    panel.scrollTo({ top: targetTop, behavior: behavior || "smooth" });
-                }
 
+                    const panelRect = panel.getBoundingClientRect();
+                    const addressRect = address.getBoundingClientRect();
+                    const stickyHeight = steps ? steps.getBoundingClientRect().height : 0;
+
+                    /* Mobile: position Delivery Address directly below the fixed
+                       CART / ADDRESS / PAYMENT bar. Use viewport geometry instead
+                       of offsetTop so nested checkout elements cannot shift the target. */
+                    const targetTop = Math.max(
+                        0,
+                        panel.scrollTop +
+                            (addressRect.top - panelRect.top) -
+                            stickyHeight -
+                            4
+                    );
+
+                    panel.scrollTo({
+                        top: targetTop,
+                        behavior: behavior || "smooth"
+                    });
+                }
                 function updateCheckoutStepUI() {
                     const drawer = document.querySelector("#decoreva-cart-drawer");
                     if (!drawer) return;
-
-                    /* Single-page checkout: Cart, price summary and Delivery Address stay visible together. */
                     checkoutStep = cart.length ? (checkoutStep === "address" ? "address" : "cart") : "cart";
                     drawer.classList.add("decoreva-checkout-mode");
-
                     const checkoutSteps = drawer.querySelector(".decoreva-checkout-steps");
                     if (checkoutSteps) { checkoutSteps.hidden = false; checkoutSteps.style.display = "flex"; }
-
                     const cartHeadTitle = drawer.querySelector(".decoreva-cart-head strong");
                     const cartHeadLabel = drawer.querySelector("#decoreva-cart-item-label");
                     if (cartHeadTitle) cartHeadTitle.textContent = "Your Cart";
                     if (cartHeadLabel) cartHeadLabel.textContent = totalItems() + (totalItems() === 1 ? " item" : " items");
-
                     renderCheckoutSummary();
                     renderCheckoutItems();
                     renderSimilarProducts();
-
                     const address = document.querySelector("#decoreva-checkout-address");
                     const payment = document.querySelector("#decoreva-checkout-payment");
                     const steps = document.querySelector("#decoreva-cart-drawer .decoreva-checkout-steps");
@@ -6305,10 +6860,7 @@
                     const checkoutItems = document.querySelector("#decoreva-checkout-items");
                     const checkoutSummary = document.querySelector("#decoreva-checkout-summary");
                     const similarProducts = document.querySelector("#decoreva-similar-products");
-
                     if (cart.length === 0) {
-                        /* Empty cart: show ONLY the existing top Cart heading
-                           and the existing "Your cart is empty." message. */
                         if (steps) {
                             steps.hidden = true;
                             steps.style.display = "none";
@@ -6321,8 +6873,6 @@
                         if (checkoutItems) checkoutItems.hidden = true;
                         if (checkoutSummary) checkoutSummary.hidden = true;
                         if (similarProducts) similarProducts.hidden = true;
-
-                        /* Do not show "0 items" under the heading in the empty state. */
                         if (cartHeadLabel) {
                             cartHeadLabel.textContent = "";
                             cartHeadLabel.hidden = true;
@@ -6334,15 +6884,7 @@
                         }
                         if (cartItems) cartItems.hidden = false;
                         if (cartEmpty) cartEmpty.hidden = true;
-
-                        /* IMPORTANT:
-                           On normal Cart open, show ONLY the cart and summary.
-                           Delivery Address must remain hidden until the customer
-                           explicitly clicks "Proceed to Buy".
-                           Once checkoutStep becomes "address", the address
-                           section is revealed. */
                         if (address) address.hidden = checkoutStep !== "address";
-
                         if (payment) payment.hidden = true;
                         if (footer) footer.hidden = false;
                         if (checkoutItems) checkoutItems.hidden = true;
@@ -6350,37 +6892,25 @@
                         if (similarProducts) similarProducts.hidden = checkoutStep === "address";
                         if (cartHeadLabel) cartHeadLabel.hidden = false;
                     }
-
                     if (cart.length) {
-                        /* Checkout address must NEVER be auto-filled from localStorage.
-                           Address fields are customer-entered during checkout only.
-                           Saved addresses remain available through the logged-in
-                           Profile area and are not silently applied here. */
                         updateAddressContinueState();
                     }
-
                     drawer.querySelectorAll("[data-checkout-step]").forEach(function (button) {
                         const step = button.dataset.checkoutStep;
                         button.classList.toggle("active", step === checkoutStep || (step === "payment" && false));
                     });
                 }
-
                 function buildCartUI() {
                     if (document.querySelector("#decoreva-cart-drawer")) return;
-
                     const floating = document.createElement("button");
                     floating.type = "button";
                     floating.id = "decoreva-cart-button";
                     floating.className = "decoreva-cart-button";
                     floating.setAttribute("aria-label", "Open shopping cart");
                     floating.innerHTML = '<i class="fas fa-shopping-bag" aria-hidden="true"></i><span id="decoreva-cart-count">0</span>';
-
-                    /* Navigation cart is now the primary cart button.
-                       Keep the old floating cart only as a fallback if nav is unavailable. */
                     if (!document.querySelector("#decoreva-nav-cart")) {
                         document.body.appendChild(floating);
                     }
-
                     const drawer = document.createElement("aside");
                     drawer.id = "decoreva-cart-drawer";
                     drawer.className = "decoreva-cart-drawer";
@@ -6407,7 +6937,6 @@
                                     <div class="decoreva-address-field"><input id="decoreva-address-state" type="text" placeholder="State"><button type="button" class="decoreva-address-clear" data-address-clear="#decoreva-address-state" aria-label="Clear state">×</button></div>
                                     <div class="decoreva-address-field"><input id="decoreva-address-pincode" type="text" placeholder="PIN code" inputmode="numeric" maxlength="6"><button type="button" class="decoreva-address-clear" data-address-clear="#decoreva-address-pincode" aria-label="Clear PIN code">×</button></div>
                                 </div>
-
                                 <div id="decoreva-checkout-items" class="decoreva-checkout-items"></div>
                                 <div id="decoreva-similar-products" class="decoreva-similar-products" hidden></div>
                             </div>
@@ -6439,7 +6968,6 @@
                             </div>
                         </div>`;
                     document.body.appendChild(drawer);
-
                     const couponModal = document.createElement("div");
                     couponModal.id = "decoreva-coupon-modal";
                     couponModal.className = "decoreva-coupon-modal";
@@ -6457,7 +6985,6 @@
                                     <button type="button" id="decoreva-coupon-check">CHECK</button>
                                 </div>
                                 <div id="decoreva-coupon-message" class="decoreva-coupon-message"></div>
-
                                 <div class="decoreva-coupon-options" aria-label="Available coupons">
                                     <div class="decoreva-coupon-option decoreva-coupon-welcome">
                                         <div class="decoreva-coupon-option-info">
@@ -6470,7 +6997,6 @@
                                             <button type="button" id="decoreva-coupon-remove" class="decoreva-coupon-remove" aria-label="Remove applied coupon">REMOVE</button>
                                         </div>
                                     </div>
-
                                     <div class="decoreva-coupon-note">
                                         <span>✦</span>
                                         One coupon can be applied per order.
@@ -6487,7 +7013,6 @@
                             </div>
                         </div>`;
                     document.body.appendChild(couponModal);
-
                     if (!document.querySelector("#decoreva-coupon-modal-styles")) {
                         const couponStyle = document.createElement("style");
                         couponStyle.id = "decoreva-coupon-modal-styles";
@@ -6497,7 +7022,6 @@
                                 align-items:center;
                                 gap:10px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-modal-input-row input#decoreva-coupon-input{
                                 font-size:16px;
                                 font-weight:800;
@@ -6508,7 +7032,6 @@
                                 text-transform:uppercase;
                                 border-radius:8px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-modal-input-row input#decoreva-coupon-input::placeholder{
                                 font-size:13px;
                                 font-weight:500;
@@ -6516,13 +7039,11 @@
                                 text-transform:none;
                                 color:#8a7968;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-modal-input-row input#decoreva-coupon-input:focus{
                                 outline:none;
                                 border-color:#b77a13;
                                 box-shadow:0 0 0 3px rgba(183,122,19,.12);
                             }
-
                             #decoreva-coupon-modal #decoreva-coupon-check{
                                 height:44px;
                                 min-width:62px;
@@ -6532,7 +7053,6 @@
                                 font-weight:900;
                                 letter-spacing:.35px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-message{
                                 font-size:12px;
                                 font-weight:700;
@@ -6541,11 +7061,9 @@
                                 margin-top:7px;
                                 color:#6a5037;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-options{
                                 margin-top:15px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option{
                                 position:relative;
                                 display:flex;
@@ -6562,11 +7080,9 @@
                                 overflow:hidden;
                                 transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option:first-child{
                                 margin-top:0;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option::before{
                                 content:"";
                                 position:absolute;
@@ -6576,20 +7092,17 @@
                                 width:4px;
                                 background:linear-gradient(180deg,#9a610d,#d8a846,#9a610d);
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option:hover{
                                 transform:translateY(-1px);
                                 border-color:rgba(183,122,19,.55);
                                 box-shadow:0 8px 20px rgba(75,48,9,.10);
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option-info{
                                 min-width:0;
                                 display:flex;
                                 flex-direction:column;
                                 align-items:flex-start;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option-tag{
                                 display:inline-flex;
                                 align-items:center;
@@ -6603,7 +7116,6 @@
                                 letter-spacing:.65px;
                                 line-height:1;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option-info strong{
                                 display:block;
                                 margin-top:5px;
@@ -6613,7 +7125,6 @@
                                 letter-spacing:.65px;
                                 line-height:1.05;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option-info small{
                                 display:block;
                                 margin-top:4px;
@@ -6622,7 +7133,6 @@
                                 font-weight:700;
                                 letter-spacing:.15px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-option-actions{
                                 flex:0 0 auto;
                                 display:flex;
@@ -6631,7 +7141,6 @@
                                 justify-content:flex-end;
                                 gap:8px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-use{
                                 flex:0 0 auto;
                                 height:37px;
@@ -6649,12 +7158,10 @@
                                 box-shadow:0 4px 11px rgba(75,48,9,.14),inset 0 1px 0 rgba(255,255,255,.28);
                                 transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-use:hover{
                                 transform:translateY(-1px);
                                 box-shadow:0 7px 15px rgba(75,48,9,.20),inset 0 1px 0 rgba(255,255,255,.30);
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-use.applied{
                                 background:#fff4dc;
                                 color:#8c6425;
@@ -6662,12 +7169,10 @@
                                 box-shadow:none;
                                 cursor:default;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-use.applied:hover{
                                 transform:none;
                                 box-shadow:none;
                             }
-
                             #decoreva-coupon-modal #decoreva-coupon-remove{
                                 display:none;
                                 align-items:center;
@@ -6686,14 +7191,12 @@
                                 cursor:pointer;
                                 transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
                             }
-
                             #decoreva-coupon-modal #decoreva-coupon-remove:hover{
                                 background:#fff3d8;
                                 border-color:rgba(183,122,19,.68);
                                 color:#69491b;
                                 transform:translateY(-1px);
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-note{
                                 display:flex;
                                 align-items:center;
@@ -6707,37 +7210,31 @@
                                 line-height:1.45;
                                 text-align:center;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-note span{
                                 color:#b77a13;
                                 font-size:9px;
                                 flex:0 0 auto;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-modal-footer{
                                 align-items:center;
                                 gap:18px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-savings{
                                 display:flex;
                                 flex-direction:column;
                                 gap:2px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-savings span{
                                 color:#8a7968;
                                 font-size:9px;
                                 font-weight:700;
                                 letter-spacing:.15px;
                             }
-
                             #decoreva-coupon-modal .decoreva-coupon-savings strong{
                                 color:#4b3521;
                                 font-size:13px;
                                 font-weight:900;
                             }
-
                             #decoreva-coupon-modal #decoreva-coupon-apply{
                                 height:42px;
                                 min-width:132px;
@@ -6754,13 +7251,48 @@
                                 box-shadow:0 7px 16px rgba(75,48,9,.18),inset 0 1px 0 rgba(255,255,255,.3);
                                 transition:transform .18s ease,box-shadow .18s ease;
                             }
-
                             #decoreva-coupon-modal #decoreva-coupon-apply:hover{
                                 transform:translateY(-1px);
                                 box-shadow:0 9px 19px rgba(75,48,9,.23),inset 0 1px 0 rgba(255,255,255,.32);
                             }
-
                             @media (max-width:520px){
+                                #decoreva-coupon-modal .decoreva-coupon-modal-panel{
+                                    width:calc(100vw - 32px) !important;
+                                    max-width:340px !important;
+                                    max-height:calc(100vh - 34px) !important;
+                                    border-radius:14px !important;
+                                    overflow-y:auto !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-modal-head{
+                                    min-height:50px !important;
+                                    padding:0 14px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-modal-body{
+                                    padding:14px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-modal-input-row{
+                                    gap:7px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-modal-input-row input#decoreva-coupon-input{
+                                    min-height:40px !important;
+                                    height:40px !important;
+                                    padding:0 10px !important;
+                                    font-size:13px !important;
+                                }
+                                #decoreva-coupon-modal #decoreva-coupon-check{
+                                    height:40px !important;
+                                    min-width:54px !important;
+                                    padding:0 6px !important;
+                                    font-size:10px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-message{
+                                    min-height:10px !important;
+                                    margin-top:4px !important;
+                                    font-size:10px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-options{
+                                    margin-top:9px !important;
+                                }
                                 #decoreva-coupon-modal .decoreva-coupon-option{
                                     gap:10px;
                                     padding-left:14px;
@@ -6782,14 +7314,226 @@
                                     font-size:14px;
                                 }
                                 #decoreva-coupon-modal .decoreva-coupon-note{
-                                    font-size:11px;
+                                    font-size:10px !important;
+                                    margin-top:8px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-modal-footer{
+                                    gap:10px !important;
+                                    padding:10px 14px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-savings span{
+                                    font-size:8px !important;
+                                }
+                                #decoreva-coupon-modal .decoreva-coupon-savings strong{
+                                    font-size:12px !important;
+                                }
+                                #decoreva-coupon-modal #decoreva-coupon-apply{
+                                    height:36px !important;
+                                    min-width:96px !important;
+                                    padding:0 12px !important;
+                                    font-size:10px !important;
                                 }
                             }
                         `;
-
                         document.head.appendChild(couponStyle);
-                    }
 
+                        /* DECOREVA — FINAL MOBILE COUPON TYPOGRAPHY / SPACING
+                           Mobile only. Keeps the coupon modal compact but readable.
+                           Desktop/tablet are untouched. */
+                        if (!document.getElementById("decoreva-mobile-coupon-text-final")) {
+                            const mobileCouponTextStyle = document.createElement("style");
+                            mobileCouponTextStyle.id = "decoreva-mobile-coupon-text-final";
+                            mobileCouponTextStyle.textContent = `
+                                @media (max-width: 760px) {
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-panel {
+                                        width: min(350px, calc(100vw - 24px)) !important;
+                                        max-width: 350px !important;
+                                        max-height: calc(100vh - 28px) !important;
+                                        border-radius: 15px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-head {
+                                        min-height: 52px !important;
+                                        height: 52px !important;
+                                        padding: 0 15px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-head strong {
+                                        font-size: 14px !important;
+                                        line-height: 1.2 !important;
+                                        letter-spacing: .15px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-close {
+                                        width: 30px !important;
+                                        height: 30px !important;
+                                        font-size: 22px !important;
+                                        line-height: 30px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-body {
+                                        padding: 14px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-input-row {
+                                        gap: 8px !important;
+                                    }
+
+                                    #decoreva-coupon-modal #decoreva-coupon-input {
+                                        height: 40px !important;
+                                        min-height: 40px !important;
+                                        padding: 0 11px !important;
+                                        font-size: 13px !important;
+                                        line-height: 40px !important;
+                                    }
+
+                                    #decoreva-coupon-modal #decoreva-coupon-input::placeholder {
+                                        font-size: 12px !important;
+                                        opacity: .82 !important;
+                                    }
+
+                                    #decoreva-coupon-modal #decoreva-coupon-check {
+                                        height: 40px !important;
+                                        min-height: 40px !important;
+                                        min-width: 58px !important;
+                                        padding: 0 7px !important;
+                                        font-size: 10px !important;
+                                        font-weight: 800 !important;
+                                        letter-spacing: .25px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-message {
+                                        font-size: 10px !important;
+                                        line-height: 1.3 !important;
+                                        margin-top: 5px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-options {
+                                        margin-top: 10px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option {
+                                        min-height: 76px !important;
+                                        padding: 11px 11px 11px 14px !important;
+                                        gap: 9px !important;
+                                        border-radius: 12px !important;
+                                        box-sizing: border-box !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-info {
+                                        min-width: 0 !important;
+                                        gap: 2px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-tag {
+                                        font-size: 8px !important;
+                                        line-height: 1.2 !important;
+                                        letter-spacing: .55px !important;
+                                        padding: 3px 7px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-info strong {
+                                        font-size: 16px !important;
+                                        line-height: 1.1 !important;
+                                        letter-spacing: .2px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-info small {
+                                        font-size: 10px !important;
+                                        line-height: 1.2 !important;
+                                        letter-spacing: .05px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-actions {
+                                        gap: 5px !important;
+                                        flex: 0 0 auto !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-use,
+                                    #decoreva-coupon-modal #decoreva-coupon-remove {
+                                        height: 34px !important;
+                                        min-height: 34px !important;
+                                        min-width: 86px !important;
+                                        padding: 0 8px !important;
+                                        border-radius: 7px !important;
+                                        font-size: 9px !important;
+                                        font-weight: 800 !important;
+                                        letter-spacing: .15px !important;
+                                        line-height: 1 !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-note {
+                                        min-height: 28px !important;
+                                        margin-top: 7px !important;
+                                        font-size: 10px !important;
+                                        line-height: 1.25 !important;
+                                        gap: 7px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-note span {
+                                        font-size: 9px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-footer {
+                                        min-height: 60px !important;
+                                        padding: 9px 14px !important;
+                                        gap: 10px !important;
+                                        box-sizing: border-box !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-savings {
+                                        gap: 2px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-savings span {
+                                        font-size: 8.5px !important;
+                                        line-height: 1.2 !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-savings strong {
+                                        font-size: 13px !important;
+                                        line-height: 1.15 !important;
+                                    }
+
+                                    #decoreva-coupon-modal #decoreva-coupon-apply {
+                                        height: 37px !important;
+                                        min-height: 37px !important;
+                                        min-width: 96px !important;
+                                        padding: 0 11px !important;
+                                        border-radius: 7px !important;
+                                        font-size: 10px !important;
+                                        font-weight: 900 !important;
+                                        letter-spacing: .2px !important;
+                                    }
+                                }
+
+                                @media (max-width: 360px) {
+                                    #decoreva-coupon-modal .decoreva-coupon-modal-panel {
+                                        width: calc(100vw - 20px) !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option {
+                                        padding-left: 12px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-info strong {
+                                        font-size: 15px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-option-info small {
+                                        font-size: 9.5px !important;
+                                    }
+
+                                    #decoreva-coupon-modal .decoreva-coupon-use,
+                                    #decoreva-coupon-modal #decoreva-coupon-remove {
+                                        min-width: 78px !important;
+                                        font-size: 8.5px !important;
+                                    }
+                                }
+                            `;
+                            document.head.appendChild(mobileCouponTextStyle);
+                        }
+                    }
                     const wishlistDrawer = document.createElement("aside");
                     wishlistDrawer.id = "decoreva-wishlist-drawer";
                     wishlistDrawer.className = "decoreva-side-drawer";
@@ -6806,7 +7550,6 @@
                         </div>
                     `;
                     document.body.appendChild(wishlistDrawer);
-
                     const profilePanel = document.createElement("aside");
                     profilePanel.id = "decoreva-profile-panel";
                     profilePanel.className = "decoreva-profile-panel";
@@ -6872,7 +7615,98 @@
                         </div>
                     `;
                     document.body.appendChild(profilePanel);
+                    if (!document.getElementById("decoreva-mobile-profile-compact")) {
+                        const compactProfileStyle = document.createElement("style");
+                        compactProfileStyle.id = "decoreva-mobile-profile-compact";
+                        compactProfileStyle.textContent = `
+                            @media (max-width: 760px) {
+                                #decoreva-profile-panel .decoreva-profile-card {
+                                    width: min(320px, calc(100vw - 40px)) !important;
+                                    max-width: 320px !important;
+                                    max-height: calc(100vh - 88px) !important;
+                                    border-radius: 12px !important;
+                                }
 
+                                #decoreva-profile-panel .decoreva-profile-head {
+                                    min-height: 56px !important;
+                                    height: 56px !important;
+                                    padding: 9px 13px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-head strong {
+                                    font-size: 19px !important;
+                                    line-height: 1.1 !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-head span {
+                                    margin-top: 2px !important;
+                                    font-size: 9px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-head .decoreva-cart-close {
+                                    width: 30px !important;
+                                    height: 30px !important;
+                                    font-size: 20px !important;
+                                    line-height: 30px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-body {
+                                    max-height: calc(100vh - 144px) !important;
+                                    overflow-y: auto !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-welcome {
+                                    padding: 12px 14px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-welcome strong {
+                                    font-size: 16px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-welcome span {
+                                    font-size: 10px !important;
+                                    line-height: 1.3 !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-menu {
+                                    margin: 0 8px 7px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-menu button {
+                                    min-height: 46px !important;
+                                    padding: 7px 11px !important;
+                                    gap: 10px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-menu button span {
+                                    font-size: 12px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-menu button small {
+                                    font-size: 9px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-note {
+                                    padding: 7px 13px 10px !important;
+                                    font-size: 9px !important;
+                                    line-height: 1.3 !important;
+                                }
+                            }
+
+                            @media (max-width: 360px) {
+                                #decoreva-profile-panel .decoreva-profile-card {
+                                    width: calc(100vw - 24px) !important;
+                                    max-width: 320px !important;
+                                }
+
+                                #decoreva-profile-panel .decoreva-profile-menu button {
+                                    min-height: 44px !important;
+                                    padding: 7px 10px !important;
+                                }
+                            }
+                        `;
+                        document.head.appendChild(compactProfileStyle);
+                    }
                      if (!document.getElementById("decoreva-my-orders-style")) {
                          const style = document.createElement("style");
                          style.id = "decoreva-my-orders-style";
@@ -6913,32 +7747,21 @@
                              "@media (max-width:760px){#decoreva-profile-orders-section{padding:0 12px 16px;}#decoreva-profile-orders-section .decoreva-profile-orders-heading strong{font-size:17px;}.decoreva-profile-order-top{padding:11px 12px;}.decoreva-profile-order-items{padding:3px 12px;}.decoreva-profile-order-summary{padding:9px 12px 11px;}}";
                          document.head.appendChild(style);
                      }
-
-                    /* Sync the Profile login/logout UI after the panel exists.
-                       This is intentionally limited to the Supabase auth UI. */
                     if (window.decorevaSupabaseAuth &&
                         typeof window.decorevaSupabaseAuth.refresh === "function") {
                         window.decorevaSupabaseAuth.refresh();
                     }
                 }
-
                 buildCartUI();
                 renderCart();
                 renderWishlist();
                 updateCheckoutStepUI();
-
-                /* =========================================================
-                   RESTORE THE SECTION THAT WAS OPEN BEFORE REFRESH
-                   Cart/Wishlist state is temporary to this browser tab.
-                   ========================================================= */
                 const decorevaOpenPanelAfterRefresh = getOpenPanelState();
                 if (decorevaOpenPanelAfterRefresh === "cart") {
                     openCartDrawer();
                 } else if (decorevaOpenPanelAfterRefresh === "wishlist") {
                     openWishlist();
                 }
-
-                /* Direct checkout/coupon controls for reliable clicks. */
                 const checkoutDrawer = document.querySelector("#decoreva-cart-drawer");
                 if (checkoutDrawer) {
                     checkoutDrawer.querySelectorAll("[data-checkout-step]").forEach(function (button) {
@@ -6946,7 +7769,6 @@
                             event.preventDefault();
                             event.stopPropagation();
                             const step = button.dataset.checkoutStep;
-
                             if (step === "payment") {
                                 const address = document.querySelector("#decoreva-checkout-address");
                                 const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
@@ -6963,18 +7785,15 @@
                         });
                     });
                 }
-
                 const couponCheckButton = document.querySelector("#decoreva-coupon-check");
                 if (couponCheckButton) {
                     couponCheckButton.addEventListener("click", function (event) {
                         event.preventDefault();
                         event.stopImmediatePropagation();
-
                         const input = document.querySelector("#decoreva-coupon-input");
                         const message = document.querySelector("#decoreva-coupon-message");
                         const code = input ? input.value.trim().toUpperCase() : "";
                         if (!message) return;
-
                         if (!code) {
                             couponPreviewCode = "";
                             message.textContent = "Please enter a coupon code.";
@@ -6999,12 +7818,9 @@
                         }
                     });
                 }
-
-                /* Direct handlers for the top-right shopping navigation. */
                 const navCart = document.querySelector("#decoreva-nav-cart");
                 const navWishlist = document.querySelector("#decoreva-wishlist-nav");
                 const navProfile = document.querySelector("#decoreva-profile-nav");
-
                 if (navCart) navCart.addEventListener("click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -7020,10 +7836,6 @@
                 if (navProfile) navProfile.addEventListener("click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
-
-                    /* PHONE VIEW ONLY:
-                       If the hamburger menu is open, close it before opening
-                       the Profile drawer so both panels never stay visible together. */
                     if (window.innerWidth <= 760 && nav && nav.classList.contains("mobile-open")) {
                         nav.classList.remove("mobile-open");
                         document.body.classList.remove("menu-open");
@@ -7031,17 +7843,14 @@
                             menuButton.setAttribute("aria-expanded", "false");
                         }
                     }
-
                     openProfile();
                 });
-
                 if (window.MutationObserver) {
                     const decorevaRatingMountObserver = new MutationObserver(function () {
                         if (typeof mountDecorevaMobileRatingRows === "function") {
                             mountDecorevaMobileRatingRows();
                         }
                     });
-
                     const ratingCollection = document.querySelector("#collection-products");
                     if (ratingCollection) {
                         decorevaRatingMountObserver.observe(ratingCollection, {
@@ -7050,7 +7859,6 @@
                         });
                     }
                 }
-
                 document.addEventListener("click", async function (event) {
                     const cartButton = event.target.closest(".decoreva-add-cart");
                     if (cartButton) {
@@ -7059,7 +7867,6 @@
                         addToCart(cartButton.closest(".card, .featured-slide"));
                         return;
                     }
-
                     const wishlistButton = event.target.closest(".decoreva-wishlist");
                     if (wishlistButton) {
                         event.preventDefault();
@@ -7067,47 +7874,29 @@
                         toggleWishlist(wishlistButton.closest(".card, .featured-slide"));
                         return;
                     }
-
                     if (event.target.closest("#decoreva-nav-cart, #decoreva-cart-button")) {
                         event.preventDefault();
                         event.stopPropagation();
                         openCart();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-wishlist-nav")) {
                         event.preventDefault();
                         event.stopPropagation();
                         openWishlist();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-profile-nav")) {
                         event.preventDefault();
                         event.stopPropagation();
                         openProfile();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-order-confirmation-close")) {
                         event.preventDefault();
                         event.stopImmediatePropagation();
-
-                        /* =====================================================
-                           DECOREVA — ORDER CONFIRMATION → CONTINUE SHOPPING
-                           After a successful WhatsApp order, Continue Shopping
-                           clears the completed cart and returns the customer
-                           directly to Home. Checkout state is reset so the next
-                           cart opening starts fresh.
-                           ===================================================== */
                         const confirmation = document.querySelector("#decoreva-order-confirmation");
                         if (confirmation) confirmation.classList.remove("open");
-
-                        /* Cart and checkout state were already cleared when
-                           the confirmation modal was opened, so the empty-cart
-                           state shown behind this modal remains the starting
-                           state for the next shopping session. */
-
                         const drawer = document.querySelector("#decoreva-cart-drawer");
                         if (drawer) {
                             drawer.classList.remove("decoreva-checkout-mode", "open");
@@ -7120,14 +7909,11 @@
                         document.body.style.overflow = "";
                         document.documentElement.style.overflow = "";
                         clearOpenPanelState();
-
-                        /* Return directly to Home without a visible scroll animation. */
                         clearAllCollectionFilters(false);
                         document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
                             nav.style.display = "flex";
                         });
                         history.replaceState(null, "", window.location.pathname);
-
                         const html = document.documentElement;
                         const body = document.body;
                         const oldHtmlScrollBehavior = html.style.scrollBehavior;
@@ -7135,7 +7921,6 @@
                         html.style.setProperty("scroll-behavior", "auto", "important");
                         body.style.setProperty("scroll-behavior", "auto", "important");
                         window.scrollTo(0, 0);
-
                         window.requestAnimationFrame(function () {
                             window.scrollTo(0, 0);
                             html.style.scrollBehavior = oldHtmlScrollBehavior;
@@ -7143,50 +7928,34 @@
                         });
                         return;
                     }
-
-                    /* =====================================================
-                       DECOREVA — CART PRODUCT → COLLECTION CARD
-                       TRUE DIRECT JUMP:
-                       Cart product click -> selected Collection card.
-                       The page is temporarily hidden while the cart closes
-                       and pagination/position are updated, so the customer
-                       never sees Home or a scrolling animation in between.
-                       ===================================================== */
                     const cartProduct = event.target.closest(
                         ".decoreva-cart-item[data-cart-view]"
                     );
-
                     if (cartProduct && !event.target.closest("[data-cart-action]")) {
                         event.preventDefault();
                         event.stopImmediatePropagation();
-
                         const index = Number(cartProduct.dataset.cartIndex);
                         const savedItem = Number.isInteger(index) ? cart[index] : null;
                         if (!savedItem) return;
-
                         const savedId = String(savedItem.id || "");
                         const savedProductId = String(savedItem.productId || "");
                         const savedTitle = String(savedItem.title || "")
                             .trim()
                             .replace(/\s+/g, " ")
                             .toLowerCase();
-
                         const collectionCards = Array.from(
                             document.querySelectorAll("#collection-products .card")
                         );
-
                         let target = collectionCards.find(function (card) {
                             const data = getCardData(card);
                             return data && savedId && String(data.id || "") === savedId;
                         });
-
                         if (!target && savedProductId) {
                             target = collectionCards.find(function (card) {
                                 const data = getCardData(card);
                                 return data && String(data.productId || "") === savedProductId;
                             });
                         }
-
                         if (!target && savedTitle) {
                             target = collectionCards.find(function (card) {
                                 const heading = card.querySelector("h3");
@@ -7194,50 +7963,35 @@
                                     heading.textContent.trim().replace(/\s+/g, " ").toLowerCase() === savedTitle;
                             });
                         }
-
                         if (!target) return;
-
                         const targetIndex = decorevaProducts.indexOf(target);
                         const targetPage = targetIndex >= 0
                             ? Math.floor(targetIndex / decorevaPerPage) + 1
                             : 1;
-
-                        /* IMPORTANT: hide the document before unlocking the cart.
-                           This prevents any browser/layout scroll restoration from
-                           becoming visible to the customer. */
                         const html = document.documentElement;
                         const body = document.body;
                         const oldHtmlVisibility = html.style.visibility;
                         const oldBodyVisibility = body.style.visibility;
                         html.style.visibility = "hidden";
                         body.style.visibility = "hidden";
-
-                        /* Close without restoring the old cart position. */
                         closeCart(false);
-
-                        /* Pagination must not perform its own Collection-title scroll. */
                         window.decorevaPageNavigation = false;
-
                         if (targetIndex >= 0 && typeof decorevaShowPage === "function") {
                             decorevaShowPage(targetPage);
                         }
-
                         const visibleCards = Array.from(
                             document.querySelectorAll("#collection-products .card")
                         );
-
                         let exactTarget = visibleCards.find(function (card) {
                             const data = getCardData(card);
                             return data && savedId && String(data.id || "") === savedId;
                         });
-
                         if (!exactTarget && savedProductId) {
                             exactTarget = visibleCards.find(function (card) {
                                 const data = getCardData(card);
                                 return data && String(data.productId || "") === savedProductId;
                             });
                         }
-
                         if (!exactTarget && savedTitle) {
                             exactTarget = visibleCards.find(function (card) {
                                 const heading = card.querySelector("h3");
@@ -7245,95 +7999,59 @@
                                     heading.textContent.trim().replace(/\s+/g, " ").toLowerCase() === savedTitle;
                             });
                         }
-
                         if (!exactTarget) {
                             html.style.visibility = oldHtmlVisibility;
                             body.style.visibility = oldBodyVisibility;
                             return;
                         }
-
                         exactTarget.style.setProperty("display", "flex", "important");
-
                         const header = document.querySelector("header") ||
                             document.querySelector(".site-header") ||
                             document.querySelector("nav");
                         const headerHeight = header
                             ? header.getBoundingClientRect().height
                             : (window.innerWidth <= 760 ? 58 : 72);
-
                         const rect = exactTarget.getBoundingClientRect();
                         const targetTop = window.pageYOffset + rect.top - Math.max(headerHeight + 18, 90);
-
-                        /* =====================================================
-                           FINAL DIRECT-JUMP FIX
-                           Some DECOREVA CSS uses scroll-behavior:smooth. In that
-                           case behavior:"auto" can still animate the jump.
-                           Force the browser's scroll behavior to AUTO while the
-                           page is invisible, perform the jump, then reveal the
-                           page only after the final position is locked.
-                           ===================================================== */
                         const oldHtmlScrollBehavior = html.style.scrollBehavior;
                         const oldBodyScrollBehavior = body.style.scrollBehavior;
                         const oldScrollRestoration =
                             history.scrollRestoration;
-
                         html.style.setProperty("scroll-behavior", "auto", "important");
                         body.style.setProperty("scroll-behavior", "auto", "important");
                         try {
                             history.scrollRestoration = "manual";
                         } catch (error) {
-                            /* Ignore browsers that do not allow this property. */
                         }
-
                         const finalTargetTop = Math.max(0, targetTop);
-
-                        /* Cancel any existing smooth-scroll animation first,
-                           then jump directly to the selected card position. */
                         window.scrollTo(0, finalTargetTop);
-
                         exactTarget.classList.add("decoreva-cart-target");
-
-                        /* Keep the document hidden for one paint cycle so the
-                           browser cannot display the intermediate scroll. */
                         window.requestAnimationFrame(function () {
                             window.scrollTo(0, finalTargetTop);
-
                             window.requestAnimationFrame(function () {
                                 window.scrollTo(0, finalTargetTop);
-
                                 html.style.visibility = oldHtmlVisibility;
                                 body.style.visibility = oldBodyVisibility;
                                 html.style.scrollBehavior = oldHtmlScrollBehavior;
                                 body.style.scrollBehavior = oldBodyScrollBehavior;
-
                                 try {
                                     history.scrollRestoration = oldScrollRestoration;
                                 } catch (error) {
-                                    /* Ignore browsers that do not allow this property. */
                                 }
                             });
                         });
-
                         window.setTimeout(function () {
                             exactTarget.classList.remove("decoreva-cart-target");
                         }, 1800);
-
                         return;
                     }
-
-                    /* DECOREVA CART ITEM ACTIONS — FIX
-                       Handles +, −, Remove and Move to Wishlist for the
-                       dynamically rendered cart items. */
                     const cartAction = event.target.closest("[data-cart-action]");
                     if (cartAction) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const index = Number(cartAction.dataset.cartIndex);
                         const action = cartAction.dataset.cartAction;
-
                         if (!Number.isInteger(index) || !cart[index]) return;
-
                         if (action === "plus") {
                             cart[index].quantity = Number(cart[index].quantity || 0) + 1;
                         } else if (action === "minus") {
@@ -7345,19 +8063,16 @@
                             cart.splice(index, 1);
                         } else if (action === "wishlist") {
                             const item = cart[index];
-
                             if (!wishlist.some(function(saved) {
                                 return saved.id === item.id;
                             })) {
                                 wishlist.push(item);
                                 saveWishlist();
                             }
-
                             cart.splice(index, 1);
                         } else {
                             return;
                         }
-
                         saveCart();
                         updateCartCount();
                         updateWishlistCount();
@@ -7365,45 +8080,27 @@
                         renderWishlist();
                         return;
                     }
-
-                    /* =====================================================
-                       CART CLOSE BUTTON -> HOME
-                       Only the top-right X returns the customer to Home.
-                       Overlay / Continue Shopping keep their normal close
-                       behavior so the underlying page position is preserved.
-                       ===================================================== */
                     const cartCloseButton = event.target.closest("#decoreva-cart-drawer .decoreva-cart-close");
                     if (cartCloseButton) {
                         event.preventDefault();
                         event.stopImmediatePropagation();
-
                         closeCart(false);
-
-                        /* Reset Collection state without triggering any
-                           Collection-title scroll. */
                         clearAllCollectionFilters(false);
                         document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
                             nav.style.display = "flex";
                         });
-
                         history.replaceState(
                             null,
                             "",
                             window.location.pathname
                         );
-
-                        /* Go directly to the Home position. No smooth
-                           animation is used, so the customer lands on Home
-                           immediately after closing the cart. */
                         const html = document.documentElement;
                         const body = document.body;
                         const oldHtmlScrollBehavior = html.style.scrollBehavior;
                         const oldBodyScrollBehavior = body.style.scrollBehavior;
-
                         html.style.setProperty("scroll-behavior", "auto", "important");
                         body.style.setProperty("scroll-behavior", "auto", "important");
                         window.scrollTo(0, 0);
-
                         window.requestAnimationFrame(function () {
                             window.scrollTo(0, 0);
                             html.style.scrollBehavior = oldHtmlScrollBehavior;
@@ -7411,31 +8108,26 @@
                         });
                         return;
                     }
-
                     if (event.target.closest("[data-cart-close]")) {
                         event.preventDefault();
                         closeCart();
                         return;
                     }
-
                     if (event.target.closest("[data-wishlist-close]")) {
                         event.preventDefault();
                         closeWishlist();
                         return;
                     }
-
                     if (event.target.closest("[data-profile-close]")) {
                         event.preventDefault();
                         closeProfile();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-open-coupon, #decoreva-checkout-coupon-button")) {
                         event.preventDefault();
                         openCouponModal();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-checkout-remove-coupon")) {
                         event.preventDefault();
                         appliedCoupon = "";
@@ -7445,71 +8137,55 @@
                         renderCheckoutSummary();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-coupon-remove")) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const input = document.querySelector("#decoreva-coupon-input");
                         const message = document.querySelector("#decoreva-coupon-message");
                         const removeButton = document.querySelector("#decoreva-coupon-remove");
-
                         appliedCoupon = "";
                         couponPreviewCode = "";
                         saveCoupon();
-
                         if (input) input.value = "";
                         if (message) {
                             message.textContent = "Coupon removed.";
                             message.className = "decoreva-coupon-message success";
                         }
                         if (removeButton) removeButton.style.display = "none";
-
                         const restoredUseButton = document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
                         if (restoredUseButton) {
                             restoredUseButton.textContent = "USE COUPON";
                             restoredUseButton.classList.remove("applied");
                             restoredUseButton.disabled = false;
                         }
-
                         renderCart();
                         renderCheckoutSummary();
                         return;
                     }
-
                     if (event.target.closest("[data-coupon-close]")) {
                         event.preventDefault();
                         closeCouponModal();
                         return;
                     }
-
                     const couponUseButton = event.target.closest("[data-coupon-use]");
                     if (couponUseButton) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const code = String(couponUseButton.dataset.couponUse || "").toUpperCase();
                         const input = document.querySelector("#decoreva-coupon-input");
                         const message = document.querySelector("#decoreva-coupon-message");
-
                         couponPreviewCode = code;
-
                         if (input) {
                             input.value = code;
                             input.focus();
                             input.select();
                         }
-
                         if (message) {
                             message.textContent = code + " selected • 10% OFF. Click APPLY to apply this coupon.";
                             message.className = "decoreva-coupon-message success";
                         }
-
                         renderCart();
                         renderCheckoutSummary();
-
-                        /* Keep the selected coupon visible and highlighted after
-                           the cart summary re-renders the coupon field. */
                         const refreshedInput = document.querySelector("#decoreva-coupon-input");
                         if (refreshedInput) {
                             refreshedInput.value = code;
@@ -7518,7 +8194,6 @@
                         }
                         return;
                     }
-
                     if (event.target.closest("#decoreva-coupon-check")) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -7526,7 +8201,6 @@
                         const message = document.querySelector("#decoreva-coupon-message");
                         const code = input ? input.value.trim().toUpperCase() : "";
                         if (!message) return;
-
                         if (!code) {
                             couponPreviewCode = "";
                             message.textContent = "Please enter a coupon code.";
@@ -7551,15 +8225,12 @@
                         }
                         return;
                     }
-
                     if (event.target.closest("#decoreva-coupon-apply")) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const input = document.querySelector("#decoreva-coupon-input");
                         const message = document.querySelector("#decoreva-coupon-message");
                         const code = input ? input.value.trim().toUpperCase() : "";
-
                         if (!code) {
                             if (message) {
                                 message.textContent = "Please enter or select a coupon code.";
@@ -7567,7 +8238,6 @@
                             }
                             return;
                         }
-
                         if (!COUPONS[code]) {
                             couponPreviewCode = "";
                             if (message) {
@@ -7578,24 +8248,20 @@
                             renderCheckoutSummary();
                             return;
                         }
-
                         applyCoupon();
                         return;
                     }
-
                     const stepButton = event.target.closest("[data-checkout-step]");
                     if (stepButton) {
                         event.preventDefault();
                         event.stopPropagation();
                         const step = stepButton.dataset.checkoutStep;
-
                         if (step === "payment") {
                             const address = document.querySelector("#decoreva-checkout-address");
                             const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
                             if (address && panel) scrollCheckoutAddressToTop("smooth");
                             return;
                         }
-
                         checkoutStep = step === "address" ? "address" : "cart";
                         const d = document.querySelector("#decoreva-cart-drawer");
                         if (d) d.classList.add("decoreva-checkout-mode");
@@ -7608,20 +8274,15 @@
                         if (target && panel) { if (step === "address") scrollCheckoutAddressToTop("smooth"); else panel.scrollTo({ top: Math.max(0, target.offsetTop - 18), behavior: "smooth" }); }
                         return;
                     }
-
-
                     if (event.target.closest("#decoreva-payment-order")) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const address = document.querySelector("#decoreva-checkout-address");
                         if (!address || !cart.length) return;
-
                         const get = function (id) {
                             const el = document.querySelector(id);
                             return el ? el.value.trim() : "";
                         };
-
                         const complete =
                             !!get("#decoreva-address-name") &&
                             /^\\d{10}$/.test(get("#decoreva-address-mobile")) &&
@@ -7629,7 +8290,6 @@
                             !!get("#decoreva-address-city") &&
                             !!get("#decoreva-address-state") &&
                             /^\\d{6}$/.test(get("#decoreva-address-pincode"));
-
                         if (!complete) {
                             const addressMessage = document.querySelector("#decoreva-address-message");
                             if (addressMessage) {
@@ -7642,7 +8302,6 @@
                             scrollCheckoutAddressToTop("smooth");
                             return;
                         }
-
                         deliveryAddress = {
                             name: get("#decoreva-address-name"),
                             mobile: get("#decoreva-address-mobile"),
@@ -7651,26 +8310,21 @@
                             state: get("#decoreva-address-state"),
                             pincode: get("#decoreva-address-pincode")
                         };
-
                         localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(deliveryAddress));
                         whatsappCheckout();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-cart-whatsapp")) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const drawer = document.querySelector("#decoreva-cart-drawer");
                         const addressSection = document.querySelector("#decoreva-checkout-address");
                         const checkoutButton = document.querySelector("#decoreva-cart-whatsapp");
                         if (!drawer || !addressSection || !cart.length) return;
-
                         const get = function (id) {
                             const el = document.querySelector(id);
                             return el ? el.value.trim() : "";
                         };
-
                         const address = {
                             name: get("#decoreva-address-name"),
                             mobile: get("#decoreva-address-mobile"),
@@ -7679,7 +8333,6 @@
                             state: get("#decoreva-address-state"),
                             pincode: get("#decoreva-address-pincode")
                         };
-
                         const complete =
                             !!address.name &&
                             /^\d{10}$/.test(address.mobile) &&
@@ -7687,10 +8340,6 @@
                             !!address.city &&
                             !!address.state &&
                             /^\d{6}$/.test(address.pincode);
-
-                        /* FIRST CLICK = PROCEED TO BUY.
-                           Always take the customer to Delivery Address first.
-                           Empty/invalid fields are marked red and one toast is shown. */
                         if (!checkoutAddressUnlocked) {
                             checkoutAddressUnlocked = true;
                             checkoutStep = "address";
@@ -7701,7 +8350,6 @@
                             document.body.style.overflow = "hidden";
                             document.documentElement.style.overflow = "hidden";
                             updateCheckoutStepUI();
-
                             const message = document.querySelector("#decoreva-address-message");
                             if (!complete) {
                                 if (message) {
@@ -7709,12 +8357,9 @@
                                     message.textContent = "Please complete all required delivery address details.";
                                     message.className = "decoreva-address-message error";
                                 }
-
                                 updateAddressContinueState();
                                 if (typeof showShopToast === "function") {
-                                    
                                 }
-
                                 requestAnimationFrame(function () {
                                     scrollCheckoutAddressToTop("smooth");
                                     const firstInvalid = [
@@ -7733,17 +8378,12 @@
                                 });
                                 return;
                             }
-
-                            /* Saved/complete address: first click still only opens checkout.
-                               It does NOT send WhatsApp. The button now changes to Order on WhatsApp. */
                             deliveryAddress = address;
                             localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(address));
                             updateAddressContinueState();
                             if (checkoutButton) checkoutButton.focus({ preventScroll: true });
                             return;
                         }
-
-                        /* SECOND CLICK = ORDER ON WHATSAPP, but only when every field is valid. */
                         if (!complete) {
                             const message = document.querySelector("#decoreva-address-message");
                             if (message) {
@@ -7753,7 +8393,6 @@
                             }
                             updateAddressContinueState();
                             if (typeof showShopToast === "function") {
-                                
                             }
                             checkoutStep = "address";
                             updateCheckoutStepUI();
@@ -7762,17 +8401,13 @@
                             });
                             return;
                         }
-
                         deliveryAddress = address;
                         localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(address));
-
                         profile.name = address.name || profile.name;
                         profile.mobile = address.mobile || profile.mobile;
-
                         const exists = profile.addresses.some(function (saved) {
                             return saved.line === address.line && saved.pincode === address.pincode;
                         });
-
                         if (!exists) {
                             profile.addresses.push({
                                 label: "HOME",
@@ -7786,19 +8421,15 @@
                             });
                             saveProfile();
                         }
-
                         const message = document.querySelector("#decoreva-address-message");
                         if (message) {
                             message.dataset.userMessage = "1";
                             message.textContent = "Address saved. Opening WhatsApp to place your order.";
                             message.className = "decoreva-address-message success";
                         }
-
                         whatsappCheckout();
                     }
                 }, true);
-
-                /* Address clear buttons — keep every checkout address field easy to clear. */
                 document.addEventListener("click", function (event) {
                     const clearButton = event.target.closest("[data-address-clear]");
                     if (!clearButton) return;
@@ -7819,9 +8450,6 @@
                     updateAddressContinueState();
                     field.focus();
                 }, true);
-
-                /* Robust drawer + item actions. These use event delegation so
-                   dynamically rendered wishlist/cart/recommendation buttons always work. */
                 document.addEventListener("click", function (event) {
                     const navWish = event.target.closest("#decoreva-wishlist-nav");
                     if (navWish) {
@@ -7830,47 +8458,31 @@
                         openWishlist();
                         return;
                     }
-
-                    /* =====================================================
-                       DECOREVA — WISHLIST PRODUCT → COLLECTION CARD
-                       Clicking a wishlist product must open the matching card
-                       from #collection-products only. Never use Featured cards.
-                       Remove keeps its original action.
-                       ===================================================== */
                     const wishlistItem = event.target.closest(
                         ".decoreva-wishlist-item[data-wishlist-view]"
                     );
-
                     if (wishlistItem && !event.target.closest("[data-wishlist-action]")) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const index = Number(wishlistItem.dataset.wishlistIndex);
                         const savedItem =
                             Number.isInteger(index) ? wishlist[index] : null;
-
                         if (!savedItem) return;
-
                         const savedId = String(savedItem.id || "");
                         const savedProductId = String(savedItem.productId || "");
                         const savedTitle = String(savedItem.title || "")
                             .trim()
                             .replace(/\s+/g, " ")
                             .toLowerCase();
-
-                        /* IMPORTANT: search Collection cards ONLY. */
                         const collectionCards = Array.from(
                             document.querySelectorAll("#collection-products .card")
                         );
-
                         let target = collectionCards.find(function (card) {
                             const data = getCardData(card);
                             return data &&
                                 savedId &&
                                 String(data.id || "") === savedId;
                         });
-
-                        /* Variation fallback: match the parent product. */
                         if (!target && savedProductId) {
                             target = collectionCards.find(function (card) {
                                 const data = getCardData(card);
@@ -7878,8 +8490,6 @@
                                     String(data.productId || "") === savedProductId;
                             });
                         }
-
-                        /* Final fallback: exact Collection-card title. */
                         if (!target && savedTitle) {
                             target = collectionCards.find(function (card) {
                                 const heading = card.querySelector("h3");
@@ -7890,12 +8500,8 @@
                                         .toLowerCase() === savedTitle;
                             });
                         }
-
                         if (!target) return;
-
                         closeWishlist();
-
-                        /* Find the card's real Collection pagination page. */
                         const targetIndex = decorevaProducts.indexOf(target);
                         if (
                             targetIndex >= 0 &&
@@ -7903,32 +8509,23 @@
                         ) {
                             const targetPage =
                                 Math.floor(targetIndex / decorevaPerPage) + 1;
-
-                            /* Do not let pagination itself scroll to the Collection title. */
                             window.decorevaPageNavigation = false;
-
                             if (decorevaCurrentPage !== targetPage) {
                                 decorevaShowPage(targetPage);
                             }
                         }
-
-                        /* Wait for the Collection page/card to become visible. */
                         setTimeout(function () {
                             target.scrollIntoView({
                                 behavior: "smooth",
                                 block: "center"
                             });
-
-                            /* Short visual focus only; no permanent card styling. */
                             target.classList.add("decoreva-wishlist-target");
                             window.setTimeout(function () {
                                 target.classList.remove("decoreva-wishlist-target");
                             }, 1400);
                         }, 100);
-
                         return;
                     }
-
                     const wishlistAction = event.target.closest("[data-wishlist-action]");
                     if (wishlistAction) {
                         event.preventDefault();
@@ -7941,7 +8538,6 @@
                         }
                         return;
                     }
-
                     const checkoutAction = event.target.closest("[data-checkout-item-action]");
                     if (checkoutAction) {
                         event.preventDefault();
@@ -7963,7 +8559,6 @@
                         renderWishlist();
                         return;
                     }
-
                     const similarView = event.target.closest("[data-similar-product-title]");
                     if (similarView) {
                         event.preventDefault();
@@ -7982,8 +8577,6 @@
                         return;
                     }
                 }, true);
-
-                /* Temporary highlight for a Collection card opened from Wishlist. */
                 if (!document.getElementById("decoreva-wishlist-target-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-wishlist-target-style";
@@ -7995,8 +8588,6 @@
                         "}";
                     document.head.appendChild(style);
                 }
-
-                /* Temporary focus for a Collection card opened from Cart. */
                 if (!document.getElementById("decoreva-cart-target-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-cart-target-style";
@@ -8008,7 +8599,6 @@
                         "}";
                     document.head.appendChild(style);
                 }
-
                 document.addEventListener("keydown", function (event) {
                     if (event.key === "Escape") {
                         closeCart();
@@ -8017,14 +8607,12 @@
                         closeCouponModal();
                     }
                 });
-
                 document.addEventListener("input", function (event) {
                     if (!event.target.matches("#decoreva-address-name, #decoreva-address-mobile, #decoreva-address-line, #decoreva-address-city, #decoreva-address-state, #decoreva-address-pincode")) return;
                     const message = document.querySelector("#decoreva-address-message");
                     if (message) message.dataset.userMessage = "";
                     updateAddressContinueState();
                 });
-
                 document.addEventListener("input", function (event) {
                     if (!event.target.matches("#decoreva-coupon-input")) return;
                     const message = document.querySelector("#decoreva-coupon-message");
@@ -8042,7 +8630,6 @@
                         }
                     }
                 }, true);
-
                 function addCardButtons() {
                     document.querySelectorAll("#collection-products .card, .featured-slide").forEach(function (card) {
                         if (!card.querySelector(":scope > .decoreva-add-cart")) {
@@ -8055,7 +8642,6 @@
                             button.innerHTML = '<i class="fas fa-cart-plus" aria-hidden="true"></i>';
                             card.appendChild(button);
                         }
-
                         if (!card.querySelector(":scope > .decoreva-wishlist")) {
                             const button = document.createElement("button");
                             button.type = "button";
@@ -8065,16 +8651,8 @@
                             card.appendChild(button);
                         }
                     });
-
                     updateWishlistButtons();
                 }
-
-                /* =========================================================
-                   DECOREVA V8 — TRUE CARD CORNER ICON POSITION
-                   Force the card itself to be the positioning container, then place
-                   wishlist and add-to-cart 3px from the real card corners.
-                   Targeted only to these two card controls.
-                   ========================================================= */
                 if (!document.getElementById("decoreva-card-corner-icons-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-card-corner-icons-style";
@@ -8089,7 +8667,6 @@
                         "z-index:60 !important;}";
                     document.head.appendChild(style);
                 }
-
                 addCardButtons();
                 updateCartCount();
                 updateWishlistCount();
@@ -8097,26 +8674,15 @@
                     updateCartCount();
                     updateWishlistCount();
                 }, 0);
-
-                /* =========================================================
-                   DECOREVA — PROFILE + SAVED ADDRESSES
-                   Supabase-backed for logged-in customers; local fallback for guests.
-                   ========================================================= */
                 document.addEventListener("click", async function (event) {
                     const profileMenu = event.target.closest("[data-profile-menu]");
                     if (profileMenu) {
                         event.preventDefault();
                         const action = profileMenu.dataset.profileMenu;
                         if (action === "orders") {
-                            /*
-                             * My Orders opens as its own professional drawer.
-                             * The Profile drawer closes completely so the two
-                             * panels never overlap or squeeze each other.
-                             */
                             const section = document.querySelector("#decoreva-profile-orders-section");
                             if (section) {
                                 let ordersDrawer = document.querySelector("#decoreva-orders-drawer");
-
                                 if (!ordersDrawer) {
                                     ordersDrawer = document.createElement("aside");
                                     ordersDrawer.id = "decoreva-orders-drawer";
@@ -8132,10 +8698,8 @@
                                             '<div class="decoreva-orders-panel-body"></div>' +
                                         '</div>';
                                     document.body.appendChild(ordersDrawer);
-
                                     const orderBody = ordersDrawer.querySelector(".decoreva-orders-panel-body");
                                     if (orderBody) orderBody.appendChild(section);
-
                                     if (!document.getElementById("decoreva-orders-drawer-style")) {
                                         const style = document.createElement("style");
                                         style.id = "decoreva-orders-drawer-style";
@@ -8159,7 +8723,6 @@
                                             "@media(max-width:760px){#decoreva-orders-drawer .decoreva-orders-panel{width:100%!important;}#decoreva-orders-drawer .decoreva-orders-panel-head{min-height:66px;padding:12px 14px;}#decoreva-orders-drawer .decoreva-orders-panel-head strong{font-size:18px;}#decoreva-orders-drawer .decoreva-profile-orders-section{padding:12px!important;}}";
                                         document.head.appendChild(style);
                                     }
-
                                     ordersDrawer.addEventListener("click", function (ordersEvent) {
                                         if (ordersEvent.target.closest("[data-orders-close]")) {
                                             ordersEvent.preventDefault();
@@ -8168,18 +8731,15 @@
                                         }
                                     });
                                 }
-
                                 section.hidden = false;
                                 const profileBack = section.querySelector("[data-profile-orders-back]");
                                 if (profileBack) profileBack.hidden = true;
-
                                 closeProfile();
                                 ordersDrawer.classList.add("open");
                                 ordersDrawer.setAttribute("aria-hidden", "false");
                                 document.body.classList.add("decoreva-orders-open");
                                 document.body.style.overflow = "hidden";
                             }
-
                             await loadMyOrders();
                         } else if (action === "wishlist") {
                             closeProfile();
@@ -8196,8 +8756,10 @@
                         } else if (action === "addresses") {
                             const section = document.querySelector("#decoreva-profile-address-section");
                             if (section) {
-                                section.hidden = false;
-                                section.scrollIntoView({behavior:"smooth", block:"start"});
+                                section.hidden = !section.hidden;
+                                if (!section.hidden) {
+                                    section.scrollIntoView({behavior:"smooth", block:"start"});
+                                }
                             }
                         } else if (action === "contact") {
                             closeProfile();
@@ -8208,26 +8770,16 @@
                         }
                         return;
                     }
-
                     if (event.target.closest("[data-profile-orders-back]")) {
                         event.preventDefault();
                         closeMyOrdersDrawer();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-profile-login")) {
-                        /*
-                         * Guest LOGIN / SIGNUP belongs to Supabase Auth.
-                         * Do not open Personal Details here — that used to
-                         * consume the click and fight with supabase-auth.js.
-                         * Close the drawer immediately and let the Auth
-                         * listener handle the same click.
-                         */
                         event.preventDefault();
                         closeProfile();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-profile-save")) {
                         event.preventDefault();
                         const get = id => { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
@@ -8248,19 +8800,16 @@
                         if (message) { message.textContent = "Profile saved successfully."; message.className = "decoreva-profile-message success"; message.dataset.persistent = "true"; }
                         return;
                     }
-
                     if (event.target.closest("#decoreva-profile-add-address")) {
                         event.preventDefault();
                         showProfileAddressForm();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-profile-address-cancel")) {
                         event.preventDefault();
                         hideProfileAddressForm();
                         return;
                     }
-
                     const addressAction = event.target.closest("[data-profile-address-action]");
                     if (addressAction) {
                         event.preventDefault();
@@ -8270,7 +8819,6 @@
                         if (action === "edit") { showProfileAddressForm(index); return; }
                         if (action === "delete") {
                             const selectedAddress = profile.addresses[index];
-
                             if (selectedAddress && selectedAddress.id && decorevaAddressSupabase) {
                                 try {
                                     await deleteSupabaseAddress(selectedAddress);
@@ -8281,15 +8829,12 @@
                                 }
                                 return;
                             }
-
                             profile.addresses.splice(index, 1);
                             if (profile.addresses.length && !profile.addresses.some(a => a.default)) profile.addresses[0].default = true;
                             saveProfile(); renderProfile(); return;
                         }
-
                         if (action === "default") {
                             const selectedAddress = profile.addresses[index];
-
                             if (selectedAddress && selectedAddress.id && decorevaAddressSupabase) {
                                 try {
                                     await setSupabaseDefaultAddress(selectedAddress);
@@ -8300,13 +8845,11 @@
                                 }
                                 return;
                             }
-
                             profile.addresses.forEach((a, i) => a.default = i === index);
                             saveProfile(); renderProfile();
                             return;
                         }
                     }
-
                     if (event.target.closest("#decoreva-profile-address-save")) {
                         event.preventDefault();
                         const get = id => { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
@@ -8330,22 +8873,17 @@
                         const existingAddress = editIndex >= 0 && profile.addresses[editIndex]
                             ? profile.addresses[editIndex]
                             : null;
-
                         address.default = existingAddress
                             ? !!existingAddress.default
                             : profile.addresses.length === 0;
-
                         if (existingAddress && existingAddress.id) {
                             address.id = existingAddress.id;
                         }
-
                         const currentUser = await getDecorevaAuthUser();
-
                         if (currentUser && decorevaAddressSupabase) {
                             try {
                                 const saved = await saveSupabaseAddress(address, editIndex);
                                 if (!saved) throw new Error("Supabase address save unavailable.");
-
                                 hideProfileAddressForm();
                                 renderProfile();
                                 return;
@@ -8358,25 +8896,20 @@
                                 return;
                             }
                         }
-
                         if (editIndex >= 0 && profile.addresses[editIndex]) {
                             profile.addresses[editIndex] = address;
                         } else {
                             profile.addresses.push(address);
                         }
-
                         saveProfile();
                         hideProfileAddressForm();
                         renderProfile();
                         return;
                     }
-
                     if (event.target.closest("#decoreva-profile-panel") && event.target.closest(".decoreva-profile-card") === null) {
                         return;
                     }
                 }, true);
-
-                /* Keep checkout address and profile addresses synchronized. */
                 const originalAddressMessage = document.querySelector("#decoreva-address-message");
                 window.setTimeout(function () {
                     const addressButton = document.querySelector("#decoreva-save-address");
@@ -8404,7 +8937,6 @@
                         }, false);
                     }
                 }, 0);
-
                 window.addEventListener("storage", function (event) {
                     if (event.key === CART_KEY) {
                         try {
@@ -8425,21 +8957,9 @@
                     }
                 });
             })();
-
-            /* =========================================================
-               DECOREVA — LIKE + RATING + REVIEWS
-               SAFE ADD-ON
-               - Reviews + ratings use Supabase
-               - Likes use Supabase for logged-in users
-               - Guests cannot Like products
-               - No changes to cart/wishlist/variation/slider logic
-               - Uses one-time initialization + delegated clicks
-               ========================================================= */
             (function () {
                 "use strict";
-
                 const supabaseClient = window.decorevaSupabase || null;
-
                 let ratings = {};
                 let likes = {};
                 let reviewerNames = {};
@@ -8447,91 +8967,71 @@
                 let reviewsLoadingPromise = null;
                 let supabaseLikesLoaded = false;
                 let supabaseLikedKeys = {};
-
                 function getCardKey(card) {
                     if (!card) return "";
-
                     if (card.dataset.variationProduct) {
                         return "variation:" + card.dataset.variationProduct;
                     }
-
                     const title = card.querySelector("h3");
                     if (title) {
                         return "product:" + title.textContent.trim().toLowerCase();
                     }
-
                     return "";
                 }
-
                 function getRecord(key) {
                     if (!ratings[key] || typeof ratings[key] !== "object") {
                         ratings[key] = { reviews: [] };
                     }
-
                     if (!Array.isArray(ratings[key].reviews)) {
                         ratings[key].reviews = [];
                     }
-
                     return ratings[key];
                 }
-
                 function getAverage(record) {
                     if (!record.reviews.length) return 0;
-
                     return record.reviews.reduce(function (total, review) {
                         return total + Number(review.rating || 0);
                     }, 0) / record.reviews.length;
                 }
-
                 function starText(value) {
                     const rounded = Math.round(Number(value) || 0);
                     let output = "";
-
                     for (let i = 1; i <= 5; i++) {
                         output += i <= rounded ? "★" : "☆";
                     }
-
                     return output;
                 }
-
                 async function loadSupabaseReviews() {
                     if (!supabaseClient) {
                         console.warn("DECOREVA: Supabase client not available for reviews.");
                         return;
                     }
-
                     if (reviewsLoaded) return;
                     if (reviewsLoadingPromise) return reviewsLoadingPromise;
-
                     reviewsLoadingPromise = (async function () {
                         try {
                             const result = await supabaseClient
                                 .from("product_reviews")
                                 .select("id, product_key, user_id, rating, review_text, created_at")
                                 .order("created_at", { ascending: true });
-
                             if (result.error) {
                                 console.error("DECOREVA reviews load error:", result.error);
                                 return;
                             }
-
                             ratings = {};
                             reviewerNames = {};
-
                             const reviewRows = result.data || [];
                             const reviewerIds = Array.from(new Set(
                                 reviewRows
                                     .map(function (review) { return review && review.user_id; })
                                     .filter(Boolean)
                             ));
-
                             if (reviewerIds.length) {
                                 try {
                                     const profilesResult = await supabaseClient
                                         .from("decoreva_reviewer_names")
                                         .select("id, full_name")
                                         .in("id", reviewerIds);
-
                                     if (profilesResult.error) {
                                         console.warn("DECOREVA reviewer names load warning:", profilesResult.error);
                                     } else {
@@ -8545,10 +9045,8 @@
                                     console.warn("DECOREVA reviewer names load exception:", profileError);
                                 }
                             }
-
                             reviewRows.forEach(function (review) {
                                 if (!review || !review.product_key) return;
-
                                 getRecord(review.product_key).reviews.push({
                                     id: review.id,
                                     user_id: review.user_id,
@@ -8558,7 +9056,6 @@
                                     date: review.created_at || ""
                                 });
                             });
-
                             reviewsLoaded = true;
                             updateAllRatingRows();
                             if (typeof mountDecorevaMobileRatingRows === "function") {
@@ -8571,23 +9068,15 @@
                             reviewsLoadingPromise = null;
                         }
                     })();
-
                     return reviewsLoadingPromise;
                 }
-
                 function createRatingRow(card) {
                     if (!card || card.querySelector(".decoreva-rating-row")) return;
-
                     const key = getCardKey(card);
                     if (!key) return;
-
                     const row = document.createElement("div");
                     row.className = "decoreva-rating-row";
                     row.dataset.ratingKey = key;
-
-                    /* Myntra-style compact rating box:
-                       average rating + total customer review count only.
-                       No Like button and no heart are shown here. */
                     const ratingButton = document.createElement("button");
                     ratingButton.type = "button";
                     ratingButton.className = "decoreva-rating-button";
@@ -8595,45 +9084,34 @@
                     ratingButton.setAttribute("aria-label", "Open ratings and reviews");
                     ratingButton.removeAttribute("title");
                     ratingButton.setAttribute("data-tooltip", "View ratings and reviews");
-
                     const ratingValue = document.createElement("span");
                     ratingValue.className = "decoreva-rating-value";
-
                     const ratingStar = document.createElement("span");
                     ratingStar.className = "decoreva-rating-small-star";
                     ratingStar.setAttribute("aria-hidden", "true");
                     ratingStar.textContent = "★";
-
                     const ratingCount = document.createElement("span");
                     ratingCount.className = "decoreva-rating-count";
-
                     ratingButton.appendChild(ratingValue);
                     ratingButton.appendChild(ratingStar);
                     ratingButton.appendChild(ratingCount);
                     row.appendChild(ratingButton);
-
                     card.appendChild(row);
                     updateRatingRow(card);
                 }
-
                 function updateRatingRow(card) {
                     if (!card) return;
-
                     const row = card.querySelector(".decoreva-rating-row");
                     if (!row) return;
-
                     const key = getCardKey(card);
                     if (!key) return;
-
                     const record = getRecord(key);
                     const average = getAverage(record);
                     const reviewCount = record.reviews.length;
-
                     const ratingButton = row.querySelector(".decoreva-rating-button");
                     const ratingValue = row.querySelector(".decoreva-rating-value");
                     const ratingStar = row.querySelector(".decoreva-rating-small-star");
                     const ratingCount = row.querySelector(".decoreva-rating-count");
-
                     function formatCustomerCount(value) {
                         const number = Number(value || 0);
                         if (number >= 1000000) {
@@ -8644,19 +9122,15 @@
                         }
                         return String(number);
                     }
-
                     if (ratingValue) {
                         ratingValue.textContent = average > 0 ? average.toFixed(1) : "0.0";
                     }
-
                     if (ratingStar) {
                         ratingStar.textContent = "★";
                     }
-
                     if (ratingCount) {
                         ratingCount.textContent = " | " + formatCustomerCount(reviewCount);
                     }
-
                     if (ratingButton) {
                         ratingButton.setAttribute(
                             "aria-label",
@@ -8666,7 +9140,6 @@
                         );
                     }
                 }
-
                 function updateAllRatingRows() {
                     document.querySelectorAll(
                         "#collection-products .card, .featured-slider .featured-slide"
@@ -8675,16 +9148,9 @@
                         updateRatingRow(card);
                     });
                 }
-
-                /* =========================================================
-                   DECOREVA — ALL PRODUCTS CUSTOMER REVIEW HISTORY
-                   Displayed immediately above Contact Us.
-                   Uses the existing Supabase product_reviews data.
-                   ========================================================= */
                 function renderAllProductReviewHistory() {
                     const contact = document.querySelector("#contact");
                     if (!contact) return;
-
                     let section = document.querySelector("#decoreva-all-reviews");
                     if (!section) {
                         section = document.createElement("section");
@@ -8693,11 +9159,9 @@
                         section.setAttribute("aria-label", "Customer Ratings and Reviews");
                         contact.parentNode.insertBefore(section, contact);
                     }
-
                     const cards = Array.from(document.querySelectorAll(
                         "#collection-products .card, .featured-slider .featured-slide"
                     ));
-
                     const products = new Map();
                     cards.forEach(function (card) {
                         const key = getCardKey(card);
@@ -8709,20 +9173,16 @@
                             });
                         }
                     });
-
                     const history = [];
                     Object.keys(ratings).forEach(function (key) {
                         const record = ratings[key];
                         if (!record || !Array.isArray(record.reviews) || !record.reviews.length) return;
-
                         const product = products.get(key);
                         if (!product) return;
-
                         const reviews = record.reviews.slice().reverse();
                         const average = reviews.reduce(function (sum, item) {
                             return sum + Number(item.rating || 0);
                         }, 0) / reviews.length;
-
                         history.push({
                             key: key,
                             name: product.name,
@@ -8731,17 +9191,13 @@
                             average: average
                         });
                     });
-
                     history.sort(function (a, b) {
                         return cards.indexOf(a.card) - cards.indexOf(b.card);
                     });
-
                     const totalReviews = history.reduce(function (sum, item) {
                         return sum + item.reviews.length;
                     }, 0);
-
                     section.replaceChildren();
-
                     const heading = document.createElement("div");
                     heading.className = "decoreva-all-reviews-heading";
                     heading.innerHTML =
@@ -8749,7 +9205,6 @@
                         '<h2>Customer Ratings & Reviews</h2>' +
                         '<p>Real ratings and review history from DECOREVA customers.</p>';
                     section.appendChild(heading);
-
                     if (!history.length) {
                         const empty = document.createElement("div");
                         empty.className = "decoreva-all-reviews-empty";
@@ -8760,7 +9215,6 @@
                         section.appendChild(empty);
                         return;
                     }
-
                     const summary = document.createElement("div");
                     summary.className = "decoreva-all-reviews-summary";
                     summary.dataset.allReviewsToggle = "true";
@@ -8771,107 +9225,80 @@
                         "aria-label",
                         "Open Customer Ratings and Reviews"
                     );
-
                     const summaryNumber = document.createElement("strong");
                     summaryNumber.textContent = String(totalReviews);
-
                     const summaryLabel = document.createElement("span");
                     summaryLabel.textContent = totalReviews === 1
                         ? "Customer Review"
                         : "Customer Reviews";
-
                     const summaryProducts = document.createElement("em");
                     summaryProducts.textContent = history.length === 1
                         ? "1 product reviewed"
                         : history.length + " products reviewed";
-
                     summary.appendChild(summaryNumber);
                     summary.appendChild(summaryLabel);
                     summary.appendChild(summaryProducts);
-
                     const summaryToggle = document.createElement("span");
                     summaryToggle.className = "decoreva-all-reviews-toggle-icon";
                     summaryToggle.setAttribute("aria-hidden", "true");
                     summary.appendChild(summaryToggle);
-
                     section.appendChild(summary);
-
                     const list = document.createElement("div");
                     list.className = "decoreva-all-reviews-list";
-
                     history.forEach(function (product) {
                         const box = document.createElement("article");
                         box.className = "decoreva-all-review-product";
-
                         const head = document.createElement("div");
                         head.className = "decoreva-all-review-product-head";
-
                         const info = document.createElement("div");
                         info.className = "decoreva-all-review-product-info";
-
                         const name = document.createElement("h3");
                         name.textContent = product.name;
-
                         const ratingLine = document.createElement("div");
                         ratingLine.className = "decoreva-all-review-rating-line";
-
                         const stars = document.createElement("span");
                         stars.className = "decoreva-all-review-stars";
                         stars.textContent = starText(product.average);
-
                         const average = document.createElement("strong");
                         average.textContent = product.average.toFixed(1) + " / 5";
-
                         const count = document.createElement("span");
                         count.className = "decoreva-all-review-count";
                         count.textContent = product.reviews.length +
                             (product.reviews.length === 1 ? " review" : " reviews");
-
                         ratingLine.appendChild(stars);
                         ratingLine.appendChild(average);
                         ratingLine.appendChild(count);
                         info.appendChild(name);
                         info.appendChild(ratingLine);
-
                         const view = document.createElement("button");
                         view.type = "button";
                         view.className = "decoreva-all-review-view";
                         view.textContent = "VIEW PRODUCT REVIEWS";
                         view.dataset.allReviewKey = product.key;
-
                         head.appendChild(info);
                         head.appendChild(view);
                         box.appendChild(head);
-
                         const entries = document.createElement("div");
                         entries.className = "decoreva-all-review-history";
-
                         product.reviews.forEach(function (review) {
                             const item = document.createElement("div");
                             item.className = "decoreva-all-review-entry";
-
                             const top = document.createElement("div");
                             top.className = "decoreva-all-review-entry-top";
-
                             const customer = document.createElement("strong");
                             customer.textContent =
                                 review.name ||
                                 reviewerNames[review.user_id] ||
                                 "Customer";
-
                             const reviewStars = document.createElement("span");
                             reviewStars.textContent = starText(review.rating);
-
                             top.appendChild(customer);
                             top.appendChild(reviewStars);
-
                             const body = document.createElement("p");
                             body.textContent = review.text ||
                                 "Customer left a rating without written feedback.";
-
                             const date = document.createElement("time");
                             date.className = "decoreva-all-review-date";
-
                             if (review.date) {
                                 const parsed = new Date(review.date);
                                 if (!Number.isNaN(parsed.getTime())) {
@@ -8882,24 +9309,17 @@
                                     });
                                 }
                             }
-
                             item.appendChild(top);
                             item.appendChild(body);
                             if (date.textContent) item.appendChild(date);
                             entries.appendChild(item);
                         });
-
                         box.appendChild(entries);
                         list.appendChild(box);
                     });
-
-                    /* Review list — only the bottom close button is shown. */
                     section.appendChild(list);
-
-                    /* Bottom close button — aligned to the same 1120px review content width. */
                     const bottomCloseWrap = document.createElement("div");
                     bottomCloseWrap.className = "decoreva-all-reviews-close-wrap";
-
                     const closeButton = document.createElement("button");
                     closeButton.type = "button";
                     closeButton.className = "decoreva-all-reviews-close decoreva-all-reviews-close-bottom";
@@ -8909,29 +9329,24 @@
                     bottomCloseWrap.appendChild(closeButton);
                     section.appendChild(bottomCloseWrap);
                 }
-
                 document.addEventListener("click", function (event) {
                     const closeButton = event.target.closest("[data-all-reviews-close]");
                     if (closeButton) {
                         const section = closeButton.closest("#decoreva-all-reviews");
                         if (!section) return;
-
                         section.classList.remove("is-open");
                         const toggle = section.querySelector("[data-all-reviews-toggle]");
                         if (toggle) {
                             toggle.setAttribute("aria-expanded", "false");
                             toggle.setAttribute("aria-label", "Open Customer Ratings and Reviews");
                         }
-
                         section.scrollIntoView({ behavior: "smooth", block: "start" });
                         return;
                     }
-
                     const toggle = event.target.closest("[data-all-reviews-toggle]");
                     if (toggle) {
                         const section = toggle.closest("#decoreva-all-reviews");
                         if (!section) return;
-
                         const isOpen = section.classList.toggle("is-open");
                         toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
                         toggle.setAttribute(
@@ -8942,30 +9357,23 @@
                         );
                         return;
                     }
-
                     const button = event.target.closest("[data-all-review-key]");
                     if (!button) return;
-
                     const key = button.dataset.allReviewKey;
                     let card = null;
-
                     document.querySelectorAll(
                         "#collection-products .card, .featured-slider .featured-slide"
                     ).forEach(function (candidate) {
                         if (!card && getCardKey(candidate) === key) card = candidate;
                     });
-
                     if (card) openReviewModal(card);
                 }, true);
-
                 document.addEventListener("keydown", function (event) {
                     const toggle = event.target.closest("[data-all-reviews-toggle]");
                     if (!toggle || (event.key !== "Enter" && event.key !== " ")) return;
-
                     event.preventDefault();
                     const section = toggle.closest("#decoreva-all-reviews");
                     if (!section) return;
-
                     const isOpen = section.classList.toggle("is-open");
                     toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
                     toggle.setAttribute(
@@ -8975,7 +9383,6 @@
                             : "Open Customer Ratings and Reviews"
                     );
                 }, true);
-
                 if (!document.querySelector("#decoreva-all-reviews-styles")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-all-reviews-styles";
@@ -9289,14 +9696,7 @@
                     `;
                     document.head.appendChild(style);
                 }
-
                 renderAllProductReviewHistory();
-
-                /* =====================================================
-                   DECOREVA — COMPACT MYNTRA-STYLE RATING BOX
-                   Only average rating + customer count are visible.
-                   Clicking the box opens the existing ratings/reviews modal.
-                   ===================================================== */
                 if (!document.getElementById("decoreva-compact-rating-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-compact-rating-style";
@@ -9312,7 +9712,6 @@
                             border:0 !important;
                             background:transparent !important;
                         }
-
                         .decoreva-rating-button{
                             display:inline-flex !important;
                             align-items:center !important;
@@ -9333,38 +9732,27 @@
                             cursor:pointer !important;
                             white-space:nowrap !important;
                         }
-
                         .decoreva-rating-button:hover{
                             background:linear-gradient(135deg,#A96D12 0%,#D1A03B 100%) !important;
                         }
-
                         .decoreva-rating-value{
                             font-weight:700 !important;
                         }
-
                         .decoreva-rating-small-star{
                             font-size:9px !important;
                             line-height:1 !important;
                             color:#FFF4D6 !important;
                         }
-
                         .decoreva-rating-count{
                             font-weight:600 !important;
                             color:#FFF8E8 !important;
                         }
-
                         .decoreva-like-button{
                             display:none !important;
                         }
                     `;
                     document.head.appendChild(style);
                 }
-
-                /* =====================================================
-                   DECOREVA — RATING BOX POSITION
-                   Featured + normal Collection cards:
-                   top-center, touching the card top.
-                   ===================================================== */
                 if (!document.getElementById("decoreva-rating-top-center-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-rating-top-center-style";
@@ -9385,21 +9773,12 @@
                             justify-content:center !important;
                             z-index:60 !important;
                         }
-
                         .decoreva-rating-row .decoreva-rating-button{
                             margin:0 !important;
                         }
                     `;
                     document.head.appendChild(style);
                 }
-
-                /* =====================================================
-                   DECOREVA — MOBILE NORMAL-CARD RATING FIX (STRUCTURAL)
-                   The rating box is mounted INSIDE the product image layer.
-                   This avoids any parent/card stacking or clipping layer
-                   covering the rating box on mobile.
-                   Desktop behaviour remains unchanged.
-                   ===================================================== */
                 if (!document.getElementById("decoreva-mobile-rating-fix-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-mobile-rating-fix-style";
@@ -9408,7 +9787,6 @@
                             #collection-products .card{
                                 position:relative !important;
                             }
-
                             /* The rating row is mounted inside .image-slider
                                so it shares the same visual layer as the image
                                and cannot disappear behind the slider. */
@@ -9434,7 +9812,6 @@
                                 visibility:visible !important;
                                 opacity:1 !important;
                             }
-
                             #collection-products .card .image-slider > .decoreva-rating-row .decoreva-rating-button,
                             .featured-slider .featured-slide .featured-image-box > .decoreva-rating-row .decoreva-rating-button{
                                 position:relative !important;
@@ -9443,7 +9820,6 @@
                                 touch-action:manipulation !important;
                                 -webkit-tap-highlight-color:transparent !important;
                             }
-
                             /* Keep both mobile image layers as the containing block. */
                             #collection-products .card .image-slider,
                             .featured-slider .featured-slide .featured-image-box{
@@ -9453,45 +9829,31 @@
                     `;
                     document.head.appendChild(style);
                 }
-
                 function mountDecorevaMobileRatingRows() {
-                    /* MOBILE ONLY — desktop card and featured-card layout is untouched. */
                     if (window.innerWidth > 760) return;
-
                     document.querySelectorAll(
                         "#collection-products .card, .featured-slider .featured-slide"
                     ).forEach(function (card) {
                         const row = card.querySelector(":scope > .decoreva-rating-row");
                         if (!row) return;
-
                         const imageLayer =
                             card.querySelector(".image-slider") ||
                             card.querySelector(".featured-image-box");
-
                         if (!imageLayer) return;
-
                         if (row.parentElement !== imageLayer) {
                             imageLayer.appendChild(row);
                         }
                     });
                 }
-
                 let decorevaMobileRatingTouchTimer = 0;
-
-                /* Physical-phone touch: show the same professional tooltip
-                   briefly, but DO NOT cancel the browser click. The click
-                   must continue so the Ratings & Reviews box can open. */
                 function handleDecorevaMobileRatingTouch(button) {
                     if (!button) return;
-
                     window.clearTimeout(decorevaMobileRatingTouchTimer);
                     showDecorevaRatingTooltip(button);
-
                     decorevaMobileRatingTouchTimer = window.setTimeout(function () {
                         hideDecorevaRatingTooltip(button);
                     }, 900);
                 }
-
                 document.addEventListener("pointerdown", function (event) {
                     if (window.innerWidth > 760 || event.pointerType !== "touch") return;
                     const button = event.target.closest(
@@ -9500,7 +9862,6 @@
                     if (!button) return;
                     handleDecorevaMobileRatingTouch(button);
                 }, { passive:true, capture:true });
-
                 document.addEventListener("touchstart", function (event) {
                     if (window.innerWidth > 760) return;
                     const button = event.target.closest(
@@ -9509,7 +9870,6 @@
                     if (!button) return;
                     handleDecorevaMobileRatingTouch(button);
                 }, { passive:true, capture:true });
-
                 function initializeRatingRows() {
                     updateAllRatingRows();
                     mountDecorevaMobileRatingRows();
@@ -9519,10 +9879,8 @@
                         mountDecorevaMobileRatingRows();
                     });
                 }
-
                 async function getCurrentUser() {
                     if (!supabaseClient || !supabaseClient.auth) return null;
-
                     try {
                         const result = await supabaseClient.auth.getUser();
                         return result && result.data ? result.data.user : null;
@@ -9531,25 +9889,20 @@
                         return null;
                     }
                 }
-
                 async function loadSupabaseLikes(force) {
                     if (!supabaseClient) return false;
                     if (supabaseLikesLoaded && !force) return true;
-
                     try {
                         const result = await supabaseClient
                             .from("product_likes")
                             .select("product_key, user_id");
-
                         if (result.error) {
                             console.error("DECOREVA likes load error:", result.error);
                             return false;
                         }
-
                         const counts = {};
                         const likedKeys = {};
                         const user = await getCurrentUser();
-
                         (result.data || []).forEach(function (like) {
                             if (!like || !like.product_key) return;
                             counts[like.product_key] = Number(counts[like.product_key] || 0) + 1;
@@ -9557,14 +9910,9 @@
                                 likedKeys[like.product_key] = true;
                             }
                         });
-
                         likes = counts;
                         supabaseLikedKeys = likedKeys;
-
-                        /* Supabase is the personal Like-state source only for
-                           logged-in users. Guests cannot Like products. */
                         supabaseLikesLoaded = !!user;
-
                         updateAllRatingRows();
                         return true;
                     } catch (error) {
@@ -9572,27 +9920,21 @@
                         return false;
                     }
                 }
-
                 async function openReviewModal(card) {
                     const key = getCardKey(card);
                     if (!key) return;
-
                     await loadSupabaseReviews();
-
                     const title = card.querySelector("h3");
                     const productName = title
                         ? title.textContent.trim()
                         : "DECOREVA Product";
-
                     const record = getRecord(key);
                     let modal = document.querySelector("#decoreva-review-modal");
-
                     if (!modal) {
                         modal = document.createElement("div");
                         modal.id = "decoreva-review-modal";
                         modal.className = "decoreva-review-modal";
                         modal.setAttribute("aria-hidden", "true");
-
                         modal.innerHTML =
                             '<div class="decoreva-review-overlay" data-review-close></div>' +
                             '<div class="decoreva-review-card" role="dialog" aria-modal="true" aria-label="Ratings and Reviews">' +
@@ -9613,28 +9955,21 @@
                                     '<button type="submit" class="decoreva-review-submit">Submit Review</button>' +
                                 '</form>' +
                             '</div>';
-
                         document.body.appendChild(modal);
                     }
-
                     modal.dataset.ratingKey = key;
                     modal.dataset.ratingCardKey = key;
                     modal.querySelector(".decoreva-review-product").textContent = productName;
-
                     const average = getAverage(record);
                     const count = record.reviews.length;
-
                     modal.querySelector(".decoreva-review-summary").textContent =
                         count
                             ? starText(average) + "  " + average.toFixed(1) + " · " +
                               count + " review" + (count === 1 ? "" : "s")
                             : "No reviews yet — be the first to review this product.";
-
                     const user = await getCurrentUser();
-
                     const list = modal.querySelector(".decoreva-review-list");
                     list.replaceChildren();
-
                     if (!count) {
                         const empty = document.createElement("div");
                         empty.className = "decoreva-review-empty";
@@ -9644,84 +9979,64 @@
                         record.reviews.slice().reverse().forEach(function (review) {
                             const item = document.createElement("div");
                             item.className = "decoreva-review-item";
-
                             const top = document.createElement("div");
                             top.className = "decoreva-review-item-top";
-
                             const name = document.createElement("strong");
                             name.textContent = "Customer";
-
                             const stars = document.createElement("span");
                             stars.textContent = starText(review.rating);
-
                             const text = document.createElement("p");
                             text.textContent = review.text || "";
-
                             top.appendChild(name);
                             top.appendChild(stars);
-
-                            /* Customer controls — only the owner of this review
-                               can edit or delete it. */
                             if (user && review.user_id === user.id) {
                                 const actions = document.createElement("div");
                                 actions.className = "decoreva-review-actions";
-
                                 const editButton = document.createElement("button");
                                 editButton.type = "button";
                                 editButton.className = "decoreva-review-edit";
                                 editButton.textContent = "Edit";
                                 editButton.setAttribute("aria-label", "Edit your review");
-
                                 const deleteButton = document.createElement("button");
                                 deleteButton.type = "button";
                                 deleteButton.className = "decoreva-review-delete";
                                 deleteButton.textContent = "×";
                                 deleteButton.setAttribute("aria-label", "Delete your review");
                                 deleteButton.title = "Delete review";
-
                                 actions.appendChild(editButton);
                                 actions.appendChild(deleteButton);
                                 top.appendChild(actions);
-
                                 editButton.addEventListener("click", function () {
                                     nameInput.value = String(user.user_metadata?.full_name || user.email || nameInput.value || "");
                                     textInput.value = review.text || "";
                                     editingReviewId = review.id;
                                     selectedRating = Number(review.rating || 0);
-
                                     starsInput.querySelectorAll("button").forEach(function (button, index) {
                                         button.classList.toggle("active", index < selectedRating);
                                     });
-
                                     submitButton.textContent = "Update Review";
                                     textInput.focus();
                                 });
-
                                 deleteButton.addEventListener("click", async function () {
                                     if (!window.confirm("Delete your review? This cannot be undone.")) {
                                         return;
                                     }
-
                                     deleteButton.disabled = true;
                                     editButton.disabled = true;
-
                                     try {
                                         const result = await supabaseClient
                                             .from("product_reviews")
                                             .delete()
                                             .eq("id", review.id)
                                             .eq("user_id", user.id);
-
                                         if (result.error) {
                                             console.error("DECOREVA review delete error:", result.error);
                                             window.decorevaShowReviewToast("Could not delete your review. Please try again");
                                             return;
                                         }
-
                                         record.reviews = record.reviews.filter(function (itemReview) {
                                             return itemReview.id !== review.id;
                                         });
-
                                         reviewsLoaded = true;
                                         updateAllRatingRows();
                                         await openReviewModal(card);
@@ -9735,33 +10050,26 @@
                                     }
                                 });
                             }
-
                             item.appendChild(top);
                             item.appendChild(text);
                             list.appendChild(item);
                         });
                     }
-
                     const form = modal.querySelector(".decoreva-review-form");
                     const nameInput = form.querySelector(".decoreva-review-name");
                     const textInput = form.querySelector(".decoreva-review-text");
                     const submitButton = form.querySelector(".decoreva-review-submit");
-
                     if (!user) {
                         nameInput.value = "";
                         nameInput.disabled = true;
                         textInput.value = "";
                         textInput.disabled = true;
-
-                        /* The login button must remain clickable. A disabled button
-                           cannot open the existing DECOREVA Auth modal. */
                         submitButton.disabled = false;
                         submitButton.textContent = "Login to Review";
                         submitButton.type = "button";
                         submitButton.onclick = function (event) {
                             event.preventDefault();
                             event.stopPropagation();
-
                             if (window.decorevaSupabaseAuth &&
                                 typeof window.decorevaSupabaseAuth.open === "function") {
                                 window.decorevaSupabaseAuth.open();
@@ -9776,7 +10084,6 @@
                         submitButton.type = "submit";
                         submitButton.onclick = null;
                         submitButton.textContent = "Submit Review";
-
                         try {
                             const metadata = user.user_metadata || {};
                             nameInput.value = String(metadata.full_name || "");
@@ -9784,12 +10091,10 @@
                             nameInput.value = "";
                         }
                     }
-
                     const starsInput = modal.querySelector(".decoreva-review-stars-input");
                     starsInput.replaceChildren();
                     let selectedRating = 0;
                     let editingReviewId = null;
-
                     for (let i = 1; i <= 5; i++) {
                         const button = document.createElement("button");
                         button.type = "button";
@@ -9798,21 +10103,16 @@
                         button.dataset.value = String(i);
                         button.setAttribute("aria-label", i + " star");
                         button.disabled = !user;
-
                         button.addEventListener("click", function () {
                             selectedRating = i;
-
                             starsInput.querySelectorAll("button").forEach(function (item, index) {
                                 item.classList.toggle("active", index < selectedRating);
                             });
                         });
-
                         starsInput.appendChild(button);
                     }
-
                     form.onsubmit = async function (event) {
                         event.preventDefault();
-
                         const currentUser = await getCurrentUser();
                         if (!currentUser) {
                             const modalCardKey = modal.dataset.ratingCardKey;
@@ -9827,33 +10127,25 @@
                             showRatingToast(modalRow, "Please login first to rate or review this product");
                             return;
                         }
-
                         const name = nameInput.value.trim();
                         const text = textInput.value.trim();
-
                         if (!selectedRating) {
                             window.decorevaShowReviewToast("Please select a star rating");
                             return;
                         }
-
                         if (!name || !text) {
                             window.decorevaShowReviewToast("Please enter your name and review");
                             return;
                         }
-
                         if (!supabaseClient) {
                             window.decorevaShowReviewToast("Review service is temporarily unavailable");
                             return;
                         }
-
                         submitButton.disabled = true;
                         submitButton.textContent = editingReviewId ? "Updating..." : "Submitting...";
-
                         const wasEditingReview = !!editingReviewId;
-
                         try {
                             let result;
-
                             if (editingReviewId) {
                                 result = await supabaseClient
                                     .from("product_reviews")
@@ -9865,19 +10157,16 @@
                                     .eq("user_id", currentUser.id)
                                     .select("id, product_key, user_id, rating, review_text, created_at")
                                     .single();
-
                                 if (result.error) {
                                     console.error("DECOREVA review update error:", result.error);
                                     window.decorevaShowReviewToast("Could not update your review. Please try again");
                                     return;
                                 }
-
                                 const updatedReview = result.data;
                                 const localReviews = getRecord(key).reviews;
                                 const localIndex = localReviews.findIndex(function (itemReview) {
                                     return itemReview.id === editingReviewId;
                                 });
-
                                 if (localIndex >= 0) {
                                     localReviews[localIndex] = {
                                         id: updatedReview.id,
@@ -9887,7 +10176,6 @@
                                         date: updatedReview.created_at || ""
                                     };
                                 }
-
                                 editingReviewId = null;
                             } else {
                                 result = await supabaseClient
@@ -9900,13 +10188,11 @@
                                     })
                                     .select("id, product_key, user_id, rating, review_text, created_at")
                                     .single();
-
                                 if (result.error) {
                                     console.error("DECOREVA review insert error:", result.error);
                                     window.decorevaShowReviewToast("Could not submit your review. Please try again");
                                     return;
                                 }
-
                                 const newReview = result.data;
                                 getRecord(key).reviews.push({
                                     id: newReview.id,
@@ -9916,7 +10202,6 @@
                                     date: newReview.created_at || ""
                                 });
                             }
-
                             reviewsLoaded = true;
                             updateAllRatingRows();
                             nameInput.value = String(currentUser.user_metadata?.full_name || name);
@@ -9925,7 +10210,6 @@
                             starsInput.querySelectorAll("button").forEach(function (item) {
                                 item.classList.remove("active");
                             });
-
                             await openReviewModal(card);
                             window.decorevaShowReviewToast(
                                 wasEditingReview
@@ -9942,52 +10226,36 @@
                             submitButton.textContent = "Submit Review";
                         }
                     };
-
                     modal.classList.add("open");
                     modal.setAttribute("aria-hidden", "false");
                     document.documentElement.style.overflow = "hidden";
                     document.body.style.overflow = "hidden";
                 }
-
-                /* =========================================================
-                   DECOREVA — Review/Auth sync
-                   Keeps the open Ratings & Reviews box in sync after
-                   logout -> login without requiring a page refresh.
-                   ========================================================= */
                 let decorevaReviewAuthChangeRunning = false;
-
                 window.decorevaReviewAuthChanged = async function () {
                     if (decorevaReviewAuthChangeRunning) return;
                     decorevaReviewAuthChangeRunning = true;
-
                     try {
-                        /* Never let a new user inherit the previous user's
-                           Like state. Reload the current user's likes. */
                         supabaseLikesLoaded = false;
                         supabaseLikedKeys = {};
-
                         if (supabaseClient) {
                             await loadSupabaseLikes(true);
                         } else {
                             updateAllRatingRows();
                         }
-
                         if (!supabaseLikesLoaded) {
                             updateAllRatingRows();
                         }
-
                         const modal = document.querySelector("#decoreva-review-modal");
                         if (!modal || !modal.classList.contains("open")) {
                             updateAllRatingRows();
                             return;
                         }
-
                         const key = modal.dataset.ratingKey;
                         if (!key) {
                             updateAllRatingRows();
                             return;
                         }
-
                         let targetCard = null;
                         document.querySelectorAll(
                             "#collection-products .card, .featured-slider .featured-slide"
@@ -9996,7 +10264,6 @@
                                 targetCard = candidate;
                             }
                         });
-
                         if (targetCard) {
                             await openReviewModal(targetCard);
                         } else {
@@ -10009,26 +10276,16 @@
                         decorevaReviewAuthChangeRunning = false;
                     }
                 };
-
                 function closeReviewModal() {
                     const modal = document.querySelector("#decoreva-review-modal");
                     if (!modal) return;
-
                     modal.classList.remove("open");
                     modal.setAttribute("aria-hidden", "true");
-
                     if (!document.body.classList.contains("decoreva-cart-open")) {
                         document.documentElement.style.overflow = "";
                         document.body.style.overflow = "";
                     }
                 }
-
-                /* =========================================================
-                   DECOREVA — PROFESSIONAL RATINGS TOOLTIP
-                   Body-level tooltip so it is never clipped by the
-                   featured-slider/card overflow. It appears ABOVE the
-                   rating box/card and follows the button on scroll/resize.
-                   ========================================================= */
                 if (!document.getElementById("decoreva-rating-tooltip-style")) {
                     const style = document.createElement("style");
                     style.id = "decoreva-rating-tooltip-style";
@@ -10063,15 +10320,12 @@
                     `;
                     document.head.appendChild(style);
                 }
-
                 let decorevaRatingTooltip = null;
                 let decorevaRatingTooltipButton = null;
-
                 function ensureDecorevaRatingTooltip() {
                     if (decorevaRatingTooltip && document.body.contains(decorevaRatingTooltip)) {
                         return decorevaRatingTooltip;
                     }
-
                     decorevaRatingTooltip = document.createElement("div");
                     decorevaRatingTooltip.className = "decoreva-rating-floating-tooltip";
                     decorevaRatingTooltip.textContent = "View ratings and reviews";
@@ -10080,37 +10334,28 @@
                     document.body.appendChild(decorevaRatingTooltip);
                     return decorevaRatingTooltip;
                 }
-
                 function positionDecorevaRatingTooltip() {
                     if (!decorevaRatingTooltip || !decorevaRatingTooltip.classList.contains("show") || !decorevaRatingTooltipButton) return;
-
                     const rect = decorevaRatingTooltipButton.getBoundingClientRect();
                     const tooltipRect = decorevaRatingTooltip.getBoundingClientRect();
                     const gap = 9;
                     const viewportPadding = 8;
-
                     let left = rect.left + (rect.width / 2);
                     let top = rect.top - gap;
                     let transformY = "-100%";
-
-                    /* If the button is too close to the top edge, place the
-                       tooltip below it instead of clipping it. */
                     if (top - tooltipRect.height < viewportPadding) {
                         top = rect.bottom + gap;
                         transformY = "0";
                     }
-
                     const halfWidth = tooltipRect.width / 2;
                     left = Math.max(halfWidth + viewportPadding, Math.min(
                         window.innerWidth - halfWidth - viewportPadding,
                         left
                     ));
-
                     decorevaRatingTooltip.style.left = left + "px";
                     decorevaRatingTooltip.style.top = top + "px";
                     decorevaRatingTooltip.style.setProperty("--tooltip-y", transformY);
                 }
-
                 function showDecorevaRatingTooltip(button) {
                     if (!button) return;
                     decorevaRatingTooltipButton = button;
@@ -10119,7 +10364,6 @@
                     tooltip.setAttribute("aria-hidden", "false");
                     positionDecorevaRatingTooltip();
                 }
-
                 function hideDecorevaRatingTooltip(button) {
                     if (button && decorevaRatingTooltipButton && button !== decorevaRatingTooltipButton) return;
                     if (!decorevaRatingTooltip) return;
@@ -10127,76 +10371,51 @@
                     decorevaRatingTooltip.setAttribute("aria-hidden", "true");
                     decorevaRatingTooltipButton = null;
                 }
-
-                /* Desktop hover/focus tooltip only.
-                   On mobile, touch is handled exclusively by the pointerdown
-                   handler above. Ignoring hover/focus events on small screens
-                   prevents the browser's synthetic pointerout/focusout from
-                   hiding the tooltip immediately after a finger tap. */
                 document.addEventListener("pointerover", function (event) {
                     if (window.innerWidth <= 760 && event.pointerType === "touch") return;
-
                     const button = event.target.closest(".decoreva-rating-button");
                     if (!button) return;
                     if (event.relatedTarget && button.contains(event.relatedTarget)) return;
                     showDecorevaRatingTooltip(button);
                 }, true);
-
                 document.addEventListener("pointerout", function (event) {
                     if (window.innerWidth <= 760 && event.pointerType === "touch") return;
-
                     const button = event.target.closest(".decoreva-rating-button");
                     if (!button) return;
                     if (event.relatedTarget && button.contains(event.relatedTarget)) return;
                     hideDecorevaRatingTooltip(button);
                 }, true);
-
                 document.addEventListener("focusin", function (event) {
                     if (window.innerWidth <= 760) return;
-
                     const button = event.target.closest(".decoreva-rating-button");
                     if (button) showDecorevaRatingTooltip(button);
                 }, true);
-
                 document.addEventListener("focusout", function (event) {
                     if (window.innerWidth <= 760) return;
-
                     const button = event.target.closest(".decoreva-rating-button");
                     if (button) hideDecorevaRatingTooltip(button);
                 }, true);
-
                 window.addEventListener("scroll", positionDecorevaRatingTooltip, true);
                 window.addEventListener("resize", positionDecorevaRatingTooltip);
-
                 document.addEventListener("click", async function (event) {
                     const ratingButton = event.target.closest(
                         ".card .decoreva-rating-button, .featured-slide .decoreva-rating-button"
                     );
-
                     if (ratingButton) {
                         event.preventDefault();
                         event.stopPropagation();
-
                         const card = ratingButton.closest(".card, .featured-slide");
                         if (!card) return;
-
                         const row = ratingButton.closest(".decoreva-rating-row");
                         const isMobile = window.innerWidth <= 760;
-
-                        /* On a physical phone, keep the tooltip visible just
-                           long enough for the tap feedback to be seen, then
-                           continue with the normal Ratings & Reviews modal.
-                           Desktop remains immediate and unchanged. */
                         if (isMobile) {
                             showDecorevaRatingTooltip(ratingButton);
                             window.clearTimeout(decorevaMobileRatingTouchTimer);
                         } else {
                             hideDecorevaRatingTooltip(ratingButton);
                         }
-
                         const openRatingAction = async function () {
                             const currentUser = await getCurrentUser();
-
                             if (!currentUser) {
                                 if (window.decorevaSupabaseAuth &&
                                     typeof window.decorevaSupabaseAuth.open === "function") {
@@ -10210,16 +10429,13 @@
                                 }
                                 return;
                             }
-
                             openReviewModal(card);
-
                             if (isMobile) {
                                 window.setTimeout(function () {
                                     hideDecorevaRatingTooltip(ratingButton);
                                 }, 250);
                             }
                         };
-
                         if (isMobile) {
                             window.setTimeout(openRatingAction, 300);
                         } else {
@@ -10227,24 +10443,18 @@
                         }
                         return;
                     }
-
                     if (event.target.closest("[data-review-close]")) {
                         event.preventDefault();
                         event.stopPropagation();
                         closeReviewModal();
                     }
                 }, true);
-
                 document.addEventListener("keydown", function (event) {
                     if (event.key === "Escape") {
                         closeReviewModal();
                     }
                 });
-
                 initializeRatingRows();
-
-                /* Featured slides can be rebuilt on resize. Re-check only on resize;
-                   there is deliberately NO DOM MutationObserver. */
                 let resizeTimer = 0;
                 window.addEventListener("resize", function () {
                     window.clearTimeout(resizeTimer);
@@ -10253,16 +10463,8 @@
                     }, 180);
                 });
             })();
-
-            /* =========================================================
-               DECOREVA — MOBILE CONTACT SECTION POLISH
-               Phone view only. Desktop/tablet styles remain untouched.
-               Keeps the existing Contact Us content and links while making
-               the section tighter, cleaner and more professional on phones.
-               ========================================================= */
             (function () {
                 if (document.getElementById("decoreva-mobile-contact-polish")) return;
-
                 const style = document.createElement("style");
                 style.id = "decoreva-mobile-contact-polish";
                 style.textContent = `
@@ -10272,20 +10474,17 @@
                             text-align: center !important;
                             box-sizing: border-box !important;
                         }
-
                         #contact h2 {
                             margin: 0 0 10px !important;
                             font-size: 28px !important;
                             line-height: 1.15 !important;
                         }
-
                         #contact p {
                             margin: 0 auto 26px !important;
                             max-width: 310px !important;
                             font-size: 15px !important;
                             line-height: 1.55 !important;
                         }
-
                         #contact a,
                         #contact button {
                             display: flex !important;
@@ -10304,12 +10503,10 @@
                             line-height: 1 !important;
                             text-align: center !important;
                         }
-
                         #contact a:last-child,
                         #contact button:last-child {
                             margin-bottom: 0 !important;
                         }
-
                         #contact a i,
                         #contact button i {
                             margin-right: 7px !important;
@@ -10319,13 +10516,7 @@
                 `;
                 document.head.appendChild(style);
             })();
-
-            /* The saved drawer is already restored immediately after buildCartUI().
-               Do not restore it a second time; reveal only after that restore. */
-
-            /* Reveal only after the saved drawer has been opened. */
             document.documentElement.removeAttribute("data-decoreva-restoring-panel");
             document.documentElement.style.visibility = "";
             document.documentElement.style.display = "";
         });
-
