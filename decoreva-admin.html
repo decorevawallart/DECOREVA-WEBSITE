@@ -227,7 +227,20 @@ async function loadDashboard(){
   }catch(e){console.error(e);dashMsg("Dashboard data could not be loaded: "+(e.message||"Unknown error"),"error")}
 }
 function renderVisitors(){
-  $("visitorsTable").innerHTML=allVisits.slice(0,100).map(x=>`<tr><td>${new Date(x.created_at).toLocaleString("en-IN")}</td><td title="${esc(x.visitor_id)}">${esc((x.visitor_id||"").slice(0,12))}…</td><td>${x.user_id?'<span class="badge admin">Logged-in</span>':'<span class="badge guest">Guest</span>'}</td><td>${esc(x.page_path)}</td><td>${esc(x.product_key||"—")}</td></tr>`).join("")||'<tr><td colspan="5">No visitors.</td></tr>';
+  $("visitorsTable").innerHTML=allVisits.slice(0,100).map(x=>{
+    const customer=x.user_id ? allCustomers.find(c=>String(c.id)===String(x.user_id)) : null;
+    const visitorName=x.user_id
+      ? (customer?.full_name || "Logged-in customer")
+      : "Guest";
+
+    return `<tr>
+      <td>${new Date(x.created_at).toLocaleString("en-IN")}</td>
+      <td title="${esc(x.visitor_id)}">${esc(visitorName)}</td>
+      <td>${x.user_id?'<span class="badge admin">Logged-in</span>':'<span class="badge guest">Guest</span>'}</td>
+      <td>${esc(x.page_path)}</td>
+      <td>${esc(x.product_key||"—")}</td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="5">No visitors.</td></tr>';
 }
 function renderOrders(){
   const q=($("orderSearch").value||"").toLowerCase().trim(),f=$("orderStatusFilter").value;

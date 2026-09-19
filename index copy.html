@@ -34,6 +34,25 @@
     }
 </script>
 
+<script>
+    /* =========================================================
+       DECOREVA — BLOCK THE INITIAL HOME PAINT
+       If Cart/Wishlist was open before refresh, hide the entire
+       document immediately from the <head>. This runs before the
+       body exists, so there is no Home -> Drawer flash.
+       ========================================================= */
+    try {
+        const decorevaSavedPanel = sessionStorage.getItem("decoreva_open_panel");
+        if (decorevaSavedPanel === "cart" || decorevaSavedPanel === "wishlist") {
+            document.documentElement.setAttribute("data-decoreva-restoring-panel", decorevaSavedPanel);
+            document.documentElement.style.display = "none";
+            document.documentElement.style.visibility = "hidden";
+        }
+    } catch (error) {
+        /* Ignore storage restrictions; normal site behavior continues. */
+    }
+</script>
+
 
 <style id="decoreva-hero-slider-css">
 /* =========================================================
@@ -201,6 +220,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="supabase-client.js"></script>
+<script src="supabase-auth.js"></script>
+
+
+<style id="decoreva-offer-hover-pause">
+/* Pause the offer ticker when the cursor is anywhere over the strip. */
+.decoreva-offer-strip:hover .decoreva-offer-track {
+    animation-play-state: paused !important;
+}
+</style>
+
 </head>
 
 
@@ -276,7 +305,7 @@ Instagram
         <b id="decoreva-wishlist-count" class="decoreva-nav-count">0</b>
     </button>
     <button type="button" class="decoreva-nav-action" id="decoreva-nav-cart" aria-label="Cart">
-        <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+        <i class="fas fa-cart-plus" aria-hidden="true"></i>
         <span>Cart</span>
         <b id="decoreva-cart-nav-count" class="decoreva-nav-count">0</b>
     </button>
@@ -371,6 +400,8 @@ Instagram
 
 <span class="offer-divider">✦</span>
 
+<span class="offer-divider">✦</span>
+
 <a class="decoreva-offer-shop" href="#collection-title" aria-label="Shop now and view collection">
   SHOP NOW →
 </a>
@@ -410,6 +441,8 @@ Instagram
   <span class="code-label">USE CODE</span>
   <span class="code-value">WELCOME10</span>
 </span>
+
+<span class="offer-divider">✦</span>
 
 <span class="offer-divider">✦</span>
 
@@ -7563,7 +7596,7 @@ aria-label="Voice search">
 }
 </style>
 
-<script src="script.js?v=20260912-card42-46"></script>
+<script src="script.js?v=20260918-no-home-flash-v4"></script>
 
 <script>
 /* =====================================================

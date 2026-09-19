@@ -47,14 +47,14 @@
                         '<input id="decoreva-auth-phone" type="tel" maxlength="20" placeholder="Mobile number">' +
                         '<input id="decoreva-auth-email" type="email" autocomplete="email" placeholder="Email address" required>' +
                         '<input id="decoreva-auth-password" type="password" autocomplete="current-password" minlength="6" placeholder="Password (minimum 6 characters)" required>' +
+                        '<div id="decoreva-auth-reset-wrap" hidden>' +
+                            '<input id="decoreva-auth-new-password" type="password" autocomplete="new-password" minlength="6" placeholder="New password (minimum 6 characters)">' +
+                            '<input id="decoreva-auth-confirm-password" type="password" autocomplete="new-password" minlength="6" placeholder="Confirm new password">' +
+                        '</div>' +
                         '<button type="submit" id="decoreva-auth-submit">LOGIN</button>' +
                     '</form>' +
 
                     '<button type="button" id="decoreva-auth-forgot" class="decoreva-auth-switch">Forgot password?</button>' +
-                    '<div id="decoreva-auth-reset-wrap" hidden>' +
-                        '<input id="decoreva-auth-new-password" type="password" autocomplete="new-password" minlength="6" placeholder="New password (minimum 6 characters)">' +
-                        '<input id="decoreva-auth-confirm-password" type="password" autocomplete="new-password" minlength="6" placeholder="Confirm new password">' +
-                    '</div>' +
                     '<button type="button" id="decoreva-auth-switch">New customer? SIGN UP</button>' +
                     '<button type="button" id="decoreva-auth-logout" class="decoreva-auth-submit" hidden>LOGOUT</button>' +
                 '</div>';
@@ -71,71 +71,87 @@
         }
 
         function showAuthToast(message) {
-            let toast = document.getElementById("decoreva-auth-toast");
+            let toast = document.querySelector(".decoreva-shop-toast");
 
-            if (!toast) {
-                toast = document.createElement("div");
-                toast.id = "decoreva-auth-toast";
-                toast.setAttribute("role", "status");
-                toast.setAttribute("aria-live", "polite");
-
-                toast.innerHTML =
-                    '<span class="decoreva-auth-toast-icon" aria-hidden="true">✓</span>' +
-                    '<span class="decoreva-auth-toast-text"></span>';
-
-                toast.style.cssText =
-                    "position:fixed;top:145px;left:50%;z-index:999999;" +
-                    "width:max-content;max-width:calc(100vw - 32px);" +
-                    "display:flex;align-items:center;gap:11px;" +
-                    "padding:11px 18px 11px 12px;" +
-                    "border:1px solid rgba(181,128,28,.28);border-radius:8px;" +
-                    "background:#fff;color:#24170f;" +
-                    "font:600 14px/1.35 Arial,sans-serif;" +
-                    "box-shadow:0 8px 28px rgba(0,0,0,.16);" +
-                    "opacity:0;visibility:hidden;" +
-                    "transform:translate(-50%,-10px);" +
-                    "transition:opacity .25s ease,transform .25s ease,visibility .25s ease;" +
-                    "pointer-events:none;";
-
-                const icon = toast.querySelector(".decoreva-auth-toast-icon");
-                if (icon) {
-                    icon.style.cssText =
-                        "width:24px;height:24px;flex:0 0 24px;" +
-                        "display:flex;align-items:center;justify-content:center;" +
-                        "border-radius:50%;background:#b47a18;color:#fff;" +
-                        "font:bold 15px/1 Arial,sans-serif;";
-                }
-
-                const textBox = toast.querySelector(".decoreva-auth-toast-text");
-                if (textBox) {
-                    textBox.style.cssText =
-                        "display:block;letter-spacing:.1px;";
-                }
-
-                const mobileStyle = document.createElement("style");
-                mobileStyle.id = "decoreva-auth-toast-mobile-style";
-                mobileStyle.textContent =
-                    "@media (max-width:600px) {" +
-                    "#decoreva-auth-toast { top:118px; max-width:calc(100vw - 24px);" +
-                    "padding:10px 14px 10px 10px; font-size:13px; } }";
-                document.head.appendChild(mobileStyle);
-                document.body.appendChild(toast);
+            if (toast) {
+                toast.remove();
             }
 
-            const textBox = toast.querySelector(".decoreva-auth-toast-text");
-            if (textBox) textBox.textContent = message;
-            else toast.textContent = message;
+            toast = document.createElement("div");
+            toast.className = "decoreva-shop-toast";
+            toast.setAttribute("role", "status");
+            toast.setAttribute("aria-live", "polite");
 
-            toast.style.opacity = "1";
-            toast.style.visibility = "visible";
-            toast.style.transform = "translate(-50%,0)";
+            /* Small professional auth toast — scoped only to this toast.
+               Keeps the existing DECOREVA shop-toast behaviour intact. */
+            toast.style.cssText =
+                "position:fixed !important;" +
+                "top:105px !important;" +
+                "right:20px !important;" +
+                "left:auto !important;" +
+                "z-index:999999 !important;" +
+                "width:auto !important;" +
+                "max-width:min(360px,calc(100vw - 32px)) !important;" +
+                "min-height:0 !important;" +
+                "display:flex !important;" +
+                "align-items:center !important;" +
+                "gap:8px !important;" +
+                "padding:9px 13px !important;" +
+                "border-radius:7px !important;" +
+                "font:600 13px/1.3 Arial,sans-serif !important;" +
+                "box-sizing:border-box !important;" +
+                "white-space:normal !important;";
+
+            const icon = document.createElement("i");
+            icon.className = "fas fa-check";
+            icon.setAttribute("aria-hidden", "true");
+            icon.style.cssText =
+                "width:20px !important;" +
+                "height:20px !important;" +
+                "min-width:20px !important;" +
+                "display:flex !important;" +
+                "align-items:center !important;" +
+                "justify-content:center !important;" +
+                "font-size:11px !important;" +
+                "border-radius:50% !important;";
+
+            const text = document.createElement("span");
+            text.textContent = message;
+            text.style.cssText =
+                "font-size:13px !important;" +
+                "line-height:1.3 !important;" +
+                "font-weight:600 !important;" +
+                "margin:0 !important;";
+
+            toast.appendChild(icon);
+            toast.appendChild(text);
+            document.body.appendChild(toast);
+
+            if (window.matchMedia && window.matchMedia("(max-width:600px)").matches) {
+                toast.style.setProperty("top", "88px", "important");
+                toast.style.setProperty("right", "12px", "important");
+                toast.style.setProperty("max-width", "calc(100vw - 24px)", "important");
+                toast.style.setProperty("padding", "8px 11px", "important");
+                toast.style.setProperty("font-size", "12px", "important");
+
+                icon.style.setProperty("width", "19px", "important");
+                icon.style.setProperty("height", "19px", "important");
+                icon.style.setProperty("min-width", "19px", "important");
+                icon.style.setProperty("font-size", "10px", "important");
+                text.style.setProperty("font-size", "12px", "important");
+            }
+
+            requestAnimationFrame(function () {
+                toast.classList.add("show");
+            });
 
             clearTimeout(window.__decorevaAuthToastTimer);
             window.__decorevaAuthToastTimer = setTimeout(function () {
-                toast.style.opacity = "0";
-                toast.style.visibility = "hidden";
-                toast.style.transform = "translate(-50%,-10px)";
-            }, 1000);
+                toast.classList.remove("show");
+                setTimeout(function () {
+                    if (toast.parentNode) toast.remove();
+                }, 180);
+            }, 1050);
         }
 
         function setMode(mode) {
@@ -486,7 +502,21 @@
                         redirectTo: redirectTo
                     });
 
-                    if (result.error) throw result.error;
+                    if (result.error) {
+                        const errorMessage = String(result.error?.message || "").toLowerCase();
+
+                        if (
+                            errorMessage.includes("rate limit") ||
+                            errorMessage.includes("too many") ||
+                            errorMessage.includes("email rate")
+                        ) {
+                            throw new Error(
+                                "Too many reset requests. Please try again later."
+                            );
+                        }
+
+                        throw result.error;
+                    }
 
                     showMessage("Password reset link sent. Please check your email.");
                     setTimeout(closeAuthModal, 1200);
@@ -506,11 +536,13 @@
 
                     if (result.error) throw result.error;
 
-                    showMessage("Password updated successfully. You can now log in.");
+                    showMessage("Password reset successfully. You can now log in.");
                     setTimeout(async function () {
                         await supabase.auth.signOut();
                         setMode("login");
-                    }, 1200);
+                        closeAuthModal();
+                        showAuthToast("Your password has been reset successfully.");
+                    }, 700);
 
                 } else if (mode === "signup") {
                     const result = await supabase.auth.signUp({
@@ -553,12 +585,29 @@
                     await refreshAuthButton();
                     setTimeout(function () {
                         closeAuthModal();
-                        showAuthToast("You are logged in successfully. Welcome back to DECOREVA!");
+                        showAuthToast("You are logged in successfully.");
                     }, 500);
                 }
             } catch (error) {
                 console.error("DECOREVA Auth:", error);
-                showMessage(error?.message || "Unable to complete this request.", true);
+
+                const errorMessage = String(error?.message || "").toLowerCase();
+
+                if (
+                    errorMessage.includes("rate limit") ||
+                    errorMessage.includes("too many") ||
+                    errorMessage.includes("email rate")
+                ) {
+                    showMessage(
+                        "Too many reset requests. Please try again later.",
+                        true
+                    );
+                } else {
+                    showMessage(
+                        error?.message || "Unable to complete this request.",
+                        true
+                    );
+                }
             } finally {
                 if (submit) submit.disabled = false;
             }
@@ -619,6 +668,19 @@
 
         supabase.auth.onAuthStateChange(function (event) {
             refreshAuthButton();
+
+            /* If a Review modal is open, immediately re-bind its controls
+               to the new authenticated user. */
+            if (
+                (event === "SIGNED_IN" ||
+                 event === "SIGNED_OUT" ||
+                 event === "USER_UPDATED") &&
+                typeof window.decorevaReviewAuthChanged === "function"
+            ) {
+                setTimeout(function () {
+                    window.decorevaReviewAuthChanged();
+                }, 120);
+            }
 
             if (event === "PASSWORD_RECOVERY") {
                 openPasswordResetMode();
