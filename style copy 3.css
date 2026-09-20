@@ -6967,13 +6967,14 @@
         top:auto !important;
         left:auto !important;
         width:100% !important;
-        height:245px !important;
-        min-height:245px !important;
+        height:auto !important;
+        min-height:175px !important;
         display:flex !important;
         flex-direction:column !important;
         align-items:stretch !important;
         justify-content:flex-start !important;
         padding:0 !important;
+        overflow:visible !important;
         background:#201108 !important;
         box-shadow:0 8px 20px rgba(0,0,0,.30) !important;
         z-index:100004 !important;
@@ -6999,7 +7000,7 @@
 
     #main-nav.mobile-open > a:first-child,
     body.menu-open #main-nav > a:first-child{
-        margin-top:45px !important;
+        margin-top:0 !important;
     }
 
     #main-nav.mobile-open > a:hover,
@@ -7110,4 +7111,371 @@
         #A96F12,
         transparent
     );
+}
+
+
+/* =========================================================
+   DECOREVA — FINAL MAIN NAVIGATION BAR POLISH
+   PURPOSE:
+   - Main navigation buttons cover the available top bar width
+   - Equal-width buttons with visible spacing between them
+   - Keeps Profile / Wishlist / Cart completely untouched
+   - Does NOT change HTML, JS, Auth, Wishlist or Cart
+   - Desktop only; existing mobile hamburger behavior is preserved
+   ========================================================= */
+
+@media (min-width:761px){
+
+    /* Use the whole navigation bar while reserving only the
+       existing Profile / Wishlist / Cart area on the right. */
+    #main-nav{
+        width:100% !important;
+        height:50px !important;
+        min-height:50px !important;
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:stretch !important;
+        justify-content:flex-start !important;
+
+        /* 188px is reserved for the existing 3 action buttons. */
+        padding:5px 188px 5px 8px !important;
+        gap:8px !important;
+        box-sizing:border-box !important;
+
+        background:linear-gradient(
+            180deg,
+            #321B0F 0%,
+            #201108 100%
+        ) !important;
+    }
+
+    /* Every main navigation link gets an equal share of the bar. */
+    #main-nav > a{
+        position:relative !important;
+        flex:1 1 0 !important;
+        width:auto !important;
+        min-width:0 !important;
+        max-width:none !important;
+        height:40px !important;
+        min-height:40px !important;
+        margin:0 !important;
+        padding:0 12px !important;
+
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+
+        box-sizing:border-box !important;
+
+        border:1px solid rgba(215,164,58,.52) !important;
+        border-radius:9px !important;
+
+        background:linear-gradient(
+            135deg,
+            #3A2111 0%,
+            #24140A 50%,
+            #3A2111 100%
+        ) !important;
+
+        color:#F7E7C5 !important;
+        font-family:Arial,Helvetica,sans-serif !important;
+        font-size:13px !important;
+        font-weight:700 !important;
+        line-height:1 !important;
+        letter-spacing:.25px !important;
+        text-align:center !important;
+        text-decoration:none !important;
+        white-space:nowrap !important;
+
+        box-shadow:
+            0 3px 9px rgba(0,0,0,.16),
+            inset 0 1px 0 rgba(255,255,255,.08) !important;
+
+        transition:
+            background .2s ease,
+            color .2s ease,
+            border-color .2s ease,
+            transform .2s ease,
+            box-shadow .2s ease !important;
+    }
+
+    /* Remove old thin underline animation. */
+    #main-nav > a::after{
+        content:none !important;
+        display:none !important;
+    }
+
+    /* Same premium hover effect for every main button. */
+    #main-nav > a:hover{
+        color:#FFF4D8 !important;
+        border-color:#D7A43A !important;
+
+        background:linear-gradient(
+            135deg,
+            #8D5A0D 0%,
+            #C99124 48%,
+            #8D5A0D 100%
+        ) !important;
+
+        transform:translateY(-1px) !important;
+
+        box-shadow:
+            0 6px 15px rgba(91,54,5,.25),
+            inset 0 1px 0 rgba(255,255,255,.28) !important;
+    }
+
+    /* Same active style for every main button. */
+    #main-nav > a.active{
+        color:#FFF !important;
+        border-color:#D7A43A !important;
+
+        background:linear-gradient(
+            135deg,
+            #9A610D 0%,
+            #D3A43F 48%,
+            #9A610D 100%
+        ) !important;
+
+        box-shadow:
+            0 5px 14px rgba(91,54,5,.24),
+            inset 0 1px 0 rgba(255,255,255,.30) !important;
+    }
+
+    #main-nav > a.active:hover{
+        color:#FFF !important;
+        transform:translateY(-1px) !important;
+    }
+
+    #main-nav > a:focus-visible{
+        outline:2px solid #E8C77A !important;
+        outline-offset:2px !important;
+    }
+
+    /* IMPORTANT:
+       No .decoreva-nav-actions or .decoreva-nav-action rule
+       is changed here. Profile / Wishlist / Cart stay exactly
+       under their existing CSS. */
+}
+
+
+/* =========================================================
+   LARGE DESKTOP — give the buttons a little more breathing room
+   without changing the right-side Profile / Wishlist / Cart.
+   ========================================================= */
+@media (min-width:1200px){
+    #main-nav{
+        padding-left:12px !important;
+        padding-right:188px !important;
+        gap:10px !important;
+    }
+
+    #main-nav > a{
+        padding-left:16px !important;
+        padding-right:16px !important;
+        font-size:13px !important;
+    }
+}
+
+
+/* =========================================================
+   MOBILE — DO NOT CHANGE THE EXISTING HAMBURGER SYSTEM
+   ========================================================= */
+@media (max-width:760px){
+    /* The existing final mobile rules remain authoritative.
+       Profile / Wishlist / Cart are untouched. */
+}
+
+
+/* =========================================================
+   DECOREVA NAVIGATION — NO BOXES / FULL BAR
+   - Main nav links spread across the available top bar
+   - NO button boxes, borders, backgrounds or rounded cards
+   - Keeps the existing gold text + underline style
+   - Profile / Wishlist / Cart are NOT touched
+   - Desktop only; existing mobile navigation remains unchanged
+   ========================================================= */
+
+@media (min-width:761px){
+
+    /* Let the main navigation use the full bar while leaving
+       the existing Profile / Wishlist / Cart area untouched. */
+    #main-nav{
+        width:100% !important;
+        height:50px !important;
+        min-height:50px !important;
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        gap:8px !important;
+        padding:5px 188px 5px 8px !important;
+        box-sizing:border-box !important;
+        background:linear-gradient(180deg,#321B0F 0%,#201108 100%) !important;
+    }
+
+    /* Main navigation links only — NO BOX */
+    #main-nav > a{
+        position:relative !important;
+        flex:1 1 0 !important;
+        width:auto !important;
+        min-width:0 !important;
+        max-width:none !important;
+
+        height:40px !important;
+        min-height:40px !important;
+        margin:0 !important;
+        padding:0 12px !important;
+
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        box-sizing:border-box !important;
+
+        /* Remove all button/card appearance */
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+
+        color:#F7E7C5 !important;
+        font-family:Arial,Helvetica,sans-serif !important;
+        font-size:14px !important;
+        font-weight:600 !important;
+        line-height:1 !important;
+        letter-spacing:.35px !important;
+        text-align:center !important;
+        text-decoration:none !important;
+        white-space:nowrap !important;
+
+        transform:none !important;
+        transition:color .25s ease,transform .25s ease !important;
+    }
+
+    /* Keep the original clean gold underline. */
+    #main-nav > a::after{
+        content:"" !important;
+        position:absolute !important;
+        left:22px !important;
+        right:22px !important;
+        bottom:3px !important;
+        width:auto !important;
+        height:2px !important;
+        margin:0 !important;
+        padding:0 !important;
+        display:block !important;
+
+        border:0 !important;
+        border-radius:5px !important;
+        background:#E2B14A !important;
+
+        transform:scaleX(0) !important;
+        transform-origin:center !important;
+        transition:transform .25s ease !important;
+    }
+
+    #main-nav > a:hover,
+    #main-nav > a.active{
+        color:#E2B14A !important;
+        background:transparent !important;
+        border:0 !important;
+        box-shadow:none !important;
+        transform:none !important;
+    }
+
+    #main-nav > a:hover::after,
+    #main-nav > a.active::after{
+        transform:scaleX(1) !important;
+    }
+
+    #main-nav > a:focus-visible{
+        outline:2px solid rgba(232,199,122,.65) !important;
+        outline-offset:2px !important;
+    }
+
+    /* Explicitly leave these existing controls alone:
+       .decoreva-nav-actions
+       .decoreva-nav-action
+       Profile
+       Wishlist
+       Cart */
+}
+
+/* =========================================================
+   DECOREVA — MOBILE TOP / BURGER OVERLAY FIX
+   Mobile only.
+   1) Burger menu overlays the banner instead of pushing it down.
+   2) Keeps the mobile top/menu clean and professional.
+   3) Desktop and all other settings remain unchanged.
+   ========================================================= */
+@media (max-width:760px){
+
+    /* Keep the normal header footprint when the menu opens.
+       The menu itself will float over the banner. */
+    body.menu-open header{
+        min-height:124px !important;
+    }
+
+    /* Open mobile navigation as an overlay.
+       73px = mobile header padding + 66px logo row,
+       so the menu starts exactly where the normal nav bar starts. */
+    #main-nav.mobile-open,
+    body.menu-open #main-nav{
+        position:absolute !important;
+        top:73px !important;
+        left:0 !important;
+        right:0 !important;
+        width:100% !important;
+        height:auto !important;
+        min-height:175px !important;
+        max-height:calc(100vh - 73px) !important;
+        margin:0 !important;
+        padding:0 !important;
+        overflow-x:hidden !important;
+        overflow-y:auto !important;
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:stretch !important;
+        justify-content:flex-start !important;
+        background:linear-gradient(180deg,#2A160B 0%,#201108 100%) !important;
+        border-top:1px solid rgba(215,164,58,.65) !important;
+        border-bottom:1px solid rgba(215,164,58,.45) !important;
+        box-shadow:0 14px 30px rgba(0,0,0,.34) !important;
+        z-index:100004 !important;
+    }
+
+    /* Clean professional menu rows */
+    #main-nav.mobile-open > a,
+    body.menu-open #main-nav > a{
+        flex:0 0 40px !important;
+        width:100% !important;
+        min-height:40px !important;
+        height:40px !important;
+        padding:10px 18px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        background:transparent !important;
+        border-bottom:1px solid rgba(215,164,58,.18) !important;
+        color:#F0C66A !important;
+        font-size:12px !important;
+        font-weight:700 !important;
+        letter-spacing:.15px !important;
+    }
+
+    #main-nav.mobile-open > a:hover,
+    body.menu-open #main-nav > a:hover{
+        background:rgba(215,164,58,.10) !important;
+        color:#F8D989 !important;
+    }
+
+    /* Keep Profile / Wishlist / Cart fixed at the top-right
+       of the original 45px navigation strip. */
+    #main-nav.mobile-open > .decoreva-nav-actions,
+    body.menu-open #main-nav > .decoreva-nav-actions{
+        position:absolute !important;
+        top:0 !important;
+        right:0 !important;
+        display:flex !important;
+        z-index:100005 !important;
+    }
 }

@@ -10520,3 +10520,528 @@
             document.documentElement.style.visibility = "";
             document.documentElement.style.display = "";
         });
+
+/* =========================================================
+   DECOREVA — COLLECTION CATEGORY NAVIGATION
+   SAFE ADD-ON
+   - Uses the existing #main-nav Collection link
+   - Creates the Collection dropdown directly under Collection
+   - Mobile Collection opens correctly inside the hamburger menu
+   - Filters the existing product cards only
+   - Does not modify product/card HTML
+   - Does not touch Auth, Supabase, Cart, Wishlist,
+     sliders, lightbox, reviews, or existing settings
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+
+    const nav = document.querySelector("#main-nav");
+    const collectionProducts = document.querySelector("#collection-products");
+
+    if (!nav || !collectionProducts) return;
+
+    const collectionLink = Array.from(nav.querySelectorAll("a")).find(function (link) {
+        const text = (link.textContent || "").trim().toLowerCase();
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        return text === "collection" || href === "#collection-title";
+    });
+
+    if (!collectionLink) return;
+
+    let wrapper = nav.querySelector(".decoreva-collection-nav");
+    let dropdown = document.querySelector("#decoreva-collection-dropdown");
+
+    /*
+     * Wrap ONLY the existing Collection link.
+     * This keeps the dropdown positioned relative to Collection,
+     * instead of relative to the whole navigation bar.
+     */
+    if (!wrapper) {
+        wrapper = document.createElement("div");
+        wrapper.className = "decoreva-collection-nav";
+
+        collectionLink.parentNode.insertBefore(wrapper, collectionLink);
+        wrapper.appendChild(collectionLink);
+    }
+
+    wrapper.style.position = "relative";
+
+    collectionLink.classList.add("decoreva-collection-trigger");
+    collectionLink.setAttribute("aria-haspopup", "true");
+    collectionLink.setAttribute("aria-expanded", "false");
+
+    if (!dropdown) {
+        dropdown = document.createElement("div");
+        dropdown.id = "decoreva-collection-dropdown";
+        dropdown.setAttribute("role", "menu");
+        dropdown.setAttribute("aria-hidden", "true");
+
+        dropdown.innerHTML = `
+            <button type="button" role="menuitem" data-decoreva-category="all">All Products</button>
+            <button type="button" role="menuitem" data-decoreva-category="temples">Temples</button>
+            <button type="button" role="menuitem" data-decoreva-category="keyholders">Key Holders</button>
+            <button type="button" role="menuitem" data-decoreva-category="wallart">Wall Art</button>
+        `;
+
+        wrapper.appendChild(dropdown);
+    } else if (dropdown.parentElement !== wrapper) {
+        wrapper.appendChild(dropdown);
+    }
+
+    if (!document.getElementById("decoreva-collection-category-style")) {
+        const style = document.createElement("style");
+        style.id = "decoreva-collection-category-style";
+        style.textContent = `
+            /* =====================================================
+               DESKTOP — dropdown is attached to COLLECTION itself
+               ===================================================== */
+            #main-nav .decoreva-collection-nav {
+                position: relative !important;
+                display: flex !important;
+                align-items: center !important;
+                height: 100% !important;
+                flex: 0 0 auto !important;
+            }
+
+            #main-nav .decoreva-collection-trigger {
+                position: relative !important;
+            }
+
+            /* Collection trigger remains clean — no extra dot/arrow below it. */
+            #main-nav .decoreva-collection-trigger::after {
+                content: none !important;
+                display: none !important;
+            }
+
+            #decoreva-collection-dropdown {
+                position: absolute !important;
+                top: calc(100% + 7px) !important;
+                left: 50% !important;
+                transform: translateX(-50%) translateY(-5px) !important;
+                width: 158px !important;
+                padding: 6px !important;
+                box-sizing: border-box !important;
+                background: linear-gradient(180deg, #1b100a 0%, #100906 100%) !important;
+                border: 1px solid rgba(210, 161, 61, .92) !important;
+                border-radius: 10px !important;
+                box-shadow:
+                    0 16px 34px rgba(0,0,0,.38),
+                    0 4px 12px rgba(0,0,0,.22),
+                    inset 0 1px 0 rgba(255,226,151,.08) !important;
+                overflow: hidden !important;
+                z-index: 100000 !important;
+                display: block !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                transition: opacity .16s ease, transform .16s ease, visibility .16s ease !important;
+            }
+
+            #decoreva-collection-dropdown::before {
+                content: "";
+                display: block;
+                width: 34px;
+                height: 2px;
+                margin: 1px auto 5px;
+                border-radius: 99px;
+                background: linear-gradient(90deg,#9b6819,#f1c85f,#9b6819);
+                box-shadow: 0 0 8px rgba(225,185,87,.18);
+            }
+
+            #decoreva-collection-dropdown.decoreva-open {
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                transform: translateX(-50%) translateY(0) !important;
+            }
+
+            #decoreva-collection-dropdown button {
+                display: block !important;
+                width: 100% !important;
+                min-height: 32px !important;
+                padding: 7px 11px 7px 12px !important;
+                margin: 1px 0 !important;
+                border: 0 !important;
+                border-radius: 6px !important;
+                background: transparent !important;
+                color: #f2d28a !important;
+                font: inherit !important;
+                font-size: 11.5px !important;
+                font-weight: 800 !important;
+                line-height: 1.2 !important;
+                letter-spacing: .15px !important;
+                text-align: left !important;
+                cursor: pointer !important;
+                box-sizing: border-box !important;
+                transition: background .16s ease, color .16s ease, padding-left .16s ease, box-shadow .16s ease !important;
+            }
+
+            #decoreva-collection-dropdown button + button {
+                border-top: 1px solid rgba(213,170,84,.11) !important;
+            }
+
+            #decoreva-collection-dropdown button:hover,
+            #decoreva-collection-dropdown button:focus-visible {
+                background: linear-gradient(90deg,rgba(198,149,46,.24),rgba(225,185,87,.10)) !important;
+                color: #fff0c7 !important;
+                padding-left: 16px !important;
+                box-shadow: inset 2px 0 0 #d7a43a !important;
+                outline: none !important;
+            }
+
+            /* =====================================================
+               MOBILE — Collection stays a working menu item
+               inside the hamburger navigation.
+               ===================================================== */
+            @media (max-width: 760px) {
+                /* CLOSED MOBILE MENU:
+                   Collection must stay hidden with the rest of the hamburger links.
+                   The Collection wrapper is a DIV, so the existing
+                   #main-nav > a { display:none } rule cannot hide it. */
+                #main-nav .decoreva-collection-nav {
+                    width: 100% !important;
+                    height: auto !important;
+                    display: none !important;
+                    flex-direction: column !important;
+                    align-items: stretch !important;
+                    position: relative !important;
+                }
+
+                /* OPEN MOBILE MENU:
+                   Show Collection only when the hamburger navigation is open. */
+                #main-nav.mobile-open .decoreva-collection-nav,
+                body.menu-open #main-nav .decoreva-collection-nav {
+                    display: flex !important;
+                }
+
+                /* Make Collection match Home / About Us / Contact / Instagram exactly. */
+                #main-nav.mobile-open .decoreva-collection-trigger,
+                body.menu-open #main-nav .decoreva-collection-trigger {
+                    display: flex !important;
+                    position: relative !important;
+                    flex: 0 0 40px !important;
+                    width: 100% !important;
+                    min-width: 100% !important;
+                    min-height: 40px !important;
+                    height: 40px !important;
+                    box-sizing: border-box !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    padding: 10px 18px !important;
+                    margin: 0 !important;
+                    background: #201108 !important;
+                    border: 0 !important;
+                    border-bottom: 1px solid rgba(184,134,44,.28) !important;
+                    border-radius: 0 !important;
+                    color: #F0C66A !important;
+                    font-size: 12px !important;
+                    font-weight: 700 !important;
+                    line-height: 1.2 !important;
+                    text-align: left !important;
+                    text-decoration: none !important;
+                    letter-spacing: normal !important;
+                }
+
+                #main-nav .decoreva-collection-trigger {
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                }
+
+                #main-nav .decoreva-collection-trigger::after {
+                    content: none !important;
+                    display: none !important;
+                }
+
+                #decoreva-collection-dropdown {
+                    position: static !important;
+                    width: 180px !important;
+                    max-width: calc(100% - 28px) !important;
+                    margin: 2px 0 5px 14px !important;
+                    transform: none !important;
+                    padding: 3px !important;
+                    border-radius: 7px !important;
+                    box-shadow: 0 6px 14px rgba(0,0,0,.22) !important;
+                    display: none !important;
+                    opacity: 0 !important;
+                    visibility: hidden !important;
+                    pointer-events: none !important;
+                }
+
+                #decoreva-collection-dropdown.decoreva-open {
+                    display: block !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                    pointer-events: auto !important;
+                    transform: none !important;
+                }
+
+                #decoreva-collection-dropdown button {
+                    min-height: 26px !important;
+                    font-size: 10.5px !important;
+                    line-height: 1.1 !important;
+                    padding: 5px 8px !important;
+                }
+
+                #decoreva-collection-dropdown::before {
+                    width: 22px !important;
+                    height: 2px !important;
+                    margin: 0 auto 2px !important;
+                }
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    const collectionTitle =
+        document.querySelector("#collection-title, .collection-title");
+
+    const productSearch =
+        document.querySelector("#productSearch");
+
+    let activeCategory = "all";
+
+    function getCardText(card) {
+        const title = card.querySelector("h3");
+        const image = card.querySelector("img");
+
+        return (
+            (title ? title.textContent : "") +
+            " " +
+            (image ? image.getAttribute("alt") || "" : "") +
+            " " +
+            (card.getAttribute("data-product-key") || "") +
+            " " +
+            (card.getAttribute("data-product-id") || "") +
+            " " +
+            (card.getAttribute("data-variation-product") || "")
+        ).toLowerCase();
+    }
+
+    function cardMatchesCategory(card, category) {
+        if (category === "all") return true;
+
+        const text = getCardText(card);
+
+        if (category === "temples") {
+            return /\btemple\b|\btemples\b|\bmandir\b/.test(text);
+        }
+
+        if (category === "keyholders") {
+            return /\bkey[\s-]?holder\b|\bkeyholders\b|\bkeyholder\b/.test(text);
+        }
+
+        if (category === "wallart") {
+            return /\bwall[\s-]?art\b|\bwallart\b|\bmdf wall\b|\bacrylic wall\b/.test(text);
+        }
+
+        return false;
+    }
+
+    function closeDropdown() {
+        dropdown.classList.remove("decoreva-open");
+        dropdown.setAttribute("aria-hidden", "true");
+        collectionLink.setAttribute("aria-expanded", "false");
+    }
+
+    function openDropdown() {
+        dropdown.classList.add("decoreva-open");
+        dropdown.setAttribute("aria-hidden", "false");
+        collectionLink.setAttribute("aria-expanded", "true");
+    }
+
+    function scrollToCollection() {
+        if (!collectionTitle) return;
+
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                const navHeight = nav ? nav.getBoundingClientRect().height : 0;
+                const top =
+                    collectionTitle.getBoundingClientRect().top +
+                    window.pageYOffset -
+                    navHeight -
+                    6;
+
+                window.scrollTo({
+                    top: Math.max(0, top),
+                    left: 0,
+                    behavior: "smooth"
+                });
+            });
+        });
+    }
+
+    function showAllProducts() {
+        activeCategory = "all";
+
+        if (productSearch) {
+            productSearch.value = "";
+        }
+
+        if (typeof clearAllCollectionFilters === "function") {
+            clearAllCollectionFilters(false);
+        } else {
+            const cards = Array.from(collectionProducts.querySelectorAll(".card"));
+            cards.forEach(function (card) {
+                card.style.setProperty("display", "flex", "important");
+            });
+
+            document.querySelectorAll(".decoreva-pagination").forEach(function (navItem) {
+                navItem.style.display = "flex";
+            });
+
+            if (typeof decorevaShowPage === "function") {
+                decorevaShowPage(1);
+            }
+        }
+
+        if (typeof window.decorevaLoadVisibleSliders === "function") {
+            window.decorevaLoadVisibleSliders();
+        }
+    }
+
+    function applyCategory(category) {
+        activeCategory = category;
+
+        if (productSearch) {
+            productSearch.value = "";
+        }
+
+        if (category === "all") {
+            showAllProducts();
+            return;
+        }
+
+        document.querySelectorAll(".decoreva-pagination").forEach(function (navItem) {
+            navItem.style.display = "none";
+        });
+
+        const cards = Array.from(
+            collectionProducts.querySelectorAll(".card")
+        );
+
+        cards.forEach(function (card) {
+            const visible = cardMatchesCategory(card, category);
+
+            card.style.setProperty(
+                "display",
+                visible ? "flex" : "none",
+                "important"
+            );
+        });
+
+        if (typeof window.decorevaLoadVisibleSliders === "function") {
+            window.decorevaLoadVisibleSliders();
+        }
+    }
+
+    collectionLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const isOpening =
+            !dropdown.classList.contains("decoreva-open");
+
+        if (window.innerWidth <= 760) {
+            /*
+             * The existing mobile document click handler closes the
+             * hamburger nav during capture. Re-open it here only for
+             * the Collection interaction. No other mobile navigation
+             * behavior is changed.
+             */
+            if (isOpening) {
+                nav.classList.add("mobile-open");
+                document.body.classList.add("menu-open");
+
+                const menuButton =
+                    document.querySelector(".mobile-menu-toggle");
+
+                if (menuButton) {
+                    menuButton.setAttribute("aria-expanded", "true");
+                }
+            }
+        }
+
+        if (isOpening) {
+            openDropdown();
+        } else {
+            closeDropdown();
+        }
+    }, true);
+
+    dropdown.querySelectorAll("[data-decoreva-category]").forEach(function (button) {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const category =
+                button.getAttribute("data-decoreva-category") || "all";
+
+            applyCategory(category);
+            closeDropdown();
+
+            if (window.innerWidth <= 760) {
+                nav.classList.remove("mobile-open");
+                document.body.classList.remove("menu-open");
+
+                const menuButton =
+                    document.querySelector(".mobile-menu-toggle");
+
+                if (menuButton) {
+                    menuButton.setAttribute("aria-expanded", "false");
+                }
+            }
+
+            scrollToCollection();
+        });
+    });
+
+    document.addEventListener("click", function (event) {
+        if (
+            !dropdown.contains(event.target) &&
+            !collectionLink.contains(event.target)
+        ) {
+            closeDropdown();
+        }
+    }, true);
+
+    if (productSearch) {
+        productSearch.addEventListener("input", function () {
+            if (activeCategory === "all") return;
+
+            const searchText =
+                productSearch.value.toLowerCase().trim();
+
+            document.querySelectorAll(".decoreva-pagination").forEach(function (navItem) {
+                navItem.style.display = "none";
+            });
+
+            const cards = Array.from(
+                collectionProducts.querySelectorAll(".card")
+            );
+
+            cards.forEach(function (card) {
+                const title = card.querySelector("h3");
+                const name = title
+                    ? title.textContent.toLowerCase()
+                    : "";
+
+                const categoryMatch =
+                    cardMatchesCategory(card, activeCategory);
+
+                const searchMatch =
+                    !searchText || name.includes(searchText);
+
+                card.style.setProperty(
+                    "display",
+                    categoryMatch && searchMatch ? "flex" : "none",
+                    "important"
+                );
+            });
+
+            if (typeof window.decorevaLoadVisibleSliders === "function") {
+                window.decorevaLoadVisibleSliders();
+            }
+        });
+    }
+});
