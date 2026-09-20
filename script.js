@@ -1,9 +1,9 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded",function(){
 "use strict";
-if (!document.getElementById("decoreva-desktop-profile-polish")) {
-const desktopProfileStyle = document.createElement("style");
-desktopProfileStyle.id = "decoreva-desktop-profile-polish";
-desktopProfileStyle.textContent = `
+if(!document.getElementById("decoreva-desktop-profile-polish")){
+const desktopProfileStyle=document.createElement("style");
+desktopProfileStyle.id= "decoreva-desktop-profile-polish";
+desktopProfileStyle.textContent= `
 @media (min-width: 761px) {
 #decoreva-profile-panel .decoreva-profile-card {
 width: 380px !important;
@@ -78,388 +78,388 @@ line-height: 1.4 !important;
 `;
 document.head.appendChild(desktopProfileStyle);
 }
-window.addEventListener("beforeunload", function () {
-try {
-const savedPanelBeforeRefresh = sessionStorage.getItem("decoreva_open_panel");
-if (savedPanelBeforeRefresh === "cart" || savedPanelBeforeRefresh === "wishlist") {
-document.documentElement.style.display = "none";
-document.documentElement.style.visibility = "hidden";
+window.addEventListener("beforeunload",function(){
+try{
+const savedPanelBeforeRefresh=sessionStorage.getItem("decoreva_open_panel");
+if(savedPanelBeforeRefresh=== "cart"||savedPanelBeforeRefresh=== "wishlist"){
+document.documentElement.style.display= "none";
+document.documentElement.style.visibility= "hidden";
 }
-} catch (error) {
+}catch(error){
 }
 });
-const DECOREVA_VISITOR_ID_KEY = "decorevaVisitorId";
-const DECOREVA_TRACKED_PAGE_KEY = "decorevaTrackedPage";
-function getDecorevaVisitorId() {
-let visitorId = "";
-try {
-visitorId = localStorage.getItem(DECOREVA_VISITOR_ID_KEY) || "";
-} catch (error) {
-console.warn("DECOREVA visitor storage read error:", error);
+const DECOREVA_VISITOR_ID_KEY= "decorevaVisitorId";
+const DECOREVA_TRACKED_PAGE_KEY= "decorevaTrackedPage";
+function getDecorevaVisitorId(){
+let visitorId= "";
+try{
+visitorId=localStorage.getItem(DECOREVA_VISITOR_ID_KEY)|| "";
+}catch(error){
+console.warn("DECOREVA visitor storage read error:",error);
 }
-if (!visitorId) {
-if (window.crypto && typeof window.crypto.randomUUID === "function") {
-visitorId = window.crypto.randomUUID();
-} else if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-const bytes = new Uint8Array(16);
+if(!visitorId){
+if(window.crypto&&typeof window.crypto.randomUUID=== "function"){
+visitorId=window.crypto.randomUUID();
+}else if(window.crypto&&typeof window.crypto.getRandomValues=== "function"){
+const bytes=new Uint8Array(16);
 window.crypto.getRandomValues(bytes);
-visitorId = Array.from(bytes, function (byte) {
+visitorId=Array.from(bytes,function(byte){
 return byte.toString(16).padStart(2, "0");
 }).join("");
-} else {
-visitorId = "visitor-" + Date.now() + "-" + Math.random().toString(36).slice(2, 12);
+}else{
+visitorId= "visitor-"+Date.now()+ "-"+Math.random().toString(36).slice(2,12);
 }
-try {
-localStorage.setItem(DECOREVA_VISITOR_ID_KEY, visitorId);
-} catch (error) {
-console.warn("DECOREVA visitor storage write error:", error);
+try{
+localStorage.setItem(DECOREVA_VISITOR_ID_KEY,visitorId);
+}catch(error){
+console.warn("DECOREVA visitor storage write error:",error);
 }
 }
 return visitorId;
 }
-async function getDecorevaTrackingUser() {
-if (!window.decorevaSupabase || !window.decorevaSupabase.auth) {
+async function getDecorevaTrackingUser(){
+if(!window.decorevaSupabase||!window.decorevaSupabase.auth){
 return null;
 }
-try {
-const result = await window.decorevaSupabase.auth.getUser();
-return result && result.data ? result.data.user || null : null;
-} catch (error) {
-console.warn("DECOREVA visitor auth check error:", error);
+try{
+const result=await window.decorevaSupabase.auth.getUser();
+return result&&result.data?result.data.user||null:null;
+}catch(error){
+console.warn("DECOREVA visitor auth check error:",error);
 return null;
 }
 }
-function getDecorevaTrackingPageKey() {
-return window.location.pathname + window.location.search + window.location.hash;
+function getDecorevaTrackingPageKey(){
+return window.location.pathname+window.location.search+window.location.hash;
 }
-async function trackDecorevaVisit(productKey) {
-if (!window.decorevaSupabase) {
+async function trackDecorevaVisit(productKey){
+if(!window.decorevaSupabase){
 console.warn("DECOREVA visitor tracking: Supabase client unavailable.");
 return false;
 }
-const visitorId = getDecorevaVisitorId();
-if (!visitorId) return false;
-const pageKey = getDecorevaTrackingPageKey();
-const isProductView = !!productKey;
-if (!isProductView) {
-try {
-if (sessionStorage.getItem(DECOREVA_TRACKED_PAGE_KEY) === pageKey) {
+const visitorId=getDecorevaVisitorId();
+if(!visitorId)return false;
+const pageKey=getDecorevaTrackingPageKey();
+const isProductView=!!productKey;
+if(!isProductView){
+try{
+if(sessionStorage.getItem(DECOREVA_TRACKED_PAGE_KEY)===pageKey){
 return true;
 }
-} catch (error) {
-console.warn("DECOREVA visitor session storage read error:", error);
+}catch(error){
+console.warn("DECOREVA visitor session storage read error:",error);
 }
 }
-const user = await getDecorevaTrackingUser();
-const payload = {
-visitor_id: visitorId,
-user_id: user ? user.id : null,
-page_path: pageKey,
-product_key: productKey ? String(productKey) : null,
-referrer: document.referrer || null
+const user=await getDecorevaTrackingUser();
+const payload={
+visitor_id:visitorId,
+user_id:user?user.id:null,
+page_path:pageKey,
+product_key:productKey?String(productKey):null,
+referrer:document.referrer||null
 };
-try {
-const result = await window.decorevaSupabase
+try{
+const result=await window.decorevaSupabase
 .from("site_visits")
 .insert(payload);
-if (result.error) {
-console.error("DECOREVA visitor tracking error:", result.error);
+if(result.error){
+console.error("DECOREVA visitor tracking error:",result.error);
 return false;
 }
-if (!isProductView) {
-try {
-sessionStorage.setItem(DECOREVA_TRACKED_PAGE_KEY, pageKey);
-} catch (error) {
-console.warn("DECOREVA visitor session storage write error:", error);
+if(!isProductView){
+try{
+sessionStorage.setItem(DECOREVA_TRACKED_PAGE_KEY,pageKey);
+}catch(error){
+console.warn("DECOREVA visitor session storage write error:",error);
 }
 }
 return true;
-} catch (error) {
-console.error("DECOREVA visitor tracking exception:", error);
+}catch(error){
+console.error("DECOREVA visitor tracking exception:",error);
 return false;
 }
 }
-window.decorevaTrackVisit = trackDecorevaVisit;
+window.decorevaTrackVisit=trackDecorevaVisit;
 trackDecorevaVisit();
-document.addEventListener("click", function (event) {
-const card = event.target.closest("#collection-products .card, .featured-slider .featured-slide");
-if (!card) return;
-const productKey =
-card.dataset.productKey ||
-card.dataset.productId ||
-card.getAttribute("data-product-key") ||
-card.getAttribute("data-product-id") ||
-card.getAttribute("data-variation-product") ||
+document.addEventListener("click",function(event){
+const card=event.target.closest("#collection-products .card, .featured-slider .featured-slide");
+if(!card)return;
+const productKey=
+card.dataset.productKey||
+card.dataset.productId||
+card.getAttribute("data-product-key")||
+card.getAttribute("data-product-id")||
+card.getAttribute("data-variation-product")||
 "";
-if (productKey) {
+if(productKey){
 trackDecorevaVisit(productKey);
 }
-}, true);
-function getSliderImages(slider) {
-if (!slider) return [];
-try {
-return JSON.parse(slider.dataset.images || "[]");
-} catch (error) {
-console.error("DECOREVA slider data error:", error);
-return [];
+},true);
+function getSliderImages(slider){
+if(!slider)return[];
+try{
+return JSON.parse(slider.dataset.images|| "[]");
+}catch(error){
+console.error("DECOREVA slider data error:",error);
+return[];
 }
 }
-function getSliderIndex(slider) {
-if (!slider) return 0;
-const index = parseInt(slider.dataset.index || "0", 10);
-return Number.isNaN(index) ? 0 : index;
+function getSliderIndex(slider){
+if(!slider)return 0;
+const index=parseInt(slider.dataset.index|| "0",10);
+return Number.isNaN(index)?0:index;
 }
-document.querySelectorAll("#collection-products .card").forEach(function (card) {
-const title = card.querySelector("h3");
-if (!title) return;
-if (title.textContent.trim().toLowerCase() === "family keyholder") {
+document.querySelectorAll("#collection-products .card").forEach(function(card){
+const title=card.querySelector("h3");
+if(!title)return;
+if(title.textContent.trim().toLowerCase()=== "family keyholder"){
 card.remove();
 }
 });
-function updateDots(slider, images, currentIndex) {
-if (!slider) return;
-const container = slider.querySelector(".slider-dots");
-if (!container) return;
-const fragment = document.createDocumentFragment();
-images.forEach(function (_, index) {
-const dot = document.createElement("span");
-dot.className =
-"slider-dot" +
-(index === currentIndex ? " active" : "");
-dot.dataset.index = String(index);
+function updateDots(slider,images,currentIndex){
+if(!slider)return;
+const container=slider.querySelector(".slider-dots");
+if(!container)return;
+const fragment=document.createDocumentFragment();
+images.forEach(function(_,index){
+const dot=document.createElement("span");
+dot.className=
+"slider-dot"+
+(index===currentIndex? " active": "");
+dot.dataset.index=String(index);
 dot.setAttribute("role", "button");
 dot.setAttribute("tabindex", "0");
-dot.setAttribute("aria-label", "View image " + (index + 1));
+dot.setAttribute("aria-label", "View image "+(index+1));
 fragment.appendChild(dot);
 });
 container.replaceChildren(fragment);
 }
-document.addEventListener("click", function (event) {
-const dot = event.target.closest(".slider-dot");
-if (!dot) return;
-const container = dot.closest(".slider-dots");
-const slider = container
-? container.closest(".image-slider, .featured-image-box")
-: null;
-const index = Number(dot.dataset.index);
-if (!slider || !Number.isInteger(index)) return;
+document.addEventListener("click",function(event){
+const dot=event.target.closest(".slider-dot");
+if(!dot)return;
+const container=dot.closest(".slider-dots");
+const slider=container
+?container.closest(".image-slider, .featured-image-box")
+:null;
+const index=Number(dot.dataset.index);
+if(!slider||!Number.isInteger(index))return;
 event.preventDefault();
 event.stopPropagation();
-showSliderImage(slider, index);
+showSliderImage(slider,index);
 });
-document.addEventListener("keydown", function (event) {
-if (event.key !== "Enter" && event.key !== " ") return;
-const dot = event.target.closest(".slider-dot");
-if (!dot) return;
-const container = dot.closest(".slider-dots");
-const slider = container
-? container.closest(".image-slider, .featured-image-box")
-: null;
-const index = Number(dot.dataset.index);
-if (!slider || !Number.isInteger(index)) return;
+document.addEventListener("keydown",function(event){
+if(event.key!== "Enter"&&event.key!== " ")return;
+const dot=event.target.closest(".slider-dot");
+if(!dot)return;
+const container=dot.closest(".slider-dots");
+const slider=container
+?container.closest(".image-slider, .featured-image-box")
+:null;
+const index=Number(dot.dataset.index);
+if(!slider||!Number.isInteger(index))return;
 event.preventDefault();
 event.stopPropagation();
-showSliderImage(slider, index);
+showSliderImage(slider,index);
 });
-function showSliderImage(slider, index) {
-if (!slider) return;
-const images = getSliderImages(slider);
-const image = slider.querySelector(".slider-image");
-if (!images.length || !image) return;
-index =
-((index % images.length) + images.length) %
+function showSliderImage(slider,index){
+if(!slider)return;
+const images=getSliderImages(slider);
+const image=slider.querySelector(".slider-image");
+if(!images.length||!image)return;
+index=
+((index%images.length)+images.length)%
 images.length;
-slider.dataset.index = String(index);
-const targetSrc = images[index];
-if (image.getAttribute("src") !== targetSrc) {
-image.src = targetSrc;
+slider.dataset.index=String(index);
+const targetSrc=images[index];
+if(image.getAttribute("src")!==targetSrc){
+image.src=targetSrc;
 }
-image.dataset.loaded = "true";
-updateDots(slider, images, index);
+image.dataset.loaded= "true";
+updateDots(slider,images,index);
 }
-window.changeImage = function (button, direction) {
-if (!button) return;
-const slider = button.closest(".image-slider");
-if (!slider) return;
-const images = getSliderImages(slider);
-if (!images.length) return;
-let index = getSliderIndex(slider);
-index += Number(direction) || 0;
-showSliderImage(slider, index);
+window.changeImage=function(button,direction){
+if(!button)return;
+const slider=button.closest(".image-slider");
+if(!slider)return;
+const images=getSliderImages(slider);
+if(!images.length)return;
+let index=getSliderIndex(slider);
+index+=Number(direction)||0;
+showSliderImage(slider,index);
 };
-const sliderObserver =
-"IntersectionObserver" in window
-? new IntersectionObserver(
-function (entries) {
-entries.forEach(function (entry) {
-if (!entry.isIntersecting) return;
-const slider = entry.target;
-const index = getSliderIndex(slider);
-showSliderImage(slider, index);
+const sliderObserver=
+"IntersectionObserver"in window
+?new IntersectionObserver(
+function(entries){
+entries.forEach(function(entry){
+if(!entry.isIntersecting)return;
+const slider=entry.target;
+const index=getSliderIndex(slider);
+showSliderImage(slider,index);
 sliderObserver.unobserve(slider);
 });
 },
 {
 rootMargin: "250px 0px",
-threshold: 0.01
+threshold:0.01
 }
 )
-: null;
-document.querySelectorAll(".image-slider").forEach(function (slider) {
-const images = getSliderImages(slider);
-if (!images.length) return;
-updateDots(slider, images, getSliderIndex(slider));
-if (sliderObserver) {
+:null;
+document.querySelectorAll(".image-slider").forEach(function(slider){
+const images=getSliderImages(slider);
+if(!images.length)return;
+updateDots(slider,images,getSliderIndex(slider));
+if(sliderObserver){
 sliderObserver.observe(slider);
-} else {
-showSliderImage(slider, getSliderIndex(slider));
+}else{
+showSliderImage(slider,getSliderIndex(slider));
 }
 });
-const lightbox =
-document.querySelector("#lightbox") ||
+const lightbox=
+document.querySelector("#lightbox")||
 document.querySelector(".lightbox");
-const lightboxImg =
+const lightboxImg=
 document.querySelector("#lightbox-img");
-const lightboxClose =
+const lightboxClose=
 document.querySelector(".lightbox .close");
-const lightboxPrev =
+const lightboxPrev=
 document.querySelector(".lightbox-prev");
-const lightboxNext =
+const lightboxNext=
 document.querySelector(".lightbox-next");
-let lightboxImages = [];
-let lightboxIndex = 0;
-function openLightbox(images, index) {
-if (!lightbox || !lightboxImg || !images || !images.length) {
+let lightboxImages=[];
+let lightboxIndex=0;
+function openLightbox(images,index){
+if(!lightbox||!lightboxImg||!images||!images.length){
 return;
 }
-lightboxImages = images.filter(Boolean);
-if (!lightboxImages.length) return;
-lightboxIndex = parseInt(index, 10) || 0;
-lightboxIndex =
-((lightboxIndex % lightboxImages.length) +
-lightboxImages.length) %
+lightboxImages=images.filter(Boolean);
+if(!lightboxImages.length)return;
+lightboxIndex=parseInt(index,10)||0;
+lightboxIndex=
+((lightboxIndex%lightboxImages.length)+
+lightboxImages.length)%
 lightboxImages.length;
-lightboxImg.src = lightboxImages[lightboxIndex];
+lightboxImg.src=lightboxImages[lightboxIndex];
 lightbox.classList.add("active");
 document.body.classList.add("lightbox-open");
-document.body.style.overflow = "hidden";
+document.body.style.overflow= "hidden";
 }
-function closeLightbox() {
-if (!lightbox) return;
+function closeLightbox(){
+if(!lightbox)return;
 lightbox.classList.remove("active");
 document.body.classList.remove("lightbox-open");
-document.body.style.overflow = "";
+document.body.style.overflow= "";
 }
-function showLightboxImage(index) {
-if (!lightboxImages.length || !lightboxImg) return;
-index =
-((index % lightboxImages.length) +
-lightboxImages.length) %
+function showLightboxImage(index){
+if(!lightboxImages.length||!lightboxImg)return;
+index=
+((index%lightboxImages.length)+
+lightboxImages.length)%
 lightboxImages.length;
-lightboxIndex = index;
-lightboxImg.src = lightboxImages[index];
+lightboxIndex=index;
+lightboxImg.src=lightboxImages[index];
 }
-function flashLightboxButton(button) {
-if (!button) return;
-button.style.transition = "transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease";
-button.style.transform = "translateY(-50%) scale(0.91)";
-button.style.background = "rgba(201,149,46,.95)";
-button.style.color = "#fff";
-button.style.boxShadow = "0 0 0 3px rgba(201,149,46,.18), 0 6px 18px rgba(0,0,0,.28)";
+function flashLightboxButton(button){
+if(!button)return;
+button.style.transition= "transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease";
+button.style.transform= "translateY(-50%) scale(0.91)";
+button.style.background= "rgba(201,149,46,.95)";
+button.style.color= "#fff";
+button.style.boxShadow= "0 0 0 3px rgba(201,149,46,.18), 0 6px 18px rgba(0,0,0,.28)";
 window.clearTimeout(button._decorevaPressTimer);
-button._decorevaPressTimer = window.setTimeout(function () {
-button.style.transform = "translateY(-50%) scale(1)";
-button.style.background = "rgba(20,15,9,.78)";
-button.style.color = "#f1cd7c";
-button.style.boxShadow = "";
-}, 140);
+button._decorevaPressTimer=window.setTimeout(function(){
+button.style.transform= "translateY(-50%) scale(1)";
+button.style.background= "rgba(20,15,9,.78)";
+button.style.color= "#f1cd7c";
+button.style.boxShadow= "";
+},140);
 }
-[lightboxPrev, lightboxNext].forEach(function (button) {
-if (!button) return;
-button.addEventListener("pointerdown", function () {
-button.style.transition = "transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease";
-button.style.transform = "translateY(-50%) scale(0.91)";
-button.style.background = "rgba(201,149,46,.95)";
-button.style.color = "#fff";
-button.style.boxShadow = "0 0 0 3px rgba(201,149,46,.18), 0 6px 18px rgba(0,0,0,.28)";
+[lightboxPrev,lightboxNext].forEach(function(button){
+if(!button)return;
+button.addEventListener("pointerdown",function(){
+button.style.transition= "transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease";
+button.style.transform= "translateY(-50%) scale(0.91)";
+button.style.background= "rgba(201,149,46,.95)";
+button.style.color= "#fff";
+button.style.boxShadow= "0 0 0 3px rgba(201,149,46,.18), 0 6px 18px rgba(0,0,0,.28)";
 });
-button.addEventListener("pointerup", function () {
+button.addEventListener("pointerup",function(){
 flashLightboxButton(button);
 });
-button.addEventListener("pointercancel", function () {
+button.addEventListener("pointercancel",function(){
 flashLightboxButton(button);
 });
 });
-const featuredLightboxSlider =
+const featuredLightboxSlider=
 document.querySelector(".featured-slider");
-if (featuredLightboxSlider) {
+if(featuredLightboxSlider){
 featuredLightboxSlider.addEventListener(
 "click",
-function (event) {
-const image =
+function(event){
+const image=
 event.target.closest(
 ".featured-image-box img"
 );
-if (!image) return;
+if(!image)return;
 event.preventDefault();
 event.stopPropagation();
-const slide =
+const slide=
 image.closest(".featured-slide");
-if (!slide) return;
-const imageBox =
+if(!slide)return;
+const imageBox=
 image.closest(".featured-image-box");
-let images = [];
-if (
-imageBox &&
+let images=[];
+if(
+imageBox&&
 imageBox.dataset.images
-) {
-try {
-images = JSON.parse(
+){
+try{
+images=JSON.parse(
 imageBox.dataset.images
 );
-} catch (error) {
+}catch(error){
 console.error(
 "Featured image data error:",
 error
 );
 }
 }
-if (
-!images.length &&
+if(
+!images.length&&
 slide.dataset.images
-) {
-try {
-images = JSON.parse(
+){
+try{
+images=JSON.parse(
 slide.dataset.images
 );
-} catch (error) {
+}catch(error){
 console.error(
 "Featured slide data error:",
 error
 );
 }
 }
-if (!images.length) {
-images = [
-image.currentSrc ||
+if(!images.length){
+images=[
+image.currentSrc||
 image.src
 ];
 }
-const currentImage =
-image.currentSrc ||
+const currentImage=
+image.currentSrc||
 image.src;
-let currentIndex =
+let currentIndex=
 images.findIndex(
-function (src) {
-return (
-src === currentImage ||
-currentImage.includes(src) ||
+function(src){
+return(
+src===currentImage||
+currentImage.includes(src)||
 src.includes(currentImage)
 );
 }
 );
-if (currentIndex < 0) {
-currentIndex = 0;
+if(currentIndex<0){
+currentIndex=0;
 }
 openLightbox(
 images,
@@ -468,68 +468,68 @@ currentIndex
 }
 );
 }
-const collectionProducts =
+const collectionProducts=
 document.querySelector("#collection-products");
-if (collectionProducts) {
+if(collectionProducts){
 collectionProducts.addEventListener(
 "click",
-function (event) {
-const image =
+function(event){
+const image=
 event.target.closest(".slider-image");
-if (!image) return;
+if(!image)return;
 event.preventDefault();
 event.stopPropagation();
-const slider =
+const slider=
 image.closest(".image-slider");
-if (!slider) return;
-const images = getSliderImages(slider);
-const index = getSliderIndex(slider);
-if (!images.length) return;
-openLightbox(images, index);
+if(!slider)return;
+const images=getSliderImages(slider);
+const index=getSliderIndex(slider);
+if(!images.length)return;
+openLightbox(images,index);
 }
 );
 }
-if (lightboxClose) {
+if(lightboxClose){
 lightboxClose.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 closeLightbox();
 }
 );
 }
-if (lightboxNext) {
+if(lightboxNext){
 lightboxNext.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 flashLightboxButton(lightboxNext);
 showLightboxImage(
-lightboxIndex + 1
+lightboxIndex+1
 );
 }
 );
 }
-if (lightboxPrev) {
+if(lightboxPrev){
 lightboxPrev.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 flashLightboxButton(lightboxPrev);
 showLightboxImage(
-lightboxIndex - 1
+lightboxIndex-1
 );
 }
 );
 }
-if (lightbox) {
+if(lightbox){
 lightbox.addEventListener(
 "click",
-function (event) {
-if (event.target === lightbox) {
+function(event){
+if(event.target===lightbox){
 closeLightbox();
 }
 }
@@ -537,90 +537,90 @@ closeLightbox();
 }
 document.addEventListener(
 "keydown",
-function (event) {
-if (
-!lightbox ||
+function(event){
+if(
+!lightbox||
 !lightbox.classList.contains("active")
-) {
+){
 return;
 }
-if (event.key === "Escape") {
+if(event.key=== "Escape"){
 closeLightbox();
 }
-if (event.key === "ArrowRight") {
-showLightboxImage(lightboxIndex + 1);
+if(event.key=== "ArrowRight"){
+showLightboxImage(lightboxIndex+1);
 }
-if (event.key === "ArrowLeft") {
-showLightboxImage(lightboxIndex - 1);
+if(event.key=== "ArrowLeft"){
+showLightboxImage(lightboxIndex-1);
 }
 }
 );
-const productSearch =
+const productSearch=
 document.querySelector("#productSearch");
-function filterProducts() {
-if (!productSearch) return;
-const searchText =
+function filterProducts(){
+if(!productSearch)return;
+const searchText=
 productSearch.value.toLowerCase().trim();
-const cards =
+const cards=
 document.querySelectorAll("#collection-products .card");
-if (searchText) {
+if(searchText){
 document
 .querySelectorAll(".decoreva-pagination")
-.forEach(function (nav) {
-nav.style.display = "none";
+.forEach(function(nav){
+nav.style.display= "none";
 });
-cards.forEach(function (card) {
-const title = card.querySelector("h3");
-const name = title
-? title.textContent.toLowerCase()
+cards.forEach(function(card){
+const title=card.querySelector("h3");
+const name=title
+?title.textContent.toLowerCase()
 : "";
 card.style.setProperty(
 "display",
-name.includes(searchText) ? "flex" : "none",
+name.includes(searchText)? "flex": "none",
 "important"
 );
 });
-if (typeof window.decorevaLoadVisibleSliders === "function") {
+if(typeof window.decorevaLoadVisibleSliders=== "function"){
 window.decorevaLoadVisibleSliders();
 }
 return;
 }
 document
 .querySelectorAll(".decoreva-pagination")
-.forEach(function (nav) {
-nav.style.display = "flex";
+.forEach(function(nav){
+nav.style.display= "flex";
 });
-if (typeof decorevaShowPage === "function") {
+if(typeof decorevaShowPage=== "function"){
 decorevaShowPage(1);
 }
 }
-if (productSearch) {
+if(productSearch){
 productSearch.addEventListener(
 "input",
 filterProducts
 );
 }
-const voiceSearchBtn =
+const voiceSearchBtn=
 document.querySelector("#voiceSearchBtn");
-if (voiceSearchBtn && productSearch) {
-const SpeechRecognition =
-window.SpeechRecognition ||
+if(voiceSearchBtn&&productSearch){
+const SpeechRecognition=
+window.SpeechRecognition||
 window.webkitSpeechRecognition;
-if (SpeechRecognition) {
-const recognition =
+if(SpeechRecognition){
+const recognition=
 new SpeechRecognition();
-recognition.lang = "en-IN";
-recognition.continuous = false;
-recognition.interimResults = false;
+recognition.lang= "en-IN";
+recognition.continuous=false;
+recognition.interimResults=false;
 voiceSearchBtn.addEventListener(
 "click",
-function () {
-try {
+function(){
+try{
 recognition.start();
 voiceSearchBtn.classList.add(
 "listening"
 );
-} catch (error) {
+}catch(error){
 console.log(
 "Voice search already active."
 );
@@ -629,19 +629,19 @@ console.log(
 );
 recognition.addEventListener(
 "result",
-function (event) {
-const transcript =
+function(event){
+const transcript=
 event.results[0][0]
 .transcript
 .trim();
-productSearch.value =
+productSearch.value=
 transcript;
 filterProducts();
 }
 );
 recognition.addEventListener(
 "end",
-function () {
+function(){
 voiceSearchBtn.classList.remove(
 "listening"
 );
@@ -649,16 +649,16 @@ voiceSearchBtn.classList.remove(
 );
 recognition.addEventListener(
 "error",
-function () {
+function(){
 voiceSearchBtn.classList.remove(
 "listening"
 );
 }
 );
-} else {
+}else{
 voiceSearchBtn.addEventListener(
 "click",
-function () {
+function(){
 alert(
 "Voice search is not supported in this browser. Please use Google Chrome."
 );
@@ -666,122 +666,122 @@ alert(
 );
 }
 }
-const productsContainer =
+const productsContainer=
 document.querySelector("#collection-products");
-const customSort =
+const customSort=
 document.querySelector(".custom-sort");
-const customSortButton =
+const customSortButton=
 document.querySelector(".custom-sort-button");
-const customSortMenu =
+const customSortMenu=
 document.querySelector(".custom-sort-menu");
-const sortOptions =
+const sortOptions=
 customSortMenu
-? Array.from(
+?Array.from(
 customSortMenu.querySelectorAll(
 "[data-value]"
 )
 )
-: [];
-const originalProductOrder =
+:[];
+const originalProductOrder=
 productsContainer
-? Array.from(
+?Array.from(
 productsContainer.querySelectorAll(".card")
 )
-: [];
-function getCards() {
-if (!productsContainer) return [];
+:[];
+function getCards(){
+if(!productsContainer)return[];
 return Array.from(
 productsContainer.querySelectorAll(".card")
 );
 }
-function getPrice(card) {
-const price =
+function getPrice(card){
+const price=
 card.querySelector(".price");
-if (!price) return 0;
+if(!price)return 0;
 return parseFloat(
 price.textContent.replace(
 /[^\d.]/g,
 ""
 )
-) || 0;
+)||0;
 }
-function getName(card) {
-const title =
+function getName(card){
+const title=
 card.querySelector("h3");
-if (!title) return "";
+if(!title)return "";
 return title.textContent
 .trim()
 .toLowerCase();
 }
-function sortProducts(value) {
-if (!productsContainer) return;
-const cards = getCards();
-cards.sort(function (a, b) {
-if (value === "low-high") {
-return getPrice(a) - getPrice(b);
+function sortProducts(value){
+if(!productsContainer)return;
+const cards=getCards();
+cards.sort(function(a,b){
+if(value=== "low-high"){
+return getPrice(a)-getPrice(b);
 }
-if (value === "high-low") {
-return getPrice(b) - getPrice(a);
+if(value=== "high-low"){
+return getPrice(b)-getPrice(a);
 }
-if (value === "az") {
+if(value=== "az"){
 return getName(a)
 .localeCompare(getName(b));
 }
-if (value === "za") {
+if(value=== "za"){
 return getName(b)
 .localeCompare(getName(a));
 }
 return 0;
 });
-cards.forEach(function (card) {
+cards.forEach(function(card){
 productsContainer.appendChild(card);
 });
-decorevaProducts = Array.from(
+decorevaProducts=Array.from(
 productsContainer.querySelectorAll(".card")
 );
-if (typeof decorevaShowPage === "function") {
+if(typeof decorevaShowPage=== "function"){
 decorevaShowPage(1);
 }
 }
-function updateSortLabel(value) {
-if (!customSortButton) return;
-const label =
+function updateSortLabel(value){
+if(!customSortButton)return;
+const label=
 customSortButton.querySelector(
 "span:first-child"
 );
-const option =
-sortOptions.find(function (item) {
-return item.dataset.value === value;
+const option=
+sortOptions.find(function(item){
+return item.dataset.value===value;
 });
-if (label && option) {
-label.textContent =
+if(label&&option){
+label.textContent=
 option.textContent.trim();
 }
 }
-if (customSort && customSortButton) {
+if(customSort&&customSortButton){
 customSortButton.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 customSort.classList.toggle("open");
 }
 );
-sortOptions.forEach(function (option) {
+sortOptions.forEach(function(option){
 option.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
-const value =
+const value=
 option.dataset.value;
-if (value === "default") {
+if(value=== "default"){
 clearAllCollectionFilters();
 return;
 }
 sortProducts(value);
 updateSortLabel(value);
-sortOptions.forEach(function (item) {
+sortOptions.forEach(function(item){
 item.classList.remove("active");
 });
 option.classList.add("active");
@@ -795,8 +795,8 @@ customSortButton.setAttribute(
 });
 document.addEventListener(
 "click",
-function (event) {
-if (!customSort.contains(event.target)) {
+function(event){
+if(!customSort.contains(event.target)){
 customSort.classList.remove("open");
 customSortButton.setAttribute(
 "aria-expanded",
@@ -806,80 +806,80 @@ customSortButton.setAttribute(
 }
 );
 }
-function clearAllCollectionFilters(shouldScrollToCollection = true) {
-if (productSearch) {
-productSearch.value = "";
+function clearAllCollectionFilters(shouldScrollToCollection=true){
+if(productSearch){
+productSearch.value= "";
 }
-if (productsContainer && originalProductOrder.length) {
-originalProductOrder.forEach(function (card) {
+if(productsContainer&&originalProductOrder.length){
+originalProductOrder.forEach(function(card){
 productsContainer.appendChild(card);
 });
-decorevaProducts = originalProductOrder.slice();
+decorevaProducts=originalProductOrder.slice();
 }
-if (customSortButton) {
-const label =
+if(customSortButton){
+const label=
 customSortButton.querySelector(
 "span:first-child"
 );
-if (label) {
-label.textContent = "Sort Products";
+if(label){
+label.textContent= "Sort Products";
 }
 customSortButton.setAttribute(
 "aria-expanded",
 "false"
 );
 }
-sortOptions.forEach(function (item) {
+sortOptions.forEach(function(item){
 item.classList.remove("active");
 });
-if (customSort) {
+if(customSort){
 customSort.classList.remove("open");
 }
 document
 .querySelectorAll(".decoreva-pagination")
-.forEach(function (nav) {
-nav.style.display = "flex";
+.forEach(function(nav){
+nav.style.display= "flex";
 });
-if (typeof decorevaShowPage === "function") {
+if(typeof decorevaShowPage=== "function"){
 decorevaShowPage(1);
 }
-if (shouldScrollToCollection) {
-requestAnimationFrame(function () {
+if(shouldScrollToCollection){
+requestAnimationFrame(function(){
 scrollToCollectionTitle("smooth");
 });
 }
 }
-const collectionControls =
+const collectionControls=
 document.querySelector(".collection-controls");
-if (collectionControls) {
-let clearAllButton =
+if(collectionControls){
+let clearAllButton=
 document.querySelector("#clear-all-products");
-if (!clearAllButton) {
-clearAllButton =
+if(!clearAllButton){
+clearAllButton=
 document.createElement("button");
-clearAllButton.type = "button";
-clearAllButton.id = "clear-all-products";
-clearAllButton.className = "clear-all-products";
+clearAllButton.type= "button";
+clearAllButton.id= "clear-all-products";
+clearAllButton.className= "clear-all-products";
 clearAllButton.setAttribute("aria-label", "Clear all collection filters");
-clearAllButton.textContent = "Clear All";
+clearAllButton.textContent= "Clear All";
 clearAllButton.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 clearAllCollectionFilters();
 }
 );
-const productSort =
+const productSort=
 collectionControls.querySelector(
 ".product-sort"
 );
-if (productSort) {
+if(productSort){
 productSort.insertAdjacentElement(
 "afterend",
 clearAllButton
 );
-} else {
+}else{
 collectionControls.insertBefore(
 clearAllButton,
 collectionControls.firstChild
@@ -887,63 +887,63 @@ collectionControls.firstChild
 }
 }
 }
-const featuredSlider =
+const featuredSlider=
 document.querySelector(".featured-slider");
-let featuredSlides =
+let featuredSlides=
 Array.from(
 document.querySelectorAll(".featured-slide")
 );
-const featuredPrev =
+const featuredPrev=
 document.querySelector(".featured-prev");
-const featuredNext =
+const featuredNext=
 document.querySelector(".featured-next");
-const featuredDotsContainer =
+const featuredDotsContainer=
 document.querySelector(".featured-dots");
-let featuredTrack = null;
-let featuredPosition = 0;
-let featuredRealIndex = 0;
-let featuredCloneCount = 0;
-let featuredAnimating = false;
-let featuredTimer = null;
-let featuredResizeTimer = null;
-function getFeaturedVisibleCount() {
-if (window.innerWidth <= 760) return 2;
-if (window.innerWidth <= 1100) return 3;
+let featuredTrack=null;
+let featuredPosition=0;
+let featuredRealIndex=0;
+let featuredCloneCount=0;
+let featuredAnimating=false;
+let featuredTimer=null;
+let featuredResizeTimer=null;
+function getFeaturedVisibleCount(){
+if(window.innerWidth<=760)return 2;
+if(window.innerWidth<=1100)return 3;
 return 4;
 }
-function getFeaturedGap() {
-if (!featuredTrack) return 10;
-const styles =
+function getFeaturedGap(){
+if(!featuredTrack)return 10;
+const styles=
 window.getComputedStyle(
 featuredTrack
 );
-return (
+return(
 parseFloat(
-styles.columnGap ||
-styles.gap ||
+styles.columnGap||
+styles.gap||
 "10"
-) || 10
+)||10
 );
 }
-function getFeaturedStep() {
-if (!featuredTrack) return 0;
-const card =
+function getFeaturedStep(){
+if(!featuredTrack)return 0;
+const card=
 featuredTrack.querySelector(
 ".featured-slide"
 );
-if (!card) return 0;
-return (
-card.getBoundingClientRect().width +
+if(!card)return 0;
+return(
+card.getBoundingClientRect().width+
 getFeaturedGap()
 );
 }
-function createFeaturedDots() {
-if (!featuredDotsContainer) return;
-featuredDotsContainer.innerHTML = "";
-featuredSlides.forEach(function (_, index) {
-const dot =
+function createFeaturedDots(){
+if(!featuredDotsContainer)return;
+featuredDotsContainer.innerHTML= "";
+featuredSlides.forEach(function(_,index){
+const dot=
 document.createElement("span");
-dot.className = "featured-dot";
+dot.className= "featured-dot";
 dot.setAttribute(
 "role",
 "button"
@@ -954,11 +954,11 @@ dot.setAttribute(
 );
 dot.setAttribute(
 "aria-label",
-"Featured product " + (index + 1)
+"Featured product "+(index+1)
 );
 dot.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 goToFeatured(index);
@@ -966,11 +966,11 @@ goToFeatured(index);
 );
 dot.addEventListener(
 "keydown",
-function (event) {
-if (
-event.key === "Enter" ||
-event.key === " "
-) {
+function(event){
+if(
+event.key=== "Enter"||
+event.key=== " "
+){
 event.preventDefault();
 goToFeatured(index);
 }
@@ -979,63 +979,63 @@ goToFeatured(index);
 featuredDotsContainer.appendChild(dot);
 });
 }
-function updateFeaturedDots() {
-if (!featuredDotsContainer) return;
-const dots =
+function updateFeaturedDots(){
+if(!featuredDotsContainer)return;
+const dots=
 Array.from(
 featuredDotsContainer.querySelectorAll(
 ".featured-dot"
 )
 );
-dots.forEach(function (dot, index) {
+dots.forEach(function(dot,index){
 dot.classList.toggle(
 "active",
-index === featuredRealIndex
+index===featuredRealIndex
 );
 });
 }
-function clearFeaturedClones() {
-if (!featuredTrack) return;
+function clearFeaturedClones(){
+if(!featuredTrack)return;
 featuredTrack
 .querySelectorAll(".featured-clone")
-.forEach(function (clone) {
+.forEach(function(clone){
 clone.remove();
 });
 }
-function buildFeaturedLoop() {
-if (
-!featuredSlider ||
+function buildFeaturedLoop(){
+if(
+!featuredSlider||
 !featuredSlides.length
-) {
+){
 return;
 }
-if (!featuredTrack) {
-featuredTrack =
+if(!featuredTrack){
+featuredTrack=
 document.createElement("div");
-featuredTrack.className =
+featuredTrack.className=
 "featured-track";
-featuredSlides.forEach(function (slide) {
+featuredSlides.forEach(function(slide){
 featuredTrack.appendChild(slide);
 });
 featuredSlider.insertBefore(
 featuredTrack,
 featuredSlider.firstChild
 );
-} else {
+}else{
 clearFeaturedClones();
 }
-const visible =
+const visible=
 getFeaturedVisibleCount();
-featuredCloneCount =
+featuredCloneCount=
 Math.min(
 visible,
 featuredSlides.length
 );
-const before =
+const before=
 featuredSlides
 .slice(-featuredCloneCount)
-.map(function (slide) {
-const clone =
+.map(function(slide){
+const clone=
 slide.cloneNode(true);
 clone.classList.add(
 "featured-clone"
@@ -1043,121 +1043,121 @@ clone.classList.add(
 return clone;
 })
 .reverse();
-const after =
+const after=
 featuredSlides
-.slice(0, featuredCloneCount)
-.map(function (slide) {
-const clone =
+.slice(0,featuredCloneCount)
+.map(function(slide){
+const clone=
 slide.cloneNode(true);
 clone.classList.add(
 "featured-clone"
 );
 return clone;
 });
-before.forEach(function (clone) {
+before.forEach(function(clone){
 featuredTrack.insertBefore(
 clone,
 featuredTrack.firstChild
 );
 });
-after.forEach(function (clone) {
+after.forEach(function(clone){
 featuredTrack.appendChild(clone);
 });
-featuredPosition =
-featuredCloneCount +
+featuredPosition=
+featuredCloneCount+
 featuredRealIndex;
-featuredAnimating = false;
-requestAnimationFrame(function () {
+featuredAnimating=false;
+requestAnimationFrame(function(){
 setFeaturedPosition(false);
 updateFeaturedDots();
 });
 }
-function setFeaturedPosition(animate) {
-if (!featuredTrack) return;
-featuredTrack.style.transition =
+function setFeaturedPosition(animate){
+if(!featuredTrack)return;
+featuredTrack.style.transition=
 animate
 ? "transform .55s cubic-bezier(.22,.61,.36,1)"
 : "none";
-const step =
+const step=
 getFeaturedStep();
-featuredTrack.style.transform =
-"translate3d(" +
-(-featuredPosition * step) +
+featuredTrack.style.transform=
+"translate3d("+
+(-featuredPosition*step)+
 "px,0,0)";
 }
-function nextFeaturedSlide() {
-if (
-featuredAnimating ||
+function nextFeaturedSlide(){
+if(
+featuredAnimating||
 !featuredSlides.length
-) {
+){
 return;
 }
-featuredAnimating = true;
+featuredAnimating=true;
 featuredPosition++;
 setFeaturedPosition(true);
 }
-function previousFeaturedSlide() {
-if (
-featuredAnimating ||
+function previousFeaturedSlide(){
+if(
+featuredAnimating||
 !featuredSlides.length
-) {
+){
 return;
 }
-featuredAnimating = true;
+featuredAnimating=true;
 featuredPosition--;
 setFeaturedPosition(true);
 }
-function goToFeatured(index) {
-if (
-featuredAnimating ||
+function goToFeatured(index){
+if(
+featuredAnimating||
 !featuredSlides.length
-) {
+){
 return;
 }
-index =
+index=
 (
-index %
-featuredSlides.length +
+index%
+featuredSlides.length+
 featuredSlides.length
-) %
+)%
 featuredSlides.length;
-featuredAnimating = true;
-featuredRealIndex = index;
-featuredPosition =
-featuredCloneCount + index;
+featuredAnimating=true;
+featuredRealIndex=index;
+featuredPosition=
+featuredCloneCount+index;
 setFeaturedPosition(true);
 updateFeaturedDots();
 restartFeaturedAutoPlay();
 }
-function startFeaturedAutoPlay() {
+function startFeaturedAutoPlay(){
 clearInterval(featuredTimer);
-if (
-featuredSlides.length <=
+if(
+featuredSlides.length<=
 getFeaturedVisibleCount()
-) {
+){
 return;
 }
-featuredTimer =
+featuredTimer=
 setInterval(
-function () {
+function(){
 nextFeaturedSlide();
 },
 4500
 );
 }
-function restartFeaturedAutoPlay() {
+function restartFeaturedAutoPlay(){
 startFeaturedAutoPlay();
 }
-if (
-featuredSlider &&
+if(
+featuredSlider&&
 featuredSlides.length
-) {
+){
 createFeaturedDots();
 buildFeaturedLoop();
-if (featuredPrev) {
+if(featuredPrev){
 featuredPrev.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 previousFeaturedSlide();
@@ -1165,10 +1165,10 @@ restartFeaturedAutoPlay();
 }
 );
 }
-if (featuredNext) {
+if(featuredNext){
 featuredNext.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 nextFeaturedSlide();
@@ -1176,47 +1176,47 @@ restartFeaturedAutoPlay();
 }
 );
 }
-if (featuredTrack) {
+if(featuredTrack){
 featuredTrack.addEventListener(
 "transitionend",
-function (event) {
-if (
-event.propertyName !==
+function(event){
+if(
+event.propertyName!==
 "transform"
-) {
+){
 return;
 }
-featuredAnimating = false;
-const total =
+featuredAnimating=false;
+const total=
 featuredSlides.length;
-const firstReal =
+const firstReal=
 featuredCloneCount;
-const lastReal =
-featuredCloneCount +
-total -
+const lastReal=
+featuredCloneCount+
+total-
 1;
-if (
-featuredPosition >
+if(
+featuredPosition>
 lastReal
-) {
-featuredRealIndex = 0;
-featuredPosition =
+){
+featuredRealIndex=0;
+featuredPosition=
 firstReal;
 setFeaturedPosition(false);
-} else if (
-featuredPosition <
+}else if(
+featuredPosition<
 firstReal
-) {
-featuredRealIndex =
-total - 1;
-featuredPosition =
-firstReal +
-total -
+){
+featuredRealIndex=
+total-1;
+featuredPosition=
+firstReal+
+total-
 1;
 setFeaturedPosition(false);
-} else {
-featuredRealIndex =
-featuredPosition -
+}else{
+featuredRealIndex=
+featuredPosition-
 featuredCloneCount;
 }
 updateFeaturedDots();
@@ -1225,79 +1225,79 @@ updateFeaturedDots();
 }
 featuredSlider.addEventListener(
 "mouseenter",
-function () {
+function(){
 clearInterval(featuredTimer);
 }
 );
 featuredSlider.addEventListener(
 "mouseleave",
-function () {
+function(){
 startFeaturedAutoPlay();
 }
 );
-let touchStartX = 0;
-let touchStartY = 0;
+let touchStartX=0;
+let touchStartY=0;
 featuredSlider.addEventListener(
 "touchstart",
-function (event) {
-const touch =
+function(event){
+const touch=
 event.changedTouches[0];
-touchStartX =
+touchStartX=
 touch.screenX;
-touchStartY =
+touchStartY=
 touch.screenY;
 clearInterval(featuredTimer);
 },
 {
-passive: true
+passive:true
 }
 );
 featuredSlider.addEventListener(
 "touchend",
-function (event) {
-const touch =
+function(event){
+const touch=
 event.changedTouches[0];
-const dx =
-touchStartX -
+const dx=
+touchStartX-
 touch.screenX;
-const dy =
-touchStartY -
+const dy=
+touchStartY-
 touch.screenY;
-if (
-Math.abs(dx) > 40 &&
-Math.abs(dx) >
+if(
+Math.abs(dx)>40&&
+Math.abs(dx)>
 Math.abs(dy)
-) {
-if (dx > 0) {
+){
+if(dx>0){
 nextFeaturedSlide();
-} else {
+}else{
 previousFeaturedSlide();
 }
 }
 restartFeaturedAutoPlay();
 },
 {
-passive: true
+passive:true
 }
 );
 window.addEventListener(
 "resize",
-function () {
+function(){
 clearTimeout(
 featuredResizeTimer
 );
-featuredResizeTimer =
+featuredResizeTimer=
 setTimeout(
-function () {
+function(){
 clearInterval(
 featuredTimer
 );
-if (featuredTrack) {
-featuredTrack.style.transition =
+if(featuredTrack){
+featuredTrack.style.transition=
 "none";
 clearFeaturedClones();
 }
-featuredAnimating = false;
+featuredAnimating=false;
 buildFeaturedLoop();
 startFeaturedAutoPlay();
 },
@@ -1307,29 +1307,56 @@ startFeaturedAutoPlay();
 );
 startFeaturedAutoPlay();
 }
-function scrollToCollectionTitle(behavior) {
-const title = document.querySelector("#collection-title, .collection-title");
-if (!title) return;
-const offset = window.innerWidth <= 760 ? 58 : 72;
-const top = title.getBoundingClientRect().top + window.pageYOffset - offset;
+function scrollToCollectionTitle(behavior){
+const title=document.querySelector(
+"#collection-title, .collection-title"
+);
+if(!title)return;
+if(window.innerWidth<=760){
+const header=document.querySelector("header");
+const nav=document.querySelector("#main-nav");
+const headerHeight=header
+?header.getBoundingClientRect().height
+:0;
+const navHeight=
+nav&&!nav.classList.contains("mobile-open")
+?nav.getBoundingClientRect().height
+:0;
+const offset=headerHeight+navHeight;
+const top=
+title.getBoundingClientRect().top+
+window.pageYOffset-
+offset;
 window.scrollTo({
-top: Math.max(0, top),
-behavior: behavior || "smooth"
+top:Math.max(0,top),
+left:0,
+behavior:behavior|| "smooth"
+});
+return;
+}
+const top=
+title.getBoundingClientRect().top+
+window.pageYOffset-
+72;
+window.scrollTo({
+top:Math.max(0,top),
+left:0,
+behavior:behavior|| "smooth"
 });
 }
-const menuButton =
+const menuButton=
 document.querySelector(
 ".mobile-menu-toggle"
 );
-const nav =
+const nav=
 document.querySelector("#main-nav");
-if (menuButton && nav) {
+if(menuButton&&nav){
 menuButton.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
-const isOpen =
+const isOpen=
 nav.classList.toggle(
 "mobile-open"
 );
@@ -1339,15 +1366,15 @@ isOpen
 );
 menuButton.setAttribute(
 "aria-expanded",
-isOpen ? "true" : "false"
+isOpen? "true": "false"
 );
 }
 );
 nav.querySelectorAll("a")
-.forEach(function (link) {
+.forEach(function(link){
 link.addEventListener(
 "click",
-function () {
+function(){
 nav.classList.remove(
 "mobile-open"
 );
@@ -1364,15 +1391,15 @@ menuButton.setAttribute(
 }
 document.addEventListener(
 "click",
-function (event) {
-if (window.innerWidth > 760) return;
-if (!nav || !nav.classList.contains("mobile-open")) return;
-if (event.target.closest(".mobile-menu-toggle")) {
+function(event){
+if(window.innerWidth>760)return;
+if(!nav||!nav.classList.contains("mobile-open"))return;
+if(event.target.closest(".mobile-menu-toggle")){
 return;
 }
 nav.classList.remove("mobile-open");
 document.body.classList.remove("menu-open");
-if (menuButton) {
+if(menuButton){
 menuButton.setAttribute(
 "aria-expanded",
 "false"
@@ -1383,32 +1410,32 @@ true
 );
 document
 .querySelectorAll("#main-nav a[href^='#']")
-.forEach(function (link) {
-link.addEventListener("click", function (event) {
-const id = link.getAttribute("href");
-if (!id || id === "#") return;
-const target = document.querySelector(id);
-if (!target) return;
-const aboutSection = document.querySelector("#about");
-if (aboutSection) aboutSection.style.display = id === "#about" ? "block" : "none";
+.forEach(function(link){
+link.addEventListener("click",function(event){
+const id=link.getAttribute("href");
+if(!id||id=== "#")return;
+const target=document.querySelector(id);
+if(!target)return;
+const aboutSection=document.querySelector("#about");
+if(aboutSection)aboutSection.style.display=id=== "#about"? "block": "none";
 event.preventDefault();
 event.stopPropagation();
-if (id === "#collection-title") {
-document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
-nav.style.display = "flex";
+if(id=== "#collection-title"){
+document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
+nav.style.display= "flex";
 });
-const savedPage = Number(sessionStorage.getItem("decorevaPage")) || 1;
-if (typeof decorevaShowPage === "function") {
-window.decorevaPageNavigation = false;
+const savedPage=Number(sessionStorage.getItem("decorevaPage"))||1;
+if(typeof decorevaShowPage=== "function"){
+window.decorevaPageNavigation=false;
 decorevaShowPage(savedPage);
 }
-requestAnimationFrame(function () {
+requestAnimationFrame(function(){
 scrollToCollectionTitle("smooth");
 });
-} else if (id === "#home") {
+}else if(id=== "#home"){
 clearAllCollectionFilters(false);
-document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
-nav.style.display = "flex";
+document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
+nav.style.display= "flex";
 });
 history.replaceState(
 null,
@@ -1416,17 +1443,17 @@ null,
 window.location.pathname
 );
 window.scrollTo({
-top: 0,
-left: 0,
+top:0,
+left:0,
 behavior: "smooth"
 });
-} else {
-document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
-nav.style.display = "flex";
+}else{
+document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
+nav.style.display= "flex";
 });
-(id === "#about"
-? (target.querySelector(".about-heading") || target)
-: target
+(id=== "#about"
+?(target.querySelector(".about-heading")||target)
+:target
 ).scrollIntoView({
 behavior: "smooth",
 block: "start"
@@ -1439,7 +1466,7 @@ id
 }
 nav.classList.remove("mobile-open");
 document.body.classList.remove("menu-open");
-if (menuButton) {
+if(menuButton){
 menuButton.setAttribute(
 "aria-expanded",
 "false"
@@ -1451,10 +1478,10 @@ document
 .querySelectorAll(
 'a[href="#home"]:not(#main-nav a)'
 )
-.forEach(function (link) {
+.forEach(function(link){
 link.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 clearAllCollectionFilters(false);
 history.replaceState(
@@ -1463,44 +1490,44 @@ null,
 window.location.pathname
 );
 window.scrollTo({
-top: 0,
-left: 0,
+top:0,
+left:0,
 behavior: "smooth"
 });
 }
 );
 });
-const searchContainer =
+const searchContainer=
 document.querySelector(
 ".search-container"
 );
-const searchBox =
+const searchBox=
 document.querySelector(
 ".search-box"
 );
-if (voiceSearchBtn) {
-voiceSearchBtn.style.position = "absolute";
-voiceSearchBtn.style.right = "13px";
-voiceSearchBtn.style.top = "50%";
-voiceSearchBtn.style.transform = "translateY(-50%)";
-voiceSearchBtn.style.width = "32px";
-voiceSearchBtn.style.height = "32px";
-voiceSearchBtn.style.padding = "0";
-voiceSearchBtn.style.margin = "0";
-voiceSearchBtn.style.border = "0";
-voiceSearchBtn.style.background = "transparent";
-voiceSearchBtn.style.display = "flex";
-voiceSearchBtn.style.alignItems = "center";
-voiceSearchBtn.style.justifyContent = "center";
-voiceSearchBtn.style.cursor = "pointer";
-voiceSearchBtn.style.zIndex = "50";
+if(voiceSearchBtn){
+voiceSearchBtn.style.position= "absolute";
+voiceSearchBtn.style.right= "13px";
+voiceSearchBtn.style.top= "50%";
+voiceSearchBtn.style.transform= "translateY(-50%)";
+voiceSearchBtn.style.width= "32px";
+voiceSearchBtn.style.height= "32px";
+voiceSearchBtn.style.padding= "0";
+voiceSearchBtn.style.margin= "0";
+voiceSearchBtn.style.border= "0";
+voiceSearchBtn.style.background= "transparent";
+voiceSearchBtn.style.display= "flex";
+voiceSearchBtn.style.alignItems= "center";
+voiceSearchBtn.style.justifyContent= "center";
+voiceSearchBtn.style.cursor= "pointer";
+voiceSearchBtn.style.zIndex= "50";
 }
 document
 .querySelectorAll(".slider-btn")
-.forEach(function (button) {
+.forEach(function(button){
 button.addEventListener(
 "click",
-function (event) {
+function(event){
 event.preventDefault();
 event.stopPropagation();
 }
@@ -1508,18 +1535,18 @@ event.stopPropagation();
 });
 document
 .querySelectorAll("img")
-.forEach(function (image) {
+.forEach(function(image){
 image.setAttribute(
 "draggable",
 "false"
 );
 });
-if (!sliderObserver) {
+if(!sliderObserver){
 document
 .querySelectorAll("#collection-products .image-slider")
-.forEach(function (slider) {
-const images = getSliderImages(slider);
-if (images.length) {
+.forEach(function(slider){
+const images=getSliderImages(slider);
+if(images.length){
 showSliderImage(
 slider,
 getSliderIndex(slider)
@@ -1529,11 +1556,11 @@ getSliderIndex(slider)
 }
 document.addEventListener(
 "keydown",
-function (event) {
-if (
-event.key === "Escape" &&
+function(event){
+if(
+event.key=== "Escape"&&
 customSort
-) {
+){
 customSort.classList.remove(
 "open"
 );
@@ -1542,109 +1569,109 @@ customSort.classList.remove(
 );
 window.addEventListener(
 "beforeunload",
-function () {
+function(){
 clearInterval(
 featuredTimer
 );
 }
 );
-let decorevaProducts = Array.from(
+let decorevaProducts=Array.from(
 document.querySelectorAll("#collection-products .card")
 );
-const decorevaPerPage = 20;
-const decorevaTotalPages = Math.max(
+const decorevaPerPage=20;
+const decorevaTotalPages=Math.max(
 1,
-Math.ceil(decorevaProducts.length / decorevaPerPage)
+Math.ceil(decorevaProducts.length/decorevaPerPage)
 );
-let decorevaCurrentPage = 1;
-function decorevaPaginationStyle(nav) {
-nav.style.display = "flex";
-nav.style.justifyContent = "center";
-nav.style.alignItems = "center";
-nav.style.gap = "22px";
-nav.style.margin = "28px 0";
-nav.style.padding = "8px 0";
-nav.style.fontFamily = "inherit";
+let decorevaCurrentPage=1;
+function decorevaPaginationStyle(nav){
+nav.style.display= "flex";
+nav.style.justifyContent= "center";
+nav.style.alignItems= "center";
+nav.style.gap= "22px";
+nav.style.margin= "28px 0";
+nav.style.padding= "8px 0";
+nav.style.fontFamily= "inherit";
 }
-function createDecorevaPagination() {
-const nav = document.createElement("div");
-nav.className = "decoreva-pagination";
+function createDecorevaPagination(){
+const nav=document.createElement("div");
+nav.className= "decoreva-pagination";
 decorevaPaginationStyle(nav);
-const previous = document.createElement("button");
-previous.type = "button";
-previous.innerHTML = "‹";
+const previous=document.createElement("button");
+previous.type= "button";
+previous.innerHTML= "‹";
 previous.setAttribute(
 "aria-label",
 "Previous page"
 );
-previous.style.border = "none";
-previous.style.background = "transparent";
-previous.style.fontSize = "30px";
-previous.style.lineHeight = "1";
-previous.style.color = "#8b6a32";
-previous.style.cursor = "pointer";
-previous.style.padding = "4px 8px";
-previous.style.fontWeight = "400";
+previous.style.border= "none";
+previous.style.background= "transparent";
+previous.style.fontSize= "30px";
+previous.style.lineHeight= "1";
+previous.style.color= "#8b6a32";
+previous.style.cursor= "pointer";
+previous.style.padding= "4px 8px";
+previous.style.fontWeight= "400";
 previous.addEventListener(
 "click",
-function () {window.decorevaPageNavigation = true;
-if (decorevaCurrentPage > 1) {
+function(){window.decorevaPageNavigation=true;
+if(decorevaCurrentPage>1){
 decorevaShowPage(
-decorevaCurrentPage - 1
+decorevaCurrentPage-1
 );
 }
 }
 );
 nav.appendChild(previous);
-for (
-let page = 1;
-page <= decorevaTotalPages;
+for(
+let page=1;
+page<=decorevaTotalPages;
 page++
-) {
-const number = document.createElement("button");
-number.type = "button";
-number.textContent = page;
-number.dataset.page = page;
-number.style.border = "none";
-number.style.background = "transparent";
-number.style.color = "#5a4630";
-number.style.cursor = "pointer";
-number.style.fontSize = "15px";
-number.style.padding = "5px 4px";
-number.style.minWidth = "24px";
-number.style.fontWeight = "400";
+){
+const number=document.createElement("button");
+number.type= "button";
+number.textContent=page;
+number.dataset.page=page;
+number.style.border= "none";
+number.style.background= "transparent";
+number.style.color= "#5a4630";
+number.style.cursor= "pointer";
+number.style.fontSize= "15px";
+number.style.padding= "5px 4px";
+number.style.minWidth= "24px";
+number.style.fontWeight= "400";
 number.addEventListener(
 "click",
-function () {window.decorevaPageNavigation = true;
+function(){window.decorevaPageNavigation=true;
 decorevaShowPage(page);
 }
 );
 nav.appendChild(number);
 }
-const next = document.createElement("button");
-next.type = "button";
-next.innerHTML = "›";
+const next=document.createElement("button");
+next.type= "button";
+next.innerHTML= "›";
 next.setAttribute(
 "aria-label",
 "Next page"
 );
-next.style.border = "none";
-next.style.background = "transparent";
-next.style.fontSize = "30px";
-next.style.lineHeight = "1";
-next.style.color = "#8b6a32";
-next.style.cursor = "pointer";
-next.style.padding = "4px 8px";
-next.style.fontWeight = "400";
+next.style.border= "none";
+next.style.background= "transparent";
+next.style.fontSize= "30px";
+next.style.lineHeight= "1";
+next.style.color= "#8b6a32";
+next.style.cursor= "pointer";
+next.style.padding= "4px 8px";
+next.style.fontWeight= "400";
 next.addEventListener(
 "click",
-function () {window.decorevaPageNavigation = true;
-if (
-decorevaCurrentPage <
+function(){window.decorevaPageNavigation=true;
+if(
+decorevaCurrentPage<
 decorevaTotalPages
-) {
+){
 decorevaShowPage(
-decorevaCurrentPage + 1
+decorevaCurrentPage+1
 );
 }
 }
@@ -1652,45 +1679,45 @@ decorevaCurrentPage + 1
 nav.appendChild(next);
 return nav;
 }
-window.decorevaLoadVisibleSliders = function () {
-const sliders =
+window.decorevaLoadVisibleSliders=function(){
+const sliders=
 document.querySelectorAll("#collection-products .image-slider");
-sliders.forEach(function (slider) {
-if (slider.closest(".card")?.style.display === "none") return;
-const rect = slider.getBoundingClientRect();
-if (
-rect.bottom >= -250 &&
-rect.top <= window.innerHeight + 250
-) {
-showSliderImage(slider, getSliderIndex(slider));
+sliders.forEach(function(slider){
+if(slider.closest(".card")?.style.display=== "none")return;
+const rect=slider.getBoundingClientRect();
+if(
+rect.bottom>=-250&&
+rect.top<=window.innerHeight+250
+){
+showSliderImage(slider,getSliderIndex(slider));
 }
 });
 };
-function decorevaShowPage(page) {
-decorevaCurrentPage = page;
-sessionStorage.setItem("decorevaPage", page);
-const aboutSection = document.querySelector("#about");
-if (aboutSection) aboutSection.style.display = "none";
-const start =
-(page - 1) * decorevaPerPage;
-const end =
-start + decorevaPerPage;
+function decorevaShowPage(page){
+decorevaCurrentPage=page;
+sessionStorage.setItem("decorevaPage",page);
+const aboutSection=document.querySelector("#about");
+if(aboutSection)aboutSection.style.display= "none";
+const start=
+(page-1)*decorevaPerPage;
+const end=
+start+decorevaPerPage;
 decorevaProducts.forEach(
-function (card, index) {
+function(card,index){
 card.style.setProperty(
 "display",
-index >= start && index < end
+index>=start&&index<end
 ? "flex"
 : "none",
 "important"
 );
 }
 );
-if (typeof window.decorevaLoadVisibleSliders === "function") {
+if(typeof window.decorevaLoadVisibleSliders=== "function"){
 window.decorevaLoadVisibleSliders();
 }
-if (window.decorevaPageNavigation) {
-requestAnimationFrame(function () {
+if(window.decorevaPageNavigation){
+requestAnimationFrame(function(){
 scrollToCollectionTitle("auto");
 });
 }
@@ -1699,85 +1726,85 @@ document
 ".decoreva-pagination"
 )
 .forEach(
-function (nav) {
-const buttons =
+function(nav){
+const buttons=
 nav.querySelectorAll(
 "button"
 );
 buttons.forEach(
-function (button) {
-if (
+function(button){
+if(
 button.dataset.page
-) {
-const isActive =
+){
+const isActive=
 Number(
 button.dataset.page
-) === page;
-if (isActive) {
-button.style.color =
+)===page;
+if(isActive){
+button.style.color=
 "#b98218";
-button.style.fontWeight =
+button.style.fontWeight=
 "700";
-button.style.borderBottom =
+button.style.borderBottom=
 "2px solid #b98218";
-} else {
-button.style.color =
+}else{
+button.style.color=
 "#5a4630";
-button.style.fontWeight =
+button.style.fontWeight=
 "400";
-button.style.borderBottom =
+button.style.borderBottom=
 "2px solid transparent";
 }
 }
 }
 );
-const previousButton =
+const previousButton=
 buttons[0];
-const nextButton =
-buttons[buttons.length - 1];
-if (page === 1) {
-previousButton.disabled = true;
-previousButton.style.opacity = "0.25";
-previousButton.style.cursor =
+const nextButton=
+buttons[buttons.length-1];
+if(page===1){
+previousButton.disabled=true;
+previousButton.style.opacity= "0.25";
+previousButton.style.cursor=
 "default";
-} else {
-previousButton.disabled = false;
-previousButton.style.opacity = "1";
-previousButton.style.cursor =
+}else{
+previousButton.disabled=false;
+previousButton.style.opacity= "1";
+previousButton.style.cursor=
 "pointer";
 }
-if (
-page === decorevaTotalPages
-) {
-nextButton.disabled = true;
-nextButton.style.opacity = "0.25";
-nextButton.style.cursor =
+if(
+page===decorevaTotalPages
+){
+nextButton.disabled=true;
+nextButton.style.opacity= "0.25";
+nextButton.style.cursor=
 "default";
-} else {
-nextButton.disabled = false;
-nextButton.style.opacity = "1";
-nextButton.style.cursor =
+}else{
+nextButton.disabled=false;
+nextButton.style.opacity= "1";
+nextButton.style.cursor=
 "pointer";
 }
 }
 );
 }
-const decorevaGrid =
+const decorevaGrid=
 document.querySelector(
 "#collection-products"
 );
-if (
-decorevaGrid &&
-decorevaProducts.length > 0
-) {
+if(
+decorevaGrid&&
+decorevaProducts.length>0
+){
 decorevaGrid.parentNode
 .querySelectorAll(".decoreva-pagination")
-.forEach(function (nav) {
+.forEach(function(nav){
 nav.remove();
 });
-const paginationAbove =
+const paginationAbove=
 createDecorevaPagination();
-const paginationBelow =
+const paginationBelow=
 createDecorevaPagination();
 decorevaGrid.parentNode.insertBefore(
 paginationAbove,
@@ -1787,20 +1814,20 @@ decorevaGrid.insertAdjacentElement(
 "afterend",
 paginationBelow
 );
-const savedPage =
-Number(sessionStorage.getItem("decorevaPage")) || 1;
+const savedPage=
+Number(sessionStorage.getItem("decorevaPage"))||1;
 decorevaShowPage(savedPage);
 }
-const decorevaVariationProducts = {
-"happy-place-1": {
+const decorevaVariationProducts={
+"happy-place-1":{
 defaultVariation: "black",
-variations: {
-"black": {
+variations:{
+"black":{
 price: "₹299",
 size: "Size: 12 × 7 inch (Approx.)",
 amazon: "https://amzn.in/d/0bqU4Xuu",
 whatsapp: "This Is My Happy Place MDF Wallart - Black",
-images: [
+images:[
 "images/Thisismyhappyplace_Black_01.webp",
 "images/Thisismyhappyplace_Black_02.webp",
 "images/Thisismyhappyplace_Black_03.webp",
@@ -1812,12 +1839,12 @@ images: [
 "images/Thisismyhappyplace_Black_09.webp"
 ]
 },
-"red": {
+"red":{
 price: "₹299",
 size: "Size: 12 × 7 inch (Approx.)",
 amazon: "https://amzn.in/d/06FvVbYg",
 whatsapp: "This Is My Happy Place MDF Wallart - Red",
-images: [
+images:[
 "images/Thisismyhappyplace_Red_01.webp",
 "images/Thisismyhappyplace_Red_02.webp",
 "images/Thisismyhappyplace_Red_03.webp",
@@ -1831,15 +1858,15 @@ images: [
 }
 }
 },
-"radha-krishna-2": {
+"radha-krishna-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/005U5hmW",
 whatsapp: "Radha Krishna Small Temple 2 - Brown Small",
-images: [
+images:[
 "images/Radha Krishna Temple_02_Small_Brown_01.webp",
 "images/Radha Krishna Temple_02_Small_Brown_02.webp",
 "images/Radha Krishna Temple_02_Small_Brown_03.webp",
@@ -1851,12 +1878,12 @@ images: [
 "images/Radha Krishna Temple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0aHi7S4O",
 whatsapp: "Radha Krishna Small Temple 2 - Brown Big",
-images: [
+images:[
 "images/Radha Krishna Temple_02_Big_Brown_01.webp",
 "images/Radha Krishna Temple_02_Big_Brown_02.webp",
 "images/Radha Krishna Temple_02_Big_Brown_03.webp",
@@ -1868,12 +1895,12 @@ images: [
 "images/Radha Krishna Temple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0c7WcRdE",
 whatsapp: "Radha Krishna Small Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Radha Krishna Temple_02_Small_Darkbrown_01.webp",
 "images/Radha Krishna Temple_02_Small_Darkbrown_02.webp",
 "images/Radha Krishna Temple_02_Small_Darkbrown_03.webp",
@@ -1885,12 +1912,12 @@ images: [
 "images/Radha Krishna Temple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0cIsHZ0d",
 whatsapp: "Radha Krishna Small Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Radha Krishna Temple_02_Big_Darkbrown_01.webp",
 "images/Radha Krishna Temple_02_Big_Darkbrown_02.webp",
 "images/Radha Krishna Temple_02_Big_Darkbrown_03.webp",
@@ -1904,15 +1931,15 @@ images: [
 }
 }
 },
-"radha-krishna-1": {
+"radha-krishna-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0412ozF3",
 whatsapp: "Radha Krishna Small Temple - Brown Small",
-images: [
+images:[
 "images/Radha Krishna Temple_01_Small_Brown_01.webp",
 "images/Radha Krishna Temple_01_Small_Brown_02.webp",
 "images/Radha Krishna Temple_01_Small_Brown_03.webp",
@@ -1924,12 +1951,12 @@ images: [
 "images/Radha Krishna Temple_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/03VyLAM6",
 whatsapp: "Radha Krishna Small Temple - Brown Big",
-images: [
+images:[
 "images/Radha Krishna Temple_01_Big_Brown_01.webp",
 "images/Radha Krishna Temple_01_Big_Brown_02.webp",
 "images/Radha Krishna Temple_01_Big_Brown_03.webp",
@@ -1941,12 +1968,12 @@ images: [
 "images/Radha Krishna Temple_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0iF4jE0x",
 whatsapp: "Radha Krishna Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Radha Krishna Temple_01_Small_Darkbrown_01.webp",
 "images/Radha Krishna Temple_01_Small_Darkbrown_02.webp",
 "images/Radha Krishna Temple_01_Small_Darkbrown_03.webp",
@@ -1958,12 +1985,12 @@ images: [
 "images/Radha Krishna Temple_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/08WY03U0",
 whatsapp: "Radha Krishna Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Radha Krishna Temple_01_Big_Darkbrown_01.webp",
 "images/Radha Krishna Temple_01_Big_Darkbrown_02.webp",
 "images/Radha Krishna Temple_01_Big_Darkbrown_03.webp",
@@ -1977,15 +2004,15 @@ images: [
 }
 }
 },
-"lakshmi-ganesha-1": {
+"lakshmi-ganesha-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0dZPplNw",
 whatsapp: "Lakshmi Ganesha Small Temple - Brown Small",
-images: [
+images:[
 "images/Lakshmi Ganesha_Temple_Small_Brown_01.webp",
 "images/Lakshmi Ganesha_Temple_Small_Brown_02.webp",
 "images/Lakshmi Ganesha_Temple_Small_Brown_03.webp",
@@ -1997,12 +2024,12 @@ images: [
 "images/Lakshmi Ganesha_Temple_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/04y60sk1",
 whatsapp: "Lakshmi Ganesha Small Temple - Brown Big",
-images: [
+images:[
 "images/Lakshmi Ganesha_Temple_Big_Brown_01.webp",
 "images/Lakshmi Ganesha_Temple_Big_Brown_02.webp",
 "images/Lakshmi Ganesha_Temple_Big_Brown_03.webp",
@@ -2014,12 +2041,12 @@ images: [
 "images/Lakshmi Ganesha_Temple_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/01CKyfSY",
 whatsapp: "Lakshmi Ganesha Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Lakshmi Ganesha_Temple_Small_Darkbrown_01.webp",
 "images/Lakshmi Ganesha_Temple_Small_Darkbrown_02.webp",
 "images/Lakshmi Ganesha_Temple_Small_Darkbrown_03.webp",
@@ -2031,12 +2058,12 @@ images: [
 "images/Lakshmi Ganesha_Temple_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0654Yb37",
 whatsapp: "Lakshmi Ganesha Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Lakshmi Ganesha_Temple_Big_Darkbrown_01.webp",
 "images/Lakshmi Ganesha_Temple_Big_Darkbrown_02.webp",
 "images/Lakshmi Ganesha_Temple_Big_Darkbrown_03.webp",
@@ -2050,15 +2077,15 @@ images: [
 }
 }
 },
-"sherawali-1": {
+"sherawali-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0hKdqLAl",
 whatsapp: "Sherawali Mata Temple - Brown Small",
-images: [
+images:[
 "images/Sherawalimatatemple_01_Small_Brown.webp",
 "images/Sherawalimatatemple_02_Small_Brown.webp",
 "images/Sherawalimatatemple_03_Small_Brown.webp",
@@ -2070,12 +2097,12 @@ images: [
 "images/Sherawalimatatemple_09_Small_Brown.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/09hyu0US",
 whatsapp: "Sherawali Mata Temple - Brown Big",
-images: [
+images:[
 "images/Sherawalimatatemple_01_Big_Brown.webp",
 "images/Sherawalimatatemple_02_Big_Brown.webp",
 "images/Sherawalimatatemple_03_Big_Brown.webp",
@@ -2087,12 +2114,12 @@ images: [
 "images/Sherawalimatatemple_09_Big_Brown.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/08DePxbl",
 whatsapp: "Sherawali Mata Temple - Dark Brown Small",
-images: [
+images:[
 "images/Sherawalimatatemple_01_Small_Darkbrown.webp",
 "images/Sherawalimatatemple_02_Small_Darkbrown.webp",
 "images/Sherawalimatatemple_03_Small_Darkbrown.webp",
@@ -2104,12 +2131,12 @@ images: [
 "images/Sherawalimatatemple_09_Small_Darkbrown.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/03Rcbh9e",
 whatsapp: "Sherawali Mata Temple - Dark Brown Big",
-images: [
+images:[
 "images/Sherawalimatatemple_01_Big_DarkBrown.webp",
 "images/Sherawalimatatemple_02_Big_DarkBrown.webp",
 "images/Sherawalimatatemple_03_Big_DarkBrown.webp",
@@ -2123,15 +2150,15 @@ images: [
 }
 }
 },
-"sherawali-2": {
+"sherawali-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0arqThT9",
 whatsapp: "Sherawali Mata Temple 2 - Brown Small",
-images: [
+images:[
 "images/Sherawalimatatemple_02_Small_Brown_01.webp",
 "images/Sherawalimatatemple_02_Small_Brown_02.webp",
 "images/Sherawalimatatemple_02_Small_Brown_03.webp",
@@ -2143,12 +2170,12 @@ images: [
 "images/Sherawalimatatemple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/03E4xYH5",
 whatsapp: "Sherawali Mata Temple 2 - Brown Big",
-images: [
+images:[
 "images/Sherawalimatatemple_02_Big_Brown_01.webp",
 "images/Sherawalimatatemple_02_Big_Brown_02.webp",
 "images/Sherawalimatatemple_02_Big_Brown_03.webp",
@@ -2160,12 +2187,12 @@ images: [
 "images/Sherawalimatatemple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0dj2Lz3c",
 whatsapp: "Sherawali Mata Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Sherawalimatatemple_02_Small_Darkrown_01.webp",
 "images/Sherawalimatatemple_02_Small_Darkrown_02.webp",
 "images/Sherawalimatatemple_02_Small_Darkrown_03.webp",
@@ -2177,12 +2204,12 @@ images: [
 "images/Sherawalimatatemple_02_Small_Darkrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0cGv5Z1p",
 whatsapp: "Sherawali Mata Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Sherawalimatatemple_02_Big_DarkBrown_01.webp",
 "images/Sherawalimatatemple_02_Big_DarkBrown_02.webp",
 "images/Sherawalimatatemple_02_Big_DarkBrown_03.webp",
@@ -2196,15 +2223,15 @@ images: [
 }
 }
 },
-"sherawali-3": {
+"sherawali-3":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0izsug2U",
 whatsapp: "Sherawali Mata Temple 3 - Brown Small",
-images: [
+images:[
 "images/Sherawalimata_03_Small_Brown_01.webp",
 "images/Sherawalimata_03_Small_Brown_02.webp",
 "images/Sherawalimata_03_Small_Brown_03.webp",
@@ -2216,12 +2243,12 @@ images: [
 "images/Sherawalimata_03_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0fajTDks",
 whatsapp: "Sherawali Mata Temple 3 - Brown Big",
-images: [
+images:[
 "images/Sherawalimata_03_Big_Brown_01.webp",
 "images/Sherawalimata_03_Big_Brown_02.webp",
 "images/Sherawalimata_03_Big_Brown_03.webp",
@@ -2233,12 +2260,12 @@ images: [
 "images/Sherawalimata_03_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0fiWhSdI",
 whatsapp: "Sherawali Mata Temple 3 - Dark Brown Small",
-images: [
+images:[
 "images/Sherawalimata_03_Small_Darkbrown_01.webp",
 "images/Sherawalimata_03_Small_Darkbrown_02.webp",
 "images/Sherawalimata_03_Small_Darkbrown_03.webp",
@@ -2250,12 +2277,12 @@ images: [
 "images/Sherawalimata_03_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0cL2sOsj",
 whatsapp: "Sherawali Mata Temple 3 - Dark Brown Big",
-images: [
+images:[
 "images/Sherawalimata_03_Big_Darkbrown_01.webp",
 "images/Sherawalimata_03_Big_Darkbrown_02.webp",
 "images/Sherawalimata_03_Big_Darkbrown_03.webp",
@@ -2269,15 +2296,15 @@ images: [
 }
 }
 },
-"sherawali-4": {
+"sherawali-4":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0gfODZNB",
 whatsapp: "Sherawali Mata Temple 4 - Brown Small",
-images: [
+images:[
 "images/Sherawalimata Temple_04_Small_Brown_01.webp",
 "images/Sherawalimata Temple_04_Small_Brown_02.webp",
 "images/Sherawalimata Temple_04_Small_Brown_03.webp",
@@ -2289,12 +2316,12 @@ images: [
 "images/Sherawalimata Temple_04_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0a1tvQM1",
 whatsapp: "Sherawali Mata Temple 4 - Brown Big",
-images: [
+images:[
 "images/Sherawalimata Temple_04_Big_Brown_01.webp",
 "images/Sherawalimata Temple_04_Big_Brown_02.webp",
 "images/Sherawalimata Temple_04_Big_Brown_03.webp",
@@ -2306,12 +2333,12 @@ images: [
 "images/Sherawalimata Temple_04_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/05l1jM6H",
 whatsapp: "Sherawali Mata Temple 4 - Dark Brown Small",
-images: [
+images:[
 "images/Sherawalimata Temple_04_Small_Darkbrown_01.webp",
 "images/Sherawalimata Temple_04_Small_Darkbrown_02.webp",
 "images/Sherawalimata Temple_04_Small_Darkbrown_03.webp",
@@ -2323,12 +2350,12 @@ images: [
 "images/Sherawalimata Temple_04_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0f5J7uWW",
 whatsapp: "Sherawali Mata Temple 4 - Dark Brown Big",
-images: [
+images:[
 "images/Sherawalimata Temple_04_Big_Darkbrown_01.webp",
 "images/Sherawalimata Temple_04_Big_Darkbrown_02.webp",
 "images/Sherawalimata Temple_04_Big_Darkbrown_03.webp",
@@ -2342,15 +2369,15 @@ images: [
 }
 }
 },
-"shiv-parvati-1": {
+"shiv-parvati-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0b5XcQw3",
 whatsapp: "Shiv Parvati Temple - Brown Small",
-images: [
+images:[
 "images/Shivparvatitemple_01_Small_Brown_01.webp",
 "images/Shivparvatitemple_01_Small_Brown_02.webp",
 "images/Shivparvatitemple_01_Small_Brown_03.webp",
@@ -2362,12 +2389,12 @@ images: [
 "images/Shivparvatitemple_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/03cwZ8fE",
 whatsapp: "Shiv Parvati Temple - Brown Big",
-images: [
+images:[
 "images/Shivparvatitemple_01_Big_Brown_01.webp",
 "images/Shivparvatitemple_01_Big_Brown_02.webp",
 "images/Shivparvatitemple_01_Big_Brown_03.webp",
@@ -2379,12 +2406,12 @@ images: [
 "images/Shivparvatitemple_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/03ersPUv",
 whatsapp: "Shiv Parvati Temple - Dark Brown Small",
-images: [
+images:[
 "images/Shivparvatitemple_01_Small_Darkbrown_01.webp",
 "images/Shivparvatitemple_01_Small_Darkbrown_02.webp",
 "images/Shivparvatitemple_01_Small_Darkbrown_03.webp",
@@ -2396,12 +2423,12 @@ images: [
 "images/Shivparvatitemple_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/03hAJP4O",
 whatsapp: "Shiv Parvati Temple - Dark Brown Big",
-images: [
+images:[
 "images/Shivparvatitemple_01_Big_Darkbrown_01.webp",
 "images/Shivparvatitemple_01_Big_Darkbrown_02.webp",
 "images/Shivparvatitemple_01_Big_Darkbrown_03.webp",
@@ -2415,15 +2442,15 @@ images: [
 }
 }
 },
-"shiv-parvati-2": {
+"shiv-parvati-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0hYVylr1",
 whatsapp: "Shiv Parvati Small Temple 2 - Brown Small",
-images: [
+images:[
 "images/ShivParvatitemple_02_Small_Brown_01.webp",
 "images/ShivParvatitemple_02_Small_Brown_02.webp",
 "images/ShivParvatitemple_02_Small_Brown_03.webp",
@@ -2435,12 +2462,12 @@ images: [
 "images/ShivParvatitemple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/02CrHlvJ",
 whatsapp: "Shiv Parvati Small Temple 2 - Brown Big",
-images: [
+images:[
 "images/ShivParvatitemple_02_Big_Brown_01.webp",
 "images/ShivParvatitemple_02_Big_Brown_02.webp",
 "images/ShivParvatitemple_02_Big_Brown_03.webp",
@@ -2452,12 +2479,12 @@ images: [
 "images/ShivParvatitemple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/03uf1aPo",
 whatsapp: "Shiv Parvati Small Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/ShivParvatitemple_02_Small_Darkbrown_01.webp",
 "images/ShivParvatitemple_02_Small_Darkbrown_02.webp",
 "images/ShivParvatitemple_02_Small_Darkbrown_03.webp",
@@ -2469,12 +2496,12 @@ images: [
 "images/ShivParvatitemple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/02XBU4Gd",
 whatsapp: "Shiv Parvati Small Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/ShivParvatitemple_02_Big_Darkbrown_01.webp",
 "images/ShivParvatitemple_02_Big_Darkbrown_02.webp",
 "images/ShivParvatitemple_02_Big_Darkbrown_03.webp",
@@ -2488,15 +2515,15 @@ images: [
 }
 }
 },
-"shiv-parvati-3": {
+"shiv-parvati-3":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0f1drRls",
 whatsapp: "Shiv Parvati Temple 3 - Brown Small",
-images: [
+images:[
 "images/Shivparvatitemple_03_Small_Brown_01.webp",
 "images/Shivparvatitemple_03_Small_Brown_02.webp",
 "images/Shivparvatitemple_03_Small_Brown_03.webp",
@@ -2508,12 +2535,12 @@ images: [
 "images/Shivparvatitemple_03_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/05o5nTgm",
 whatsapp: "Shiv Parvati Temple 3 - Brown Big",
-images: [
+images:[
 "images/Shivparvatitemple_03_Big_Brown_01.webp",
 "images/Shivparvatitemple_03_Big_Brown_02.webp",
 "images/Shivparvatitemple_03_Big_Brown_03.webp",
@@ -2525,12 +2552,12 @@ images: [
 "images/Shivparvatitemple_03_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0bjseaa9",
 whatsapp: "Shiv Parvati Temple 3 - Dark Brown Small",
-images: [
+images:[
 "images/Shivparvatitemple_03_Small_Darkbrown_01.webp",
 "images/Shivparvatitemple_03_Small_Darkbrown_02.webp",
 "images/Shivparvatitemple_03_Small_Darkbrown_03.webp",
@@ -2542,12 +2569,12 @@ images: [
 "images/Shivparvatitemple_03_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/05Q5QwZF",
 whatsapp: "Shiv Parvati Temple 3 - Dark Brown Big",
-images: [
+images:[
 "images/Shivparvatitemple_03_Big_Darkbrown_01.webp",
 "images/Shivparvatitemple_03_Big_Darkbrown_02.webp",
 "images/Shivparvatitemple_03_Big_Darkbrown_03.webp",
@@ -2561,15 +2588,15 @@ images: [
 }
 }
 },
-"shiva-1": {
+"shiva-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0bhOrhrA",
 whatsapp: "Shiva Small Temple - Brown Small",
-images: [
+images:[
 "images/Shivatemple_Small_Brown_01.webp",
 "images/Shivatemple_Small_Brown_02.webp",
 "images/Shivatemple_Small_Brown_03.webp",
@@ -2581,12 +2608,12 @@ images: [
 "images/Shivatemple_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0gGYOUAX",
 whatsapp: "Shiva Small Temple - Brown Big",
-images: [
+images:[
 "images/Shivatemple_Big_Brown_01.webp",
 "images/Shivatemple_Big_Brown_02.webp",
 "images/Shivatemple_Big_Brown_03.webp",
@@ -2598,12 +2625,12 @@ images: [
 "images/Shivatemple_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/09BhbjJ1",
 whatsapp: "Shiva Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Shivatemple_Small_Darkrown_01.webp",
 "images/Shivatemple_Small_Darkrown_02.webp",
 "images/Shivatemple_Small_Darkrown_03.webp",
@@ -2615,12 +2642,12 @@ images: [
 "images/Shivatemple_Small_Darkrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/08soQzMu",
 whatsapp: "Shiva Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Shivatemple_Big_Darkrown_01.webp",
 "images/Shivatemple_Big_Darkrown_02.webp",
 "images/Shivatemple_Big_Darkrown_03.webp",
@@ -2634,15 +2661,15 @@ images: [
 }
 }
 },
-"siyaram-1": {
+"siyaram-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/05tK8gJy",
 whatsapp: "Siyaram Small Temple - Brown Small",
-images: [
+images:[
 "images/Siyaramtemple_01_Small_Brown_01.webp",
 "images/Siyaramtemple_01_Small_Brown_02.webp",
 "images/Siyaramtemple_01_Small_Brown_03.webp",
@@ -2654,12 +2681,12 @@ images: [
 "images/Siyaramtemple_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/06I1Y8Ry",
 whatsapp: "Siyaram Small Temple - Brown Big",
-images: [
+images:[
 "images/Siyaramtemple_01_Big_Brown_01.webp",
 "images/Siyaramtemple_01_Big_Brown_02.webp",
 "images/Siyaramtemple_01_Big_Brown_03.webp",
@@ -2671,12 +2698,12 @@ images: [
 "images/Siyaramtemple_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/05WrvCs0",
 whatsapp: "Siyaram Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Siyaramtemple_01_Small_Darkbrown_01.webp",
 "images/Siyaramtemple_01_Small_Darkbrown_02.webp",
 "images/Siyaramtemple_01_Small_Darkbrown_03.webp",
@@ -2688,12 +2715,12 @@ images: [
 "images/Siyaramtemple_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/09BSNNbN",
 whatsapp: "Siyaram Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Siyaramtemple_01_Big_Darkbrown_01.webp",
 "images/Siyaramtemple_01_Big_Darkbrown_02.webp",
 "images/Siyaramtemple_01_Big_Darkbrown_03.webp",
@@ -2707,15 +2734,15 @@ images: [
 }
 }
 },
-"siyaram-2": {
+"siyaram-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0357ndZq",
 whatsapp: "Siyaram Small Temple 2 - Brown Small",
-images: [
+images:[
 "images/Siyaramtemple_02_Small_Brown_01.webp",
 "images/Siyaramtemple_02_Small_Brown_02.webp",
 "images/Siyaramtemple_02_Small_Brown_03.webp",
@@ -2727,12 +2754,12 @@ images: [
 "images/Siyaramtemple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0cIg1mVm",
 whatsapp: "Siyaram Small Temple 2 - Brown Big",
-images: [
+images:[
 "images/Siyaramtemple_02_Big_Brown_01.webp",
 "images/Siyaramtemple_02_Big_Brown_02.webp",
 "images/Siyaramtemple_02_Big_Brown_03.webp",
@@ -2744,12 +2771,12 @@ images: [
 "images/Siyaramtemple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0e9dbVWa",
 whatsapp: "Siyaram Small Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Siyaramtemple_02_Small_Darkbrown_01.webp",
 "images/Siyaramtemple_02_Small_Darkbrown_02.webp",
 "images/Siyaramtemple_02_Small_Darkbrown_03.webp",
@@ -2761,12 +2788,12 @@ images: [
 "images/Siyaramtemple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0401KVZ2",
 whatsapp: "Siyaram Small Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Siyaramtemple_02_Big_Darkbrown_01.webp",
 "images/Siyaramtemple_02_Big_Darkbrown_02.webp",
 "images/Siyaramtemple_02_Big_Darkbrown_03.webp",
@@ -2780,15 +2807,15 @@ images: [
 }
 }
 },
-"ganesha-1": {
+"ganesha-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/07GtndwV",
 whatsapp: "Ganesha Small Temple 2 - Brown Small",
-images: [
+images:[
 "images/Ganesha_01_Small_Brown_01.webp",
 "images/Ganesha_01_Small_Brown_02.webp",
 "images/Ganesha_01_Small_Brown_03.webp",
@@ -2800,12 +2827,12 @@ images: [
 "images/Ganesha_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/00a4ejCY",
 whatsapp: "Ganesha Small Temple 2 - Brown Big",
-images: [
+images:[
 "images/Ganesha_01_Big_Brown_01.webp",
 "images/Ganesha_01_Big_Brown_02.webp",
 "images/Ganesha_01_Big_Brown_03.webp",
@@ -2817,12 +2844,12 @@ images: [
 "images/Ganesha_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0j0ORVEp",
 whatsapp: "Ganesha Small Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Ganesha_01_Small_Darkbrown_01.webp",
 "images/Ganesha_01_Small_Darkbrown_02.webp",
 "images/Ganesha_01_Small_Darkbrown_03.webp",
@@ -2834,12 +2861,12 @@ images: [
 "images/Ganesha_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/05AU3mcR",
 whatsapp: "Ganesha Small Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Ganesha_01_Big_Darkbrown_01.webp",
 "images/Ganesha_01_Big_Darkbrown_02.webp",
 "images/Ganesha_01_Big_Darkbrown_03.webp",
@@ -2853,15 +2880,15 @@ images: [
 }
 }
 },
-"hanuman-1": {
+"hanuman-1":{
 defaultVariation: "brown-small",
-variations: {
-"dark-brown-small": {
+variations:{
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/09fx0mfl",
 whatsapp: "Hanuman Small Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Hanuman_01_Small_Darkbrown_01.webp",
 "images/Hanuman_01_Small_Darkbrown_02.webp",
 "images/Hanuman_01_Small_Darkbrown_03.webp",
@@ -2873,12 +2900,12 @@ images: [
 "images/Hanuman_01_Small_Darkbrown_09.webp"
 ]
 },
-"brown-small": {
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/08hD7M2s",
 whatsapp: "Hanuman Small Temple 2 - Brown Small",
-images: [
+images:[
 "images/Hanuman_01_Small_Brown_01.webp",
 "images/Hanuman_01_Small_Brown_02.webp",
 "images/Hanuman_01_Small_Brown_03.webp",
@@ -2890,12 +2917,12 @@ images: [
 "images/Hanuman_01_Small_Brown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0178n2Pc",
 whatsapp: "Hanuman Small Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Hanuman_01_Big_Darkbrown_01.webp",
 "images/Hanuman_01_Big_Darkbrown_02.webp",
 "images/Hanuman_01_Big_Darkbrown_03.webp",
@@ -2907,12 +2934,12 @@ images: [
 "images/Hanuman_01_Big_Darkbrown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/05X0m7c9",
 whatsapp: "Hanuman Small Temple 2 - Brown Big",
-images: [
+images:[
 "images/Hanuman_01_Big_Brown_01.webp",
 "images/Hanuman_01_Big_Brown_02.webp",
 "images/Hanuman_01_Big_Brown_03.webp",
@@ -2926,15 +2953,15 @@ images: [
 }
 }
 },
-"hanuman-2": {
+"hanuman-2":{
 defaultVariation: "brown-small",
-variations: {
-"dark-brown-small": {
+variations:{
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/04bbMP4C",
 whatsapp: "Hanuman Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Hanuman Temple_02_Small_Darkbrown_01.webp",
 "images/Hanuman Temple_02_Small_Darkbrown_02.webp",
 "images/Hanuman Temple_02_Small_Darkbrown_03.webp",
@@ -2946,12 +2973,12 @@ images: [
 "images/Hanuman Temple_02_Small_Darkbrown_09.webp"
 ]
 },
-"brown-small": {
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0cOuzgW0",
 whatsapp: "Hanuman Small Temple - Brown Small",
-images: [
+images:[
 "images/Hanuman Temple_02_Small_Brown_01.webp",
 "images/Hanuman Temple_02_Small_Brown_02.webp",
 "images/Hanuman Temple_02_Small_Brown_03.webp",
@@ -2963,12 +2990,12 @@ images: [
 "images/Hanuman Temple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/02ng878g",
 whatsapp: "Hanuman Small Temple - Brown Big",
-images: [
+images:[
 "images/Hanuman Temple_02_Big_Brown_01.webp",
 "images/Hanuman Temple_02_Big_Brown_02.webp",
 "images/Hanuman Temple_02_Big_Brown_03.webp",
@@ -2979,12 +3006,12 @@ images: [
 "images/Hanuman Temple_02_Big_Brown_08.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/023TUFUz",
 whatsapp: "Hanuman Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Hanuman Temple_02_Big_Darkbrown_01.webp",
 "images/Hanuman Temple_02_Big_Darkbrown_02.webp",
 "images/Hanuman Temple_02_Big_Darkbrown_03.webp",
@@ -2998,15 +3025,15 @@ images: [
 }
 }
 }
-,"hanuman-3": {
+,"hanuman-3":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0cvdnYH4",
 whatsapp: "Hanuman Temple 3 - Brown Small",
-images: [
+images:[
 "images/Hanuman Temple_03_Small_Brown_01.webp",
 "images/Hanuman Temple_03_Small_Brown_02.webp",
 "images/Hanuman Temple_03_Small_Brown_03.webp",
@@ -3018,12 +3045,12 @@ images: [
 "images/Hanuman Temple_03_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/07HHkYm5",
 whatsapp: "Hanuman Temple 3 - Brown Big",
-images: [
+images:[
 "images/Hanuman Temple_03_Big_Brown_01.webp",
 "images/Hanuman Temple_03_Big_Brown_02.webp",
 "images/Hanuman Temple_03_Big_Brown_03.webp",
@@ -3035,12 +3062,12 @@ images: [
 "images/Hanuman Temple_03_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0gbN4YIF",
 whatsapp: "Hanuman Temple 3 - Dark Brown Small",
-images: [
+images:[
 "images/Hanuman Temple_03_Small_Darkbrown_01.webp",
 "images/Hanuman Temple_03_Small_Darkbrown_02.webp",
 "images/Hanuman Temple_03_Small_Darkbrown_03.webp",
@@ -3052,12 +3079,12 @@ images: [
 "images/Hanuman Temple_03_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/02tcnVb7",
 whatsapp: "Hanuman Temple 3 - Dark Brown Big",
-images: [
+images:[
 "images/Hanuman Temple_03_Big_Darkbrown_01.webp",
 "images/Hanuman Temple_03_Big_Darkbrown_02.webp",
 "images/Hanuman Temple_03_Big_Darkbrown_03.webp",
@@ -3071,15 +3098,15 @@ images: [
 }
 }
 },
-"krishna-2": {
+"krishna-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/02blWPLh",
 whatsapp: "Krishna Small Temple 2 - Brown Small",
-images: [
+images:[
 "images/Krishna Temple_02_Small_Brown_01.webp",
 "images/Krishna Temple_02_Small_Brown_02.webp",
 "images/Krishna Temple_02_Small_Brown_03.webp",
@@ -3091,12 +3118,12 @@ images: [
 "images/Krishna Temple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0hSl5Th1",
 whatsapp: "Krishna Small Temple 2 - Brown Big",
-images: [
+images:[
 "images/Krishna Temple_02_Big_Brown_01.webp",
 "images/Krishna Temple_02_Big_Brown_02.webp",
 "images/Krishna Temple_02_Big_Brown_03.webp",
@@ -3108,12 +3135,12 @@ images: [
 "images/Krishna Temple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0h3PBqKK",
 whatsapp: "Krishna Small Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Krishna Temple_02_Small_Darkbrown_01.webp",
 "images/Krishna Temple_02_Small_Darkbrown_02.webp",
 "images/Krishna Temple_02_Small_Darkbrown_03.webp",
@@ -3125,12 +3152,12 @@ images: [
 "images/Krishna Temple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0g4EiQdm",
 whatsapp: "Krishna Small Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Krishna Temple_02_Big_Darkbrown_01.webp",
 "images/Krishna Temple_02_Big_Darkbrown_02.webp",
 "images/Krishna Temple_02_Big_Darkbrown_03.webp",
@@ -3144,15 +3171,15 @@ images: [
 }
 }
 },
-"krishna-1": {
+"krishna-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0ckxBzLQ",
 whatsapp: "Krishna Small Temple - Brown Small",
-images: [
+images:[
 "images/Krishna_01_Small_Brown_01.webp",
 "images/Krishna_01_Small_Brown_02.webp",
 "images/Krishna_01_Small_Brown_03.webp",
@@ -3164,12 +3191,12 @@ images: [
 "images/Krishna_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0g1zPNTD",
 whatsapp: "Krishna Small Temple - Brown Big",
-images: [
+images:[
 "images/Krishna_01_Big_Brown_01.webp",
 "images/Krishna_01_Big_Brown_02.webp",
 "images/Krishna_01_Big_Brown_03.webp",
@@ -3181,12 +3208,12 @@ images: [
 "images/Krishna_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/01O8N3YG",
 whatsapp: "Krishna Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Krishna_01_Small Darkbrown_01.webp",
 "images/Krishna_01_Small Darkbrown_02.webp",
 "images/Krishna_01_Small Darkbrown_03.webp",
@@ -3198,12 +3225,12 @@ images: [
 "images/Krishna_01_Small Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/03O2qNHf",
 whatsapp: "Krishna Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Krishna_01_Big_Darkbrown_01.webp",
 "images/Krishna_01_Big_Darkbrown_02.webp",
 "images/Krishna_01_Big_Darkbrown_03.webp",
@@ -3217,15 +3244,15 @@ images: [
 }
 }
 },
-"khatushyam-1": {
+"khatushyam-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0gytQnqS",
 whatsapp: "Khatu Shyam Temple - Brown Small",
-images: [
+images:[
 "images/Khatushyam Temple_01_Small_Brown_01.webp",
 "images/Khatushyam Temple_01_Small_Brown_02.webp",
 "images/Khatushyam Temple_01_Small_Brown_03.webp",
@@ -3237,12 +3264,12 @@ images: [
 "images/Khatushyam Temple_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0a3QIQ5w",
 whatsapp: "Khatu Shyam Temple - Brown Big",
-images: [
+images:[
 "images/Khatushyam Temple_01_Big_Brown_01.webp",
 "images/Khatushyam Temple_01_Big_Brown_02.webp",
 "images/Khatushyam Temple_01_Big_Brown_03.webp",
@@ -3254,12 +3281,12 @@ images: [
 "images/Khatushyam Temple_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0etXsRC7",
 whatsapp: "Khatu Shyam Temple - Dark Brown Small",
-images: [
+images:[
 "images/Khatushyam Temple_01_Small_Darkbrown_01.webp",
 "images/Khatushyam Temple_01_Small_Darkbrown_02.webp",
 "images/Khatushyam Temple_01_Small_Darkbrown_03.webp",
@@ -3271,12 +3298,12 @@ images: [
 "images/Khatushyam Temple_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/038QapIf",
 whatsapp: "Khatu Shyam Temple - Dark Brown Big",
-images: [
+images:[
 "images/Khatushyam Temple_01_Big_Darkbrown_01.webp",
 "images/Khatushyam Temple_01_Big_Darkbrown_02.webp",
 "images/Khatushyam Temple_01_Big_Darkbrown_03.webp",
@@ -3290,15 +3317,15 @@ images: [
 }
 }
 },
-"khatushyam-2": {
+"khatushyam-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/01UiCsYS",
 whatsapp: "Khatu Shyam Temple 2 - Brown Small",
-images: [
+images:[
 "images/Khatushyamtemple_02_Small_Brown_01.webp",
 "images/Khatushyamtemple_02_Small_Brown_02.webp",
 "images/Khatushyamtemple_02_Small_Brown_03.webp",
@@ -3310,12 +3337,12 @@ images: [
 "images/Khatushyamtemple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0cpQydWP",
 whatsapp: "Khatu Shyam Temple 2 - Brown Big",
-images: [
+images:[
 "images/Khatushyamtemple_02_Big_Brown_01.webp",
 "images/Khatushyamtemple_02_Big_Brown_02.webp",
 "images/Khatushyamtemple_02_Big_Brown_03.webp",
@@ -3327,12 +3354,12 @@ images: [
 "images/Khatushyamtemple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/03RM8NkW",
 whatsapp: "Khatu Shyam Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Khatushyamtemple_02_Small_Darkbrown_01.webp",
 "images/Khatushyamtemple_02_Small_Darkbrown_02.webp",
 "images/Khatushyamtemple_02_Small_Darkbrown_03.webp",
@@ -3344,12 +3371,12 @@ images: [
 "images/Khatushyamtemple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/077VNHGC",
 whatsapp: "Khatu Shyam Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Khatushyamtemple_02_Big_Darkbrown_01.webp",
 "images/Khatushyamtemple_02_Big_Darkbrown_02.webp",
 "images/Khatushyamtemple_02_Big_Darkbrown_03.webp",
@@ -3363,15 +3390,15 @@ images: [
 }
 }
 },
-"om-1": {
+"om-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Diameter: 7.9 inch × Thickness: 5 mm",
 amazon: "https://amzn.in/d/07kUNCJ4",
 whatsapp: "OM Wall Art - Brown Small",
-images: [
+images:[
 "images/OMWallart_Small_Brown_01.webp",
 "images/OMWallart_Small_Brown_02.webp",
 "images/OMWallart_Small_Brown_03.webp",
@@ -3383,12 +3410,12 @@ images: [
 "images/OMWallart_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Diameter: 15 inch × Thickness: 5 mm",
 amazon: "https://amzn.in/d/066Mwcqs",
 whatsapp: "OM Wall Art - Brown Big",
-images: [
+images:[
 "images/OMWallart_Big_Brown_01.webp",
 "images/OMWallart_Big_Brown_02.webp",
 "images/OMWallart_Big_Brown_03.webp",
@@ -3400,12 +3427,12 @@ images: [
 "images/OMWallart_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Diameter: 7.9 inch × Thickness: 5 mm",
 amazon: "https://amzn.in/d/0iC3x8Eq",
 whatsapp: "OM Wall Art - Dark Brown Small",
-images: [
+images:[
 "images/OMWallart_Small_Darkbrown_01.webp",
 "images/OMWallart_Small_Darkbrown_02.webp",
 "images/OMWallart_Small_Darkbrown_03.webp",
@@ -3417,12 +3444,12 @@ images: [
 "images/OMWallart_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Diameter: 15 inch × Thickness: 5 mm",
 amazon: "https://amzn.in/d/06tXwLTg",
 whatsapp: "OM Wall Art - Dark Brown Big",
-images: [
+images:[
 "images/OMWallart_Big_Darkbrown_01.webp",
 "images/OMWallart_Big_Darkbrown_02.webp",
 "images/OMWallart_Big_Darkbrown_03.webp",
@@ -3436,15 +3463,15 @@ images: [
 }
 }
 },
-"waheguru-1": {
+"waheguru-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0fokBjGR",
 whatsapp: "Waheguru Temple - Brown Small",
-images: [
+images:[
 "images/Waheguru Temple_01_Small_Brown_01.webp",
 "images/Waheguru Temple_01_Small_Brown_02.webp",
 "images/Waheguru Temple_01_Small_Brown_03.webp",
@@ -3456,12 +3483,12 @@ images: [
 "images/Waheguru Temple_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/02Csehqj",
 whatsapp: "Waheguru Temple - Brown Big",
-images: [
+images:[
 "images/Waheguru Temple_01_Big_Brown_01.webp",
 "images/Waheguru Temple_01_Big_Brown_02.webp",
 "images/Waheguru Temple_01_Big_Brown_03.webp",
@@ -3473,12 +3500,12 @@ images: [
 "images/Waheguru Temple_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/06eRpND1",
 whatsapp: "Waheguru Temple - Dark Brown Small",
-images: [
+images:[
 "images/Waheguru Temple_01_Small_Darkbrown_01.webp",
 "images/Waheguru Temple_01_Small_Darkbrown_02.webp",
 "images/Waheguru Temple_01_Small_Darkbrown_03.webp",
@@ -3490,12 +3517,12 @@ images: [
 "images/Waheguru Temple_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/01gMmzz9",
 whatsapp: "Waheguru Temple - Dark Brown Big",
-images: [
+images:[
 "images/Waheguru Temple_01_Big_Darkbrown_01.webp",
 "images/Waheguru Temple_01_Big_Darkbrown_02.webp",
 "images/Waheguru Temple_01_Big_Darkbrown_03.webp",
@@ -3509,15 +3536,15 @@ images: [
 }
 }
 },
-"ganesha-2": {
+"ganesha-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/05XiBBkn",
 whatsapp: "Ganesha Temple 2 - Brown Small",
-images: [
+images:[
 "images/Ganesha Temple_02_Small_Brown_01.webp",
 "images/Ganesha Temple_02_Small_Brown_02.webp",
 "images/Ganesha Temple_02_Small_Brown_03.webp",
@@ -3529,12 +3556,12 @@ images: [
 "images/Ganesha Temple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0ekYClw1",
 whatsapp: "Ganesha Temple 2 - Brown Big",
-images: [
+images:[
 "images/Ganesha Temple_02_Big_Brown_01.webp",
 "images/Ganesha Temple_02_Big_Brown_02.webp",
 "images/Ganesha Temple_02_Big_Brown_03.webp",
@@ -3546,12 +3573,12 @@ images: [
 "images/Ganesha Temple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/02bFdeRS",
 whatsapp: "Ganesha Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Ganesha Temple_02_Small_Darkbrown_01.webp",
 "images/Ganesha Temple_02_Small_Darkbrown_02.webp",
 "images/Ganesha Temple_02_Small_Darkbrown_03.webp",
@@ -3563,12 +3590,12 @@ images: [
 "images/Ganesha Temple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0eS7NNPy",
 whatsapp: "Ganesha Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Ganesha Temple_02_Big_Darkbrown_01.webp",
 "images/Ganesha Temple_02_Big_Darkbrown_02.webp",
 "images/Ganesha Temple_02_Big_Darkbrown_03.webp",
@@ -3582,15 +3609,15 @@ images: [
 }
 }
 },
-"guruji-1": {
+"guruji-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/07c5gB7M",
 whatsapp: "Guruji Temple - Brown Small",
-images: [
+images:[
 "images/Guruji Temple_01_Small_Brown_01.webp",
 "images/Guruji Temple_01_Small_Brown_02.webp",
 "images/Guruji Temple_01_Small_Brown_03.webp",
@@ -3602,12 +3629,12 @@ images: [
 "images/Guruji Temple_01_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/02fNtirt",
 whatsapp: "Guruji Temple - Brown Big",
-images: [
+images:[
 "images/Guruji Temple_01_Big_Brown_01.webp",
 "images/Guruji Temple_01_Big_Brown_02.webp",
 "images/Guruji Temple_01_Big_Brown_03.webp",
@@ -3619,12 +3646,12 @@ images: [
 "images/Guruji Temple_01_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/08vsGWlT",
 whatsapp: "Guruji Temple - Dark Brown Small",
-images: [
+images:[
 "images/Guruji Temple_01_Small_Darkbrown_01.webp",
 "images/Guruji Temple_01_Small_Darkbrown_02.webp",
 "images/Guruji Temple_01_Small_Darkbrown_03.webp",
@@ -3636,12 +3663,12 @@ images: [
 "images/Guruji Temple_01_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0hd1fKjv",
 whatsapp: "Guruji Temple - Dark Brown Big",
-images: [
+images:[
 "images/Guruji Temple_01_Big_Darkbrown_01.webp",
 "images/Guruji Temple_01_Big_Darkbrown_02.webp",
 "images/Guruji Temple_01_Big_Darkbrown_03.webp",
@@ -3656,15 +3683,15 @@ images: [
 }
 }
 ,
-"guruji-2": {
+"guruji-2":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0io8XSB2",
 whatsapp: "Guru Ji Temple 2 - Brown Small",
-images: [
+images:[
 "images/Guruji_Temple_02_Small_Brown_01.webp",
 "images/Guruji_Temple_02_Small_Brown_02.webp",
 "images/Guruji_Temple_02_Small_Brown_03.webp",
@@ -3676,12 +3703,12 @@ images: [
 "images/Guruji_Temple_02_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/01RuvYFr",
 whatsapp: "Guru Ji Temple 2 - Brown Big",
-images: [
+images:[
 "images/Guruji_Temple_02_Big_Brown_01.webp",
 "images/Guruji_Temple_02_Big_Brown_02.webp",
 "images/Guruji_Temple_02_Big_Brown_03.webp",
@@ -3693,12 +3720,12 @@ images: [
 "images/Guruji_Temple_02_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/03Ys5G5S",
 whatsapp: "Guru Ji Temple 2 - Dark Brown Small",
-images: [
+images:[
 "images/Guruji_Temple_02_Small_Darkbrown_01.webp",
 "images/Guruji_Temple_02_Small_Darkbrown_02.webp",
 "images/Guruji_Temple_02_Small_Darkbrown_03.webp",
@@ -3710,12 +3737,12 @@ images: [
 "images/Guruji_Temple_02_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0gsINYvT",
 whatsapp: "Guru Ji Temple 2 - Dark Brown Big",
-images: [
+images:[
 "images/Guruji_Temple_02_Big_Darkbrown_01.webp",
 "images/Guruji_Temple_02_Big_Darkbrown_02.webp",
 "images/Guruji_Temple_02_Big_Darkbrown_03.webp",
@@ -3729,15 +3756,15 @@ images: [
 }
 }
 },
-"ganesha-3": {
+"ganesha-3":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/02tP3Qln",
 whatsapp: "Ganesha Small Temple 3 - Brown Small",
-images: [
+images:[
 "images/Ganesha Temple_03_Small_Brown_01.webp",
 "images/Ganesha Temple_03_Small_Brown_02.webp",
 "images/Ganesha Temple_03_Small_Brown_03.webp",
@@ -3749,12 +3776,12 @@ images: [
 "images/Ganesha Temple_03_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/07nr04Fj",
 whatsapp: "Ganesha Small Temple 3 - Brown Big",
-images: [
+images:[
 "images/Ganesha Temple_03_Big_Brown_01.webp",
 "images/Ganesha Temple_03_Big_Brown_02.webp",
 "images/Ganesha Temple_03_Big_Brown_03.webp",
@@ -3766,12 +3793,12 @@ images: [
 "images/Ganesha Temple_03_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/09oEo56H",
 whatsapp: "Ganesha Small Temple 3 - Dark Brown Small",
-images: [
+images:[
 "images/Ganesha Temple_03_Small_Darkbrown_01.webp",
 "images/Ganesha Temple_03_Small_Darkbrown_02.webp",
 "images/Ganesha Temple_03_Small_Darkbrown_03.webp",
@@ -3783,12 +3810,12 @@ images: [
 "images/Ganesha Temple_03_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/05ymgN8z",
 whatsapp: "Ganesha Small Temple 3 - Dark Brown Big",
-images: [
+images:[
 "images/Ganesha Temple_03_Big_Darkbrown_01.webp",
 "images/Ganesha Temple_03_Big_Darkbrown_02.webp",
 "images/Ganesha Temple_03_Big_Darkbrown_03.webp",
@@ -3802,15 +3829,15 @@ images: [
 }
 }
 },
-"lord-mahaveer-1": {
+"lord-mahaveer-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/06I1HHyX",
 whatsapp: "Lord Mahaveer Small Temple - Brown Small",
-images: [
+images:[
 "images/Lord Mahaveer Temple_Small_Brown_01.webp",
 "images/Lord Mahaveer Temple_Small_Brown_02.webp",
 "images/Lord Mahaveer Temple_Small_Brown_03.webp",
@@ -3822,12 +3849,12 @@ images: [
 "images/Lord Mahaveer Temple_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/04KMW16w",
 whatsapp: "Lord Mahaveer Small Temple - Brown Big",
-images: [
+images:[
 "images/Lord Mahaveer Temple_Big_Brown_01.webp",
 "images/Lord Mahaveer Temple_Big_Brown_02.webp",
 "images/Lord Mahaveer Temple_Big_Brown_03.webp",
@@ -3839,12 +3866,12 @@ images: [
 "images/Lord Mahaveer Temple_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/08bUt3cr",
 whatsapp: "Lord Mahaveer Small Temple - Dark Brown Small",
-images: [
+images:[
 "images/Lord Mahaveer Temple_Small_Darkbrown_01.webp",
 "images/Lord Mahaveer Temple_Small_Darkbrown_02.webp",
 "images/Lord Mahaveer Temple_Small_Darkbrown_03.webp",
@@ -3856,12 +3883,12 @@ images: [
 "images/Lord Mahaveer Temple_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/07PITyT2",
 whatsapp: "Lord Mahaveer Small Temple - Dark Brown Big",
-images: [
+images:[
 "images/Lord Mahaveer Temple_Big_Darkbrown_01.webp",
 "images/Lord Mahaveer Temple_Big_Darkbrown_02.webp",
 "images/Lord Mahaveer Temple_Big_Darkbrown_03.webp",
@@ -3875,15 +3902,15 @@ images: [
 }
 }
 },
-"sai-baba-1": {
+"sai-baba-1":{
 defaultVariation: "brown-small",
-variations: {
-"brown-small": {
+variations:{
+"brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/054EMTVf",
 whatsapp: "Sai Baba Temple - Brown Small",
-images: [
+images:[
 "images/Saibaba Temple_Small_Brown_01.webp",
 "images/Saibaba Temple_Small_Brown_02.webp",
 "images/Saibaba Temple_Small_Brown_03.webp",
@@ -3895,12 +3922,12 @@ images: [
 "images/Saibaba Temple_Small_Brown_09.webp"
 ]
 },
-"brown-big": {
+"brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/0gtVEVJy",
 whatsapp: "Sai Baba Temple - Brown Big",
-images: [
+images:[
 "images/Saibaba Temple_Big_Brown_01.webp",
 "images/Saibaba Temple_Big_Brown_02.webp",
 "images/Saibaba Temple_Big_Brown_03.webp",
@@ -3912,12 +3939,12 @@ images: [
 "images/Saibaba Temple_Big_Brown_09.webp"
 ]
 },
-"dark-brown-small": {
+"dark-brown-small":{
 price: "₹299",
 size: "Size : 3.3 × 4.6 inch Approx",
 amazon: "https://amzn.in/d/0d2oGsHI",
 whatsapp: "Sai Baba Temple - Dark Brown Small",
-images: [
+images:[
 "images/Saibaba Temple_Small_Darkbrown_01.webp",
 "images/Saibaba Temple_Small_Darkbrown_02.webp",
 "images/Saibaba Temple_Small_Darkbrown_03.webp",
@@ -3929,12 +3956,12 @@ images: [
 "images/Saibaba Temple_Small_Darkbrown_09.webp"
 ]
 },
-"dark-brown-big": {
+"dark-brown-big":{
 price: "₹399",
 size: "Size : 4 × 5.1 inch Approx",
 amazon: "https://amzn.in/d/04igizVh",
 whatsapp: "Sai Baba Temple - Dark Brown Big",
-images: [
+images:[
 "images/Saibaba Temple_Big_Darkbrown_01.webp",
 "images/Saibaba Temple_Big_Darkbrown_02.webp",
 "images/Saibaba Temple_Big_Darkbrown_03.webp",
@@ -3949,343 +3976,343 @@ images: [
 }
 }
 };
-function getVariationWhatsAppName(card, key, variation) {
-const title = card.querySelector("h3");
-const button = card.querySelector('[data-variation="' + key + '"]');
-const productName = title ? title.textContent.trim() : variation.whatsapp;
-const variationName = button ? button.textContent.trim() : key.replace(/-/g, " ");
-return productName + " - " + variationName;
+function getVariationWhatsAppName(card,key,variation){
+const title=card.querySelector("h3");
+const button=card.querySelector('[data-variation="'+key+ '"]');
+const productName=title?title.textContent.trim():variation.whatsapp;
+const variationName=button?button.textContent.trim():key.replace(/-/g, " ");
+return productName+ " - "+variationName;
 }
-document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function (card) {
+document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function(card){
 card.classList.add("sherawali-variation-card");
-const options = card.querySelector(".variation-options");
-if (options) options.classList.add("sherawali-variations");
-card.querySelectorAll(".variation-button").forEach(function (button) {
+const options=card.querySelector(".variation-options");
+if(options)options.classList.add("sherawali-variations");
+card.querySelectorAll(".variation-button").forEach(function(button){
 button.classList.add("sherawali-variation");
 });
-const actions = card.querySelector(".variation-actions, .featured-variation-actions");
-if (actions) actions.classList.add("sherawali-actions");
-const amazon = card.querySelector(".variation-amazon-button");
-if (amazon) amazon.classList.add("sherawali-amazon-button");
-const whatsapp = card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button");
-if (whatsapp) whatsapp.classList.add("sherawali-whatsapp-button");
+const actions=card.querySelector(".variation-actions, .featured-variation-actions");
+if(actions)actions.classList.add("sherawali-actions");
+const amazon=card.querySelector(".variation-amazon-button");
+if(amazon)amazon.classList.add("sherawali-amazon-button");
+const whatsapp=card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button");
+if(whatsapp)whatsapp.classList.add("sherawali-whatsapp-button");
 });
-document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function (card) {
-const product = decorevaVariationProducts[card.dataset.variationProduct];
-if (!product) return;
-const slider = card.querySelector(".image-slider, .featured-image-box");
-const image = card.querySelector(".slider-image, .featured-image-box img");
-const price = card.querySelector(".price, .featured-price");
-const size = card.querySelector(".size, .featured-size");
-const amazon = card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
-const whatsapp = card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button, .sherawali-whatsapp-button");
-const buttons = card.querySelectorAll(".variation-button, .sherawali-variation");
-function applyVariation(key) {
-const variation = product.variations[key];
-if (!variation || !slider) return;
-slider.dataset.images = JSON.stringify(variation.images);
-slider.dataset.index = "0";
-if (image) {
-image.src = variation.images[0];
-image.dataset.src = variation.images[0];
-image.dataset.loaded = "true";
-const title = card.querySelector("h3");
-image.alt = (title ? title.textContent.trim() : "DECOREVA Product") + " - " + key.replace(/-/g, " ");
+document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function(card){
+const product=decorevaVariationProducts[card.dataset.variationProduct];
+if(!product)return;
+const slider=card.querySelector(".image-slider, .featured-image-box");
+const image=card.querySelector(".slider-image, .featured-image-box img");
+const price=card.querySelector(".price, .featured-price");
+const size=card.querySelector(".size, .featured-size");
+const amazon=card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
+const whatsapp=card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button, .sherawali-whatsapp-button");
+const buttons=card.querySelectorAll(".variation-button, .sherawali-variation");
+function applyVariation(key){
+const variation=product.variations[key];
+if(!variation||!slider)return;
+slider.dataset.images=JSON.stringify(variation.images);
+slider.dataset.index= "0";
+if(image){
+image.src=variation.images[0];
+image.dataset.src=variation.images[0];
+image.dataset.loaded= "true";
+const title=card.querySelector("h3");
+image.alt=(title?title.textContent.trim(): "DECOREVA Product")+ " - "+key.replace(/-/g, " ");
 }
-if (price) price.textContent = variation.price;
-if (size) size.textContent = variation.size;
-if (amazon) amazon.href = variation.amazon;
-if (whatsapp) {
-whatsapp.href = "https://wa.me/919582899547?text=" +
-encodeURIComponent("Hello DECOREVA, I want to buy " + getVariationWhatsAppName(card, key, variation));
+if(price)price.textContent=variation.price;
+if(size)size.textContent=variation.size;
+if(amazon)amazon.href=variation.amazon;
+if(whatsapp){
+whatsapp.href= "https://wa.me/919582899547?text="+
+encodeURIComponent("Hello DECOREVA, I want to buy "+getVariationWhatsAppName(card,key,variation));
 }
-buttons.forEach(function (button) {
-button.classList.toggle("active", button.dataset.variation === key);
+buttons.forEach(function(button){
+button.classList.toggle("active",button.dataset.variation===key);
 });
-updateDots(slider, variation.images, 0);
+updateDots(slider,variation.images,0);
 }
-card._decorevaApplyVariation = applyVariation;
+card._decorevaApplyVariation=applyVariation;
 applyVariation(product.defaultVariation);
 });
-document.addEventListener("click", function (event) {
-const button = event.target.closest(".variation-button, .sherawali-variation");
-if (!button) return;
-const card = button.closest(".decoreva-variation-card, .featured-variation-card");
-if (!card) return;
-const key = button.dataset.variation;
-const applyVariation = card._decorevaApplyVariation;
-if (typeof applyVariation === "function") {
+document.addEventListener("click",function(event){
+const button=event.target.closest(".variation-button, .sherawali-variation");
+if(!button)return;
+const card=button.closest(".decoreva-variation-card, .featured-variation-card");
+if(!card)return;
+const key=button.dataset.variation;
+const applyVariation=card._decorevaApplyVariation;
+if(typeof applyVariation=== "function"){
 event.preventDefault();
 event.stopPropagation();
 applyVariation(key);
 return;
 }
-const product = decorevaVariationProducts[card.dataset.variationProduct];
-const variation = product && product.variations[key];
-if (!variation) return;
+const product=decorevaVariationProducts[card.dataset.variationProduct];
+const variation=product&&product.variations[key];
+if(!variation)return;
 event.preventDefault();
 event.stopPropagation();
-const image = card.querySelector(".slider-image, .featured-image-box img");
-const price = card.querySelector(".price, .featured-price");
-const size = card.querySelector(".size, .featured-size");
-const amazon = card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
-const whatsapp = card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button, .sherawali-whatsapp-button");
-if (image) image.src = variation.images[0];
-if (price) price.textContent = variation.price;
-if (size) size.textContent = variation.size;
-if (amazon) amazon.href = variation.amazon;
-if (whatsapp) {
-whatsapp.href = "https://wa.me/919582899547?text=" +
-encodeURIComponent("Hello DECOREVA, I want to buy " + getVariationWhatsAppName(card, key, variation));
+const image=card.querySelector(".slider-image, .featured-image-box img");
+const price=card.querySelector(".price, .featured-price");
+const size=card.querySelector(".size, .featured-size");
+const amazon=card.querySelector(".variation-amazon-button, .sherawali-amazon-button");
+const whatsapp=card.querySelector(".variation-whatsapp-button, .featured-whatsapp-button, .sherawali-whatsapp-button");
+if(image)image.src=variation.images[0];
+if(price)price.textContent=variation.price;
+if(size)size.textContent=variation.size;
+if(amazon)amazon.href=variation.amazon;
+if(whatsapp){
+whatsapp.href= "https://wa.me/919582899547?text="+
+encodeURIComponent("Hello DECOREVA, I want to buy "+getVariationWhatsAppName(card,key,variation));
 }
-card.querySelectorAll(".variation-button, .sherawali-variation").forEach(function (item) {
-item.classList.toggle("active", item.dataset.variation === key);
+card.querySelectorAll(".variation-button, .sherawali-variation").forEach(function(item){
+item.classList.toggle("active",item.dataset.variation===key);
 });
-}, true);
-(function () {
+},true);
+(function(){
 "use strict";
-const CART_KEY = "decoreva_cart_v1";
-const WISHLIST_KEY = "decoreva_wishlist_v1";
-const COUPON_KEY = "decoreva_coupon_v1";
-const DELIVERY_CHARGE = 60;
-const COUPONS = {
-"WELCOME10": 10
+const CART_KEY= "decoreva_cart_v1";
+const WISHLIST_KEY= "decoreva_wishlist_v1";
+const COUPON_KEY= "decoreva_coupon_v1";
+const DELIVERY_CHARGE=60;
+const COUPONS={
+"WELCOME10":10
 };
-let cart = [];
-let wishlist = [];
-let appliedCoupon = "";
-let couponModalOpen = false;
-let checkoutStep = "cart";
-let checkoutAddressUnlocked = false;
-let cartUnderlyingScrollY = 0;
-let couponPreviewCode = "";
-let deliveryAddress = null;
-const PROFILE_KEY = "decoreva_profile_v1";
-let profile = { name: "", mobile: "", email: "", addresses: [] };
-try {
-const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
-if (savedProfile && typeof savedProfile === "object") {
-profile = {
-name: String(savedProfile.name || ""),
-mobile: String(savedProfile.mobile || ""),
-email: String(savedProfile.email || ""),
-addresses: Array.isArray(savedProfile.addresses) ? savedProfile.addresses : []
+let cart=[];
+let wishlist=[];
+let appliedCoupon= "";
+let couponModalOpen=false;
+let checkoutStep= "cart";
+let checkoutAddressUnlocked=false;
+let cartUnderlyingScrollY=0;
+let couponPreviewCode= "";
+let deliveryAddress=null;
+const PROFILE_KEY= "decoreva_profile_v1";
+let profile={name: "",mobile: "",email: "",addresses:[]};
+try{
+const savedProfile=JSON.parse(localStorage.getItem(PROFILE_KEY)|| "null");
+if(savedProfile&&typeof savedProfile=== "object"){
+profile={
+name:String(savedProfile.name|| ""),
+mobile:String(savedProfile.mobile|| ""),
+email:String(savedProfile.email|| ""),
+addresses:Array.isArray(savedProfile.addresses)?savedProfile.addresses:[]
 };
 }
-} catch (error) {
-profile = { name: "", mobile: "", email: "", addresses: [] };
+}catch(error){
+profile={name: "",mobile: "",email: "",addresses:[]};
 }
-try {
-cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-if (!Array.isArray(cart)) cart = [];
-} catch (error) {
-cart = [];
+try{
+cart=JSON.parse(localStorage.getItem(CART_KEY)|| "[]");
+if(!Array.isArray(cart))cart=[];
+}catch(error){
+cart=[];
 }
-try {
-wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY) || "[]");
-if (!Array.isArray(wishlist)) wishlist = [];
-} catch (error) {
-wishlist = [];
+try{
+wishlist=JSON.parse(localStorage.getItem(WISHLIST_KEY)|| "[]");
+if(!Array.isArray(wishlist))wishlist=[];
+}catch(error){
+wishlist=[];
 }
-try {
-appliedCoupon = String(localStorage.getItem(COUPON_KEY) || "").toUpperCase();
-if (!COUPONS[appliedCoupon]) appliedCoupon = "";
-} catch (error) {
-appliedCoupon = "";
+try{
+appliedCoupon=String(localStorage.getItem(COUPON_KEY)|| "").toUpperCase();
+if(!COUPONS[appliedCoupon])appliedCoupon= "";
+}catch(error){
+appliedCoupon= "";
 }
-function saveCart() {
-localStorage.setItem(CART_KEY, JSON.stringify(cart));
+function saveCart(){
+localStorage.setItem(CART_KEY,JSON.stringify(cart));
 }
-function saveWishlist() {
-localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+function saveWishlist(){
+localStorage.setItem(WISHLIST_KEY,JSON.stringify(wishlist));
 }
-function saveCoupon() {
-if (appliedCoupon) {
-localStorage.setItem(COUPON_KEY, appliedCoupon);
-} else {
+function saveCoupon(){
+if(appliedCoupon){
+localStorage.setItem(COUPON_KEY,appliedCoupon);
+}else{
 localStorage.removeItem(COUPON_KEY);
 }
 }
-function money(value) {
-return "₹" + Number(value || 0).toLocaleString("en-IN");
+function money(value){
+return "₹"+Number(value||0).toLocaleString("en-IN");
 }
-function numericPrice(text) {
-return parseFloat(String(text || "").replace(/[^\d.]/g, "")) || 0;
+function numericPrice(text){
+return parseFloat(String(text|| "").replace(/[^\d.]/g, ""))||0;
 }
-function getCardData(card) {
-if (!card) return null;
-const titleEl = card.querySelector("h3");
-const imageEl = card.querySelector(".slider-image, .featured-image-box img");
-const priceEl = card.querySelector(".price, .featured-price");
-const sizeEl = card.querySelector(".size, .featured-size");
-const productId = card.dataset.variationProduct ||
-((titleEl ? titleEl.textContent.trim() : "DECOREVA Product") + "|" +
-(imageEl ? imageEl.currentSrc || imageEl.src : ""));
-let variationKey = "";
-let variationName = "";
-let price = numericPrice(priceEl ? priceEl.textContent : "");
-let size = sizeEl ? sizeEl.textContent.trim() : "";
-let image = imageEl ? (imageEl.currentSrc || imageEl.src) : "";
-const activeVariation = card.querySelector(".variation-button.active, .sherawali-variation.active");
-if (card.dataset.variationProduct && typeof decorevaVariationProducts !== "undefined") {
-const product = decorevaVariationProducts[card.dataset.variationProduct];
-if (product) {
-variationKey = activeVariation ? activeVariation.dataset.variation : product.defaultVariation;
-const variation = product.variations[variationKey] || product.variations[product.defaultVariation];
-if (variation) {
-variationKey = variationKey || product.defaultVariation;
-variationName = activeVariation
-? activeVariation.textContent.trim()
-: variationKey.replace(/-/g, " ");
-price = numericPrice(variation.price);
-size = variation.size || size;
-image = variation.images && variation.images.length
-? variation.images[0]
-: image;
+function getCardData(card){
+if(!card)return null;
+const titleEl=card.querySelector("h3");
+const imageEl=card.querySelector(".slider-image, .featured-image-box img");
+const priceEl=card.querySelector(".price, .featured-price");
+const sizeEl=card.querySelector(".size, .featured-size");
+const productId=card.dataset.variationProduct||
+((titleEl?titleEl.textContent.trim(): "DECOREVA Product")+ "|"+
+(imageEl?imageEl.currentSrc||imageEl.src: ""));
+let variationKey= "";
+let variationName= "";
+let price=numericPrice(priceEl?priceEl.textContent: "");
+let size=sizeEl?sizeEl.textContent.trim(): "";
+let image=imageEl?(imageEl.currentSrc||imageEl.src): "";
+const activeVariation=card.querySelector(".variation-button.active, .sherawali-variation.active");
+if(card.dataset.variationProduct&&typeof decorevaVariationProducts!== "undefined"){
+const product=decorevaVariationProducts[card.dataset.variationProduct];
+if(product){
+variationKey=activeVariation?activeVariation.dataset.variation:product.defaultVariation;
+const variation=product.variations[variationKey]||product.variations[product.defaultVariation];
+if(variation){
+variationKey=variationKey||product.defaultVariation;
+variationName=activeVariation
+?activeVariation.textContent.trim()
+:variationKey.replace(/-/g, " ");
+price=numericPrice(variation.price);
+size=variation.size||size;
+image=variation.images&&variation.images.length
+?variation.images[0]
+:image;
 }
 }
 }
-return {
-id: productId + (variationKey ? "|" + variationKey : ""),
-productId: productId,
-title: titleEl ? titleEl.textContent.trim() : "DECOREVA Product",
-variationKey: variationKey,
-variationName: variationName,
-price: price,
-size: size,
-image: image
+return{
+id:productId+(variationKey? "|"+variationKey: ""),
+productId:productId,
+title:titleEl?titleEl.textContent.trim(): "DECOREVA Product",
+variationKey:variationKey,
+variationName:variationName,
+price:price,
+size:size,
+image:image
 };
 }
-function totalItems() {
-return cart.reduce(function (sum, item) {
-return sum + Number(item.quantity || 0);
-}, 0);
+function totalItems(){
+return cart.reduce(function(sum,item){
+return sum+Number(item.quantity||0);
+},0);
 }
-function subtotalAmount() {
-return cart.reduce(function (sum, item) {
-return sum + Number(item.price || 0) * Number(item.quantity || 0);
-}, 0);
+function subtotalAmount(){
+return cart.reduce(function(sum,item){
+return sum+Number(item.price||0)*Number(item.quantity||0);
+},0);
 }
-function effectiveCouponCode() {
-return couponPreviewCode || appliedCoupon || "";
+function effectiveCouponCode(){
+return couponPreviewCode||appliedCoupon|| "";
 }
-function discountAmount() {
-const rate = COUPONS[effectiveCouponCode()] || 0;
-return Math.round(subtotalAmount() * rate / 100);
+function discountAmount(){
+const rate=COUPONS[effectiveCouponCode()]||0;
+return Math.round(subtotalAmount()*rate/100);
 }
-function deliveryCharge() {
-return cart.length ? DELIVERY_CHARGE : 0;
+function deliveryCharge(){
+return cart.length?DELIVERY_CHARGE:0;
 }
-function finalAmount() {
-return Math.max(0, subtotalAmount() - discountAmount() + deliveryCharge());
+function finalAmount(){
+return Math.max(0,subtotalAmount()-discountAmount()+deliveryCharge());
 }
-function updateCartCount() {
-try {
-const saved = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-if (Array.isArray(saved)) cart = saved;
-} catch (error) {}
-const value = String(totalItems());
-document.querySelectorAll("#decoreva-cart-count, #decoreva-cart-nav-count").forEach(function (count) {
-count.textContent = value;
-count.hidden = false;
+function updateCartCount(){
+try{
+const saved=JSON.parse(localStorage.getItem(CART_KEY)|| "[]");
+if(Array.isArray(saved))cart=saved;
+}catch(error){}
+const value=String(totalItems());
+document.querySelectorAll("#decoreva-cart-count, #decoreva-cart-nav-count").forEach(function(count){
+count.textContent=value;
+count.hidden=false;
 });
 }
-function updateWishlistCount() {
-try {
-const saved = JSON.parse(localStorage.getItem(WISHLIST_KEY) || "[]");
-if (Array.isArray(saved)) wishlist = saved;
-} catch (error) {}
-const value = String(wishlist.length);
-document.querySelectorAll("#decoreva-wishlist-count").forEach(function (count) {
-count.textContent = value;
-count.hidden = false;
+function updateWishlistCount(){
+try{
+const saved=JSON.parse(localStorage.getItem(WISHLIST_KEY)|| "[]");
+if(Array.isArray(saved))wishlist=saved;
+}catch(error){}
+const value=String(wishlist.length);
+document.querySelectorAll("#decoreva-wishlist-count").forEach(function(count){
+count.textContent=value;
+count.hidden=false;
 });
 }
-function updateWishlistButtons() {
-document.querySelectorAll(".decoreva-wishlist").forEach(function (button) {
-const card = button.closest(".card, .featured-slide");
-const data = getCardData(card);
-const saved = data && wishlist.some(function (item) {
-return item.id === data.id;
+function updateWishlistButtons(){
+document.querySelectorAll(".decoreva-wishlist").forEach(function(button){
+const card=button.closest(".card, .featured-slide");
+const data=getCardData(card);
+const saved=data&&wishlist.some(function(item){
+return item.id===data.id;
 });
-button.classList.toggle("active", !!saved);
-button.innerHTML = saved
+button.classList.toggle("active",!!saved);
+button.innerHTML=saved
 ? '<i class="fas fa-heart" aria-hidden="true"></i>'
 : '<i class="far fa-heart" aria-hidden="true"></i>';
-button.setAttribute("aria-label", saved ? "Remove from wishlist" : "Add to wishlist");
-button.title = saved ? "Remove from Wishlist" : "Add to Wishlist";
+button.setAttribute("aria-label",saved? "Remove from wishlist": "Add to wishlist");
+button.title=saved? "Remove from Wishlist": "Add to Wishlist";
 });
 }
-function renderCart() {
-const list = document.querySelector("#decoreva-cart-items");
-const total = document.querySelector("#decoreva-cart-total");
-const subtotal = document.querySelector("#decoreva-cart-subtotal");
-const discount = document.querySelector("#decoreva-cart-discount");
-const discountRow = document.querySelector("#decoreva-cart-discount-row");
-const delivery = document.querySelector("#decoreva-cart-delivery");
-const empty = document.querySelector("#decoreva-cart-empty");
-const label = document.querySelector("#decoreva-cart-item-label");
-const couponInput = document.querySelector("#decoreva-coupon-input");
-const couponMessage = document.querySelector("#decoreva-coupon-message");
-const checkout = document.querySelector("#decoreva-cart-whatsapp");
-if (!list || !total || !empty) return;
+function renderCart(){
+const list=document.querySelector("#decoreva-cart-items");
+const total=document.querySelector("#decoreva-cart-total");
+const subtotal=document.querySelector("#decoreva-cart-subtotal");
+const discount=document.querySelector("#decoreva-cart-discount");
+const discountRow=document.querySelector("#decoreva-cart-discount-row");
+const delivery=document.querySelector("#decoreva-cart-delivery");
+const empty=document.querySelector("#decoreva-cart-empty");
+const label=document.querySelector("#decoreva-cart-item-label");
+const couponInput=document.querySelector("#decoreva-coupon-input");
+const couponMessage=document.querySelector("#decoreva-coupon-message");
+const checkout=document.querySelector("#decoreva-cart-whatsapp");
+if(!list||!total||!empty)return;
 list.replaceChildren();
-cart = cart.filter(function (item) {
-return Number(item.quantity || 0) > 0;
+cart=cart.filter(function(item){
+return Number(item.quantity||0)>0;
 });
-empty.hidden = true;
-cart.forEach(function (item, index) {
-const row = document.createElement("div");
-row.className = "decoreva-cart-item";
-row.dataset.cartView = "true";
-row.dataset.cartIndex = String(index);
+empty.hidden=true;
+cart.forEach(function(item,index){
+const row=document.createElement("div");
+row.className= "decoreva-cart-item";
+row.dataset.cartView= "true";
+row.dataset.cartIndex=String(index);
 row.setAttribute("role", "button");
 row.setAttribute("tabindex", "0");
-row.setAttribute("aria-label", "View " + item.title + " in Collection");
-row.style.cursor = "pointer";
-const img = document.createElement("img");
-img.src = item.image || "";
-img.alt = item.title;
-img.loading = "lazy";
-const info = document.createElement("div");
-info.className = "decoreva-cart-item-info";
-const name = document.createElement("strong");
-name.textContent = item.title;
+row.setAttribute("aria-label", "View "+item.title+ " in Collection");
+row.style.cursor= "pointer";
+const img=document.createElement("img");
+img.src=item.image|| "";
+img.alt=item.title;
+img.loading= "lazy";
+const info=document.createElement("div");
+info.className= "decoreva-cart-item-info";
+const name=document.createElement("strong");
+name.textContent=item.title;
 info.appendChild(name);
-if (item.variationName) {
-const variation = document.createElement("span");
-variation.textContent = item.variationName;
+if(item.variationName){
+const variation=document.createElement("span");
+variation.textContent=item.variationName;
 info.appendChild(variation);
 }
-const price = document.createElement("span");
-price.textContent = money(item.price) + " × " + item.quantity;
+const price=document.createElement("span");
+price.textContent=money(item.price)+ " × "+item.quantity;
 info.appendChild(price);
-const controls = document.createElement("div");
-controls.className = "decoreva-cart-item-controls";
-const minus = document.createElement("button");
-minus.type = "button";
-minus.textContent = "−";
+const controls=document.createElement("div");
+controls.className= "decoreva-cart-item-controls";
+const minus=document.createElement("button");
+minus.type= "button";
+minus.textContent= "−";
 minus.setAttribute("aria-label", "Decrease quantity");
-minus.dataset.cartAction = "minus";
-minus.dataset.cartIndex = String(index);
-const qty = document.createElement("span");
-qty.textContent = String(item.quantity);
-const plus = document.createElement("button");
-plus.type = "button";
-plus.textContent = "+";
+minus.dataset.cartAction= "minus";
+minus.dataset.cartIndex=String(index);
+const qty=document.createElement("span");
+qty.textContent=String(item.quantity);
+const plus=document.createElement("button");
+plus.type= "button";
+plus.textContent= "+";
 plus.setAttribute("aria-label", "Increase quantity");
-plus.dataset.cartAction = "plus";
-plus.dataset.cartIndex = String(index);
-const remove = document.createElement("button");
-remove.type = "button";
-remove.textContent = "Remove";
-remove.dataset.cartAction = "remove";
-remove.dataset.cartIndex = String(index);
-const wishlistButton = document.createElement("button");
-wishlistButton.type = "button";
-wishlistButton.textContent = "Move to Wishlist";
-wishlistButton.dataset.cartAction = "wishlist";
-wishlistButton.dataset.cartIndex = String(index);
+plus.dataset.cartAction= "plus";
+plus.dataset.cartIndex=String(index);
+const remove=document.createElement("button");
+remove.type= "button";
+remove.textContent= "Remove";
+remove.dataset.cartAction= "remove";
+remove.dataset.cartIndex=String(index);
+const wishlistButton=document.createElement("button");
+wishlistButton.type= "button";
+wishlistButton.textContent= "Move to Wishlist";
+wishlistButton.dataset.cartAction= "wishlist";
+wishlistButton.dataset.cartIndex=String(index);
 controls.appendChild(minus);
 controls.appendChild(qty);
 controls.appendChild(plus);
@@ -4296,550 +4323,550 @@ row.appendChild(img);
 row.appendChild(info);
 list.appendChild(row);
 });
-const count = totalItems();
-if (label) {
-label.textContent = count + (count === 1 ? " item" : " items");
+const count=totalItems();
+if(label){
+label.textContent=count+(count===1? " item": " items");
 }
-if (subtotal) subtotal.textContent = money(subtotalAmount());
-const discountValue = discountAmount();
-if (discount) discount.textContent = "- " + money(discountValue);
-if (discountRow) discountRow.hidden = !discountValue;
-if (delivery) delivery.textContent = money(deliveryCharge());
-if (total) total.textContent = money(finalAmount());
-if (couponInput) couponInput.value = appliedCoupon || couponPreviewCode;
-if (couponMessage) {
-if (appliedCoupon) {
-couponMessage.textContent = appliedCoupon + " applied — 10% off";
-couponMessage.className = "decoreva-coupon-message success";
-} else if (couponPreviewCode) {
-couponMessage.textContent = couponPreviewCode + " selected • 10% OFF. Click APPLY to apply this coupon.";
-couponMessage.className = "decoreva-coupon-message success";
-} else {
-couponMessage.textContent = "";
-couponMessage.className = "decoreva-coupon-message";
+if(subtotal)subtotal.textContent=money(subtotalAmount());
+const discountValue=discountAmount();
+if(discount)discount.textContent= "- "+money(discountValue);
+if(discountRow)discountRow.hidden=!discountValue;
+if(delivery)delivery.textContent=money(deliveryCharge());
+if(total)total.textContent=money(finalAmount());
+if(couponInput)couponInput.value=appliedCoupon||couponPreviewCode;
+if(couponMessage){
+if(appliedCoupon){
+couponMessage.textContent=appliedCoupon+ " applied — 10% off";
+couponMessage.className= "decoreva-coupon-message success";
+}else if(couponPreviewCode){
+couponMessage.textContent=couponPreviewCode+ " selected • 10% OFF. Click APPLY to apply this coupon.";
+couponMessage.className= "decoreva-coupon-message success";
+}else{
+couponMessage.textContent= "";
+couponMessage.className= "decoreva-coupon-message";
 }
 }
-const couponAppliedLabel = document.querySelector("#decoreva-coupon-applied-label");
-if (couponAppliedLabel) {
-couponAppliedLabel.textContent = appliedCoupon
-? "✓ " + appliedCoupon + " applied — 10% OFF"
-: (couponPreviewCode ? couponPreviewCode + " checked — 10% OFF" : "");
-couponAppliedLabel.hidden = !(appliedCoupon || couponPreviewCode);
+const couponAppliedLabel=document.querySelector("#decoreva-coupon-applied-label");
+if(couponAppliedLabel){
+couponAppliedLabel.textContent=appliedCoupon
+? "✓ "+appliedCoupon+ " applied — 10% OFF"
+:(couponPreviewCode?couponPreviewCode+ " checked — 10% OFF": "");
+couponAppliedLabel.hidden=!(appliedCoupon||couponPreviewCode);
 }
-const couponRemoveButton = document.querySelector("#decoreva-coupon-remove");
-if (couponRemoveButton) {
-couponRemoveButton.style.display = appliedCoupon ? "inline-flex" : "none";
+const couponRemoveButton=document.querySelector("#decoreva-coupon-remove");
+if(couponRemoveButton){
+couponRemoveButton.style.display=appliedCoupon? "inline-flex": "none";
 }
-const couponUseButton = document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
-if (couponUseButton) {
-const isWelcomeApplied = appliedCoupon === "WELCOME10";
-couponUseButton.textContent = isWelcomeApplied ? "APPLIED ✓" : "USE COUPON";
-couponUseButton.classList.toggle("applied", isWelcomeApplied);
-couponUseButton.disabled = isWelcomeApplied;
+const couponUseButton=document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
+if(couponUseButton){
+const isWelcomeApplied=appliedCoupon=== "WELCOME10";
+couponUseButton.textContent=isWelcomeApplied? "APPLIED ✓": "USE COUPON";
+couponUseButton.classList.toggle("applied",isWelcomeApplied);
+couponUseButton.disabled=isWelcomeApplied;
 }
-const couponTrigger = document.querySelector("#decoreva-open-coupon");
-if (couponTrigger) couponTrigger.textContent = appliedCoupon ? "Coupon Applied" : "Apply Coupon";
-if (checkout) {
-checkout.disabled = cart.length === 0;
-checkout.textContent = checkoutAddressUnlocked ? "Order on WhatsApp" : "Proceed to Buy";
-checkout.setAttribute("aria-label", checkoutAddressUnlocked ? "Order on WhatsApp" : "Proceed to Buy");
+const couponTrigger=document.querySelector("#decoreva-open-coupon");
+if(couponTrigger)couponTrigger.textContent=appliedCoupon? "Coupon Applied": "Apply Coupon";
+if(checkout){
+checkout.disabled=cart.length===0;
+checkout.textContent=checkoutAddressUnlocked? "Order on WhatsApp": "Proceed to Buy";
+checkout.setAttribute("aria-label",checkoutAddressUnlocked? "Order on WhatsApp": "Proceed to Buy");
 }
-if (cart.length > 0 && document.querySelector("#decoreva-similar-products")) renderSimilarProducts();
-if (checkoutStep !== "cart" && cart.length > 0) {
+if(cart.length>0&&document.querySelector("#decoreva-similar-products"))renderSimilarProducts();
+if(checkoutStep!== "cart"&&cart.length>0){
 renderCheckoutSummary();
 updateAddressContinueState();
 }
 updateCartCount();
-if (typeof updateCheckoutStepUI === "function") {
+if(typeof updateCheckoutStepUI=== "function"){
 updateCheckoutStepUI();
 }
 }
-function renderWishlist() {
-const list = document.querySelector("#decoreva-wishlist-items");
-const empty = document.querySelector("#decoreva-wishlist-empty");
-const label = document.querySelector("#decoreva-wishlist-label");
-if (!list || !empty) return;
+function renderWishlist(){
+const list=document.querySelector("#decoreva-wishlist-items");
+const empty=document.querySelector("#decoreva-wishlist-empty");
+const label=document.querySelector("#decoreva-wishlist-label");
+if(!list||!empty)return;
 list.replaceChildren();
-empty.hidden = wishlist.length !== 0;
-wishlist.forEach(function (item, index) {
-const row = document.createElement("div");
-row.className = "decoreva-wishlist-item";
-row.dataset.wishlistView = "true";
-row.dataset.wishlistIndex = String(index);
+empty.hidden=wishlist.length!==0;
+wishlist.forEach(function(item,index){
+const row=document.createElement("div");
+row.className= "decoreva-wishlist-item";
+row.dataset.wishlistView= "true";
+row.dataset.wishlistIndex=String(index);
 row.setAttribute("role", "button");
 row.setAttribute("tabindex", "0");
-row.setAttribute("aria-label", "View " + item.title + " in Collection");
-row.style.cursor = "pointer";
-const img = document.createElement("img");
-img.src = item.image || "";
-img.alt = item.title;
-img.loading = "lazy";
-const info = document.createElement("div");
-info.className = "decoreva-wishlist-info";
-const name = document.createElement("strong");
-name.textContent = item.title;
+row.setAttribute("aria-label", "View "+item.title+ " in Collection");
+row.style.cursor= "pointer";
+const img=document.createElement("img");
+img.src=item.image|| "";
+img.alt=item.title;
+img.loading= "lazy";
+const info=document.createElement("div");
+info.className= "decoreva-wishlist-info";
+const name=document.createElement("strong");
+name.textContent=item.title;
 info.appendChild(name);
-if (item.variationName) {
-const variation = document.createElement("span");
-variation.textContent = item.variationName;
+if(item.variationName){
+const variation=document.createElement("span");
+variation.textContent=item.variationName;
 info.appendChild(variation);
 }
-const price = document.createElement("b");
-price.textContent = money(item.price);
+const price=document.createElement("b");
+price.textContent=money(item.price);
 info.appendChild(price);
-const remove = document.createElement("button");
-remove.type = "button";
-remove.textContent = "Remove";
-remove.dataset.wishlistAction = "remove";
-remove.dataset.wishlistIndex = String(index);
+const remove=document.createElement("button");
+remove.type= "button";
+remove.textContent= "Remove";
+remove.dataset.wishlistAction= "remove";
+remove.dataset.wishlistIndex=String(index);
 info.appendChild(remove);
 row.appendChild(img);
 row.appendChild(info);
 list.appendChild(row);
 });
-if (label) {
-label.textContent = wishlist.length + (wishlist.length === 1 ? " item" : " items");
+if(label){
+label.textContent=wishlist.length+(wishlist.length===1? " item": " items");
 }
 updateWishlistCount();
 updateWishlistButtons();
 }
-const DECOREVA_OPEN_PANEL_KEY = "decoreva_open_panel";
-function saveOpenPanelState(panelName) {
-try {
-sessionStorage.setItem(DECOREVA_OPEN_PANEL_KEY, panelName);
-} catch (error) {
+const DECOREVA_OPEN_PANEL_KEY= "decoreva_open_panel";
+function saveOpenPanelState(panelName){
+try{
+sessionStorage.setItem(DECOREVA_OPEN_PANEL_KEY,panelName);
+}catch(error){
 }
 }
-function getOpenPanelState() {
-try {
-return sessionStorage.getItem(DECOREVA_OPEN_PANEL_KEY) || "";
-} catch (error) {
+function getOpenPanelState(){
+try{
+return sessionStorage.getItem(DECOREVA_OPEN_PANEL_KEY)|| "";
+}catch(error){
 return "";
 }
 }
-function clearOpenPanelState() {
-try {
+function clearOpenPanelState(){
+try{
 sessionStorage.removeItem(DECOREVA_OPEN_PANEL_KEY);
-} catch (error) {
+}catch(error){
 }
 }
-function openCart() {
-checkoutAddressUnlocked = false;
+function openCart(){
+checkoutAddressUnlocked=false;
 openCartDrawer();
 }
-function closeCart(restoreUnderlyingPosition = true) {
-const drawer = document.querySelector("#decoreva-cart-drawer");
-if (!drawer) return;
-const pageScrollY = Number.isFinite(cartUnderlyingScrollY)
-? cartUnderlyingScrollY
-: (window.scrollY || window.pageYOffset || 0);
-if (document.activeElement && typeof document.activeElement.blur === "function") {
+function closeCart(restoreUnderlyingPosition=true){
+const drawer=document.querySelector("#decoreva-cart-drawer");
+if(!drawer)return;
+const pageScrollY=Number.isFinite(cartUnderlyingScrollY)
+?cartUnderlyingScrollY
+:(window.scrollY||window.pageYOffset||0);
+if(document.activeElement&&typeof document.activeElement.blur=== "function"){
 document.activeElement.blur();
 }
-drawer.style.display = "none";
-drawer.style.visibility = "hidden";
-drawer.style.pointerEvents = "none";
-checkoutStep = "cart";
-const closingAddress = drawer.querySelector("#decoreva-checkout-address");
-if (closingAddress) closingAddress.hidden = true;
-const closingAddressMessage = drawer.querySelector("#decoreva-address-message");
-if (closingAddressMessage) {
-closingAddressMessage.textContent = "";
-closingAddressMessage.className = "decoreva-address-message";
-closingAddressMessage.dataset.userMessage = "";
+drawer.style.display= "none";
+drawer.style.visibility= "hidden";
+drawer.style.pointerEvents= "none";
+checkoutStep= "cart";
+const closingAddress=drawer.querySelector("#decoreva-checkout-address");
+if(closingAddress)closingAddress.hidden=true;
+const closingAddressMessage=drawer.querySelector("#decoreva-address-message");
+if(closingAddressMessage){
+closingAddressMessage.textContent= "";
+closingAddressMessage.className= "decoreva-address-message";
+closingAddressMessage.dataset.userMessage= "";
 }
 drawer.classList.remove("decoreva-checkout-mode");
 drawer.classList.remove("open");
 document.body.classList.remove("decoreva-cart-open", "decoreva-checkout-open");
-document.body.style.overflow = "";
-document.documentElement.style.overflow = "";
+document.body.style.overflow= "";
+document.documentElement.style.overflow= "";
 drawer.setAttribute("aria-hidden", "true");
-if (getOpenPanelState() === "cart") clearOpenPanelState();
-if (restoreUnderlyingPosition) {
-window.scrollTo(0, pageScrollY);
-window.requestAnimationFrame(function () {
-window.scrollTo(0, pageScrollY);
+if(getOpenPanelState()=== "cart")clearOpenPanelState();
+if(restoreUnderlyingPosition){
+window.scrollTo(0,pageScrollY);
+window.requestAnimationFrame(function(){
+window.scrollTo(0,pageScrollY);
 });
-window.setTimeout(function () {
-window.scrollTo(0, pageScrollY);
-}, 60);
+window.setTimeout(function(){
+window.scrollTo(0,pageScrollY);
+},60);
 }
 }
-function openCartDrawer() {
-const drawer = document.querySelector("#decoreva-cart-drawer");
-if (!drawer) return;
-cartUnderlyingScrollY = window.scrollY || window.pageYOffset || 0;
+function openCartDrawer(){
+const drawer=document.querySelector("#decoreva-cart-drawer");
+if(!drawer)return;
+cartUnderlyingScrollY=window.scrollY||window.pageYOffset||0;
 saveOpenPanelState("cart");
-checkoutStep = "cart";
-const addressMessage = drawer.querySelector("#decoreva-address-message");
-if (addressMessage) {
-addressMessage.textContent = "";
-addressMessage.className = "decoreva-address-message";
-addressMessage.dataset.userMessage = "";
+checkoutStep= "cart";
+const addressMessage=drawer.querySelector("#decoreva-address-message");
+if(addressMessage){
+addressMessage.textContent= "";
+addressMessage.className= "decoreva-address-message";
+addressMessage.dataset.userMessage= "";
 }
-drawer.style.display = "";
-drawer.style.visibility = "visible";
-drawer.style.pointerEvents = "";
+drawer.style.display= "";
+drawer.style.visibility= "visible";
+drawer.style.pointerEvents= "";
 drawer.classList.add("decoreva-checkout-mode");
 renderCart();
 updateCheckoutStepUI();
-const steps = drawer.querySelector(".decoreva-checkout-steps");
-if (steps) { steps.hidden = false; steps.style.display = "flex"; }
+const steps=drawer.querySelector(".decoreva-checkout-steps");
+if(steps){steps.hidden=false;steps.style.display= "flex";}
 drawer.classList.add("open");
 document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
-document.body.style.overflow = "hidden";
-document.documentElement.style.overflow = "hidden";
+document.body.style.overflow= "hidden";
+document.documentElement.style.overflow= "hidden";
 drawer.setAttribute("aria-hidden", "false");
 }
-function openWishlist() {
-const drawer = document.querySelector("#decoreva-wishlist-drawer");
-if (!drawer) return;
+function openWishlist(){
+const drawer=document.querySelector("#decoreva-wishlist-drawer");
+if(!drawer)return;
 saveOpenPanelState("wishlist");
 renderWishlist();
 drawer.classList.add("open");
 drawer.setAttribute("aria-hidden", "false");
 document.body.classList.add("decoreva-wishlist-open");
-document.body.style.overflow = "hidden";
+document.body.style.overflow= "hidden";
 }
-function closeWishlist() {
-const drawer = document.querySelector("#decoreva-wishlist-drawer");
-if (!drawer) return;
+function closeWishlist(){
+const drawer=document.querySelector("#decoreva-wishlist-drawer");
+if(!drawer)return;
 drawer.classList.remove("open");
 drawer.setAttribute("aria-hidden", "true");
 document.body.classList.remove("decoreva-wishlist-open");
-if (!document.body.classList.contains("decoreva-cart-open")) document.body.style.overflow = "";
-if (getOpenPanelState() === "wishlist") clearOpenPanelState();
+if(!document.body.classList.contains("decoreva-cart-open"))document.body.style.overflow= "";
+if(getOpenPanelState()=== "wishlist")clearOpenPanelState();
 }
-function saveProfile() {
-localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+function saveProfile(){
+localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));
 }
-const decorevaAddressSupabase = window.decorevaSupabase || null;
-let decorevaOrderInProgress = false;
-function generateDecorevaOrderNumber() {
-const now = new Date();
-const datePart = now.getFullYear().toString() +
-String(now.getMonth() + 1).padStart(2, "0") +
+const decorevaAddressSupabase=window.decorevaSupabase||null;
+let decorevaOrderInProgress=false;
+function generateDecorevaOrderNumber(){
+const now=new Date();
+const datePart=now.getFullYear().toString()+
+String(now.getMonth()+1).padStart(2, "0")+
 String(now.getDate()).padStart(2, "0");
-let randomPart = "";
-if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-const bytes = new Uint8Array(4);
+let randomPart= "";
+if(window.crypto&&typeof window.crypto.getRandomValues=== "function"){
+const bytes=new Uint8Array(4);
 window.crypto.getRandomValues(bytes);
-randomPart = Array.from(bytes, function (byte) {
+randomPart=Array.from(bytes,function(byte){
 return byte.toString(16).padStart(2, "0");
 }).join("").toUpperCase();
-} else {
-randomPart = Math.random().toString(16).slice(2, 10).toUpperCase();
+}else{
+randomPart=Math.random().toString(16).slice(2,10).toUpperCase();
 }
-return "ORD-" + datePart + "-" + randomPart;
+return "ORD-"+datePart+ "-"+randomPart;
 }
-function formatDecorevaOrderNumber(orderNumber) {
-const value = String(orderNumber || "").trim();
-if (!value) return "DECOREVA Order";
+function formatDecorevaOrderNumber(orderNumber){
+const value=String(orderNumber|| "").trim();
+if(!value)return "DECOREVA Order";
 return value.replace(/^DEC-/i, "ORD-");
 }
-function buildDeliveryAddressText(address) {
-if (!address) return "";
-return [
-address.name || "",
-"Mobile: " + (address.mobile || ""),
-address.line || "",
-(address.city || "") + ", " + (address.state || "") + " - " + (address.pincode || "")
+function buildDeliveryAddressText(address){
+if(!address)return "";
+return[
+address.name|| "",
+"Mobile: "+(address.mobile|| ""),
+address.line|| "",
+(address.city|| "")+ ", "+(address.state|| "")+ " - "+(address.pincode|| "")
 ].filter(Boolean).join("\n");
 }
-async function createSupabaseOrder() {
-if (!cart.length || !deliveryAddress) {
+async function createSupabaseOrder(){
+if(!cart.length||!deliveryAddress){
 throw new Error("Cart or delivery address is missing.");
 }
-if (!decorevaAddressSupabase) {
+if(!decorevaAddressSupabase){
 throw new Error("Supabase is not available on this page.");
 }
-const user = await getDecorevaAuthUser();
-const orderNumber = generateDecorevaOrderNumber();
-const subtotal = subtotalAmount();
-const discount = discountAmount();
-const delivery = deliveryCharge();
-const total = finalAmount();
-const coupon = effectiveCouponCode() || null;
-const orderPayload = {
-user_id: user ? user.id : null,
-order_number: orderNumber,
+const user=await getDecorevaAuthUser();
+const orderNumber=generateDecorevaOrderNumber();
+const subtotal=subtotalAmount();
+const discount=discountAmount();
+const delivery=deliveryCharge();
+const total=finalAmount();
+const coupon=effectiveCouponCode()||null;
+const orderPayload={
+user_id:user?user.id:null,
+order_number:orderNumber,
 status: "pending",
-customer_name: deliveryAddress.name,
-customer_phone: deliveryAddress.mobile,
-delivery_address: buildDeliveryAddressText(deliveryAddress),
-subtotal: subtotal,
-delivery_charge: delivery,
-discount: discount,
-total: total,
-coupon: coupon
+customer_name:deliveryAddress.name,
+customer_phone:deliveryAddress.mobile,
+delivery_address:buildDeliveryAddressText(deliveryAddress),
+subtotal:subtotal,
+delivery_charge:delivery,
+discount:discount,
+total:total,
+coupon:coupon
 };
-const itemPayload = cart.map(function (item) {
-return {
-product_key: String(item.productId || item.id || ""),
-product_name: String(item.title || "DECOREVA Product"),
-variation: String(item.variationName || item.variationKey || ""),
-quantity: Math.max(1, Number(item.quantity || 1)),
-unit_price: Math.max(0, Number(item.price || 0))
+const itemPayload=cart.map(function(item){
+return{
+product_key:String(item.productId||item.id|| ""),
+product_name:String(item.title|| "DECOREVA Product"),
+variation:String(item.variationName||item.variationKey|| ""),
+quantity:Math.max(1,Number(item.quantity||1)),
+unit_price:Math.max(0,Number(item.price||0))
 };
 });
-const orderResult = await decorevaAddressSupabase.rpc(
+const orderResult=await decorevaAddressSupabase.rpc(
 "create_decoreva_order",
 {
-p_order: orderPayload,
-p_items: itemPayload
+p_order:orderPayload,
+p_items:itemPayload
 }
 );
-if (orderResult.error) {
-console.error("DECOREVA order create error:", orderResult.error);
+if(orderResult.error){
+console.error("DECOREVA order create error:",orderResult.error);
 throw orderResult.error;
 }
-const createdOrder = orderResult.data || {};
-const orderId = createdOrder.id;
-if (!orderId) {
+const createdOrder=orderResult.data||{};
+const orderId=createdOrder.id;
+if(!orderId){
 throw new Error("Supabase did not return the created order ID.");
 }
-return {
-id: orderId,
-orderNumber: createdOrder.order_number || orderNumber,
-userId: createdOrder.user_id || (user ? user.id : null)
+return{
+id:orderId,
+orderNumber:createdOrder.order_number||orderNumber,
+userId:createdOrder.user_id||(user?user.id:null)
 };
 }
-async function getDecorevaAuthUser() {
-if (!decorevaAddressSupabase || !decorevaAddressSupabase.auth) return null;
-try {
-const result = await decorevaAddressSupabase.auth.getUser();
-return result.data && result.data.user ? result.data.user : null;
-} catch (error) {
-console.warn("DECOREVA address auth check:", error);
+async function getDecorevaAuthUser(){
+if(!decorevaAddressSupabase||!decorevaAddressSupabase.auth)return null;
+try{
+const result=await decorevaAddressSupabase.auth.getUser();
+return result.data&&result.data.user?result.data.user:null;
+}catch(error){
+console.warn("DECOREVA address auth check:",error);
 return null;
 }
 }
-function formatDecorevaOrderDate(value) {
-if (!value) return "Date unavailable";
-try {
-const date = new Date(value);
-if (Number.isNaN(date.getTime())) return "Date unavailable";
-return date.toLocaleString("en-IN", {
-day: "2-digit", month: "short", year: "numeric",
-hour: "2-digit", minute: "2-digit"
+function formatDecorevaOrderDate(value){
+if(!value)return "Date unavailable";
+try{
+const date=new Date(value);
+if(Number.isNaN(date.getTime()))return "Date unavailable";
+return date.toLocaleString("en-IN",{
+day: "2-digit",month: "short",year: "numeric",
+hour: "2-digit",minute: "2-digit"
 });
-} catch (error) { return "Date unavailable"; }
+}catch(error){return "Date unavailable";}
 }
-function formatDecorevaOrderMoney(value) {
-const amount = Number(value);
-if (!Number.isFinite(amount)) return "₹0";
-try {
-return new Intl.NumberFormat("en-IN", {
-style: "currency", currency: "INR", maximumFractionDigits: 0
+function formatDecorevaOrderMoney(value){
+const amount=Number(value);
+if(!Number.isFinite(amount))return "₹0";
+try{
+return new Intl.NumberFormat("en-IN",{
+style: "currency",currency: "INR",maximumFractionDigits:0
 }).format(amount);
-} catch (error) {
-return "₹" + Math.round(amount).toLocaleString("en-IN");
+}catch(error){
+return "₹"+Math.round(amount).toLocaleString("en-IN");
 }
 }
-function formatDecorevaOrderStatus(value) {
-const raw = String(value || "pending").trim().toLowerCase();
-const label = raw.replace(/[_-]+/g, " ").replace(/\s+/g, " ")
-.replace(/\b\w/g, function (char) { return char.toUpperCase(); });
-return { key: raw.replace(/[^a-z0-9_-]/g, ""), label: label || "Pending" };
+function formatDecorevaOrderStatus(value){
+const raw=String(value|| "pending").trim().toLowerCase();
+const label=raw.replace(/[_-]+/g, " ").replace(/\s+/g, " ")
+.replace(/\b\w/g,function(char){return char.toUpperCase();});
+return{key:raw.replace(/[^a-z0-9_-]/g, ""),label:label|| "Pending"};
 }
-function renderMyOrders(orders, itemsByOrderId) {
-const list = document.querySelector("#decoreva-profile-orders");
-if (!list) return;
+function renderMyOrders(orders,itemsByOrderId){
+const list=document.querySelector("#decoreva-profile-orders");
+if(!list)return;
 list.replaceChildren();
-if (!Array.isArray(orders) || !orders.length) {
-const empty = document.createElement("div");
-empty.className = "decoreva-profile-orders-empty";
-empty.innerHTML = '<strong>No orders yet</strong><span>Your DECOREVA orders will appear here after checkout.</span>';
+if(!Array.isArray(orders)||!orders.length){
+const empty=document.createElement("div");
+empty.className= "decoreva-profile-orders-empty";
+empty.innerHTML= '<strong>No orders yet</strong><span>Your DECOREVA orders will appear here after checkout.</span>';
 list.appendChild(empty);
 return;
 }
-orders.forEach(function (order) {
-const card = document.createElement("article");
-card.className = "decoreva-profile-order-card";
-const status = formatDecorevaOrderStatus(order.status);
-const orderItems = Array.isArray(itemsByOrderId[order.id]) ? itemsByOrderId[order.id] : [];
-const itemRows = orderItems.length ? orderItems.map(function (item) {
-const quantity = Math.max(1, Number(item.quantity || 1));
-const unitPrice = Math.max(0, Number(item.unit_price || 0));
-const variation = String(item.variation || "").trim();
-return '<div class="decoreva-profile-order-item">' +
-'<div class="decoreva-profile-order-item-info">' +
-'<strong>' + escapeProfileText(item.product_name || "DECOREVA Product") + '</strong>' +
-(variation ? '<span>' + escapeProfileText(variation) + '</span>' : '') +
-'<small>Qty: ' + quantity + '</small></div>' +
-'<strong>' + formatDecorevaOrderMoney(unitPrice * quantity) + '</strong></div>';
-}).join("") : '<div class="decoreva-profile-order-item-empty">Order items are not available.</div>';
-const coupon = String(order.coupon || "").trim();
-const discount = Number(order.discount || 0);
-card.innerHTML =
-'<div class="decoreva-profile-order-top"><div>' +
-'<strong>' + escapeProfileText(formatDecorevaOrderNumber(order.order_number)) + '</strong>' +
-'<span>' + escapeProfileText(formatDecorevaOrderDate(order.created_at)) + '</span></div>' +
-'<span class="decoreva-profile-order-status status-' + status.key + '">' + escapeProfileText(status.label) + '</span></div>' +
-'<div class="decoreva-profile-order-items">' + itemRows + '</div>' +
-'<div class="decoreva-profile-order-summary">' +
-'<span>Subtotal <strong>' + formatDecorevaOrderMoney(order.subtotal) + '</strong></span>' +
-'<span>Delivery <strong>' + formatDecorevaOrderMoney(order.delivery_charge) + '</strong></span>' +
-(discount > 0 ? '<span>Discount <strong>−' + formatDecorevaOrderMoney(discount) + '</strong></span>' : '') +
-(coupon ? '<span>Coupon <strong>' + escapeProfileText(coupon) + '</strong></span>' : '') +
-'<span class="decoreva-profile-order-total">Total <strong>' + formatDecorevaOrderMoney(order.total) + '</strong></span></div>';
+orders.forEach(function(order){
+const card=document.createElement("article");
+card.className= "decoreva-profile-order-card";
+const status=formatDecorevaOrderStatus(order.status);
+const orderItems=Array.isArray(itemsByOrderId[order.id])?itemsByOrderId[order.id]:[];
+const itemRows=orderItems.length?orderItems.map(function(item){
+const quantity=Math.max(1,Number(item.quantity||1));
+const unitPrice=Math.max(0,Number(item.unit_price||0));
+const variation=String(item.variation|| "").trim();
+return '<div class="decoreva-profile-order-item">'+
+'<div class="decoreva-profile-order-item-info">'+
+'<strong>'+escapeProfileText(item.product_name|| "DECOREVA Product")+ '</strong>'+
+(variation? '<span>'+escapeProfileText(variation)+ '</span>': '')+
+'<small>Qty: '+quantity+ '</small></div>'+
+'<strong>'+formatDecorevaOrderMoney(unitPrice*quantity)+ '</strong></div>';
+}).join(""): '<div class="decoreva-profile-order-item-empty">Order items are not available.</div>';
+const coupon=String(order.coupon|| "").trim();
+const discount=Number(order.discount||0);
+card.innerHTML=
+'<div class="decoreva-profile-order-top"><div>'+
+'<strong>'+escapeProfileText(formatDecorevaOrderNumber(order.order_number))+ '</strong>'+
+'<span>'+escapeProfileText(formatDecorevaOrderDate(order.created_at))+ '</span></div>'+
+'<span class="decoreva-profile-order-status status-'+status.key+ '">'+escapeProfileText(status.label)+ '</span></div>'+
+'<div class="decoreva-profile-order-items">'+itemRows+ '</div>'+
+'<div class="decoreva-profile-order-summary">'+
+'<span>Subtotal <strong>'+formatDecorevaOrderMoney(order.subtotal)+ '</strong></span>'+
+'<span>Delivery <strong>'+formatDecorevaOrderMoney(order.delivery_charge)+ '</strong></span>'+
+(discount>0? '<span>Discount <strong>−'+formatDecorevaOrderMoney(discount)+ '</strong></span>': '')+
+(coupon? '<span>Coupon <strong>'+escapeProfileText(coupon)+ '</strong></span>': '')+
+'<span class="decoreva-profile-order-total">Total <strong>'+formatDecorevaOrderMoney(order.total)+ '</strong></span></div>';
 list.appendChild(card);
 });
 }
-async function loadMyOrders() {
-const section = document.querySelector("#decoreva-profile-orders-section");
-const list = document.querySelector("#decoreva-profile-orders");
-if (!section || !list) return;
-section.hidden = false;
-list.innerHTML = '<div class="decoreva-profile-orders-loading">Loading your orders…</div>';
-const user = await getDecorevaAuthUser();
-if (!user) {
-list.innerHTML = '<div class="decoreva-profile-orders-empty"><strong>Please login to view your orders</strong><span>Your logged-in DECOREVA orders are securely linked to your account.</span></div>';
+async function loadMyOrders(){
+const section=document.querySelector("#decoreva-profile-orders-section");
+const list=document.querySelector("#decoreva-profile-orders");
+if(!section||!list)return;
+section.hidden=false;
+list.innerHTML= '<div class="decoreva-profile-orders-loading">Loading your orders…</div>';
+const user=await getDecorevaAuthUser();
+if(!user){
+list.innerHTML= '<div class="decoreva-profile-orders-empty"><strong>Please login to view your orders</strong><span>Your logged-in DECOREVA orders are securely linked to your account.</span></div>';
 return;
 }
-if (!decorevaAddressSupabase) {
-list.innerHTML = '<div class="decoreva-profile-orders-empty"><strong>Orders are temporarily unavailable</strong><span>Please try again in a moment.</span></div>';
+if(!decorevaAddressSupabase){
+list.innerHTML= '<div class="decoreva-profile-orders-empty"><strong>Orders are temporarily unavailable</strong><span>Please try again in a moment.</span></div>';
 return;
 }
-try {
-const ordersResult = await decorevaAddressSupabase
+try{
+const ordersResult=await decorevaAddressSupabase
 .from("orders")
 .select("id, order_number, status, customer_name, customer_phone, delivery_address, subtotal, delivery_charge, discount, total, coupon, created_at")
-.eq("user_id", user.id)
-.order("created_at", { ascending: false });
-if (ordersResult.error) throw ordersResult.error;
-const orders = Array.isArray(ordersResult.data) ? ordersResult.data : [];
-if (!orders.length) {
-renderMyOrders([], {});
+.eq("user_id",user.id)
+.order("created_at",{ascending:false});
+if(ordersResult.error)throw ordersResult.error;
+const orders=Array.isArray(ordersResult.data)?ordersResult.data:[];
+if(!orders.length){
+renderMyOrders([],{});
 return;
 }
-const orderIds = orders.map(function (order) { return order.id; });
-const itemsResult = await decorevaAddressSupabase
+const orderIds=orders.map(function(order){return order.id;});
+const itemsResult=await decorevaAddressSupabase
 .from("order_items")
 .select("id, order_id, product_key, product_name, variation, quantity, unit_price")
-.in("order_id", orderIds);
-if (itemsResult.error) throw itemsResult.error;
-const itemsByOrderId = {};
-(Array.isArray(itemsResult.data) ? itemsResult.data : []).forEach(function (item) {
-if (!itemsByOrderId[item.order_id]) itemsByOrderId[item.order_id] = [];
+.in("order_id",orderIds);
+if(itemsResult.error)throw itemsResult.error;
+const itemsByOrderId={};
+(Array.isArray(itemsResult.data)?itemsResult.data:[]).forEach(function(item){
+if(!itemsByOrderId[item.order_id])itemsByOrderId[item.order_id]=[];
 itemsByOrderId[item.order_id].push(item);
 });
-renderMyOrders(orders, itemsByOrderId);
-} catch (error) {
-console.error("DECOREVA My Orders load error:", error);
-list.innerHTML = '<div class="decoreva-profile-orders-empty error"><strong>Could not load your orders</strong><span>Please try again. Your other profile features are unchanged.</span></div>';
+renderMyOrders(orders,itemsByOrderId);
+}catch(error){
+console.error("DECOREVA My Orders load error:",error);
+list.innerHTML= '<div class="decoreva-profile-orders-empty error"><strong>Could not load your orders</strong><span>Please try again. Your other profile features are unchanged.</span></div>';
 }
 }
-function mapSupabaseAddress(row) {
-return {
-id: row.id,
-label: String(row.label || "HOME"),
-name: String(row.recipient_name || ""),
-mobile: String(row.phone || ""),
-line: String(row.address_line || ""),
-city: String(row.city || ""),
-state: String(row.state || ""),
-pincode: String(row.pincode || ""),
-default: !!row.is_default
+function mapSupabaseAddress(row){
+return{
+id:row.id,
+label:String(row.label|| "HOME"),
+name:String(row.recipient_name|| ""),
+mobile:String(row.phone|| ""),
+line:String(row.address_line|| ""),
+city:String(row.city|| ""),
+state:String(row.state|| ""),
+pincode:String(row.pincode|| ""),
+default:!!row.is_default
 };
 }
-async function loadSupabaseAddresses() {
-const user = await getDecorevaAuthUser();
-if (!user || !decorevaAddressSupabase) return false;
-const result = await decorevaAddressSupabase
+async function loadSupabaseAddresses(){
+const user=await getDecorevaAuthUser();
+if(!user||!decorevaAddressSupabase)return false;
+const result=await decorevaAddressSupabase
 .from("saved_addresses")
 .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
-.eq("user_id", user.id)
-.order("is_default", { ascending: false })
-.order("created_at", { ascending: true });
-if (result.error) {
-console.error("DECOREVA saved addresses load error:", result.error);
+.eq("user_id",user.id)
+.order("is_default",{ascending:false})
+.order("created_at",{ascending:true});
+if(result.error){
+console.error("DECOREVA saved addresses load error:",result.error);
 return false;
 }
-profile.addresses = Array.isArray(result.data)
-? result.data.map(mapSupabaseAddress)
-: [];
+profile.addresses=Array.isArray(result.data)
+?result.data.map(mapSupabaseAddress)
+:[];
 saveProfile();
 return true;
 }
-async function saveSupabaseAddress(address, editIndex) {
-const user = await getDecorevaAuthUser();
-if (!user || !decorevaAddressSupabase) return false;
-const payload = {
-user_id: user.id,
-label: address.label,
-recipient_name: address.name,
-phone: address.mobile,
-address_line: address.line,
-city: address.city,
-state: address.state,
-pincode: address.pincode,
-is_default: !!address.default
+async function saveSupabaseAddress(address,editIndex){
+const user=await getDecorevaAuthUser();
+if(!user||!decorevaAddressSupabase)return false;
+const payload={
+user_id:user.id,
+label:address.label,
+recipient_name:address.name,
+phone:address.mobile,
+address_line:address.line,
+city:address.city,
+state:address.state,
+pincode:address.pincode,
+is_default:!!address.default
 };
-if (address.default) {
-const clearDefaults = await decorevaAddressSupabase
+if(address.default){
+const clearDefaults=await decorevaAddressSupabase
 .from("saved_addresses")
-.update({ is_default: false })
-.eq("user_id", user.id);
-if (clearDefaults.error) throw clearDefaults.error;
+.update({is_default:false})
+.eq("user_id",user.id);
+if(clearDefaults.error)throw clearDefaults.error;
 }
-const existing = Number.isInteger(editIndex) && profile.addresses[editIndex]
-? profile.addresses[editIndex]
-: null;
+const existing=Number.isInteger(editIndex)&&profile.addresses[editIndex]
+?profile.addresses[editIndex]
+:null;
 let result;
-if (existing && existing.id) {
-result = await decorevaAddressSupabase
+if(existing&&existing.id){
+result=await decorevaAddressSupabase
 .from("saved_addresses")
 .update(payload)
-.eq("id", existing.id)
-.eq("user_id", user.id)
+.eq("id",existing.id)
+.eq("user_id",user.id)
 .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
 .single();
-} else {
-result = await decorevaAddressSupabase
+}else{
+result=await decorevaAddressSupabase
 .from("saved_addresses")
 .insert(payload)
 .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
 .single();
 }
-if (result.error) throw result.error;
+if(result.error)throw result.error;
 await loadSupabaseAddresses();
 return true;
 }
-async function deleteSupabaseAddress(address) {
-const user = await getDecorevaAuthUser();
-if (!user || !decorevaAddressSupabase || !address || !address.id) return false;
-const result = await decorevaAddressSupabase
+async function deleteSupabaseAddress(address){
+const user=await getDecorevaAuthUser();
+if(!user||!decorevaAddressSupabase||!address||!address.id)return false;
+const result=await decorevaAddressSupabase
 .from("saved_addresses")
 .delete()
-.eq("id", address.id)
-.eq("user_id", user.id);
-if (result.error) throw result.error;
+.eq("id",address.id)
+.eq("user_id",user.id);
+if(result.error)throw result.error;
 await loadSupabaseAddresses();
-if (profile.addresses.length && !profile.addresses.some(function (item) { return item.default; })) {
+if(profile.addresses.length&&!profile.addresses.some(function(item){return item.default;})){
 await setSupabaseDefaultAddress(profile.addresses[0]);
 }
 return true;
 }
-async function setSupabaseDefaultAddress(address) {
-const user = await getDecorevaAuthUser();
-if (!user || !decorevaAddressSupabase || !address || !address.id) return false;
-let result = await decorevaAddressSupabase
+async function setSupabaseDefaultAddress(address){
+const user=await getDecorevaAuthUser();
+if(!user||!decorevaAddressSupabase||!address||!address.id)return false;
+let result=await decorevaAddressSupabase
 .from("saved_addresses")
-.update({ is_default: false })
-.eq("user_id", user.id);
-if (result.error) throw result.error;
-result = await decorevaAddressSupabase
+.update({is_default:false})
+.eq("user_id",user.id);
+if(result.error)throw result.error;
+result=await decorevaAddressSupabase
 .from("saved_addresses")
-.update({ is_default: true })
-.eq("id", address.id)
-.eq("user_id", user.id);
-if (result.error) throw result.error;
+.update({is_default:true})
+.eq("id",address.id)
+.eq("user_id",user.id);
+if(result.error)throw result.error;
 await loadSupabaseAddresses();
 return true;
 }
-function escapeProfileText(value) {
-return String(value || "").replace(/[&<>\"]/g, function (char) {
+function escapeProfileText(value){
+return String(value|| "").replace(/[&<>\"]/g, function (char) {
 return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char];
 });
 }
@@ -4857,7 +4884,7 @@ if (mobile && !mobile.value) mobile.value = profile.mobile;
 if (email && !email.value) email.value = profile.email;
 if (summary) {
 summary.innerHTML = profile.name
-? '<strong>' + escapeProfileText(profile.name) + '</strong><span>' + escapeProfileText(profile.mobile || "") + (profile.email ? ' • ' + escapeProfileText(profile.email) : '') + '</span>'
+? '<strong>' + escapeProfileText(profile.name) + '</strong><span>' + escapeProfileText(profile.mobile || "") + (profile.email ? '• ' + escapeProfileText(profile.email) : '') + '</span>'
 : '<strong>Guest Customer</strong><span>Create your profile and save your delivery details on this device.</span>';
 }
 if (addressList) {
@@ -4873,11 +4900,11 @@ const card = document.createElement("div");
 card.className = "decoreva-profile-address-card" + (address.default ? " default" : "");
 card.innerHTML = '<div class="decoreva-profile-address-top"><strong>' + escapeProfileText(address.label || "HOME") + '</strong>' + (address.default ? '<span>DEFAULT</span>' : '') + '</div>' +
 '<div class="decoreva-profile-address-name">' + escapeProfileText(address.name || profile.name) + '</div>' +
-'<div class="decoreva-profile-address-text">' + escapeProfileText(address.line) + '<br>' + escapeProfileText(address.city) + ', ' + escapeProfileText(address.state) + ' - ' + escapeProfileText(address.pincode) + '<br>Mobile: ' + escapeProfileText(address.mobile || profile.mobile) + '</div>' +
+'<div class="decoreva-profile-address-text">' + escapeProfileText(address.line) + '<br>' + escapeProfileText(address.city) + ', ' + escapeProfileText(address.state) + '- ' + escapeProfileText(address.pincode) + '<br>Mobile: ' + escapeProfileText(address.mobile || profile.mobile) + '</div>' +
 '<div class="decoreva-profile-address-actions">' +
-(!address.default ? '<button type="button" data-profile-address-action="default" data-profile-address-index="' + index + '">Set Default</button>' : '') +
-'<button type="button" data-profile-address-action="edit" data-profile-address-index="' + index + '">Edit</button>' +
-'<button type="button" data-profile-address-action="delete" data-profile-address-index="' + index + '">Delete</button>' +
+(!address.default ? '<button type="button"data-profile-address-action="default"data-profile-address-index="' + index + '">Set Default</button>' : '') +
+'<button type="button"data-profile-address-action="edit"data-profile-address-index="' + index + '">Edit</button>' +
+'<button type="button"data-profile-address-action="delete"data-profile-address-index="' + index + '">Delete</button>' +
 '</div>';
 addressList.appendChild(card);
 });
@@ -5024,262 +5051,297 @@ card.style.transform = "translateY(-8px) scale(.985)";
 panel._decorevaProfileCloseTimer = window.setTimeout(function () {
 /* Move focus outside the Profile panel BEFORE hiding it
 from assistive technology. This removes Chrome's
-"Blocked aria-hidden" warning without changing the
-Profile UI, animation, menu state, or behaviour. */
-const returnFocus = panel._decorevaProfileReturnFocus;
-if (panel.contains(document.activeElement)) {
-if (returnFocus && document.contains(returnFocus) && typeof returnFocus.focus === "function") {
-try { returnFocus.focus({ preventScroll: true }); } catch (error) { returnFocus.focus(); }
-} else {
-const profileNav = document.querySelector("#decoreva-profile-nav");
-if (profileNav && typeof profileNav.focus === "function") {
-profileNav.focus({ preventScroll: true });
-} else if (document.activeElement && typeof document.activeElement.blur === "function") {
+"Blocked aria-hidden"warning without changing the
+Profile UI,animation,menu state,or behaviour.*/
+const returnFocus=panel._decorevaProfileReturnFocus;
+if(panel.contains(document.activeElement)){
+if(returnFocus&&document.contains(returnFocus)&&typeof returnFocus.focus=== "function"){
+try{returnFocus.focus({preventScroll:true});}catch(error){returnFocus.focus();}
+}else{
+const profileNav=document.querySelector("#decoreva-profile-nav");
+if(profileNav&&typeof profileNav.focus=== "function"){
+profileNav.focus({preventScroll:true});
+}else if(document.activeElement&&typeof document.activeElement.blur=== "function"){
 document.activeElement.blur();
 }
 }
 }
 panel.classList.remove("open");
 panel.setAttribute("aria-hidden", "true");
-if (card) {
-card.style.transition = "";
-card.style.transform = "";
+if(card){
+card.style.transition= "";
+card.style.transform= "";
 }
 resetProfileToStart();
-panel._decorevaProfileCloseTimer = null;
-panel._decorevaProfileReturnFocus = null;
-if (typeof callback === "function") {
+panel._decorevaProfileCloseTimer=null;
+panel._decorevaProfileReturnFocus=null;
+if(typeof callback=== "function"){
 callback();
 }
-}, 180);
+},180);
 }
-window.decorevaCloseProfile = closeProfile;
-function addToCart(card) {
-const data = getCardData(card);
-if (!data || !data.price) return;
-const existing = cart.find(function (item) {
-return item.id === data.id;
+window.decorevaCloseProfile=closeProfile;
+function addToCart(card){
+const data=getCardData(card);
+if(!data||!data.price)return;
+const existing=cart.find(function(item){
+return item.id===data.id;
 });
-if (existing) {
-existing.quantity += 1;
-} else {
-data.quantity = 1;
+if(existing){
+existing.quantity+=1;
+}else{
+data.quantity=1;
 cart.push(data);
 }
 saveCart();
 updateCartCount();
 renderCart();
-showShopToast("Added to Cart");
+showShopToast("Added to Cart",1050,card);
 }
-function showShopToast(message, duration) {
-const oldToast = document.querySelector(".decoreva-shop-toast");
-if (oldToast) oldToast.remove();
-const toast = document.createElement("div");
-toast.className = "decoreva-shop-toast";
-toast.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
-toast.querySelector("span").textContent = message;
-const isCartWishlistToast =
-message === "Added to Cart" ||
-message === "Removed from Cart" ||
-message === "Added to Wishlist" ||
-message === "Removed from Wishlist";
-if (isCartWishlistToast && window.innerWidth <= 760) {
-toast.style.setProperty("width", "min(250px, calc(100vw - 32px))", "important");
+function showShopToast(message,duration,anchorCard){
+const oldToast=document.querySelector(".decoreva-shop-toast");
+if(oldToast)oldToast.remove();
+const toast=document.createElement("div");
+const isCardActionToast=
+message=== "Added to Cart"||
+message=== "Removed from Cart"||
+message=== "Added to Wishlist"||
+message=== "Removed from Wishlist";
+const shouldAnchorCardToast=!!anchorCard&&isCardActionToast;
+toast.className= "decoreva-shop-toast"+(
+shouldAnchorCardToast
+? " decoreva-card-anchor-toast"
+: ""
+);
+toast.innerHTML= '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
+toast.querySelector("span").textContent=message;
+if(window.innerWidth<=760){
+toast.style.setProperty("width", "150px", "important");
 toast.style.setProperty("min-width", "0", "important");
-toast.style.setProperty("max-width", "calc(100vw - 32px)", "important");
+toast.style.setProperty("max-width", "150px", "important");
 toast.style.setProperty("box-sizing", "border-box", "important");
-toast.style.setProperty("padding", "8px 12px", "important");
-toast.style.setProperty("gap", "8px", "important");
-toast.style.setProperty("font-size", "12px", "important");
+toast.style.setProperty("padding", "6px 9px", "important");
+toast.style.setProperty("gap", "6px", "important");
+toast.style.setProperty("font-size", "11px", "important");
 toast.style.setProperty("line-height", "1.25", "important");
-toast.style.setProperty("border-radius", "7px", "important");
-const icon = toast.querySelector("i");
-const messageNode = toast.querySelector("span");
-if (icon) {
-icon.style.setProperty("font-size", "11px", "important");
-icon.style.setProperty("width", "18px", "important");
-icon.style.setProperty("min-width", "18px", "important");
+toast.style.setProperty("border-radius", "6px", "important");
+const icon=toast.querySelector("i");
+const messageNode=toast.querySelector("span");
+if(icon){
+icon.style.setProperty("font-size", "9px", "important");
+icon.style.setProperty("width", "16px", "important");
+icon.style.setProperty("min-width", "16px", "important");
 }
-if (messageNode) {
-messageNode.style.setProperty("font-size", "12px", "important");
+if(messageNode){
+messageNode.style.setProperty("font-size", "11px", "important");
 messageNode.style.setProperty("line-height", "1.25", "important");
 }
 }
 document.body.appendChild(toast);
-requestAnimationFrame(function () {
+if(toast.classList.contains("decoreva-card-anchor-toast")&&anchorCard){
+requestAnimationFrame(function(){
+const cardRect=anchorCard.getBoundingClientRect();
+const toastHeight=toast.getBoundingClientRect().height||36;
+const toastWidth=toast.getBoundingClientRect().width||150;
+const gap=6;
+let left=cardRect.left+(cardRect.width-toastWidth)/2;
+let top;
+if(window.innerWidth>760){
+top=cardRect.top-toastHeight-gap;
+if(top<8){
+top=cardRect.top+30;
+}
+}else{
+top=cardRect.bottom-toastHeight-72;
+top=Math.max(cardRect.top+30,top);
+if(top+toastHeight>window.innerHeight-8){
+top=Math.max(8,window.innerHeight-toastHeight-8);
+}
+}
+left=Math.max(8,Math.min(left,window.innerWidth-toastWidth-8));
+toast.style.setProperty("left",left+ "px", "important");
+toast.style.setProperty("top",top+ "px", "important");
+toast.style.setProperty("right", "auto", "important");
+toast.style.setProperty("bottom", "auto", "important");
+toast.style.setProperty("transform", "translateY(8px)", "important");
 toast.classList.add("show");
 });
-duration = Number(duration) > 0 ? Number(duration) : 1050;
-window.setTimeout(function () {
-toast.classList.remove("show");
-window.setTimeout(function () {
-if (toast.parentNode) toast.remove();
-}, 170);
-}, duration);
+}else{
+requestAnimationFrame(function(){
+toast.classList.add("show");
+});
 }
-window.decorevaShowShopToast = showShopToast;
-function showRatingToast(row, message) {
-const oldToast = document.querySelector(".decoreva-shop-toast");
-if (oldToast) oldToast.remove();
-const toast = document.createElement("div");
-toast.className = "decoreva-shop-toast show";
+duration=Number(duration)>0?Number(duration):1050;
+window.setTimeout(function(){
+toast.classList.remove("show");
+window.setTimeout(function(){
+if(toast.parentNode)toast.remove();
+},170);
+},duration);
+}
+window.decorevaShowShopToast=showShopToast;
+function showRatingToast(row,message){
+const oldToast=document.querySelector(".decoreva-shop-toast");
+if(oldToast)oldToast.remove();
+const toast=document.createElement("div");
+toast.className= "decoreva-shop-toast show";
 toast.setAttribute("role", "status");
 toast.setAttribute("aria-live", "polite");
-toast.innerHTML =
+toast.innerHTML=
 '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
-const messageNode = toast.querySelector("span");
-if (messageNode) messageNode.textContent = message;
-toast.style.opacity = "1";
-toast.style.transform = "translateY(0)";
-toast.style.visibility = "visible";
-toast.style.display = "flex";
+const messageNode=toast.querySelector("span");
+if(messageNode)messageNode.textContent=message;
+toast.style.opacity= "1";
+toast.style.transform= "translateY(0)";
+toast.style.visibility= "visible";
+toast.style.display= "flex";
 document.body.appendChild(toast);
 clearTimeout(window.__decorevaRatingToastTimer);
-window.__decorevaRatingToastTimer = window.setTimeout(function () {
-toast.style.opacity = "0";
-toast.style.transform = "translateY(-8px)";
-window.setTimeout(function () {
-if (toast.parentNode) toast.remove();
-}, 180);
-}, 2200);
+window.__decorevaRatingToastTimer=window.setTimeout(function(){
+toast.style.opacity= "0";
+toast.style.transform= "translateY(-8px)";
+window.setTimeout(function(){
+if(toast.parentNode)toast.remove();
+},180);
+},2200);
 }
-window.decorevaShowReviewToast = function (message) {
-const reviewForm = document.querySelector("#decoreva-review-modal.open .decoreva-review-form");
-if (!reviewForm) {
-showShopToast(message, 2200);
+window.decorevaShowReviewToast=function(message){
+const reviewForm=document.querySelector("#decoreva-review-modal.open .decoreva-review-form");
+if(!reviewForm){
+showShopToast(message,2200);
 return;
 }
-const oldToast = reviewForm.querySelector(".decoreva-review-toast");
-if (oldToast) oldToast.remove();
-const toast = document.createElement("div");
-toast.className = "decoreva-review-toast";
-toast.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
-toast.querySelector("span").textContent = message;
+const oldToast=reviewForm.querySelector(".decoreva-review-toast");
+if(oldToast)oldToast.remove();
+const toast=document.createElement("div");
+toast.className= "decoreva-review-toast";
+toast.innerHTML= '<i class="fas fa-check" aria-hidden="true"></i><span></span>';
+toast.querySelector("span").textContent=message;
 reviewForm.appendChild(toast);
-requestAnimationFrame(function () {
+requestAnimationFrame(function(){
 toast.classList.add("show");
 });
-window.setTimeout(function () {
+window.setTimeout(function(){
 toast.classList.remove("show");
-window.setTimeout(function () {
-if (toast.parentNode) toast.remove();
-}, 180);
-}, 2200);
+window.setTimeout(function(){
+if(toast.parentNode)toast.remove();
+},180);
+},2200);
 };
-function toggleWishlist(card) {
-const data = getCardData(card);
-if (!data) return;
-const index = wishlist.findIndex(function (item) {
-return item.id === data.id;
+function toggleWishlist(card){
+const data=getCardData(card);
+if(!data)return;
+const index=wishlist.findIndex(function(item){
+return item.id===data.id;
 });
-if (index >= 0) {
-wishlist.splice(index, 1);
-showShopToast("Removed from Wishlist");
-} else {
+if(index>=0){
+wishlist.splice(index,1);
+showShopToast("Removed from Wishlist",1050,card);
+}else{
 wishlist.push(data);
-showShopToast("Added to Wishlist");
+showShopToast("Added to Wishlist",1050,card);
 }
 saveWishlist();
 updateWishlistCount();
 renderWishlist();
 }
-function applyCoupon() {
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-if (!input || !message) return;
-const code = input.value.trim().toUpperCase();
-if (!code) {
-appliedCoupon = "";
+function applyCoupon(){
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+if(!input||!message)return;
+const code=input.value.trim().toUpperCase();
+if(!code){
+appliedCoupon= "";
 saveCoupon();
-message.textContent = "";
-message.className = "decoreva-coupon-message";
+message.textContent= "";
+message.className= "decoreva-coupon-message";
 renderCart();
 return;
 }
-if (!COUPONS[code]) {
-appliedCoupon = "";
+if(!COUPONS[code]){
+appliedCoupon= "";
 saveCoupon();
-message.textContent = "Invalid coupon code.";
-message.className = "decoreva-coupon-message error";
+message.textContent= "Invalid coupon code.";
+message.className= "decoreva-coupon-message error";
 renderCart();
 return;
 }
-appliedCoupon = code;
-couponPreviewCode = "";
+appliedCoupon=code;
+couponPreviewCode= "";
 saveCoupon();
-message.textContent = "✓ " + code + " APPLIED — 10% OFF";
-message.className = "decoreva-coupon-message success";
+message.textContent= "✓ "+code+ " APPLIED — 10% OFF";
+message.className= "decoreva-coupon-message success";
 renderCart();
 renderCheckoutSummary();
-const appliedInput = document.querySelector("#decoreva-coupon-input");
-if (appliedInput) {
-appliedInput.value = code;
+const appliedInput=document.querySelector("#decoreva-coupon-input");
+if(appliedInput){
+appliedInput.value=code;
 appliedInput.focus();
 appliedInput.select();
 }
-const appliedRemoveButton = document.querySelector("#decoreva-coupon-remove");
-if (appliedRemoveButton) {
-appliedRemoveButton.style.display = "inline-flex";
+const appliedRemoveButton=document.querySelector("#decoreva-coupon-remove");
+if(appliedRemoveButton){
+appliedRemoveButton.style.display= "inline-flex";
 }
-const appliedUseButton = document.querySelector(".decoreva-coupon-use[data-coupon-use='" + code + "']");
-if (appliedUseButton) {
-appliedUseButton.textContent = "APPLIED ✓";
+const appliedUseButton=document.querySelector(".decoreva-coupon-use[data-coupon-use='"+code+ "']");
+if(appliedUseButton){
+appliedUseButton.textContent= "APPLIED ✓";
 appliedUseButton.classList.add("applied");
-appliedUseButton.disabled = true;
+appliedUseButton.disabled=true;
 }
 }
-function openCouponModal() {
-const modal = document.querySelector("#decoreva-coupon-modal");
-if (!modal) return;
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-const removeButton = document.querySelector("#decoreva-coupon-remove");
-if (input) input.value = appliedCoupon || couponPreviewCode || "";
-if (removeButton) {
-removeButton.style.display = appliedCoupon ? "inline-flex" : "none";
-removeButton.setAttribute("aria-label", appliedCoupon ? "Remove applied coupon " + appliedCoupon : "Remove coupon");
+function openCouponModal(){
+const modal=document.querySelector("#decoreva-coupon-modal");
+if(!modal)return;
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+const removeButton=document.querySelector("#decoreva-coupon-remove");
+if(input)input.value=appliedCoupon||couponPreviewCode|| "";
+if(removeButton){
+removeButton.style.display=appliedCoupon? "inline-flex": "none";
+removeButton.setAttribute("aria-label",appliedCoupon? "Remove applied coupon "+appliedCoupon: "Remove coupon");
 }
-const openUseButton = document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
-if (openUseButton) {
-const isWelcomeApplied = appliedCoupon === "WELCOME10";
-openUseButton.textContent = isWelcomeApplied ? "APPLIED ✓" : "USE COUPON";
-openUseButton.classList.toggle("applied", isWelcomeApplied);
-openUseButton.disabled = isWelcomeApplied;
+const openUseButton=document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
+if(openUseButton){
+const isWelcomeApplied=appliedCoupon=== "WELCOME10";
+openUseButton.textContent=isWelcomeApplied? "APPLIED ✓": "USE COUPON";
+openUseButton.classList.toggle("applied",isWelcomeApplied);
+openUseButton.disabled=isWelcomeApplied;
 }
-if (message && !appliedCoupon && !couponPreviewCode) {
-message.textContent = "";
-message.className = "decoreva-coupon-message";
+if(message&&!appliedCoupon&&!couponPreviewCode){
+message.textContent= "";
+message.className= "decoreva-coupon-message";
 }
 modal.classList.add("open");
 modal.setAttribute("aria-hidden", "false");
-couponModalOpen = true;
-window.setTimeout(function () { if (input) input.focus(); }, 50);
+couponModalOpen=true;
+window.setTimeout(function(){if(input)input.focus();},50);
 }
-function closeCouponModal() {
-const modal = document.querySelector("#decoreva-coupon-modal");
-if (!modal) return;
+function closeCouponModal(){
+const modal=document.querySelector("#decoreva-coupon-modal");
+if(!modal)return;
 modal.classList.remove("open");
 modal.setAttribute("aria-hidden", "true");
-couponModalOpen = false;
-if (couponPreviewCode && couponPreviewCode !== appliedCoupon) {
-couponPreviewCode = "";
+couponModalOpen=false;
+if(couponPreviewCode&&couponPreviewCode!==appliedCoupon){
+couponPreviewCode= "";
 renderCart();
 renderCheckoutSummary();
 }
 }
-function beginWhatsAppCheckout() {
-if (!cart.length) return;
-deliveryAddress = null;
-checkoutStep = "address";
-const drawer = document.querySelector("#decoreva-cart-drawer");
-if (drawer) {
+function beginWhatsAppCheckout(){
+if(!cart.length)return;
+deliveryAddress=null;
+checkoutStep= "address";
+const drawer=document.querySelector("#decoreva-cart-drawer");
+if(drawer){
 drawer.classList.add("decoreva-checkout-mode");
 drawer.classList.add("open");
 drawer.setAttribute("aria-hidden", "false");
 }
 document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
-document.body.style.overflow = "hidden";
-document.documentElement.style.overflow = "hidden";
+document.body.style.overflow= "hidden";
+document.documentElement.style.overflow= "hidden";
 updateCheckoutStepUI();
 [
 "#decoreva-address-name",
@@ -5288,82 +5350,82 @@ updateCheckoutStepUI();
 "#decoreva-address-city",
 "#decoreva-address-state",
 "#decoreva-address-pincode"
-].forEach(function (id) {
-const el = document.querySelector(id);
-if (el) el.value = "";
+].forEach(function(id){
+const el=document.querySelector(id);
+if(el)el.value= "";
 });
 updateAddressContinueState();
-window.setTimeout(function () {
-const address = document.querySelector("#decoreva-checkout-address");
-const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
-if (address && panel) {
+window.setTimeout(function(){
+const address=document.querySelector("#decoreva-checkout-address");
+const panel=document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+if(address&&panel){
 panel.scrollTo({
-top: Math.max(0, address.offsetTop - 18),
+top:Math.max(0,address.offsetTop-18),
 behavior: "smooth"
 });
 }
-}, 40);
+},40);
 }
-async function whatsappCheckout() {
-if (!cart.length || !deliveryAddress || decorevaOrderInProgress) return;
-decorevaOrderInProgress = true;
-const button = document.querySelector("#decoreva-cart-whatsapp");
-const paymentButton = document.querySelector("#decoreva-payment-order");
-const message = document.querySelector("#decoreva-address-message");
-const originalButtonText = button ? button.textContent : "Order on WhatsApp";
-const originalPaymentText = paymentButton ? paymentButton.textContent : "Place Order on WhatsApp";
-if (button) {
-button.disabled = true;
-button.textContent = "Saving Order...";
+async function whatsappCheckout(){
+if(!cart.length||!deliveryAddress||decorevaOrderInProgress)return;
+decorevaOrderInProgress=true;
+const button=document.querySelector("#decoreva-cart-whatsapp");
+const paymentButton=document.querySelector("#decoreva-payment-order");
+const message=document.querySelector("#decoreva-address-message");
+const originalButtonText=button?button.textContent: "Order on WhatsApp";
+const originalPaymentText=paymentButton?paymentButton.textContent: "Place Order on WhatsApp";
+if(button){
+button.disabled=true;
+button.textContent= "Saving Order...";
 }
-if (paymentButton) {
-paymentButton.disabled = true;
-paymentButton.textContent = "Saving Order...";
+if(paymentButton){
+paymentButton.disabled=true;
+paymentButton.textContent= "Saving Order...";
 }
-try {
-const order = await createSupabaseOrder();
-if (!order) {
-if (button) {
-button.disabled = false;
-button.textContent = originalButtonText;
+try{
+const order=await createSupabaseOrder();
+if(!order){
+if(button){
+button.disabled=false;
+button.textContent=originalButtonText;
 }
-if (paymentButton) {
-paymentButton.disabled = false;
-paymentButton.textContent = originalPaymentText;
+if(paymentButton){
+paymentButton.disabled=false;
+paymentButton.textContent=originalPaymentText;
 }
 return;
 }
-const lines = [
+const lines=[
 "Hello DECOREVA, I want to order:",
 "",
-"Order Number: " + order.orderNumber,
+"Order Number: "+order.orderNumber,
 ""
 ];
-cart.forEach(function (item, index) {
-let line = (index + 1) + ". " + item.title;
-if (item.variationName) line += " - " + item.variationName;
-line += " × " + item.quantity + " = " + money(item.price * item.quantity);
+cart.forEach(function(item,index){
+let line=(index+1)+ ". "+item.title;
+if(item.variationName)line+= " - "+item.variationName;
+line+= " × "+item.quantity+ " = "+money(item.price*item.quantity);
 lines.push(line);
 });
-lines.push("", "Total MRP: " + money(subtotalAmount()));
-if (appliedCoupon) {
-lines.push("Coupon: " + appliedCoupon + " (10% OFF)");
-lines.push("Discount on MRP: - " + money(discountAmount()));
+lines.push("", "Total MRP: "+money(subtotalAmount()));
+if(appliedCoupon){
+lines.push("Coupon: "+appliedCoupon+ " (10% OFF)");
+lines.push("Discount on MRP: - "+money(discountAmount()));
 }
-lines.push("Delivery: " + money(deliveryCharge()), "Total Amount: " + money(finalAmount()));
-if (deliveryAddress) {
+lines.push("Delivery: "+money(deliveryCharge()), "Total Amount: "+money(finalAmount()));
+if(deliveryAddress){
 lines.push(
 "",
 "Delivery Address:",
 deliveryAddress.name,
-"Mobile: " + deliveryAddress.mobile,
+"Mobile: "+deliveryAddress.mobile,
 deliveryAddress.line,
-deliveryAddress.city + ", " + deliveryAddress.state + " - " + deliveryAddress.pincode
+deliveryAddress.city+ ", "+deliveryAddress.state+ " - "+deliveryAddress.pincode
 );
 }
 lines.push("", "Please confirm availability and payment details.");
-const whatsappUrl =
-"https://wa.me/919582899547?text=" +
+const whatsappUrl=
+"https://wa.me/919582899547?text="+
 encodeURIComponent(lines.join("\n"));
 window.open(
 whatsappUrl,
@@ -5371,36 +5433,36 @@ whatsappUrl,
 "noopener,noreferrer"
 );
 showOrderConfirmation(order.orderNumber);
-if (message) {
-message.dataset.userMessage = "1";
-message.textContent = "Order " + order.orderNumber + " saved. WhatsApp opened for confirmation.";
-message.className = "decoreva-address-message success";
+if(message){
+message.dataset.userMessage= "1";
+message.textContent= "Order "+order.orderNumber+ " saved. WhatsApp opened for confirmation.";
+message.className= "decoreva-address-message success";
 }
-} catch (error) {
-console.error("DECOREVA order submission error:", error);
-if (message) {
-message.dataset.userMessage = "1";
-message.textContent = "Could not save your order. Please try again. Your WhatsApp order was not opened.";
-message.className = "decoreva-address-message error";
+}catch(error){
+console.error("DECOREVA order submission error:",error);
+if(message){
+message.dataset.userMessage= "1";
+message.textContent= "Could not save your order. Please try again. Your WhatsApp order was not opened.";
+message.className= "decoreva-address-message error";
 }
 alert("We could not save your order. Please try again.");
-} finally {
-decorevaOrderInProgress = false;
-if (button) {
-button.disabled = !cart.length;
-button.textContent = originalButtonText;
+}finally{
+decorevaOrderInProgress=false;
+if(button){
+button.disabled=!cart.length;
+button.textContent=originalButtonText;
 }
-if (paymentButton) {
-paymentButton.disabled = false;
-paymentButton.textContent = originalPaymentText;
+if(paymentButton){
+paymentButton.disabled=false;
+paymentButton.textContent=originalPaymentText;
 }
 }
 }
-function showOrderConfirmation(orderNumber) {
-if (!document.getElementById("decoreva-mobile-order-confirmation-compact")) {
-const compactStyle = document.createElement("style");
-compactStyle.id = "decoreva-mobile-order-confirmation-compact";
-compactStyle.textContent = `
+function showOrderConfirmation(orderNumber){
+if(!document.getElementById("decoreva-mobile-order-confirmation-compact")){
+const compactStyle=document.createElement("style");
+compactStyle.id= "decoreva-mobile-order-confirmation-compact";
+compactStyle.textContent= `
 @media (max-width: 760px) {
 #decoreva-order-confirmation {
 padding: 14px !important;
@@ -5467,12 +5529,12 @@ height: 40px !important;
 `;
 document.head.appendChild(compactStyle);
 }
-let confirmation = document.querySelector("#decoreva-order-confirmation");
-if (!confirmation) {
-confirmation = document.createElement("div");
-confirmation.id = "decoreva-order-confirmation";
-confirmation.className = "decoreva-order-confirmation";
-confirmation.innerHTML = `
+let confirmation=document.querySelector("#decoreva-order-confirmation");
+if(!confirmation){
+confirmation=document.createElement("div");
+confirmation.id= "decoreva-order-confirmation";
+confirmation.className= "decoreva-order-confirmation";
+confirmation.innerHTML= `
 <div class="decoreva-order-confirmation-overlay"></div>
 <div class="decoreva-order-confirmation-card" role="dialog" aria-modal="true" aria-label="Order confirmation">
 <div class="decoreva-order-confirmation-icon">✓</div>
@@ -5482,43 +5544,43 @@ confirmation.innerHTML = `
 </div>`;
 document.body.appendChild(confirmation);
 }
-const confirmationText = confirmation.querySelector(".decoreva-order-confirmation-text");
-if (confirmationText) {
-confirmationText.textContent =
-"Order " + (orderNumber || "") + " has been saved. Your order details are open in WhatsApp. Please send the message to DECOREVA to confirm your order.";
+const confirmationText=confirmation.querySelector(".decoreva-order-confirmation-text");
+if(confirmationText){
+confirmationText.textContent=
+"Order "+(orderNumber|| "")+ " has been saved. Your order details are open in WhatsApp. Please send the message to DECOREVA to confirm your order.";
 }
-cart = [];
+cart=[];
 saveCart();
 updateCartCount();
 renderCart();
-checkoutStep = "cart";
-checkoutAddressUnlocked = false;
-deliveryAddress = null;
-appliedCoupon = "";
-couponPreviewCode = "";
+checkoutStep= "cart";
+checkoutAddressUnlocked=false;
+deliveryAddress=null;
+appliedCoupon= "";
+couponPreviewCode= "";
 saveCoupon();
 confirmation.classList.add("open");
 }
-function renderCheckoutSavedAddresses() {
+function renderCheckoutSavedAddresses(){
 return;
 }
-function fillCheckoutAddress(address) {
-if (!address) return;
-const values = {
-"#decoreva-address-name": address.name || profile.name,
-"#decoreva-address-mobile": address.mobile || profile.mobile,
-"#decoreva-address-line": address.line || "",
-"#decoreva-address-city": address.city || "",
-"#decoreva-address-state": address.state || "",
-"#decoreva-address-pincode": address.pincode || ""
+function fillCheckoutAddress(address){
+if(!address)return;
+const values={
+"#decoreva-address-name":address.name||profile.name,
+"#decoreva-address-mobile":address.mobile||profile.mobile,
+"#decoreva-address-line":address.line|| "",
+"#decoreva-address-city":address.city|| "",
+"#decoreva-address-state":address.state|| "",
+"#decoreva-address-pincode":address.pincode|| ""
 };
-Object.keys(values).forEach(function (id) { const el = document.querySelector(id); if (el) el.value = values[id]; });
+Object.keys(values).forEach(function(id){const el=document.querySelector(id);if(el)el.value=values[id];});
 }
-(function ensureEmptyCartPremiumStyle() {
-if (document.getElementById("decoreva-empty-cart-premium-style")) return;
-const style = document.createElement("style");
-style.id = "decoreva-empty-cart-premium-style";
-style.textContent = `
+(function ensureEmptyCartPremiumStyle(){
+if(document.getElementById("decoreva-empty-cart-premium-style"))return;
+const style=document.createElement("style");
+style.id= "decoreva-empty-cart-premium-style";
+style.textContent= `
 #decoreva-cart-drawer .decoreva-cart-head {
 justify-content: center !important;
 position: relative !important;
@@ -5589,11 +5651,11 @@ transform: translateY(0) !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureCheckoutSimilarProductsPremiumStyle() {
-if (document.getElementById("decoreva-checkout-similar-products-style")) return;
-const style = document.createElement("style");
-style.id = "decoreva-checkout-similar-products-style";
-style.textContent = `
+(function ensureCheckoutSimilarProductsPremiumStyle(){
+if(document.getElementById("decoreva-checkout-similar-products-style"))return;
+const style=document.createElement("style");
+style.id= "decoreva-checkout-similar-products-style";
+style.textContent= `
 #decoreva-cart-drawer .decoreva-similar-products {
 width: 100% !important;
 max-width: none !important;
@@ -5701,11 +5763,11 @@ font-size: 11px !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureDecorevaMobileCartCheckoutPolish() {
-if (document.getElementById("decoreva-mobile-cart-checkout-polish")) return;
-const style = document.createElement("style");
-style.id = "decoreva-mobile-cart-checkout-polish";
-style.textContent = `
+(function ensureDecorevaMobileCartCheckoutPolish(){
+if(document.getElementById("decoreva-mobile-cart-checkout-polish"))return;
+const style=document.createElement("style");
+style.id= "decoreva-mobile-cart-checkout-polish";
+style.textContent= `
 /* DECOREVA — MOBILE CART / CHECKOUT POLISH ONLY
 Desktop and tablet remain untouched. */
 @media (max-width: 760px) {
@@ -5921,11 +5983,11 @@ padding: 15px 12px !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureDecorevaMobileCheckoutAddressCompact() {
-if (document.getElementById("decoreva-mobile-checkout-address-compact")) return;
-const style = document.createElement("style");
-style.id = "decoreva-mobile-checkout-address-compact";
-style.textContent = `
+(function ensureDecorevaMobileCheckoutAddressCompact(){
+if(document.getElementById("decoreva-mobile-checkout-address-compact"))return;
+const style=document.createElement("style");
+style.id= "decoreva-mobile-checkout-address-compact";
+style.textContent= `
 /* DECOREVA — MOBILE CHECKOUT ADDRESS COMPACT
 Phone only. Desktop/tablet remain unchanged. */
 @media (max-width: 760px) {
@@ -6039,11 +6101,11 @@ font-size: 12.5px !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureDecorevaMobilePhoneFinalLayout() {
-if (document.getElementById("decoreva-mobile-phone-final-layout")) return;
-const style = document.createElement("style");
-style.id = "decoreva-mobile-phone-final-layout";
-style.textContent = `
+(function ensureDecorevaMobilePhoneFinalLayout(){
+if(document.getElementById("decoreva-mobile-phone-final-layout"))return;
+const style=document.createElement("style");
+style.id= "decoreva-mobile-phone-final-layout";
+style.textContent= `
 /* DECOREVA — FINAL MOBILE PHONE LAYOUT ONLY */
 @media (max-width: 760px) {
 #decoreva-cart-drawer .decoreva-cart-item {
@@ -6133,11 +6195,11 @@ font-size: 16px !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureDecorevaMobileProceedButton() {
-if (document.getElementById("decoreva-mobile-proceed-button-style")) return;
-const style = document.createElement("style");
-style.id = "decoreva-mobile-proceed-button-style";
-style.textContent = `
+(function ensureDecorevaMobileProceedButton(){
+if(document.getElementById("decoreva-mobile-proceed-button-style"))return;
+const style=document.createElement("style");
+style.id= "decoreva-mobile-proceed-button-style";
+style.textContent= `
 @media (max-width: 760px) {
 #decoreva-cart-drawer #decoreva-cart-whatsapp {
 display: flex !important;
@@ -6160,11 +6222,11 @@ line-height: 1 !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureDecorevaPasswordEye() {
-if (document.getElementById("decoreva-password-eye-style")) return;
-const style = document.createElement("style");
-style.id = "decoreva-password-eye-style";
-style.textContent = `
+(function ensureDecorevaPasswordEye(){
+if(document.getElementById("decoreva-password-eye-style"))return;
+const style=document.createElement("style");
+style.id= "decoreva-password-eye-style";
+style.textContent= `
 .decoreva-password-eye-wrap {
 position: relative !important;
 width: 100% !important;
@@ -6218,95 +6280,93 @@ background: rgba(183,122,19,.06) !important;
 }
 `;
 document.head.appendChild(style);
-function addPasswordEye(input) {
-if (!input || input.tagName !== "INPUT") return;
-if (String(input.type).toLowerCase() !== "password") return;
-if (input.dataset.decorevaPasswordEye === "true") return;
-const parent = input.parentElement;
-if (!parent) return;
-if (!parent.classList.contains("decoreva-password-eye-wrap")) {
+function addPasswordEye(input){
+if(!input||input.tagName!== "INPUT")return;
+if(String(input.type).toLowerCase()!== "password")return;
+if(input.dataset.decorevaPasswordEye=== "true")return;
+const parent=input.parentElement;
+if(!parent)return;
+if(!parent.classList.contains("decoreva-password-eye-wrap")){
 parent.classList.add("decoreva-password-eye-wrap");
 }
-function positionPasswordEye() {
-if (!button || !input || !parent) return;
-const inputRect = input.getBoundingClientRect();
-const parentRect = parent.getBoundingClientRect();
-if (!inputRect.width || !parentRect.width) return;
-// Keep the eye INSIDE the actual input even when the
-// surrounding form row is wider than the input.
-const extraRightSpace = Math.max(
+function positionPasswordEye(){
+if(!button||!input||!parent)return;
+const inputRect=input.getBoundingClientRect();
+const parentRect=parent.getBoundingClientRect();
+if(!inputRect.width||!parentRect.width)return;
+const extraRightSpace=Math.max(
 0,
-parentRect.right - inputRect.right
+parentRect.right-inputRect.right
 );
 button.style.setProperty(
 "--decoreva-password-eye-right",
-Math.max(8, extraRightSpace + 8) + "px"
+Math.max(8,extraRightSpace+8)+ "px"
 );
 }
-const button = document.createElement("button");
-button.type = "button";
-button.className = "decoreva-password-eye";
+const button=document.createElement("button");
+button.type= "button";
+button.className= "decoreva-password-eye";
 button.setAttribute("aria-label", "Show password");
 button.setAttribute("title", "Show password");
 button.setAttribute("aria-pressed", "false");
-button.innerHTML = '<i class="fas fa-eye" aria-hidden="true"></i>';
-button.addEventListener("click", function (event) {
+button.innerHTML= '<i class="fas fa-eye" aria-hidden="true"></i>';
+button.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
-const showing = input.type === "text";
-input.type = showing ? "password" : "text";
-button.setAttribute("aria-label", showing ? "Show password" : "Hide password");
-button.setAttribute("title", showing ? "Show password" : "Hide password");
-button.setAttribute("aria-pressed", showing ? "false" : "true");
-button.innerHTML = showing
+const showing=input.type=== "text";
+input.type=showing? "password": "text";
+button.setAttribute("aria-label",showing? "Show password": "Hide password");
+button.setAttribute("title",showing? "Show password": "Hide password");
+button.setAttribute("aria-pressed",showing? "false": "true");
+button.innerHTML=showing
 ? '<i class="fas fa-eye" aria-hidden="true"></i>'
 : '<i class="fas fa-eye-slash" aria-hidden="true"></i>';
 });
-input.dataset.decorevaPasswordEye = "true";
-input.dataset.decorevaPasswordInput = "true";
+input.dataset.decorevaPasswordEye= "true";
+input.dataset.decorevaPasswordInput= "true";
 parent.appendChild(button);
 positionPasswordEye();
-if ("ResizeObserver" in window) {
-const eyeResizeObserver = new ResizeObserver(function () {
+if("ResizeObserver"in window){
+const eyeResizeObserver=new ResizeObserver(function(){
 positionPasswordEye();
 });
 eyeResizeObserver.observe(parent);
 eyeResizeObserver.observe(input);
-button._decorevaEyeResizeObserver = eyeResizeObserver;
-} else {
-window.addEventListener("resize", positionPasswordEye);
+button._decorevaEyeResizeObserver=eyeResizeObserver;
+}else{
+window.addEventListener("resize",positionPasswordEye);
 }
 }
-function scanPasswordInputs(root) {
-if (!root) return;
-if (root.nodeType === 1 && root.matches && root.matches('input[type="password"]')) {
+function scanPasswordInputs(root){
+if(!root)return;
+if(root.nodeType===1&&root.matches&&root.matches('input[type="password"]')){
 addPasswordEye(root);
 }
-if (root.querySelectorAll) {
+if(root.querySelectorAll){
 root.querySelectorAll('input[type="password"]').forEach(addPasswordEye);
 }
 }
 scanPasswordInputs(document);
-const observer = new MutationObserver(function (mutations) {
-mutations.forEach(function (mutation) {
-mutation.addedNodes.forEach(function (node) {
-if (node.nodeType === 1) scanPasswordInputs(node);
+const observer=new MutationObserver(function(mutations){
+mutations.forEach(function(mutation){
+mutation.addedNodes.forEach(function(node){
+if(node.nodeType===1)scanPasswordInputs(node);
 });
 });
 });
-observer.observe(document.body, { childList: true, subtree: true });
-document.addEventListener("focusin", function (event) {
-const input = event.target;
-if (input && input.matches && input.matches('input[type="password"]')) {
+observer.observe(document.body,{childList:true,subtree:true});
+document.addEventListener("focusin",function(event){
+const input=event.target;
+if(input&&input.matches&&input.matches('input[type="password"]')){
 addPasswordEye(input);
 }
-}, true);
+},true);
 })();
-(function ensureCheckoutAddressValidationStyle() {
-if (document.getElementById("decoreva-checkout-address-validation-style")) return;
-const style = document.createElement("style");
-style.id = "decoreva-checkout-address-validation-style";
-style.textContent = `
+(function ensureCheckoutAddressValidationStyle(){
+if(document.getElementById("decoreva-checkout-address-validation-style"))return;
+const style=document.createElement("style");
+style.id= "decoreva-checkout-address-validation-style";
+style.textContent= `
 #decoreva-checkout-address input.decoreva-address-invalid,
 #decoreva-checkout-address textarea.decoreva-address-invalid {
 border: 2px solid #d93025 !important;
@@ -6321,11 +6381,11 @@ box-shadow: 0 0 0 2px rgba(217,48,37,.12) !important;
 `;
 document.head.appendChild(style);
 })();
-(function ensureCheckoutAddressClearButtonStyle() {
-if (document.getElementById("decoreva-checkout-address-clear-style")) return;
-const style = document.createElement("style");
-style.id = "decoreva-checkout-address-clear-style";
-style.textContent = `
+(function ensureCheckoutAddressClearButtonStyle(){
+if(document.getElementById("decoreva-checkout-address-clear-style"))return;
+const style=document.createElement("style");
+style.id= "decoreva-checkout-address-clear-style";
+style.textContent= `
 #decoreva-checkout-address .decoreva-address-field {
 position: relative;
 width: 100%;
@@ -6393,12 +6453,12 @@ color: #4f7629 !important;
 `;
 document.head.appendChild(style);
 })();
-function updateAddressContinueState() {
-const get = function (id) {
-const el = document.querySelector(id);
-return el ? el.value.trim() : "";
+function updateAddressContinueState(){
+const get=function(id){
+const el=document.querySelector(id);
+return el?el.value.trim(): "";
 };
-const fields = [
+const fields=[
 "#decoreva-address-name",
 "#decoreva-address-mobile",
 "#decoreva-address-line",
@@ -6406,117 +6466,117 @@ const fields = [
 "#decoreva-address-state",
 "#decoreva-address-pincode"
 ];
-const valid =
-!!get("#decoreva-address-name") &&
-/^\d{10}$/.test(get("#decoreva-address-mobile")) &&
-!!get("#decoreva-address-line") &&
-!!get("#decoreva-address-city") &&
-!!get("#decoreva-address-state") &&
+const valid=
+!!get("#decoreva-address-name")&&
+/^\d{10}$/.test(get("#decoreva-address-mobile"))&&
+!!get("#decoreva-address-line")&&
+!!get("#decoreva-address-city")&&
+!!get("#decoreva-address-state")&&
 /^\d{6}$/.test(get("#decoreva-address-pincode"));
-const checkoutButton = document.querySelector("#decoreva-cart-whatsapp");
-if (checkoutButton) {
-const canPlaceOrder = checkoutAddressUnlocked && valid;
-checkoutButton.textContent = canPlaceOrder ? "Order on WhatsApp" : "Proceed to Buy";
-checkoutButton.disabled = cart.length === 0;
-checkoutButton.setAttribute("aria-disabled", checkoutButton.disabled ? "true" : "false");
-checkoutButton.setAttribute("aria-label", canPlaceOrder ? "Order on WhatsApp" : "Proceed to Buy");
+const checkoutButton=document.querySelector("#decoreva-cart-whatsapp");
+if(checkoutButton){
+const canPlaceOrder=checkoutAddressUnlocked&&valid;
+checkoutButton.textContent=canPlaceOrder? "Order on WhatsApp": "Proceed to Buy";
+checkoutButton.disabled=cart.length===0;
+checkoutButton.setAttribute("aria-disabled",checkoutButton.disabled? "true": "false");
+checkoutButton.setAttribute("aria-label",canPlaceOrder? "Order on WhatsApp": "Proceed to Buy");
 }
-fields.forEach(function (id) {
-const el = document.querySelector(id);
-if (!el) return;
-const value = el.value.trim();
-const invalid =
-!value ||
-(id === "#decoreva-address-mobile" && !/^\d{10}$/.test(value)) ||
-(id === "#decoreva-address-pincode" && !/^\d{6}$/.test(value));
-el.classList.toggle("decoreva-address-invalid", checkoutStep === "address" && invalid);
-el.setAttribute("aria-invalid", checkoutStep === "address" && invalid ? "true" : "false");
+fields.forEach(function(id){
+const el=document.querySelector(id);
+if(!el)return;
+const value=el.value.trim();
+const invalid=
+!value||
+(id=== "#decoreva-address-mobile"&&!/^\d{10}$/.test(value))||
+(id=== "#decoreva-address-pincode"&&!/^\d{6}$/.test(value));
+el.classList.toggle("decoreva-address-invalid",checkoutStep=== "address"&&invalid);
+el.setAttribute("aria-invalid",checkoutStep=== "address"&&invalid? "true": "false");
 });
-const message = document.querySelector("#decoreva-address-message");
-const similarProducts = document.querySelector("#decoreva-similar-products");
-const cartFooter = document.querySelector("#decoreva-cart-drawer .decoreva-cart-footer");
-const cartPanel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
-if (valid) {
-if (message && (message.classList.contains("warning") || message.classList.contains("error"))) {
-message.textContent = "Address complete. You can now place your order on WhatsApp.";
-message.className = "decoreva-address-message success";
-message.dataset.userMessage = "";
+const message=document.querySelector("#decoreva-address-message");
+const similarProducts=document.querySelector("#decoreva-similar-products");
+const cartFooter=document.querySelector("#decoreva-cart-drawer .decoreva-cart-footer");
+const cartPanel=document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+if(valid){
+if(message&&(message.classList.contains("warning")||message.classList.contains("error"))){
+message.textContent= "Address complete. You can now place your order on WhatsApp.";
+message.className= "decoreva-address-message success";
+message.dataset.userMessage= "";
 }
-if (window.innerWidth <= 760 && checkoutAddressUnlocked && cartPanel) {
-if (similarProducts) similarProducts.hidden = true;
-if (cartFooter) cartFooter.hidden = false;
-window.requestAnimationFrame(function () {
-window.requestAnimationFrame(function () {
-if (window.innerWidth > 760) return;
-const checkoutFooter = document.querySelector("#decoreva-cart-drawer .decoreva-cart-footer");
-const checkoutButton = document.querySelector("#decoreva-cart-whatsapp");
-const steps = document.querySelector("#decoreva-cart-drawer .decoreva-checkout-steps");
-if (!checkoutFooter || !checkoutButton) return;
-const panelRect = cartPanel.getBoundingClientRect();
-const footerRect = checkoutFooter.getBoundingClientRect();
-const stickyHeight = steps ? steps.getBoundingClientRect().height : 0;
-const targetTop = Math.max(
+if(window.innerWidth<=760&&checkoutAddressUnlocked&&cartPanel){
+if(similarProducts)similarProducts.hidden=true;
+if(cartFooter)cartFooter.hidden=false;
+window.requestAnimationFrame(function(){
+window.requestAnimationFrame(function(){
+if(window.innerWidth>760)return;
+const checkoutFooter=document.querySelector("#decoreva-cart-drawer .decoreva-cart-footer");
+const checkoutButton=document.querySelector("#decoreva-cart-whatsapp");
+const steps=document.querySelector("#decoreva-cart-drawer .decoreva-checkout-steps");
+if(!checkoutFooter||!checkoutButton)return;
+const panelRect=cartPanel.getBoundingClientRect();
+const footerRect=checkoutFooter.getBoundingClientRect();
+const stickyHeight=steps?steps.getBoundingClientRect().height:0;
+const targetTop=Math.max(
 0,
-cartPanel.scrollTop +
-(footerRect.top - panelRect.top) -
-stickyHeight -
+cartPanel.scrollTop+
+(footerRect.top-panelRect.top)-
+stickyHeight-
 10
 );
 cartPanel.scrollTo({
-top: targetTop,
+top:targetTop,
 behavior: "smooth"
 });
 });
 });
 }
-} else if (message && !message.dataset.userMessage && checkoutAddressUnlocked) {
-if (window.innerWidth <= 760 && similarProducts) similarProducts.hidden = false;
-message.textContent = "Please complete all required delivery address details.";
-message.className = "decoreva-address-message warning";
-} else if (message && !checkoutAddressUnlocked && !message.dataset.userMessage) {
-message.textContent = "";
-message.className = "decoreva-address-message";
+}else if(message&&!message.dataset.userMessage&&checkoutAddressUnlocked){
+if(window.innerWidth<=760&&similarProducts)similarProducts.hidden=false;
+message.textContent= "Please complete all required delivery address details.";
+message.className= "decoreva-address-message warning";
+}else if(message&&!checkoutAddressUnlocked&&!message.dataset.userMessage){
+message.textContent= "";
+message.className= "decoreva-address-message";
 }
 }
-function renderCheckoutItems() {
-const box = document.querySelector("#decoreva-checkout-items");
-if (!box) return;
+function renderCheckoutItems(){
+const box=document.querySelector("#decoreva-checkout-items");
+if(!box)return;
 box.replaceChildren();
-if (!cart.length) return;
-const head = document.createElement("div");
-head.className = "decoreva-checkout-items-head";
-head.innerHTML = "<strong>Items in your order</strong><span>" + totalItems() + (totalItems() === 1 ? " item" : " items") + "</span>";
+if(!cart.length)return;
+const head=document.createElement("div");
+head.className= "decoreva-checkout-items-head";
+head.innerHTML= "<strong>Items in your order</strong><span>"+totalItems()+(totalItems()===1? " item": " items")+ "</span>";
 box.appendChild(head);
-cart.forEach(function(item, index){
-const row = document.createElement("div");
-row.className = "decoreva-checkout-item";
-const img = document.createElement("img");
-img.src = item.image || "";
-img.alt = item.title;
-img.loading = "lazy";
-const info = document.createElement("div");
-info.className = "decoreva-checkout-item-info";
-const title = document.createElement("strong");
-title.textContent = item.title;
+cart.forEach(function(item,index){
+const row=document.createElement("div");
+row.className= "decoreva-checkout-item";
+const img=document.createElement("img");
+img.src=item.image|| "";
+img.alt=item.title;
+img.loading= "lazy";
+const info=document.createElement("div");
+info.className= "decoreva-checkout-item-info";
+const title=document.createElement("strong");
+title.textContent=item.title;
 info.appendChild(title);
-const variation = document.createElement("span");
-variation.textContent = (item.variationName ? item.variationName + " • " : "") + "Qty: " + item.quantity;
+const variation=document.createElement("span");
+variation.textContent=(item.variationName?item.variationName+ " • ": "")+ "Qty: "+item.quantity;
 info.appendChild(variation);
-const price = document.createElement("b");
-price.textContent = money(item.price * item.quantity);
+const price=document.createElement("b");
+price.textContent=money(item.price*item.quantity);
 info.appendChild(price);
-const actions = document.createElement("div");
-actions.className = "decoreva-checkout-item-actions";
-const remove = document.createElement("button");
-remove.type = "button";
-remove.textContent = "Remove";
-remove.dataset.checkoutItemAction = "remove";
-remove.dataset.checkoutItemIndex = String(index);
-const wishlistButton = document.createElement("button");
-wishlistButton.type = "button";
-wishlistButton.textContent = "Move to Wishlist";
-wishlistButton.dataset.checkoutItemAction = "wishlist";
-wishlistButton.dataset.checkoutItemIndex = String(index);
+const actions=document.createElement("div");
+actions.className= "decoreva-checkout-item-actions";
+const remove=document.createElement("button");
+remove.type= "button";
+remove.textContent= "Remove";
+remove.dataset.checkoutItemAction= "remove";
+remove.dataset.checkoutItemIndex=String(index);
+const wishlistButton=document.createElement("button");
+wishlistButton.type= "button";
+wishlistButton.textContent= "Move to Wishlist";
+wishlistButton.dataset.checkoutItemAction= "wishlist";
+wishlistButton.dataset.checkoutItemIndex=String(index);
 actions.appendChild(remove);
 actions.appendChild(wishlistButton);
 info.appendChild(actions);
@@ -6524,62 +6584,62 @@ row.appendChild(img);
 row.appendChild(info);
 box.appendChild(row);
 });
-const delivery = document.createElement("div");
-delivery.className = "decoreva-checkout-delivery-note";
-delivery.innerHTML = '<strong>Delivery estimate</strong><span>Delivery details will be confirmed with you on WhatsApp.</span>';
+const delivery=document.createElement("div");
+delivery.className= "decoreva-checkout-delivery-note";
+delivery.innerHTML= '<strong>Delivery estimate</strong><span>Delivery details will be confirmed with you on WhatsApp.</span>';
 box.appendChild(delivery);
 }
-function renderSimilarProducts() {
-const box = document.querySelector("#decoreva-similar-products");
-if (!box) return;
+function renderSimilarProducts(){
+const box=document.querySelector("#decoreva-similar-products");
+if(!box)return;
 box.replaceChildren();
-if (!cart.length) { box.hidden = true; return; }
-const cartTitles = cart.map(function(item){
-return String(item.title || "").trim().toLowerCase();
+if(!cart.length){box.hidden=true;return;}
+const cartTitles=cart.map(function(item){
+return String(item.title|| "").trim().toLowerCase();
 });
-const seen = {};
-const candidates = Array.from(document.querySelectorAll(
+const seen={};
+const candidates=Array.from(document.querySelectorAll(
 "#collection-products .card, .featured-slider .featured-slide"
 )).map(function(card){
-const heading = card.querySelector("h3");
-const title = heading ? heading.textContent.trim().replace(/\s+/g," ") : "";
-const lower = title.toLowerCase();
-if (!title || cartTitles.indexOf(lower) !== -1 || seen[lower]) return null;
-seen[lower] = true;
-const image = card.querySelector("img.slider-image, img");
-const src = image ? (image.getAttribute("data-src") || image.getAttribute("src") || "") : "";
-const priceEl = card.querySelector(".price");
-const price = priceEl ? priceEl.textContent.trim().replace(/\s+/g," ") : "";
-return {title:title, src:src, price:price};
+const heading=card.querySelector("h3");
+const title=heading?heading.textContent.trim().replace(/\s+/g," "): "";
+const lower=title.toLowerCase();
+if(!title||cartTitles.indexOf(lower)!==-1||seen[lower])return null;
+seen[lower]=true;
+const image=card.querySelector("img.slider-image, img");
+const src=image?(image.getAttribute("data-src")||image.getAttribute("src")|| ""): "";
+const priceEl=card.querySelector(".price");
+const price=priceEl?priceEl.textContent.trim().replace(/\s+/g," "): "";
+return{title:title,src:src,price:price};
 }).filter(Boolean);
-if (!candidates.length) { box.hidden = true; return; }
-box.hidden = false;
-const head = document.createElement("div");
-head.className = "decoreva-similar-head";
-head.innerHTML = "<strong>You May Also Like</strong><span>More from DECOREVA</span>";
+if(!candidates.length){box.hidden=true;return;}
+box.hidden=false;
+const head=document.createElement("div");
+head.className= "decoreva-similar-head";
+head.innerHTML= "<strong>You May Also Like</strong><span>More from DECOREVA</span>";
 box.appendChild(head);
-const grid = document.createElement("div");
-grid.className = "decoreva-similar-grid decoreva-all-products-grid";
+const grid=document.createElement("div");
+grid.className= "decoreva-similar-grid decoreva-all-products-grid";
 candidates.forEach(function(item){
-const card = document.createElement("article");
-card.className = "decoreva-similar-card";
-const imageBox = document.createElement("div");
-imageBox.className = "decoreva-similar-card-image";
-const img = document.createElement("img");
-img.src = item.src;
-img.alt = item.title;
-img.loading = "lazy";
+const card=document.createElement("article");
+card.className= "decoreva-similar-card";
+const imageBox=document.createElement("div");
+imageBox.className= "decoreva-similar-card-image";
+const img=document.createElement("img");
+img.src=item.src;
+img.alt=item.title;
+img.loading= "lazy";
 imageBox.appendChild(img);
-const info = document.createElement("div");
-info.className = "decoreva-similar-card-info";
-const title = document.createElement("strong");
-title.textContent = item.title;
-const price = document.createElement("span");
-price.textContent = item.price || "View product";
-const view = document.createElement("button");
-view.type = "button";
-view.textContent = "VIEW PRODUCT";
-view.dataset.similarProductTitle = item.title;
+const info=document.createElement("div");
+info.className= "decoreva-similar-card-info";
+const title=document.createElement("strong");
+title.textContent=item.title;
+const price=document.createElement("span");
+price.textContent=item.price|| "View product";
+const view=document.createElement("button");
+view.type= "button";
+view.textContent= "VIEW PRODUCT";
+view.dataset.similarProductTitle=item.title;
 info.appendChild(title);
 info.appendChild(price);
 info.appendChild(view);
@@ -6589,180 +6649,180 @@ grid.appendChild(card);
 });
 box.appendChild(grid);
 }
-function renderPaymentReview() {
+function renderPaymentReview(){
 const box=document.querySelector("#decoreva-payment-review");
-if(!box) return;
+if(!box)return;
 box.innerHTML="";
-const address=deliveryAddress || {};
+const address=deliveryAddress||{};
 const addressCard=document.createElement("div");
 addressCard.className="decoreva-review-address";
-addressCard.innerHTML='<div><strong>Deliver to</strong><span>' + escapeProfileText(address.name || "") + (address.pincode ? ", " + escapeProfileText(address.pincode) : "") + '</span></div><p>' + escapeProfileText(address.line || "") + '<br>' + escapeProfileText(address.city || "") + (address.state ? ", " + escapeProfileText(address.state) : "") + (address.pincode ? " - " + escapeProfileText(address.pincode) : "") + '<br>Mobile: ' + escapeProfileText(address.mobile || "") + '</p><button type="button" data-checkout-step="address">CHANGE ADDRESS</button>';
+addressCard.innerHTML='<div><strong>Deliver to</strong><span>'+escapeProfileText(address.name|| "")+(address.pincode? ", "+escapeProfileText(address.pincode): "")+ '</span></div><p>'+escapeProfileText(address.line|| "")+ '<br>'+escapeProfileText(address.city|| "")+(address.state? ", "+escapeProfileText(address.state): "")+(address.pincode? " - "+escapeProfileText(address.pincode): "")+ '<br>Mobile: '+escapeProfileText(address.mobile|| "")+ '</p><button type="button" data-checkout-step="address">CHANGE ADDRESS</button>';
 box.appendChild(addressCard);
-const items=document.createElement("div"); items.className="decoreva-review-items";
-const h=document.createElement("strong"); h.textContent="Items"; items.appendChild(h);
+const items=document.createElement("div");items.className="decoreva-review-items";
+const h=document.createElement("strong");h.textContent="Items";items.appendChild(h);
 cart.forEach(function(item){
-const row=document.createElement("div"); row.className="decoreva-review-item";
-row.innerHTML='<span>' + escapeProfileText(item.title + (item.variationName ? " — " + item.variationName : "")) + ' × ' + item.quantity + '</span><b>' + money(item.price * item.quantity) + '</b>';
+const row=document.createElement("div");row.className="decoreva-review-item";
+row.innerHTML='<span>'+escapeProfileText(item.title+(item.variationName? " — "+item.variationName: ""))+ ' × '+item.quantity+ '</span><b>'+money(item.price*item.quantity)+ '</b>';
 items.appendChild(row);
 });
 box.appendChild(items);
-const price=document.createElement("div"); price.className="decoreva-review-price";
-price.innerHTML='<div><span>Total MRP</span><b>' + money(subtotalAmount()) + '</b></div>' + (discountAmount() ? '<div><span>Discount on MRP</span><b>- ' + money(discountAmount()) + '</b></div>' : '') + '<div><span>Delivery</span><b>' + money(deliveryCharge()) + '</b></div><div class="final"><span>Total Amount</span><b>' + money(finalAmount()) + '</b></div>';
+const price=document.createElement("div");price.className="decoreva-review-price";
+price.innerHTML='<div><span>Total MRP</span><b>'+money(subtotalAmount())+ '</b></div>'+(discountAmount()? '<div><span>Discount on MRP</span><b>- '+money(discountAmount())+ '</b></div>': '')+ '<div><span>Delivery</span><b>'+money(deliveryCharge())+ '</b></div><div class="final"><span>Total Amount</span><b>'+money(finalAmount())+ '</b></div>';
 box.appendChild(price);
 }
-function renderCheckoutSummary() {
-const box = document.querySelector("#decoreva-checkout-summary");
-if (!box) return;
-box.innerHTML = "";
-const title = document.createElement("strong");
-title.textContent = "Order Summary";
+function renderCheckoutSummary(){
+const box=document.querySelector("#decoreva-checkout-summary");
+if(!box)return;
+box.innerHTML= "";
+const title=document.createElement("strong");
+title.textContent= "Order Summary";
 box.appendChild(title);
-const couponRow = document.createElement("div");
-couponRow.className = "decoreva-checkout-coupon-row";
-couponRow.innerHTML = '<span>Coupon</span><button type="button" id="decoreva-checkout-coupon-button">Apply Coupon</button>';
+const couponRow=document.createElement("div");
+couponRow.className= "decoreva-checkout-coupon-row";
+couponRow.innerHTML= '<span>Coupon</span><button type="button" id="decoreva-checkout-coupon-button">Apply Coupon</button>';
 box.appendChild(couponRow);
-if (appliedCoupon) {
-const applied = document.createElement("div");
-applied.className = "decoreva-checkout-applied-coupon";
-applied.innerHTML = '<span>' + escapeProfileText(appliedCoupon) + ' applied — 10% OFF</span><button type="button" id="decoreva-checkout-remove-coupon">Remove</button>';
+if(appliedCoupon){
+const applied=document.createElement("div");
+applied.className= "decoreva-checkout-applied-coupon";
+applied.innerHTML= '<span>'+escapeProfileText(appliedCoupon)+ ' applied — 10% OFF</span><button type="button" id="decoreva-checkout-remove-coupon">Remove</button>';
 box.appendChild(applied);
 }
-cart.forEach(function (item) {
-const row = document.createElement("div");
-row.className = "decoreva-checkout-summary-item";
-const left = document.createElement("span");
-left.textContent = item.title + (item.variationName ? " — " + item.variationName : "") + " × " + item.quantity;
-const right = document.createElement("b");
-right.textContent = money(item.price * item.quantity);
+cart.forEach(function(item){
+const row=document.createElement("div");
+row.className= "decoreva-checkout-summary-item";
+const left=document.createElement("span");
+left.textContent=item.title+(item.variationName? " — "+item.variationName: "")+ " × "+item.quantity;
+const right=document.createElement("b");
+right.textContent=money(item.price*item.quantity);
 row.appendChild(left);
 row.appendChild(right);
 box.appendChild(row);
 });
-const rows = [
-["Total MRP", money(subtotalAmount())],
-...(discountAmount() ? [["Discount on MRP", "- " + money(discountAmount())]] : []),
-["Delivery", money(deliveryCharge())],
-["Total Amount", money(finalAmount())]
+const rows=[
+["Total MRP",money(subtotalAmount())],
+...(discountAmount()?[["Discount on MRP", "- "+money(discountAmount())]]:[]),
+["Delivery",money(deliveryCharge())],
+["Total Amount",money(finalAmount())]
 ];
-rows.forEach(function (pair, index) {
-const row = document.createElement("div");
-row.className = "decoreva-checkout-summary-total" + (index === rows.length - 1 ? " final" : "");
-const left = document.createElement("span");
-left.textContent = pair[0];
-const right = document.createElement("strong");
-right.textContent = pair[1];
+rows.forEach(function(pair,index){
+const row=document.createElement("div");
+row.className= "decoreva-checkout-summary-total"+(index===rows.length-1? " final": "");
+const left=document.createElement("span");
+left.textContent=pair[0];
+const right=document.createElement("strong");
+right.textContent=pair[1];
 row.appendChild(left);
 row.appendChild(right);
 box.appendChild(row);
 });
-const coupon = document.createElement("div");
-const summaryCoupon = effectiveCouponCode();
-coupon.className = "decoreva-checkout-summary-coupon" + (summaryCoupon ? " applied" : " none");
-coupon.textContent = summaryCoupon
-? "Coupon: " + summaryCoupon + (appliedCoupon ? " applied — 10% OFF" : " checked — 10% OFF")
+const coupon=document.createElement("div");
+const summaryCoupon=effectiveCouponCode();
+coupon.className= "decoreva-checkout-summary-coupon"+(summaryCoupon? " applied": " none");
+coupon.textContent=summaryCoupon
+? "Coupon: "+summaryCoupon+(appliedCoupon? " applied — 10% OFF": " checked — 10% OFF")
 : "Coupon: No coupon applied";
 box.appendChild(coupon);
 }
-function scrollCheckoutAddressToTop(behavior) {
-const drawer = document.querySelector("#decoreva-cart-drawer");
-const address = document.querySelector("#decoreva-checkout-address");
-const panel = drawer ? drawer.querySelector(".decoreva-cart-panel") : null;
-const steps = drawer ? drawer.querySelector(".decoreva-checkout-steps") : null;
-if (!address || !panel) return;
-const panelRect = panel.getBoundingClientRect();
-const addressRect = address.getBoundingClientRect();
-const stickyHeight = steps ? steps.getBoundingClientRect().height : 0;
-const targetTop = Math.max(
+function scrollCheckoutAddressToTop(behavior){
+const drawer=document.querySelector("#decoreva-cart-drawer");
+const address=document.querySelector("#decoreva-checkout-address");
+const panel=drawer?drawer.querySelector(".decoreva-cart-panel"):null;
+const steps=drawer?drawer.querySelector(".decoreva-checkout-steps"):null;
+if(!address||!panel)return;
+const panelRect=panel.getBoundingClientRect();
+const addressRect=address.getBoundingClientRect();
+const stickyHeight=steps?steps.getBoundingClientRect().height:0;
+const targetTop=Math.max(
 0,
-panel.scrollTop +
-(addressRect.top - panelRect.top) -
-stickyHeight -
+panel.scrollTop+
+(addressRect.top-panelRect.top)-
+stickyHeight-
 4
 );
 panel.scrollTo({
-top: targetTop,
-behavior: behavior || "smooth"
+top:targetTop,
+behavior:behavior|| "smooth"
 });
 }
-function updateCheckoutStepUI() {
-const drawer = document.querySelector("#decoreva-cart-drawer");
-if (!drawer) return;
-checkoutStep = cart.length ? (checkoutStep === "address" ? "address" : "cart") : "cart";
+function updateCheckoutStepUI(){
+const drawer=document.querySelector("#decoreva-cart-drawer");
+if(!drawer)return;
+checkoutStep=cart.length?(checkoutStep=== "address"? "address": "cart"): "cart";
 drawer.classList.add("decoreva-checkout-mode");
-const checkoutSteps = drawer.querySelector(".decoreva-checkout-steps");
-if (checkoutSteps) { checkoutSteps.hidden = false; checkoutSteps.style.display = "flex"; }
-const cartHeadTitle = drawer.querySelector(".decoreva-cart-head strong");
-const cartHeadLabel = drawer.querySelector("#decoreva-cart-item-label");
-if (cartHeadTitle) cartHeadTitle.textContent = "Your Cart";
-if (cartHeadLabel) cartHeadLabel.textContent = totalItems() + (totalItems() === 1 ? " item" : " items");
+const checkoutSteps=drawer.querySelector(".decoreva-checkout-steps");
+if(checkoutSteps){checkoutSteps.hidden=false;checkoutSteps.style.display= "flex";}
+const cartHeadTitle=drawer.querySelector(".decoreva-cart-head strong");
+const cartHeadLabel=drawer.querySelector("#decoreva-cart-item-label");
+if(cartHeadTitle)cartHeadTitle.textContent= "Your Cart";
+if(cartHeadLabel)cartHeadLabel.textContent=totalItems()+(totalItems()===1? " item": " items");
 renderCheckoutSummary();
 renderCheckoutItems();
 renderSimilarProducts();
-const address = document.querySelector("#decoreva-checkout-address");
-const payment = document.querySelector("#decoreva-checkout-payment");
-const steps = document.querySelector("#decoreva-cart-drawer .decoreva-checkout-steps");
-const cartItems = document.querySelector("#decoreva-cart-items");
-const cartEmpty = document.querySelector("#decoreva-cart-empty");
-const footer = document.querySelector(".decoreva-cart-footer");
-const checkoutItems = document.querySelector("#decoreva-checkout-items");
-const checkoutSummary = document.querySelector("#decoreva-checkout-summary");
-const similarProducts = document.querySelector("#decoreva-similar-products");
-if (cart.length === 0) {
-if (steps) {
-steps.hidden = true;
-steps.style.display = "none";
+const address=document.querySelector("#decoreva-checkout-address");
+const payment=document.querySelector("#decoreva-checkout-payment");
+const steps=document.querySelector("#decoreva-cart-drawer .decoreva-checkout-steps");
+const cartItems=document.querySelector("#decoreva-cart-items");
+const cartEmpty=document.querySelector("#decoreva-cart-empty");
+const footer=document.querySelector(".decoreva-cart-footer");
+const checkoutItems=document.querySelector("#decoreva-checkout-items");
+const checkoutSummary=document.querySelector("#decoreva-checkout-summary");
+const similarProducts=document.querySelector("#decoreva-similar-products");
+if(cart.length===0){
+if(steps){
+steps.hidden=true;
+steps.style.display= "none";
 }
-if (cartItems) cartItems.hidden = true;
-if (cartEmpty) cartEmpty.hidden = false;
-if (address) address.hidden = true;
-if (payment) payment.hidden = true;
-if (footer) footer.hidden = true;
-if (checkoutItems) checkoutItems.hidden = true;
-if (checkoutSummary) checkoutSummary.hidden = true;
-if (similarProducts) similarProducts.hidden = true;
-if (cartHeadLabel) {
-cartHeadLabel.textContent = "";
-cartHeadLabel.hidden = true;
+if(cartItems)cartItems.hidden=true;
+if(cartEmpty)cartEmpty.hidden=false;
+if(address)address.hidden=true;
+if(payment)payment.hidden=true;
+if(footer)footer.hidden=true;
+if(checkoutItems)checkoutItems.hidden=true;
+if(checkoutSummary)checkoutSummary.hidden=true;
+if(similarProducts)similarProducts.hidden=true;
+if(cartHeadLabel){
+cartHeadLabel.textContent= "";
+cartHeadLabel.hidden=true;
 }
-} else {
-if (steps) {
-steps.hidden = false;
-steps.style.display = "flex";
+}else{
+if(steps){
+steps.hidden=false;
+steps.style.display= "flex";
 }
-if (cartItems) cartItems.hidden = false;
-if (cartEmpty) cartEmpty.hidden = true;
-if (address) address.hidden = checkoutStep !== "address";
-if (payment) payment.hidden = true;
-if (footer) footer.hidden = false;
-if (checkoutItems) checkoutItems.hidden = true;
-if (checkoutSummary) checkoutSummary.hidden = true;
-if (similarProducts) similarProducts.hidden = checkoutStep === "address";
-if (cartHeadLabel) cartHeadLabel.hidden = false;
+if(cartItems)cartItems.hidden=false;
+if(cartEmpty)cartEmpty.hidden=true;
+if(address)address.hidden=checkoutStep!== "address";
+if(payment)payment.hidden=true;
+if(footer)footer.hidden=false;
+if(checkoutItems)checkoutItems.hidden=true;
+if(checkoutSummary)checkoutSummary.hidden=true;
+if(similarProducts)similarProducts.hidden=checkoutStep=== "address";
+if(cartHeadLabel)cartHeadLabel.hidden=false;
 }
-if (cart.length) {
+if(cart.length){
 updateAddressContinueState();
 }
-drawer.querySelectorAll("[data-checkout-step]").forEach(function (button) {
-const step = button.dataset.checkoutStep;
-button.classList.toggle("active", step === checkoutStep || (step === "payment" && false));
+drawer.querySelectorAll("[data-checkout-step]").forEach(function(button){
+const step=button.dataset.checkoutStep;
+button.classList.toggle("active",step===checkoutStep||(step=== "payment"&&false));
 });
 }
-function buildCartUI() {
-if (document.querySelector("#decoreva-cart-drawer")) return;
-const floating = document.createElement("button");
-floating.type = "button";
-floating.id = "decoreva-cart-button";
-floating.className = "decoreva-cart-button";
+function buildCartUI(){
+if(document.querySelector("#decoreva-cart-drawer"))return;
+const floating=document.createElement("button");
+floating.type= "button";
+floating.id= "decoreva-cart-button";
+floating.className= "decoreva-cart-button";
 floating.setAttribute("aria-label", "Open shopping cart");
-floating.innerHTML = '<i class="fas fa-shopping-bag" aria-hidden="true"></i><span id="decoreva-cart-count">0</span>';
-if (!document.querySelector("#decoreva-nav-cart")) {
+floating.innerHTML= '<i class="fas fa-shopping-bag" aria-hidden="true"></i><span id="decoreva-cart-count">0</span>';
+if(!document.querySelector("#decoreva-nav-cart")){
 document.body.appendChild(floating);
 }
-const drawer = document.createElement("aside");
-drawer.id = "decoreva-cart-drawer";
-drawer.className = "decoreva-cart-drawer";
+const drawer=document.createElement("aside");
+drawer.id= "decoreva-cart-drawer";
+drawer.className= "decoreva-cart-drawer";
 drawer.setAttribute("aria-hidden", "true");
-drawer.innerHTML = `
+drawer.innerHTML= `
 <div class="decoreva-cart-overlay" data-cart-close="true"></div>
 <div class="decoreva-cart-panel" role="dialog" aria-modal="true" aria-label="Shopping cart">
 <div class="decoreva-checkout-steps" aria-label="Checkout progress">
@@ -6815,11 +6875,11 @@ drawer.innerHTML = `
 </div>
 </div>`;
 document.body.appendChild(drawer);
-const couponModal = document.createElement("div");
-couponModal.id = "decoreva-coupon-modal";
-couponModal.className = "decoreva-coupon-modal";
+const couponModal=document.createElement("div");
+couponModal.id= "decoreva-coupon-modal";
+couponModal.className= "decoreva-coupon-modal";
 couponModal.setAttribute("aria-hidden", "true");
-couponModal.innerHTML = `
+couponModal.innerHTML= `
 <div class="decoreva-coupon-modal-overlay" data-coupon-close="true"></div>
 <div class="decoreva-coupon-modal-panel" role="dialog" aria-modal="true" aria-label="Apply Coupon">
 <div class="decoreva-coupon-modal-head">
@@ -6860,10 +6920,10 @@ One coupon can be applied per order.
 </div>
 </div>`;
 document.body.appendChild(couponModal);
-if (!document.querySelector("#decoreva-coupon-modal-styles")) {
-const couponStyle = document.createElement("style");
-couponStyle.id = "decoreva-coupon-modal-styles";
-couponStyle.textContent = `
+if(!document.querySelector("#decoreva-coupon-modal-styles")){
+const couponStyle=document.createElement("style");
+couponStyle.id= "decoreva-coupon-modal-styles";
+couponStyle.textContent= `
 /* DECOREVA — COUPON MODAL PROFESSIONAL UI */
 #decoreva-coupon-modal .decoreva-coupon-modal-input-row{
 align-items:center;
@@ -7183,10 +7243,10 @@ font-size:10px !important;
 }
 `;
 document.head.appendChild(couponStyle);
-if (!document.getElementById("decoreva-mobile-coupon-text-final")) {
-const mobileCouponTextStyle = document.createElement("style");
-mobileCouponTextStyle.id = "decoreva-mobile-coupon-text-final";
-mobileCouponTextStyle.textContent = `
+if(!document.getElementById("decoreva-mobile-coupon-text-final")){
+const mobileCouponTextStyle=document.createElement("style");
+mobileCouponTextStyle.id= "decoreva-mobile-coupon-text-final";
+mobileCouponTextStyle.textContent= `
 @media (max-width: 760px) {
 #decoreva-coupon-modal .decoreva-coupon-modal-panel {
 width: min(350px, calc(100vw - 24px)) !important;
@@ -7348,11 +7408,11 @@ font-size: 8.5px !important;
 document.head.appendChild(mobileCouponTextStyle);
 }
 }
-const wishlistDrawer = document.createElement("aside");
-wishlistDrawer.id = "decoreva-wishlist-drawer";
-wishlistDrawer.className = "decoreva-side-drawer";
+const wishlistDrawer=document.createElement("aside");
+wishlistDrawer.id= "decoreva-wishlist-drawer";
+wishlistDrawer.className= "decoreva-side-drawer";
 wishlistDrawer.setAttribute("aria-hidden", "true");
-wishlistDrawer.innerHTML = `
+wishlistDrawer.innerHTML= `
 <div class="decoreva-side-overlay" data-wishlist-close="true"></div>
 <div class="decoreva-side-panel" role="dialog" aria-modal="true" aria-label="Wishlist">
 <div class="decoreva-side-head">
@@ -7364,11 +7424,11 @@ wishlistDrawer.innerHTML = `
 </div>
 `;
 document.body.appendChild(wishlistDrawer);
-const profilePanel = document.createElement("aside");
-profilePanel.id = "decoreva-profile-panel";
-profilePanel.className = "decoreva-profile-panel";
+const profilePanel=document.createElement("aside");
+profilePanel.id= "decoreva-profile-panel";
+profilePanel.className= "decoreva-profile-panel";
 profilePanel.setAttribute("aria-hidden", "true");
-profilePanel.innerHTML = `
+profilePanel.innerHTML= `
 <div class="decoreva-profile-overlay" data-profile-close="true"></div>
 <div class="decoreva-profile-card" role="dialog" aria-modal="true" aria-label="DECOREVA Profile">
 <div class="decoreva-profile-head">
@@ -7429,10 +7489,10 @@ profilePanel.innerHTML = `
 </div>
 `;
 document.body.appendChild(profilePanel);
-if (!document.getElementById("decoreva-mobile-profile-compact")) {
-const compactProfileStyle = document.createElement("style");
-compactProfileStyle.id = "decoreva-mobile-profile-compact";
-compactProfileStyle.textContent = `
+if(!document.getElementById("decoreva-mobile-profile-compact")){
+const compactProfileStyle=document.createElement("style");
+compactProfileStyle.id= "decoreva-mobile-profile-compact";
+compactProfileStyle.textContent= `
 @media (max-width: 760px) {
 #decoreva-profile-panel .decoreva-profile-card {
 width: min(320px, calc(100vw - 40px)) !important;
@@ -7506,48 +7566,48 @@ padding: 7px 10px !important;
 `;
 document.head.appendChild(compactProfileStyle);
 }
-if (!document.getElementById("decoreva-my-orders-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-my-orders-style";
-style.textContent =
-"#decoreva-profile-orders-section{padding:0 16px 18px;}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-head{display:flex;flex-direction:column;gap:12px;margin:0 -2px 14px;padding:2px 0 12px;border-bottom:1px solid rgba(139,106,50,.14);}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-back{align-self:flex-start;border:0;background:transparent;color:#8b651f;font:700 11px/1 inherit;padding:3px 0;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-back span{font-size:22px;line-height:10px;margin-top:-1px;}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-back:hover{color:#5b3e14;}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-heading{display:flex;flex-direction:column;gap:3px;}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-heading strong{font-size:18px;line-height:1.2;color:#2f2115;}" +
-"#decoreva-profile-orders-section .decoreva-profile-orders-heading span{font-size:10px;color:#8b7355;}" +
-"#decoreva-profile-orders{display:flex;flex-direction:column;gap:12px;}" +
-".decoreva-profile-orders-loading,.decoreva-profile-orders-empty{padding:18px 14px;border:1px solid rgba(139,106,50,.18);border-radius:14px;background:#fffaf2;text-align:center;display:flex;flex-direction:column;gap:5px;color:#6b5537;font-size:12px;}" +
-".decoreva-profile-orders-empty strong{font-size:14px;color:#3f2d1c;}" +
-".decoreva-profile-orders-empty.error{border-color:rgba(180,60,45,.22);}" +
-".decoreva-profile-order-card{border:1px solid rgba(139,106,50,.20);border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(60,40,20,.05);}" +
-".decoreva-profile-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px 14px;background:#fffaf2;border-bottom:1px solid rgba(139,106,50,.13);}" +
-".decoreva-profile-order-top>div{display:flex;flex-direction:column;gap:3px;min-width:0;}" +
-".decoreva-profile-order-top strong{font-size:13px;color:#3f2d1c;word-break:break-word;}" +
-".decoreva-profile-order-top span:not(.decoreva-profile-order-status){font-size:10px;color:#8b7355;}" +
-".decoreva-profile-order-status{flex:0 0 auto;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.3px;background:#f2eadb;color:#73531f;}" +
-".decoreva-profile-order-status.status-confirmed,.decoreva-profile-order-status.status-delivered,.decoreva-profile-order-status.status-completed{background:#e9f5ea;color:#2f6b39;}" +
-".decoreva-profile-order-status.status-cancelled,.decoreva-profile-order-status.status-rejected{background:#fae9e7;color:#a23e35;}" +
-".decoreva-profile-order-items{padding:4px 14px;}" +
-".decoreva-profile-order-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(80,55,30,.08);}" +
-".decoreva-profile-order-item:last-child{border-bottom:0;}" +
-".decoreva-profile-order-item-info{display:flex;flex-direction:column;gap:2px;min-width:0;}" +
-".decoreva-profile-order-item-info strong{font-size:12px;color:#3f2d1c;}" +
-".decoreva-profile-order-item-info span,.decoreva-profile-order-item-info small{font-size:10px;color:#8b7355;}" +
-".decoreva-profile-order-item>strong{font-size:11px;color:#4e3924;white-space:nowrap;}" +
-".decoreva-profile-order-item-empty{padding:12px 0;color:#8b7355;font-size:11px;}" +
-".decoreva-profile-order-summary{padding:10px 14px 12px;background:#fffaf2;border-top:1px solid rgba(139,106,50,.10);display:flex;flex-direction:column;gap:5px;font-size:10px;color:#806b50;}" +
-".decoreva-profile-order-summary span{display:flex;justify-content:space-between;gap:12px;}" +
-".decoreva-profile-order-summary strong{color:#4b3825;}" +
-".decoreva-profile-order-summary .decoreva-profile-order-total{margin-top:4px;padding-top:8px;border-top:1px solid rgba(139,106,50,.15);font-size:12px;color:#3f2d1c;}" +
-".decoreva-profile-order-summary .decoreva-profile-order-total strong{font-size:14px;color:#9a6b13;}" +
+if(!document.getElementById("decoreva-my-orders-style")){
+const style=document.createElement("style");
+style.id= "decoreva-my-orders-style";
+style.textContent=
+"#decoreva-profile-orders-section{padding:0 16px 18px;}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-head{display:flex;flex-direction:column;gap:12px;margin:0 -2px 14px;padding:2px 0 12px;border-bottom:1px solid rgba(139,106,50,.14);}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-back{align-self:flex-start;border:0;background:transparent;color:#8b651f;font:700 11px/1 inherit;padding:3px 0;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-back span{font-size:22px;line-height:10px;margin-top:-1px;}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-back:hover{color:#5b3e14;}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-heading{display:flex;flex-direction:column;gap:3px;}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-heading strong{font-size:18px;line-height:1.2;color:#2f2115;}"+
+"#decoreva-profile-orders-section .decoreva-profile-orders-heading span{font-size:10px;color:#8b7355;}"+
+"#decoreva-profile-orders{display:flex;flex-direction:column;gap:12px;}"+
+".decoreva-profile-orders-loading,.decoreva-profile-orders-empty{padding:18px 14px;border:1px solid rgba(139,106,50,.18);border-radius:14px;background:#fffaf2;text-align:center;display:flex;flex-direction:column;gap:5px;color:#6b5537;font-size:12px;}"+
+".decoreva-profile-orders-empty strong{font-size:14px;color:#3f2d1c;}"+
+".decoreva-profile-orders-empty.error{border-color:rgba(180,60,45,.22);}"+
+".decoreva-profile-order-card{border:1px solid rgba(139,106,50,.20);border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(60,40,20,.05);}"+
+".decoreva-profile-order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px 14px;background:#fffaf2;border-bottom:1px solid rgba(139,106,50,.13);}"+
+".decoreva-profile-order-top>div{display:flex;flex-direction:column;gap:3px;min-width:0;}"+
+".decoreva-profile-order-top strong{font-size:13px;color:#3f2d1c;word-break:break-word;}"+
+".decoreva-profile-order-top span:not(.decoreva-profile-order-status){font-size:10px;color:#8b7355;}"+
+".decoreva-profile-order-status{flex:0 0 auto;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.3px;background:#f2eadb;color:#73531f;}"+
+".decoreva-profile-order-status.status-confirmed,.decoreva-profile-order-status.status-delivered,.decoreva-profile-order-status.status-completed{background:#e9f5ea;color:#2f6b39;}"+
+".decoreva-profile-order-status.status-cancelled,.decoreva-profile-order-status.status-rejected{background:#fae9e7;color:#a23e35;}"+
+".decoreva-profile-order-items{padding:4px 14px;}"+
+".decoreva-profile-order-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(80,55,30,.08);}"+
+".decoreva-profile-order-item:last-child{border-bottom:0;}"+
+".decoreva-profile-order-item-info{display:flex;flex-direction:column;gap:2px;min-width:0;}"+
+".decoreva-profile-order-item-info strong{font-size:12px;color:#3f2d1c;}"+
+".decoreva-profile-order-item-info span,.decoreva-profile-order-item-info small{font-size:10px;color:#8b7355;}"+
+".decoreva-profile-order-item>strong{font-size:11px;color:#4e3924;white-space:nowrap;}"+
+".decoreva-profile-order-item-empty{padding:12px 0;color:#8b7355;font-size:11px;}"+
+".decoreva-profile-order-summary{padding:10px 14px 12px;background:#fffaf2;border-top:1px solid rgba(139,106,50,.10);display:flex;flex-direction:column;gap:5px;font-size:10px;color:#806b50;}"+
+".decoreva-profile-order-summary span{display:flex;justify-content:space-between;gap:12px;}"+
+".decoreva-profile-order-summary strong{color:#4b3825;}"+
+".decoreva-profile-order-summary .decoreva-profile-order-total{margin-top:4px;padding-top:8px;border-top:1px solid rgba(139,106,50,.15);font-size:12px;color:#3f2d1c;}"+
+".decoreva-profile-order-summary .decoreva-profile-order-total strong{font-size:14px;color:#9a6b13;}"+
 "@media (max-width:760px){#decoreva-profile-orders-section{padding:0 12px 16px;}#decoreva-profile-orders-section .decoreva-profile-orders-heading strong{font-size:17px;}.decoreva-profile-order-top{padding:11px 12px;}.decoreva-profile-order-items{padding:3px 12px;}.decoreva-profile-order-summary{padding:9px 12px 11px;}}";
 document.head.appendChild(style);
 }
-if (window.decorevaSupabaseAuth &&
-typeof window.decorevaSupabaseAuth.refresh === "function") {
+if(window.decorevaSupabaseAuth&&
+typeof window.decorevaSupabaseAuth.refresh=== "function"){
 window.decorevaSupabaseAuth.refresh();
 }
 }
@@ -7555,321 +7615,321 @@ buildCartUI();
 renderCart();
 renderWishlist();
 updateCheckoutStepUI();
-const decorevaOpenPanelAfterRefresh = getOpenPanelState();
-if (decorevaOpenPanelAfterRefresh === "cart") {
+const decorevaOpenPanelAfterRefresh=getOpenPanelState();
+if(decorevaOpenPanelAfterRefresh=== "cart"){
 openCartDrawer();
-} else if (decorevaOpenPanelAfterRefresh === "wishlist") {
+}else if(decorevaOpenPanelAfterRefresh=== "wishlist"){
 openWishlist();
 }
-const checkoutDrawer = document.querySelector("#decoreva-cart-drawer");
-if (checkoutDrawer) {
-checkoutDrawer.querySelectorAll("[data-checkout-step]").forEach(function (button) {
-button.addEventListener("click", function (event) {
+const checkoutDrawer=document.querySelector("#decoreva-cart-drawer");
+if(checkoutDrawer){
+checkoutDrawer.querySelectorAll("[data-checkout-step]").forEach(function(button){
+button.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
-const step = button.dataset.checkoutStep;
-if (step === "payment") {
-const address = document.querySelector("#decoreva-checkout-address");
-const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
-if (address && panel) scrollCheckoutAddressToTop("smooth");
+const step=button.dataset.checkoutStep;
+if(step=== "payment"){
+const address=document.querySelector("#decoreva-checkout-address");
+const panel=document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+if(address&&panel)scrollCheckoutAddressToTop("smooth");
 return;
 }
-checkoutStep = step === "address" ? "address" : "cart";
+checkoutStep=step=== "address"? "address": "cart";
 updateCheckoutStepUI();
-const target = step === "address"
-? document.querySelector("#decoreva-checkout-address")
-: document.querySelector("#decoreva-cart-items");
-const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
-if (target && panel) panel.scrollTo({ top: Math.max(0, target.offsetTop - 20), behavior: "smooth" });
+const target=step=== "address"
+?document.querySelector("#decoreva-checkout-address")
+:document.querySelector("#decoreva-cart-items");
+const panel=document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+if(target&&panel)panel.scrollTo({top:Math.max(0,target.offsetTop-20),behavior: "smooth"});
 });
 });
 }
-const couponCheckButton = document.querySelector("#decoreva-coupon-check");
-if (couponCheckButton) {
-couponCheckButton.addEventListener("click", function (event) {
+const couponCheckButton=document.querySelector("#decoreva-coupon-check");
+if(couponCheckButton){
+couponCheckButton.addEventListener("click",function(event){
 event.preventDefault();
 event.stopImmediatePropagation();
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-const code = input ? input.value.trim().toUpperCase() : "";
-if (!message) return;
-if (!code) {
-couponPreviewCode = "";
-message.textContent = "Please enter a coupon code.";
-message.className = "decoreva-coupon-message warning";
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+const code=input?input.value.trim().toUpperCase(): "";
+if(!message)return;
+if(!code){
+couponPreviewCode= "";
+message.textContent= "Please enter a coupon code.";
+message.className= "decoreva-coupon-message warning";
 renderCart();
 renderCheckoutSummary();
-} else if (!COUPONS[code]) {
-couponPreviewCode = "";
-message.textContent = "Invalid coupon code.";
-message.className = "decoreva-coupon-message error";
+}else if(!COUPONS[code]){
+couponPreviewCode= "";
+message.textContent= "Invalid coupon code.";
+message.className= "decoreva-coupon-message error";
 renderCart();
 renderCheckoutSummary();
-} else if (appliedCoupon === code) {
-message.textContent = code + " is already applied.";
-message.className = "decoreva-coupon-message success";
-} else {
-couponPreviewCode = code;
-message.textContent = "Coupon code is valid — 10% discount preview shown below. Click APPLY to keep it.";
-message.className = "decoreva-coupon-message success";
+}else if(appliedCoupon===code){
+message.textContent=code+ " is already applied.";
+message.className= "decoreva-coupon-message success";
+}else{
+couponPreviewCode=code;
+message.textContent= "Coupon code is valid — 10% discount preview shown below. Click APPLY to keep it.";
+message.className= "decoreva-coupon-message success";
 renderCart();
 renderCheckoutSummary();
 }
 });
 }
-const navCart = document.querySelector("#decoreva-nav-cart");
-const navWishlist = document.querySelector("#decoreva-wishlist-nav");
-const navProfile = document.querySelector("#decoreva-profile-nav");
-if (navCart) navCart.addEventListener("click", function (event) {
+const navCart=document.querySelector("#decoreva-nav-cart");
+const navWishlist=document.querySelector("#decoreva-wishlist-nav");
+const navProfile=document.querySelector("#decoreva-profile-nav");
+if(navCart)navCart.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
 openCart();
 updateCartCount();
 });
-if (navWishlist) navWishlist.addEventListener("click", function (event) {
+if(navWishlist)navWishlist.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
 openWishlist();
 updateWishlistCount();
 });
-if (navProfile) navProfile.addEventListener("click", function (event) {
+if(navProfile)navProfile.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
-if (window.innerWidth <= 760 && nav && nav.classList.contains("mobile-open")) {
+if(window.innerWidth<=760&&nav&&nav.classList.contains("mobile-open")){
 nav.classList.remove("mobile-open");
 document.body.classList.remove("menu-open");
-if (menuButton) {
+if(menuButton){
 menuButton.setAttribute("aria-expanded", "false");
 }
 }
 openProfile();
 });
-if (window.MutationObserver) {
-const decorevaRatingMountObserver = new MutationObserver(function () {
-if (typeof mountDecorevaMobileRatingRows === "function") {
+if(window.MutationObserver){
+const decorevaRatingMountObserver=new MutationObserver(function(){
+if(typeof mountDecorevaMobileRatingRows=== "function"){
 mountDecorevaMobileRatingRows();
 }
 });
-const ratingCollection = document.querySelector("#collection-products");
-if (ratingCollection) {
-decorevaRatingMountObserver.observe(ratingCollection, {
-childList: true,
-subtree: true
+const ratingCollection=document.querySelector("#collection-products");
+if(ratingCollection){
+decorevaRatingMountObserver.observe(ratingCollection,{
+childList:true,
+subtree:true
 });
 }
 }
-document.addEventListener("click", async function (event) {
-const cartButton = event.target.closest(".decoreva-add-cart");
-if (cartButton) {
+document.addEventListener("click",async function(event){
+const cartButton=event.target.closest(".decoreva-add-cart");
+if(cartButton){
 event.preventDefault();
 event.stopPropagation();
 addToCart(cartButton.closest(".card, .featured-slide"));
 return;
 }
-const wishlistButton = event.target.closest(".decoreva-wishlist");
-if (wishlistButton) {
+const wishlistButton=event.target.closest(".decoreva-wishlist");
+if(wishlistButton){
 event.preventDefault();
 event.stopPropagation();
 toggleWishlist(wishlistButton.closest(".card, .featured-slide"));
 return;
 }
-if (event.target.closest("#decoreva-nav-cart, #decoreva-cart-button")) {
+if(event.target.closest("#decoreva-nav-cart, #decoreva-cart-button")){
 event.preventDefault();
 event.stopPropagation();
 openCart();
 return;
 }
-if (event.target.closest("#decoreva-wishlist-nav")) {
+if(event.target.closest("#decoreva-wishlist-nav")){
 event.preventDefault();
 event.stopPropagation();
 openWishlist();
 return;
 }
-if (event.target.closest("#decoreva-profile-nav")) {
+if(event.target.closest("#decoreva-profile-nav")){
 event.preventDefault();
 event.stopPropagation();
 openProfile();
 return;
 }
-if (event.target.closest("#decoreva-order-confirmation-close")) {
+if(event.target.closest("#decoreva-order-confirmation-close")){
 event.preventDefault();
 event.stopImmediatePropagation();
-const confirmation = document.querySelector("#decoreva-order-confirmation");
-if (confirmation) confirmation.classList.remove("open");
-const drawer = document.querySelector("#decoreva-cart-drawer");
-if (drawer) {
+const confirmation=document.querySelector("#decoreva-order-confirmation");
+if(confirmation)confirmation.classList.remove("open");
+const drawer=document.querySelector("#decoreva-cart-drawer");
+if(drawer){
 drawer.classList.remove("decoreva-checkout-mode", "open");
 drawer.setAttribute("aria-hidden", "true");
-drawer.style.display = "none";
-drawer.style.visibility = "hidden";
-drawer.style.pointerEvents = "none";
+drawer.style.display= "none";
+drawer.style.visibility= "hidden";
+drawer.style.pointerEvents= "none";
 }
 document.body.classList.remove("decoreva-cart-open", "decoreva-checkout-open");
-document.body.style.overflow = "";
-document.documentElement.style.overflow = "";
+document.body.style.overflow= "";
+document.documentElement.style.overflow= "";
 clearOpenPanelState();
 clearAllCollectionFilters(false);
-document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
-nav.style.display = "flex";
+document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
+nav.style.display= "flex";
 });
-history.replaceState(null, "", window.location.pathname);
-const html = document.documentElement;
-const body = document.body;
-const oldHtmlScrollBehavior = html.style.scrollBehavior;
-const oldBodyScrollBehavior = body.style.scrollBehavior;
+history.replaceState(null, "",window.location.pathname);
+const html=document.documentElement;
+const body=document.body;
+const oldHtmlScrollBehavior=html.style.scrollBehavior;
+const oldBodyScrollBehavior=body.style.scrollBehavior;
 html.style.setProperty("scroll-behavior", "auto", "important");
 body.style.setProperty("scroll-behavior", "auto", "important");
-window.scrollTo(0, 0);
-window.requestAnimationFrame(function () {
-window.scrollTo(0, 0);
-html.style.scrollBehavior = oldHtmlScrollBehavior;
-body.style.scrollBehavior = oldBodyScrollBehavior;
+window.scrollTo(0,0);
+window.requestAnimationFrame(function(){
+window.scrollTo(0,0);
+html.style.scrollBehavior=oldHtmlScrollBehavior;
+body.style.scrollBehavior=oldBodyScrollBehavior;
 });
 return;
 }
-const cartProduct = event.target.closest(
+const cartProduct=event.target.closest(
 ".decoreva-cart-item[data-cart-view]"
 );
-if (cartProduct && !event.target.closest("[data-cart-action]")) {
+if(cartProduct&&!event.target.closest("[data-cart-action]")){
 event.preventDefault();
 event.stopImmediatePropagation();
-const index = Number(cartProduct.dataset.cartIndex);
-const savedItem = Number.isInteger(index) ? cart[index] : null;
-if (!savedItem) return;
-const savedId = String(savedItem.id || "");
-const savedProductId = String(savedItem.productId || "");
-const savedTitle = String(savedItem.title || "")
+const index=Number(cartProduct.dataset.cartIndex);
+const savedItem=Number.isInteger(index)?cart[index]:null;
+if(!savedItem)return;
+const savedId=String(savedItem.id|| "");
+const savedProductId=String(savedItem.productId|| "");
+const savedTitle=String(savedItem.title|| "")
 .trim()
 .replace(/\s+/g, " ")
 .toLowerCase();
-const collectionCards = Array.from(
+const collectionCards=Array.from(
 document.querySelectorAll("#collection-products .card")
 );
-let target = collectionCards.find(function (card) {
-const data = getCardData(card);
-return data && savedId && String(data.id || "") === savedId;
+let target=collectionCards.find(function(card){
+const data=getCardData(card);
+return data&&savedId&&String(data.id|| "")===savedId;
 });
-if (!target && savedProductId) {
-target = collectionCards.find(function (card) {
-const data = getCardData(card);
-return data && String(data.productId || "") === savedProductId;
-});
-}
-if (!target && savedTitle) {
-target = collectionCards.find(function (card) {
-const heading = card.querySelector("h3");
-return heading &&
-heading.textContent.trim().replace(/\s+/g, " ").toLowerCase() === savedTitle;
+if(!target&&savedProductId){
+target=collectionCards.find(function(card){
+const data=getCardData(card);
+return data&&String(data.productId|| "")===savedProductId;
 });
 }
-if (!target) return;
-const targetIndex = decorevaProducts.indexOf(target);
-const targetPage = targetIndex >= 0
-? Math.floor(targetIndex / decorevaPerPage) + 1
-: 1;
-const html = document.documentElement;
-const body = document.body;
-const oldHtmlVisibility = html.style.visibility;
-const oldBodyVisibility = body.style.visibility;
-html.style.visibility = "hidden";
-body.style.visibility = "hidden";
+if(!target&&savedTitle){
+target=collectionCards.find(function(card){
+const heading=card.querySelector("h3");
+return heading&&
+heading.textContent.trim().replace(/\s+/g, " ").toLowerCase()===savedTitle;
+});
+}
+if(!target)return;
+const targetIndex=decorevaProducts.indexOf(target);
+const targetPage=targetIndex>=0
+?Math.floor(targetIndex/decorevaPerPage)+1
+:1;
+const html=document.documentElement;
+const body=document.body;
+const oldHtmlVisibility=html.style.visibility;
+const oldBodyVisibility=body.style.visibility;
+html.style.visibility= "hidden";
+body.style.visibility= "hidden";
 closeCart(false);
-window.decorevaPageNavigation = false;
-if (targetIndex >= 0 && typeof decorevaShowPage === "function") {
+window.decorevaPageNavigation=false;
+if(targetIndex>=0&&typeof decorevaShowPage=== "function"){
 decorevaShowPage(targetPage);
 }
-const visibleCards = Array.from(
+const visibleCards=Array.from(
 document.querySelectorAll("#collection-products .card")
 );
-let exactTarget = visibleCards.find(function (card) {
-const data = getCardData(card);
-return data && savedId && String(data.id || "") === savedId;
+let exactTarget=visibleCards.find(function(card){
+const data=getCardData(card);
+return data&&savedId&&String(data.id|| "")===savedId;
 });
-if (!exactTarget && savedProductId) {
-exactTarget = visibleCards.find(function (card) {
-const data = getCardData(card);
-return data && String(data.productId || "") === savedProductId;
-});
-}
-if (!exactTarget && savedTitle) {
-exactTarget = visibleCards.find(function (card) {
-const heading = card.querySelector("h3");
-return heading &&
-heading.textContent.trim().replace(/\s+/g, " ").toLowerCase() === savedTitle;
+if(!exactTarget&&savedProductId){
+exactTarget=visibleCards.find(function(card){
+const data=getCardData(card);
+return data&&String(data.productId|| "")===savedProductId;
 });
 }
-if (!exactTarget) {
-html.style.visibility = oldHtmlVisibility;
-body.style.visibility = oldBodyVisibility;
+if(!exactTarget&&savedTitle){
+exactTarget=visibleCards.find(function(card){
+const heading=card.querySelector("h3");
+return heading&&
+heading.textContent.trim().replace(/\s+/g, " ").toLowerCase()===savedTitle;
+});
+}
+if(!exactTarget){
+html.style.visibility=oldHtmlVisibility;
+body.style.visibility=oldBodyVisibility;
 return;
 }
 exactTarget.style.setProperty("display", "flex", "important");
-const header = document.querySelector("header") ||
-document.querySelector(".site-header") ||
+const header=document.querySelector("header")||
+document.querySelector(".site-header")||
 document.querySelector("nav");
-const headerHeight = header
-? header.getBoundingClientRect().height
-: (window.innerWidth <= 760 ? 58 : 72);
-const rect = exactTarget.getBoundingClientRect();
-const targetTop = window.pageYOffset + rect.top - Math.max(headerHeight + 18, 90);
-const oldHtmlScrollBehavior = html.style.scrollBehavior;
-const oldBodyScrollBehavior = body.style.scrollBehavior;
-const oldScrollRestoration =
+const headerHeight=header
+?header.getBoundingClientRect().height
+:(window.innerWidth<=760?58:72);
+const rect=exactTarget.getBoundingClientRect();
+const targetTop=window.pageYOffset+rect.top-Math.max(headerHeight+18,90);
+const oldHtmlScrollBehavior=html.style.scrollBehavior;
+const oldBodyScrollBehavior=body.style.scrollBehavior;
+const oldScrollRestoration=
 history.scrollRestoration;
 html.style.setProperty("scroll-behavior", "auto", "important");
 body.style.setProperty("scroll-behavior", "auto", "important");
-try {
-history.scrollRestoration = "manual";
-} catch (error) {
+try{
+history.scrollRestoration= "manual";
+}catch(error){
 }
-const finalTargetTop = Math.max(0, targetTop);
-window.scrollTo(0, finalTargetTop);
+const finalTargetTop=Math.max(0,targetTop);
+window.scrollTo(0,finalTargetTop);
 exactTarget.classList.add("decoreva-cart-target");
-window.requestAnimationFrame(function () {
-window.scrollTo(0, finalTargetTop);
-window.requestAnimationFrame(function () {
-window.scrollTo(0, finalTargetTop);
-html.style.visibility = oldHtmlVisibility;
-body.style.visibility = oldBodyVisibility;
-html.style.scrollBehavior = oldHtmlScrollBehavior;
-body.style.scrollBehavior = oldBodyScrollBehavior;
-try {
-history.scrollRestoration = oldScrollRestoration;
-} catch (error) {
+window.requestAnimationFrame(function(){
+window.scrollTo(0,finalTargetTop);
+window.requestAnimationFrame(function(){
+window.scrollTo(0,finalTargetTop);
+html.style.visibility=oldHtmlVisibility;
+body.style.visibility=oldBodyVisibility;
+html.style.scrollBehavior=oldHtmlScrollBehavior;
+body.style.scrollBehavior=oldBodyScrollBehavior;
+try{
+history.scrollRestoration=oldScrollRestoration;
+}catch(error){
 }
 });
 });
-window.setTimeout(function () {
+window.setTimeout(function(){
 exactTarget.classList.remove("decoreva-cart-target");
-}, 1800);
+},1800);
 return;
 }
-const cartAction = event.target.closest("[data-cart-action]");
-if (cartAction) {
+const cartAction=event.target.closest("[data-cart-action]");
+if(cartAction){
 event.preventDefault();
 event.stopPropagation();
-const index = Number(cartAction.dataset.cartIndex);
-const action = cartAction.dataset.cartAction;
-if (!Number.isInteger(index) || !cart[index]) return;
-if (action === "plus") {
-cart[index].quantity = Number(cart[index].quantity || 0) + 1;
-} else if (action === "minus") {
-cart[index].quantity = Math.max(0, Number(cart[index].quantity || 0) - 1);
-if (cart[index].quantity === 0) {
-cart.splice(index, 1);
+const index=Number(cartAction.dataset.cartIndex);
+const action=cartAction.dataset.cartAction;
+if(!Number.isInteger(index)||!cart[index])return;
+if(action=== "plus"){
+cart[index].quantity=Number(cart[index].quantity||0)+1;
+}else if(action=== "minus"){
+cart[index].quantity=Math.max(0,Number(cart[index].quantity||0)-1);
+if(cart[index].quantity===0){
+cart.splice(index,1);
 }
-} else if (action === "remove") {
-cart.splice(index, 1);
-} else if (action === "wishlist") {
-const item = cart[index];
-if (!wishlist.some(function(saved) {
-return saved.id === item.id;
-})) {
+}else if(action=== "remove"){
+cart.splice(index,1);
+}else if(action=== "wishlist"){
+const item=cart[index];
+if(!wishlist.some(function(saved){
+return saved.id===item.id;
+})){
 wishlist.push(item);
 saveWishlist();
 }
-cart.splice(index, 1);
-} else {
+cart.splice(index,1);
+}else{
 return;
 }
 saveCart();
@@ -7879,169 +7939,169 @@ renderCart();
 renderWishlist();
 return;
 }
-const cartCloseButton = event.target.closest("#decoreva-cart-drawer .decoreva-cart-close");
-if (cartCloseButton) {
+const cartCloseButton=event.target.closest("#decoreva-cart-drawer .decoreva-cart-close");
+if(cartCloseButton){
 event.preventDefault();
 event.stopImmediatePropagation();
 closeCart(false);
 clearAllCollectionFilters(false);
-document.querySelectorAll(".decoreva-pagination").forEach(function (nav) {
-nav.style.display = "flex";
+document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
+nav.style.display= "flex";
 });
 history.replaceState(
 null,
 "",
 window.location.pathname
 );
-const html = document.documentElement;
-const body = document.body;
-const oldHtmlScrollBehavior = html.style.scrollBehavior;
-const oldBodyScrollBehavior = body.style.scrollBehavior;
+const html=document.documentElement;
+const body=document.body;
+const oldHtmlScrollBehavior=html.style.scrollBehavior;
+const oldBodyScrollBehavior=body.style.scrollBehavior;
 html.style.setProperty("scroll-behavior", "auto", "important");
 body.style.setProperty("scroll-behavior", "auto", "important");
-window.scrollTo(0, 0);
-window.requestAnimationFrame(function () {
-window.scrollTo(0, 0);
-html.style.scrollBehavior = oldHtmlScrollBehavior;
-body.style.scrollBehavior = oldBodyScrollBehavior;
+window.scrollTo(0,0);
+window.requestAnimationFrame(function(){
+window.scrollTo(0,0);
+html.style.scrollBehavior=oldHtmlScrollBehavior;
+body.style.scrollBehavior=oldBodyScrollBehavior;
 });
 return;
 }
-if (event.target.closest("[data-cart-close]")) {
+if(event.target.closest("[data-cart-close]")){
 event.preventDefault();
 closeCart();
 return;
 }
-if (event.target.closest("[data-wishlist-close]")) {
+if(event.target.closest("[data-wishlist-close]")){
 event.preventDefault();
 closeWishlist();
 return;
 }
-if (event.target.closest("[data-profile-close]")) {
+if(event.target.closest("[data-profile-close]")){
 event.preventDefault();
 closeProfile();
 return;
 }
-if (event.target.closest("#decoreva-open-coupon, #decoreva-checkout-coupon-button")) {
+if(event.target.closest("#decoreva-open-coupon, #decoreva-checkout-coupon-button")){
 event.preventDefault();
 openCouponModal();
 return;
 }
-if (event.target.closest("#decoreva-checkout-remove-coupon")) {
+if(event.target.closest("#decoreva-checkout-remove-coupon")){
 event.preventDefault();
-appliedCoupon = "";
-couponPreviewCode = "";
+appliedCoupon= "";
+couponPreviewCode= "";
 saveCoupon();
 renderCart();
 renderCheckoutSummary();
 return;
 }
-if (event.target.closest("#decoreva-coupon-remove")) {
+if(event.target.closest("#decoreva-coupon-remove")){
 event.preventDefault();
 event.stopPropagation();
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-const removeButton = document.querySelector("#decoreva-coupon-remove");
-appliedCoupon = "";
-couponPreviewCode = "";
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+const removeButton=document.querySelector("#decoreva-coupon-remove");
+appliedCoupon= "";
+couponPreviewCode= "";
 saveCoupon();
-if (input) input.value = "";
-if (message) {
-message.textContent = "Coupon removed.";
-message.className = "decoreva-coupon-message success";
+if(input)input.value= "";
+if(message){
+message.textContent= "Coupon removed.";
+message.className= "decoreva-coupon-message success";
 }
-if (removeButton) removeButton.style.display = "none";
-const restoredUseButton = document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
-if (restoredUseButton) {
-restoredUseButton.textContent = "USE COUPON";
+if(removeButton)removeButton.style.display= "none";
+const restoredUseButton=document.querySelector(".decoreva-coupon-use[data-coupon-use='WELCOME10']");
+if(restoredUseButton){
+restoredUseButton.textContent= "USE COUPON";
 restoredUseButton.classList.remove("applied");
-restoredUseButton.disabled = false;
+restoredUseButton.disabled=false;
 }
 renderCart();
 renderCheckoutSummary();
 return;
 }
-if (event.target.closest("[data-coupon-close]")) {
+if(event.target.closest("[data-coupon-close]")){
 event.preventDefault();
 closeCouponModal();
 return;
 }
-const couponUseButton = event.target.closest("[data-coupon-use]");
-if (couponUseButton) {
+const couponUseButton=event.target.closest("[data-coupon-use]");
+if(couponUseButton){
 event.preventDefault();
 event.stopPropagation();
-const code = String(couponUseButton.dataset.couponUse || "").toUpperCase();
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-couponPreviewCode = code;
-if (input) {
-input.value = code;
+const code=String(couponUseButton.dataset.couponUse|| "").toUpperCase();
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+couponPreviewCode=code;
+if(input){
+input.value=code;
 input.focus();
 input.select();
 }
-if (message) {
-message.textContent = code + " selected • 10% OFF. Click APPLY to apply this coupon.";
-message.className = "decoreva-coupon-message success";
+if(message){
+message.textContent=code+ " selected • 10% OFF. Click APPLY to apply this coupon.";
+message.className= "decoreva-coupon-message success";
 }
 renderCart();
 renderCheckoutSummary();
-const refreshedInput = document.querySelector("#decoreva-coupon-input");
-if (refreshedInput) {
-refreshedInput.value = code;
+const refreshedInput=document.querySelector("#decoreva-coupon-input");
+if(refreshedInput){
+refreshedInput.value=code;
 refreshedInput.focus();
 refreshedInput.select();
 }
 return;
 }
-if (event.target.closest("#decoreva-coupon-check")) {
+if(event.target.closest("#decoreva-coupon-check")){
 event.preventDefault();
 event.stopPropagation();
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-const code = input ? input.value.trim().toUpperCase() : "";
-if (!message) return;
-if (!code) {
-couponPreviewCode = "";
-message.textContent = "Please enter a coupon code.";
-message.className = "decoreva-coupon-message warning";
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+const code=input?input.value.trim().toUpperCase(): "";
+if(!message)return;
+if(!code){
+couponPreviewCode= "";
+message.textContent= "Please enter a coupon code.";
+message.className= "decoreva-coupon-message warning";
 renderCart();
 renderCheckoutSummary();
-} else if (!COUPONS[code]) {
-couponPreviewCode = "";
-message.textContent = "Invalid coupon code.";
-message.className = "decoreva-coupon-message error";
+}else if(!COUPONS[code]){
+couponPreviewCode= "";
+message.textContent= "Invalid coupon code.";
+message.className= "decoreva-coupon-message error";
 renderCart();
 renderCheckoutSummary();
-} else if (appliedCoupon === code) {
-message.textContent = code + " is already applied.";
-message.className = "decoreva-coupon-message success";
-} else {
-couponPreviewCode = code;
-message.textContent = "Coupon code is valid — 10% discount preview shown below. Click APPLY to keep it.";
-message.className = "decoreva-coupon-message success";
+}else if(appliedCoupon===code){
+message.textContent=code+ " is already applied.";
+message.className= "decoreva-coupon-message success";
+}else{
+couponPreviewCode=code;
+message.textContent= "Coupon code is valid — 10% discount preview shown below. Click APPLY to keep it.";
+message.className= "decoreva-coupon-message success";
 renderCart();
 renderCheckoutSummary();
 }
 return;
 }
-if (event.target.closest("#decoreva-coupon-apply")) {
+if(event.target.closest("#decoreva-coupon-apply")){
 event.preventDefault();
 event.stopPropagation();
-const input = document.querySelector("#decoreva-coupon-input");
-const message = document.querySelector("#decoreva-coupon-message");
-const code = input ? input.value.trim().toUpperCase() : "";
-if (!code) {
-if (message) {
-message.textContent = "Please enter or select a coupon code.";
-message.className = "decoreva-coupon-message warning";
+const input=document.querySelector("#decoreva-coupon-input");
+const message=document.querySelector("#decoreva-coupon-message");
+const code=input?input.value.trim().toUpperCase(): "";
+if(!code){
+if(message){
+message.textContent= "Please enter or select a coupon code.";
+message.className= "decoreva-coupon-message warning";
 }
 return;
 }
-if (!COUPONS[code]) {
-couponPreviewCode = "";
-if (message) {
-message.textContent = "Invalid coupon code.";
-message.className = "decoreva-coupon-message error";
+if(!COUPONS[code]){
+couponPreviewCode= "";
+if(message){
+message.textContent= "Invalid coupon code.";
+message.className= "decoreva-coupon-message error";
 }
 renderCart();
 renderCheckoutSummary();
@@ -8050,654 +8110,654 @@ return;
 applyCoupon();
 return;
 }
-const stepButton = event.target.closest("[data-checkout-step]");
-if (stepButton) {
+const stepButton=event.target.closest("[data-checkout-step]");
+if(stepButton){
 event.preventDefault();
 event.stopPropagation();
-const step = stepButton.dataset.checkoutStep;
-if (step === "payment") {
-const address = document.querySelector("#decoreva-checkout-address");
-const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
-if (address && panel) scrollCheckoutAddressToTop("smooth");
+const step=stepButton.dataset.checkoutStep;
+if(step=== "payment"){
+const address=document.querySelector("#decoreva-checkout-address");
+const panel=document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+if(address&&panel)scrollCheckoutAddressToTop("smooth");
 return;
 }
-checkoutStep = step === "address" ? "address" : "cart";
-const d = document.querySelector("#decoreva-cart-drawer");
-if (d) d.classList.add("decoreva-checkout-mode");
+checkoutStep=step=== "address"? "address": "cart";
+const d=document.querySelector("#decoreva-cart-drawer");
+if(d)d.classList.add("decoreva-checkout-mode");
 document.body.classList.add("decoreva-checkout-open");
 updateCheckoutStepUI();
-const target = step === "address"
-? document.querySelector("#decoreva-checkout-address")
-: document.querySelector("#decoreva-cart-items");
-const panel = document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
-if (target && panel) { if (step === "address") scrollCheckoutAddressToTop("smooth"); else panel.scrollTo({ top: Math.max(0, target.offsetTop - 18), behavior: "smooth" }); }
+const target=step=== "address"
+?document.querySelector("#decoreva-checkout-address")
+:document.querySelector("#decoreva-cart-items");
+const panel=document.querySelector("#decoreva-cart-drawer .decoreva-cart-panel");
+if(target&&panel){if(step=== "address")scrollCheckoutAddressToTop("smooth");else panel.scrollTo({top:Math.max(0,target.offsetTop-18),behavior: "smooth"});}
 return;
 }
-if (event.target.closest("#decoreva-payment-order")) {
+if(event.target.closest("#decoreva-payment-order")){
 event.preventDefault();
 event.stopPropagation();
-const address = document.querySelector("#decoreva-checkout-address");
-if (!address || !cart.length) return;
-const get = function (id) {
-const el = document.querySelector(id);
-return el ? el.value.trim() : "";
+const address=document.querySelector("#decoreva-checkout-address");
+if(!address||!cart.length)return;
+const get=function(id){
+const el=document.querySelector(id);
+return el?el.value.trim(): "";
 };
-const complete =
-!!get("#decoreva-address-name") &&
-/^\\d{10}$/.test(get("#decoreva-address-mobile")) &&
-!!get("#decoreva-address-line") &&
-!!get("#decoreva-address-city") &&
-!!get("#decoreva-address-state") &&
+const complete=
+!!get("#decoreva-address-name")&&
+/^\\d{10}$/.test(get("#decoreva-address-mobile"))&&
+!!get("#decoreva-address-line")&&
+!!get("#decoreva-address-city")&&
+!!get("#decoreva-address-state")&&
 /^\\d{6}$/.test(get("#decoreva-address-pincode"));
-if (!complete) {
-const addressMessage = document.querySelector("#decoreva-address-message");
-if (addressMessage) {
-addressMessage.dataset.userMessage = "1";
-addressMessage.textContent = "Please fill all delivery address details before placing your order.";
-addressMessage.className = "decoreva-address-message error";
+if(!complete){
+const addressMessage=document.querySelector("#decoreva-address-message");
+if(addressMessage){
+addressMessage.dataset.userMessage= "1";
+addressMessage.textContent= "Please fill all delivery address details before placing your order.";
+addressMessage.className= "decoreva-address-message error";
 }
-checkoutStep = "address";
+checkoutStep= "address";
 updateCheckoutStepUI();
 scrollCheckoutAddressToTop("smooth");
 return;
 }
-deliveryAddress = {
-name: get("#decoreva-address-name"),
-mobile: get("#decoreva-address-mobile"),
-line: get("#decoreva-address-line"),
-city: get("#decoreva-address-city"),
-state: get("#decoreva-address-state"),
-pincode: get("#decoreva-address-pincode")
+deliveryAddress={
+name:get("#decoreva-address-name"),
+mobile:get("#decoreva-address-mobile"),
+line:get("#decoreva-address-line"),
+city:get("#decoreva-address-city"),
+state:get("#decoreva-address-state"),
+pincode:get("#decoreva-address-pincode")
 };
-localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(deliveryAddress));
+localStorage.setItem("decorevaDeliveryAddress",JSON.stringify(deliveryAddress));
 whatsappCheckout();
 return;
 }
-if (event.target.closest("#decoreva-cart-whatsapp")) {
+if(event.target.closest("#decoreva-cart-whatsapp")){
 event.preventDefault();
 event.stopPropagation();
-const drawer = document.querySelector("#decoreva-cart-drawer");
-const addressSection = document.querySelector("#decoreva-checkout-address");
-const checkoutButton = document.querySelector("#decoreva-cart-whatsapp");
-if (!drawer || !addressSection || !cart.length) return;
-const get = function (id) {
-const el = document.querySelector(id);
-return el ? el.value.trim() : "";
+const drawer=document.querySelector("#decoreva-cart-drawer");
+const addressSection=document.querySelector("#decoreva-checkout-address");
+const checkoutButton=document.querySelector("#decoreva-cart-whatsapp");
+if(!drawer||!addressSection||!cart.length)return;
+const get=function(id){
+const el=document.querySelector(id);
+return el?el.value.trim(): "";
 };
-const address = {
-name: get("#decoreva-address-name"),
-mobile: get("#decoreva-address-mobile"),
-line: get("#decoreva-address-line"),
-city: get("#decoreva-address-city"),
-state: get("#decoreva-address-state"),
-pincode: get("#decoreva-address-pincode")
+const address={
+name:get("#decoreva-address-name"),
+mobile:get("#decoreva-address-mobile"),
+line:get("#decoreva-address-line"),
+city:get("#decoreva-address-city"),
+state:get("#decoreva-address-state"),
+pincode:get("#decoreva-address-pincode")
 };
-const complete =
-!!address.name &&
-/^\d{10}$/.test(address.mobile) &&
-!!address.line &&
-!!address.city &&
-!!address.state &&
+const complete=
+!!address.name&&
+/^\d{10}$/.test(address.mobile)&&
+!!address.line&&
+!!address.city&&
+!!address.state&&
 /^\d{6}$/.test(address.pincode);
-if (!checkoutAddressUnlocked) {
-checkoutAddressUnlocked = true;
-checkoutStep = "address";
-if (addressSection) addressSection.hidden = false;
+if(!checkoutAddressUnlocked){
+checkoutAddressUnlocked=true;
+checkoutStep= "address";
+if(addressSection)addressSection.hidden=false;
 drawer.classList.add("decoreva-checkout-mode", "open");
 drawer.setAttribute("aria-hidden", "false");
 document.body.classList.add("decoreva-cart-open", "decoreva-checkout-open");
-document.body.style.overflow = "hidden";
-document.documentElement.style.overflow = "hidden";
+document.body.style.overflow= "hidden";
+document.documentElement.style.overflow= "hidden";
 updateCheckoutStepUI();
-const message = document.querySelector("#decoreva-address-message");
-if (!complete) {
-if (message) {
-message.dataset.userMessage = "1";
-message.textContent = "Please complete all required delivery address details.";
-message.className = "decoreva-address-message error";
+const message=document.querySelector("#decoreva-address-message");
+if(!complete){
+if(message){
+message.dataset.userMessage= "1";
+message.textContent= "Please complete all required delivery address details.";
+message.className= "decoreva-address-message error";
 }
 updateAddressContinueState();
-if (typeof showShopToast === "function") {
+if(typeof showShopToast=== "function"){
 }
-requestAnimationFrame(function () {
+requestAnimationFrame(function(){
 scrollCheckoutAddressToTop("smooth");
-const firstInvalid = [
+const firstInvalid=[
 "#decoreva-address-name",
 "#decoreva-address-mobile",
 "#decoreva-address-line",
 "#decoreva-address-city",
 "#decoreva-address-state",
 "#decoreva-address-pincode"
-].map(function (id) {
+].map(function(id){
 return document.querySelector(id);
-}).find(function (el) {
-return el && el.classList.contains("decoreva-address-invalid");
+}).find(function(el){
+return el&&el.classList.contains("decoreva-address-invalid");
 });
-if (firstInvalid) firstInvalid.focus({ preventScroll: true });
+if(firstInvalid)firstInvalid.focus({preventScroll:true});
 });
 return;
 }
-deliveryAddress = address;
-localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(address));
+deliveryAddress=address;
+localStorage.setItem("decorevaDeliveryAddress",JSON.stringify(address));
 updateAddressContinueState();
-if (checkoutButton) checkoutButton.focus({ preventScroll: true });
+if(checkoutButton)checkoutButton.focus({preventScroll:true});
 return;
 }
-if (!complete) {
-const message = document.querySelector("#decoreva-address-message");
-if (message) {
-message.dataset.userMessage = "1";
-message.textContent = "Please complete all required delivery address details.";
-message.className = "decoreva-address-message error";
+if(!complete){
+const message=document.querySelector("#decoreva-address-message");
+if(message){
+message.dataset.userMessage= "1";
+message.textContent= "Please complete all required delivery address details.";
+message.className= "decoreva-address-message error";
 }
 updateAddressContinueState();
-if (typeof showShopToast === "function") {
+if(typeof showShopToast=== "function"){
 }
-checkoutStep = "address";
+checkoutStep= "address";
 updateCheckoutStepUI();
-requestAnimationFrame(function () {
+requestAnimationFrame(function(){
 scrollCheckoutAddressToTop("smooth");
 });
 return;
 }
-deliveryAddress = address;
-localStorage.setItem("decorevaDeliveryAddress", JSON.stringify(address));
-profile.name = address.name || profile.name;
-profile.mobile = address.mobile || profile.mobile;
-const exists = profile.addresses.some(function (saved) {
-return saved.line === address.line && saved.pincode === address.pincode;
+deliveryAddress=address;
+localStorage.setItem("decorevaDeliveryAddress",JSON.stringify(address));
+profile.name=address.name||profile.name;
+profile.mobile=address.mobile||profile.mobile;
+const exists=profile.addresses.some(function(saved){
+return saved.line===address.line&&saved.pincode===address.pincode;
 });
-if (!exists) {
+if(!exists){
 profile.addresses.push({
 label: "HOME",
-name: address.name,
-mobile: address.mobile,
-line: address.line,
-city: address.city,
-state: address.state,
-pincode: address.pincode,
-default: profile.addresses.length === 0
+name:address.name,
+mobile:address.mobile,
+line:address.line,
+city:address.city,
+state:address.state,
+pincode:address.pincode,
+default:profile.addresses.length===0
 });
 saveProfile();
 }
-const message = document.querySelector("#decoreva-address-message");
-if (message) {
-message.dataset.userMessage = "1";
-message.textContent = "Address saved. Opening WhatsApp to place your order.";
-message.className = "decoreva-address-message success";
+const message=document.querySelector("#decoreva-address-message");
+if(message){
+message.dataset.userMessage= "1";
+message.textContent= "Address saved. Opening WhatsApp to place your order.";
+message.className= "decoreva-address-message success";
 }
 whatsappCheckout();
 }
-}, true);
-document.addEventListener("click", function (event) {
-const clearButton = event.target.closest("[data-address-clear]");
-if (!clearButton) return;
+},true);
+document.addEventListener("click",function(event){
+const clearButton=event.target.closest("[data-address-clear]");
+if(!clearButton)return;
 event.preventDefault();
 event.stopPropagation();
-const selector = clearButton.getAttribute("data-address-clear");
-const field = selector ? document.querySelector(selector) : null;
-if (!field) return;
-field.value = "";
+const selector=clearButton.getAttribute("data-address-clear");
+const field=selector?document.querySelector(selector):null;
+if(!field)return;
+field.value= "";
 field.classList.add("decoreva-address-invalid");
 field.setAttribute("aria-invalid", "true");
-const message = document.querySelector("#decoreva-address-message");
-if (message) {
-message.dataset.userMessage = "";
-message.textContent = "Please complete all required delivery address details.";
-message.className = "decoreva-address-message warning";
+const message=document.querySelector("#decoreva-address-message");
+if(message){
+message.dataset.userMessage= "";
+message.textContent= "Please complete all required delivery address details.";
+message.className= "decoreva-address-message warning";
 }
 updateAddressContinueState();
 field.focus();
-}, true);
-document.addEventListener("click", function (event) {
-const navWish = event.target.closest("#decoreva-wishlist-nav");
-if (navWish) {
+},true);
+document.addEventListener("click",function(event){
+const navWish=event.target.closest("#decoreva-wishlist-nav");
+if(navWish){
 event.preventDefault();
 event.stopPropagation();
 openWishlist();
 return;
 }
-const wishlistItem = event.target.closest(
+const wishlistItem=event.target.closest(
 ".decoreva-wishlist-item[data-wishlist-view]"
 );
-if (wishlistItem && !event.target.closest("[data-wishlist-action]")) {
+if(wishlistItem&&!event.target.closest("[data-wishlist-action]")){
 event.preventDefault();
 event.stopPropagation();
-const index = Number(wishlistItem.dataset.wishlistIndex);
-const savedItem =
-Number.isInteger(index) ? wishlist[index] : null;
-if (!savedItem) return;
-const savedId = String(savedItem.id || "");
-const savedProductId = String(savedItem.productId || "");
-const savedTitle = String(savedItem.title || "")
+const index=Number(wishlistItem.dataset.wishlistIndex);
+const savedItem=
+Number.isInteger(index)?wishlist[index]:null;
+if(!savedItem)return;
+const savedId=String(savedItem.id|| "");
+const savedProductId=String(savedItem.productId|| "");
+const savedTitle=String(savedItem.title|| "")
 .trim()
 .replace(/\s+/g, " ")
 .toLowerCase();
-const collectionCards = Array.from(
+const collectionCards=Array.from(
 document.querySelectorAll("#collection-products .card")
 );
-let target = collectionCards.find(function (card) {
-const data = getCardData(card);
-return data &&
-savedId &&
-String(data.id || "") === savedId;
+let target=collectionCards.find(function(card){
+const data=getCardData(card);
+return data&&
+savedId&&
+String(data.id|| "")===savedId;
 });
-if (!target && savedProductId) {
-target = collectionCards.find(function (card) {
-const data = getCardData(card);
-return data &&
-String(data.productId || "") === savedProductId;
+if(!target&&savedProductId){
+target=collectionCards.find(function(card){
+const data=getCardData(card);
+return data&&
+String(data.productId|| "")===savedProductId;
 });
 }
-if (!target && savedTitle) {
-target = collectionCards.find(function (card) {
-const heading = card.querySelector("h3");
-return heading &&
+if(!target&&savedTitle){
+target=collectionCards.find(function(card){
+const heading=card.querySelector("h3");
+return heading&&
 heading.textContent
 .trim()
 .replace(/\s+/g, " ")
-.toLowerCase() === savedTitle;
+.toLowerCase()===savedTitle;
 });
 }
-if (!target) return;
+if(!target)return;
 closeWishlist();
-const targetIndex = decorevaProducts.indexOf(target);
-if (
-targetIndex >= 0 &&
-typeof decorevaShowPage === "function"
-) {
-const targetPage =
-Math.floor(targetIndex / decorevaPerPage) + 1;
-window.decorevaPageNavigation = false;
-if (decorevaCurrentPage !== targetPage) {
+const targetIndex=decorevaProducts.indexOf(target);
+if(
+targetIndex>=0&&
+typeof decorevaShowPage=== "function"
+){
+const targetPage=
+Math.floor(targetIndex/decorevaPerPage)+1;
+window.decorevaPageNavigation=false;
+if(decorevaCurrentPage!==targetPage){
 decorevaShowPage(targetPage);
 }
 }
-setTimeout(function () {
+setTimeout(function(){
 target.scrollIntoView({
 behavior: "smooth",
 block: "center"
 });
 target.classList.add("decoreva-wishlist-target");
-window.setTimeout(function () {
+window.setTimeout(function(){
 target.classList.remove("decoreva-wishlist-target");
-}, 1400);
-}, 100);
+},1400);
+},100);
 return;
 }
-const wishlistAction = event.target.closest("[data-wishlist-action]");
-if (wishlistAction) {
+const wishlistAction=event.target.closest("[data-wishlist-action]");
+if(wishlistAction){
 event.preventDefault();
-const index = Number(wishlistAction.dataset.wishlistIndex);
-if (!Number.isInteger(index) || !wishlist[index]) return;
-if (wishlistAction.dataset.wishlistAction === "remove") {
-wishlist.splice(index, 1);
+const index=Number(wishlistAction.dataset.wishlistIndex);
+if(!Number.isInteger(index)||!wishlist[index])return;
+if(wishlistAction.dataset.wishlistAction=== "remove"){
+wishlist.splice(index,1);
 saveWishlist();
 renderWishlist();
 }
 return;
 }
-const checkoutAction = event.target.closest("[data-checkout-item-action]");
-if (checkoutAction) {
+const checkoutAction=event.target.closest("[data-checkout-item-action]");
+if(checkoutAction){
 event.preventDefault();
-const index = Number(checkoutAction.dataset.checkoutItemIndex);
-if (!Number.isInteger(index) || !cart[index]) return;
-const action = checkoutAction.dataset.checkoutItemAction;
-if (action === "remove") {
-cart.splice(index, 1);
-} else if (action === "wishlist") {
-const item = cart[index];
-if (!wishlist.some(function(saved){ return saved.id === item.id; })) {
+const index=Number(checkoutAction.dataset.checkoutItemIndex);
+if(!Number.isInteger(index)||!cart[index])return;
+const action=checkoutAction.dataset.checkoutItemAction;
+if(action=== "remove"){
+cart.splice(index,1);
+}else if(action=== "wishlist"){
+const item=cart[index];
+if(!wishlist.some(function(saved){return saved.id===item.id;})){
 wishlist.push(item);
 saveWishlist();
 }
-cart.splice(index, 1);
+cart.splice(index,1);
 }
 saveCart();
 renderCart();
 renderWishlist();
 return;
 }
-const similarView = event.target.closest("[data-similar-product-title]");
-if (similarView) {
+const similarView=event.target.closest("[data-similar-product-title]");
+if(similarView){
 event.preventDefault();
-const title = String(similarView.dataset.similarProductTitle || "").trim().toLowerCase();
-const target = Array.from(document.querySelectorAll("#collection-products .card, .featured-slider .featured-slide"))
+const title=String(similarView.dataset.similarProductTitle|| "").trim().toLowerCase();
+const target=Array.from(document.querySelectorAll("#collection-products .card, .featured-slider .featured-slide"))
 .find(function(card){
-const heading = card.querySelector("h3");
-return heading && heading.textContent.trim().replace(/\s+/g," ").toLowerCase() === title;
+const heading=card.querySelector("h3");
+return heading&&heading.textContent.trim().replace(/\s+/g," ").toLowerCase()===title;
 });
 closeCart();
-if (target) {
+if(target){
 setTimeout(function(){
-target.scrollIntoView({behavior:"smooth", block:"center"});
-}, 60);
+target.scrollIntoView({behavior:"smooth",block:"center"});
+},60);
 }
 return;
 }
-}, true);
-if (!document.getElementById("decoreva-wishlist-target-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-wishlist-target-style";
-style.textContent =
-"#collection-products .card.decoreva-wishlist-target{" +
-"outline:2px solid rgba(185,130,24,.85);" +
-"outline-offset:3px;" +
-"transition:outline .2s ease;" +
+},true);
+if(!document.getElementById("decoreva-wishlist-target-style")){
+const style=document.createElement("style");
+style.id= "decoreva-wishlist-target-style";
+style.textContent=
+"#collection-products .card.decoreva-wishlist-target{"+
+"outline:2px solid rgba(185,130,24,.85);"+
+"outline-offset:3px;"+
+"transition:outline .2s ease;"+
 "}";
 document.head.appendChild(style);
 }
-if (!document.getElementById("decoreva-cart-target-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-cart-target-style";
-style.textContent =
-"#collection-products .card.decoreva-cart-target{" +
-"outline:2px solid rgba(169,109,15,.9);" +
-"outline-offset:3px;" +
-"transition:outline .2s ease;" +
+if(!document.getElementById("decoreva-cart-target-style")){
+const style=document.createElement("style");
+style.id= "decoreva-cart-target-style";
+style.textContent=
+"#collection-products .card.decoreva-cart-target{"+
+"outline:2px solid rgba(169,109,15,.9);"+
+"outline-offset:3px;"+
+"transition:outline .2s ease;"+
 "}";
 document.head.appendChild(style);
 }
-document.addEventListener("keydown", function (event) {
-if (event.key === "Escape") {
+document.addEventListener("keydown",function(event){
+if(event.key=== "Escape"){
 closeCart();
 closeWishlist();
 closeProfile();
 closeCouponModal();
 }
 });
-document.addEventListener("input", function (event) {
-if (!event.target.matches("#decoreva-address-name, #decoreva-address-mobile, #decoreva-address-line, #decoreva-address-city, #decoreva-address-state, #decoreva-address-pincode")) return;
-const message = document.querySelector("#decoreva-address-message");
-if (message) message.dataset.userMessage = "";
+document.addEventListener("input",function(event){
+if(!event.target.matches("#decoreva-address-name, #decoreva-address-mobile, #decoreva-address-line, #decoreva-address-city, #decoreva-address-state, #decoreva-address-pincode"))return;
+const message=document.querySelector("#decoreva-address-message");
+if(message)message.dataset.userMessage= "";
 updateAddressContinueState();
 });
-document.addEventListener("input", function (event) {
-if (!event.target.matches("#decoreva-coupon-input")) return;
-const message = document.querySelector("#decoreva-coupon-message");
-if (!message) return;
-if (event.target.value.trim() && event.target.value.trim().toUpperCase() !== appliedCoupon) {
-message.textContent = "Please apply coupon code";
-message.className = "decoreva-coupon-message warning";
-} else if (!event.target.value.trim()) {
-message.textContent = "";
-message.className = "decoreva-coupon-message";
-if (appliedCoupon) {
-appliedCoupon = "";
+document.addEventListener("input",function(event){
+if(!event.target.matches("#decoreva-coupon-input"))return;
+const message=document.querySelector("#decoreva-coupon-message");
+if(!message)return;
+if(event.target.value.trim()&&event.target.value.trim().toUpperCase()!==appliedCoupon){
+message.textContent= "Please apply coupon code";
+message.className= "decoreva-coupon-message warning";
+}else if(!event.target.value.trim()){
+message.textContent= "";
+message.className= "decoreva-coupon-message";
+if(appliedCoupon){
+appliedCoupon= "";
 saveCoupon();
 renderCart();
 }
 }
-}, true);
-function addCardButtons() {
-document.querySelectorAll("#collection-products .card, .featured-slide").forEach(function (card) {
-if (!card.querySelector(":scope > .decoreva-add-cart")) {
-const button = document.createElement("button");
-button.type = "button";
-button.className = "decoreva-add-cart";
-const title = (card.querySelector("h3") || {}).textContent || "product";
-button.setAttribute("aria-label", "Add " + title.trim() + " to cart");
-button.title = "Add to Cart";
-button.innerHTML = '<i class="fas fa-cart-plus" aria-hidden="true"></i>';
+},true);
+function addCardButtons(){
+document.querySelectorAll("#collection-products .card, .featured-slide").forEach(function(card){
+if(!card.querySelector(":scope > .decoreva-add-cart")){
+const button=document.createElement("button");
+button.type= "button";
+button.className= "decoreva-add-cart";
+const title=(card.querySelector("h3")||{}).textContent|| "product";
+button.setAttribute("aria-label", "Add "+title.trim()+ " to cart");
+button.title= "Add to Cart";
+button.innerHTML= '<i class="fas fa-cart-plus" aria-hidden="true"></i>';
 card.appendChild(button);
 }
-if (!card.querySelector(":scope > .decoreva-wishlist")) {
-const button = document.createElement("button");
-button.type = "button";
-button.className = "decoreva-wishlist";
-button.title = "Add to Wishlist";
-button.innerHTML = '<i class="far fa-heart" aria-hidden="true"></i>';
+if(!card.querySelector(":scope > .decoreva-wishlist")){
+const button=document.createElement("button");
+button.type= "button";
+button.className= "decoreva-wishlist";
+button.title= "Add to Wishlist";
+button.innerHTML= '<i class="far fa-heart" aria-hidden="true"></i>';
 card.appendChild(button);
 }
 });
 updateWishlistButtons();
 }
-if (!document.getElementById("decoreva-card-corner-icons-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-card-corner-icons-style";
-style.textContent =
-".card, .featured-slide{" +
-"position:relative !important;}" +
-".card > .decoreva-wishlist, .featured-slide > .decoreva-wishlist{" +
-"position:absolute !important;top:3px !important;left:3px !important;right:auto !important;" +
-"z-index:60 !important;}" +
-".card > .decoreva-add-cart, .featured-slide > .decoreva-add-cart{" +
-"position:absolute !important;top:3px !important;right:3px !important;left:auto !important;" +
+if(!document.getElementById("decoreva-card-corner-icons-style")){
+const style=document.createElement("style");
+style.id= "decoreva-card-corner-icons-style";
+style.textContent=
+".card, .featured-slide{"+
+"position:relative !important;}"+
+".card > .decoreva-wishlist, .featured-slide > .decoreva-wishlist{"+
+"position:absolute !important;top:3px !important;left:3px !important;right:auto !important;"+
+"z-index:60 !important;}"+
+".card > .decoreva-add-cart, .featured-slide > .decoreva-add-cart{"+
+"position:absolute !important;top:3px !important;right:3px !important;left:auto !important;"+
 "z-index:60 !important;}";
 document.head.appendChild(style);
 }
 addCardButtons();
 updateCartCount();
 updateWishlistCount();
-window.setTimeout(function () {
+window.setTimeout(function(){
 updateCartCount();
 updateWishlistCount();
-}, 0);
-document.addEventListener("click", async function (event) {
-const profileMenu = event.target.closest("[data-profile-menu]");
-if (profileMenu) {
+},0);
+document.addEventListener("click",async function(event){
+const profileMenu=event.target.closest("[data-profile-menu]");
+if(profileMenu){
 event.preventDefault();
-const action = profileMenu.dataset.profileMenu;
-if (action === "orders") {
-const section = document.querySelector("#decoreva-profile-orders-section");
-if (section) {
-let ordersDrawer = document.querySelector("#decoreva-orders-drawer");
-if (!ordersDrawer) {
-ordersDrawer = document.createElement("aside");
-ordersDrawer.id = "decoreva-orders-drawer";
-ordersDrawer.className = "decoreva-orders-drawer";
+const action=profileMenu.dataset.profileMenu;
+if(action=== "orders"){
+const section=document.querySelector("#decoreva-profile-orders-section");
+if(section){
+let ordersDrawer=document.querySelector("#decoreva-orders-drawer");
+if(!ordersDrawer){
+ordersDrawer=document.createElement("aside");
+ordersDrawer.id= "decoreva-orders-drawer";
+ordersDrawer.className= "decoreva-orders-drawer";
 ordersDrawer.setAttribute("aria-hidden", "true");
-ordersDrawer.innerHTML =
-'<div class="decoreva-orders-overlay" data-orders-close="true"></div>' +
-'<div class="decoreva-orders-panel" role="dialog" aria-modal="true" aria-label="My Orders">' +
-'<div class="decoreva-orders-panel-head">' +
-'<div><strong>My Orders</strong><span>Your DECOREVA orders</span></div>' +
-'<button type="button" class="decoreva-orders-close" data-orders-close="true" aria-label="Close My Orders">×</button>' +
-'</div>' +
-'<div class="decoreva-orders-panel-body"></div>' +
+ordersDrawer.innerHTML=
+'<div class="decoreva-orders-overlay" data-orders-close="true"></div>'+
+'<div class="decoreva-orders-panel" role="dialog" aria-modal="true" aria-label="My Orders">'+
+'<div class="decoreva-orders-panel-head">'+
+'<div><strong>My Orders</strong><span>Your DECOREVA orders</span></div>'+
+'<button type="button" class="decoreva-orders-close" data-orders-close="true" aria-label="Close My Orders">×</button>'+
+'</div>'+
+'<div class="decoreva-orders-panel-body"></div>'+
 '</div>';
 document.body.appendChild(ordersDrawer);
-const orderBody = ordersDrawer.querySelector(".decoreva-orders-panel-body");
-if (orderBody) orderBody.appendChild(section);
-if (!document.getElementById("decoreva-orders-drawer-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-orders-drawer-style";
-style.textContent =
-"#decoreva-orders-drawer{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:100dvh!important;z-index:2147483000!important;visibility:hidden;pointer-events:none;margin:0!important;padding:0!important;}" +
-"#decoreva-orders-drawer.open{visibility:visible;pointer-events:auto;}" +
-"#decoreva-orders-drawer .decoreva-orders-overlay{position:absolute!important;top:0!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(15,10,5,.48);opacity:0;transition:opacity .22s ease;}" +
-"#decoreva-orders-drawer.open .decoreva-orders-overlay{opacity:1;}" +
-"#decoreva-orders-drawer .decoreva-orders-panel{position:absolute!important;top:0!important;right:0!important;bottom:0!important;width:min(430px,92vw)!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;padding:0!important;background:#fff;box-shadow:-12px 0 35px rgba(0,0,0,.22);transform:translate3d(105%,0,0);transition:transform .26s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;overflow:hidden;}" +
-"#decoreva-orders-drawer.open .decoreva-orders-panel{transform:translate3d(0,0,0);}" +
-"#decoreva-orders-drawer .decoreva-orders-panel-head{position:relative!important;top:0!important;flex:0 0 auto;min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;background:#1d1109;color:#fff;border-bottom:1px solid #c8952e;z-index:5;box-sizing:border-box;}" +
-"#decoreva-orders-drawer .decoreva-orders-panel-head>div{display:flex;flex-direction:column;gap:3px;min-width:0;}" +
-"#decoreva-orders-drawer .decoreva-orders-panel-head strong{font-size:20px;line-height:1.1;color:#f1c75f;}" +
-"#decoreva-orders-drawer .decoreva-orders-panel-head span{font-size:10px;color:#eadfcf;}" +
-"#decoreva-orders-drawer .decoreva-orders-close{flex:0 0 34px!important;width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;margin:0!important;padding:0!important;border:1px solid rgba(241,199,95,.5)!important;border-radius:50%!important;background:#302016!important;color:#f1c75f!important;font:700 24px/30px Arial,sans-serif!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;box-sizing:border-box!important;opacity:1!important;visibility:visible!important;}" +
-"#decoreva-orders-drawer .decoreva-orders-close:hover{background:#f1c75f!important;color:#1d1109!important;border-color:#f1c75f!important;}" +
-"#decoreva-orders-drawer .decoreva-orders-panel-body{flex:1 1 auto;min-height:0;height:auto;overflow-y:auto;overflow-x:hidden;padding:0;}" +
-"#decoreva-orders-drawer .decoreva-profile-orders-section{display:block!important;padding:16px!important;}" +
-"#decoreva-orders-drawer .decoreva-profile-orders-head{display:none;}" +
-"#decoreva-orders-drawer .decoreva-profile-order-card{box-shadow:0 3px 12px rgba(60,40,20,.07);}" +
+const orderBody=ordersDrawer.querySelector(".decoreva-orders-panel-body");
+if(orderBody)orderBody.appendChild(section);
+if(!document.getElementById("decoreva-orders-drawer-style")){
+const style=document.createElement("style");
+style.id= "decoreva-orders-drawer-style";
+style.textContent=
+"#decoreva-orders-drawer{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:100dvh!important;z-index:2147483000!important;visibility:hidden;pointer-events:none;margin:0!important;padding:0!important;}"+
+"#decoreva-orders-drawer.open{visibility:visible;pointer-events:auto;}"+
+"#decoreva-orders-drawer .decoreva-orders-overlay{position:absolute!important;top:0!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(15,10,5,.48);opacity:0;transition:opacity .22s ease;}"+
+"#decoreva-orders-drawer.open .decoreva-orders-overlay{opacity:1;}"+
+"#decoreva-orders-drawer .decoreva-orders-panel{position:absolute!important;top:0!important;right:0!important;bottom:0!important;width:min(430px,92vw)!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;padding:0!important;background:#fff;box-shadow:-12px 0 35px rgba(0,0,0,.22);transform:translate3d(105%,0,0);transition:transform .26s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;overflow:hidden;}"+
+"#decoreva-orders-drawer.open .decoreva-orders-panel{transform:translate3d(0,0,0);}"+
+"#decoreva-orders-drawer .decoreva-orders-panel-head{position:relative!important;top:0!important;flex:0 0 auto;min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;background:#1d1109;color:#fff;border-bottom:1px solid #c8952e;z-index:5;box-sizing:border-box;}"+
+"#decoreva-orders-drawer .decoreva-orders-panel-head>div{display:flex;flex-direction:column;gap:3px;min-width:0;}"+
+"#decoreva-orders-drawer .decoreva-orders-panel-head strong{font-size:20px;line-height:1.1;color:#f1c75f;}"+
+"#decoreva-orders-drawer .decoreva-orders-panel-head span{font-size:10px;color:#eadfcf;}"+
+"#decoreva-orders-drawer .decoreva-orders-close{flex:0 0 34px!important;width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;margin:0!important;padding:0!important;border:1px solid rgba(241,199,95,.5)!important;border-radius:50%!important;background:#302016!important;color:#f1c75f!important;font:700 24px/30px Arial,sans-serif!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;box-sizing:border-box!important;opacity:1!important;visibility:visible!important;}"+
+"#decoreva-orders-drawer .decoreva-orders-close:hover{background:#f1c75f!important;color:#1d1109!important;border-color:#f1c75f!important;}"+
+"#decoreva-orders-drawer .decoreva-orders-panel-body{flex:1 1 auto;min-height:0;height:auto;overflow-y:auto;overflow-x:hidden;padding:0;}"+
+"#decoreva-orders-drawer .decoreva-profile-orders-section{display:block!important;padding:16px!important;}"+
+"#decoreva-orders-drawer .decoreva-profile-orders-head{display:none;}"+
+"#decoreva-orders-drawer .decoreva-profile-order-card{box-shadow:0 3px 12px rgba(60,40,20,.07);}"+
 "@media(max-width:760px){#decoreva-orders-drawer .decoreva-orders-panel{width:100%!important;}#decoreva-orders-drawer .decoreva-orders-panel-head{min-height:66px;padding:12px 14px;}#decoreva-orders-drawer .decoreva-orders-panel-head strong{font-size:18px;}#decoreva-orders-drawer .decoreva-profile-orders-section{padding:12px!important;}}";
 document.head.appendChild(style);
 }
-ordersDrawer.addEventListener("click", function (ordersEvent) {
-if (ordersEvent.target.closest("[data-orders-close]")) {
+ordersDrawer.addEventListener("click",function(ordersEvent){
+if(ordersEvent.target.closest("[data-orders-close]")){
 ordersEvent.preventDefault();
 ordersEvent.stopPropagation();
 closeMyOrdersDrawer();
 }
 });
 }
-section.hidden = false;
-const profileBack = section.querySelector("[data-profile-orders-back]");
-if (profileBack) profileBack.hidden = true;
+section.hidden=false;
+const profileBack=section.querySelector("[data-profile-orders-back]");
+if(profileBack)profileBack.hidden=true;
 closeProfile();
 ordersDrawer.classList.add("open");
 ordersDrawer.setAttribute("aria-hidden", "false");
 document.body.classList.add("decoreva-orders-open");
-document.body.style.overflow = "hidden";
+document.body.style.overflow= "hidden";
 }
 await loadMyOrders();
-} else if (action === "wishlist") {
+}else if(action=== "wishlist"){
 closeProfile();
 openWishlist();
-} else if (action === "coupons") {
+}else if(action=== "coupons"){
 closeProfile();
 openCouponModal();
-} else if (action === "personal") {
-const section = document.querySelector("#decoreva-profile-personal-section");
-if (section) {
-section.hidden = false;
-section.scrollIntoView({behavior:"smooth", block:"start"});
+}else if(action=== "personal"){
+const section=document.querySelector("#decoreva-profile-personal-section");
+if(section){
+section.hidden=false;
+section.scrollIntoView({behavior:"smooth",block:"start"});
 }
-} else if (action === "addresses") {
-const section = document.querySelector("#decoreva-profile-address-section");
-if (section) {
-section.hidden = !section.hidden;
-if (!section.hidden) {
-section.scrollIntoView({behavior:"smooth", block:"start"});
+}else if(action=== "addresses"){
+const section=document.querySelector("#decoreva-profile-address-section");
+if(section){
+section.hidden=!section.hidden;
+if(!section.hidden){
+section.scrollIntoView({behavior:"smooth",block:"start"});
 }
 }
-} else if (action === "contact") {
+}else if(action=== "contact"){
 closeProfile();
 setTimeout(function(){
-const contact = document.querySelector("#contact");
-if (contact) contact.scrollIntoView({behavior:"smooth", block:"start"});
-}, 80);
+const contact=document.querySelector("#contact");
+if(contact)contact.scrollIntoView({behavior:"smooth",block:"start"});
+},80);
 }
 return;
 }
-if (event.target.closest("[data-profile-orders-back]")) {
+if(event.target.closest("[data-profile-orders-back]")){
 event.preventDefault();
 closeMyOrdersDrawer();
 return;
 }
-if (event.target.closest("#decoreva-profile-login")) {
+if(event.target.closest("#decoreva-profile-login")){
 event.preventDefault();
 closeProfile();
 return;
 }
-if (event.target.closest("#decoreva-profile-save")) {
+if(event.target.closest("#decoreva-profile-save")){
 event.preventDefault();
-const get = id => { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
-const name = get("#decoreva-profile-name");
-const mobile = get("#decoreva-profile-mobile");
-const email = get("#decoreva-profile-email");
-const message = document.querySelector("#decoreva-profile-message");
-if (!name || !/^\d{10}$/.test(mobile)) {
-if (message) { message.textContent = "Please enter your name and valid 10-digit mobile number."; message.className = "decoreva-profile-message error"; }
+const get=id=>{const el=document.querySelector(id);return el?el.value.trim(): "";};
+const name=get("#decoreva-profile-name");
+const mobile=get("#decoreva-profile-mobile");
+const email=get("#decoreva-profile-email");
+const message=document.querySelector("#decoreva-profile-message");
+if(!name||!/^\d{10}$/.test(mobile)){
+if(message){message.textContent= "Please enter your name and valid 10-digit mobile number.";message.className= "decoreva-profile-message error";}
 return;
 }
-profile.name = name;
-profile.mobile = mobile;
-profile.email = email;
+profile.name=name;
+profile.mobile=mobile;
+profile.email=email;
 saveProfile();
-if (message) { message.textContent = "Profile saved successfully."; message.className = "decoreva-profile-message success"; message.dataset.persistent = "true"; }
+if(message){message.textContent= "Profile saved successfully.";message.className= "decoreva-profile-message success";message.dataset.persistent= "true";}
 renderProfile();
-if (message) { message.textContent = "Profile saved successfully."; message.className = "decoreva-profile-message success"; message.dataset.persistent = "true"; }
+if(message){message.textContent= "Profile saved successfully.";message.className= "decoreva-profile-message success";message.dataset.persistent= "true";}
 return;
 }
-if (event.target.closest("#decoreva-profile-add-address")) {
+if(event.target.closest("#decoreva-profile-add-address")){
 event.preventDefault();
 showProfileAddressForm();
 return;
 }
-if (event.target.closest("#decoreva-profile-address-cancel")) {
+if(event.target.closest("#decoreva-profile-address-cancel")){
 event.preventDefault();
 hideProfileAddressForm();
 return;
 }
-const addressAction = event.target.closest("[data-profile-address-action]");
-if (addressAction) {
+const addressAction=event.target.closest("[data-profile-address-action]");
+if(addressAction){
 event.preventDefault();
-const index = Number(addressAction.dataset.profileAddressIndex);
-if (!Number.isInteger(index) || !profile.addresses[index]) return;
-const action = addressAction.dataset.profileAddressAction;
-if (action === "edit") { showProfileAddressForm(index); return; }
-if (action === "delete") {
-const selectedAddress = profile.addresses[index];
-if (selectedAddress && selectedAddress.id && decorevaAddressSupabase) {
-try {
+const index=Number(addressAction.dataset.profileAddressIndex);
+if(!Number.isInteger(index)||!profile.addresses[index])return;
+const action=addressAction.dataset.profileAddressAction;
+if(action=== "edit"){showProfileAddressForm(index);return;}
+if(action=== "delete"){
+const selectedAddress=profile.addresses[index];
+if(selectedAddress&&selectedAddress.id&&decorevaAddressSupabase){
+try{
 await deleteSupabaseAddress(selectedAddress);
 renderProfile();
-} catch (error) {
-console.error("DECOREVA saved address delete error:", error);
+}catch(error){
+console.error("DECOREVA saved address delete error:",error);
 alert("Could not delete this address. Please try again.");
 }
 return;
 }
-profile.addresses.splice(index, 1);
-if (profile.addresses.length && !profile.addresses.some(a => a.default)) profile.addresses[0].default = true;
-saveProfile(); renderProfile(); return;
+profile.addresses.splice(index,1);
+if(profile.addresses.length&&!profile.addresses.some(a=>a.default))profile.addresses[0].default=true;
+saveProfile();renderProfile();return;
 }
-if (action === "default") {
-const selectedAddress = profile.addresses[index];
-if (selectedAddress && selectedAddress.id && decorevaAddressSupabase) {
-try {
+if(action=== "default"){
+const selectedAddress=profile.addresses[index];
+if(selectedAddress&&selectedAddress.id&&decorevaAddressSupabase){
+try{
 await setSupabaseDefaultAddress(selectedAddress);
 renderProfile();
-} catch (error) {
-console.error("DECOREVA saved address default error:", error);
+}catch(error){
+console.error("DECOREVA saved address default error:",error);
 alert("Could not change the default address. Please try again.");
 }
 return;
 }
-profile.addresses.forEach((a, i) => a.default = i === index);
-saveProfile(); renderProfile();
+profile.addresses.forEach((a,i)=>a.default=i===index);
+saveProfile();renderProfile();
 return;
 }
 }
-if (event.target.closest("#decoreva-profile-address-save")) {
+if(event.target.closest("#decoreva-profile-address-save")){
 event.preventDefault();
-const get = id => { const el = document.querySelector(id); return el ? el.value.trim() : ""; };
-const address = {
-label: get("#decoreva-profile-address-label") || "HOME",
-name: get("#decoreva-profile-address-name") || profile.name,
-mobile: get("#decoreva-profile-address-mobile") || profile.mobile,
-line: get("#decoreva-profile-address-line"),
-city: get("#decoreva-profile-address-city"),
-state: get("#decoreva-profile-address-state"),
-pincode: get("#decoreva-profile-address-pincode"),
-default: false
+const get=id=>{const el=document.querySelector(id);return el?el.value.trim(): "";};
+const address={
+label:get("#decoreva-profile-address-label")|| "HOME",
+name:get("#decoreva-profile-address-name")||profile.name,
+mobile:get("#decoreva-profile-address-mobile")||profile.mobile,
+line:get("#decoreva-profile-address-line"),
+city:get("#decoreva-profile-address-city"),
+state:get("#decoreva-profile-address-state"),
+pincode:get("#decoreva-profile-address-pincode"),
+default:false
 };
-const message = document.querySelector("#decoreva-profile-address-message");
-if (!address.name || !/^\d{10}$/.test(address.mobile) || !address.line || !address.city || !address.state || !/^\d{6}$/.test(address.pincode)) {
-if (message) { message.textContent = "Please fill all details with a valid 10-digit mobile and 6-digit PIN."; message.className = "decoreva-profile-message error"; }
+const message=document.querySelector("#decoreva-profile-address-message");
+if(!address.name||!/^\d{10}$/.test(address.mobile)||!address.line||!address.city||!address.state||!/^\d{6}$/.test(address.pincode)){
+if(message){message.textContent= "Please fill all details with a valid 10-digit mobile and 6-digit PIN.";message.className= "decoreva-profile-message error";}
 return;
 }
-const form = document.querySelector("#decoreva-profile-address-form");
-const editIndex = form && form.dataset.editIndex !== "" ? Number(form.dataset.editIndex) : -1;
-const existingAddress = editIndex >= 0 && profile.addresses[editIndex]
-? profile.addresses[editIndex]
-: null;
-address.default = existingAddress
-? !!existingAddress.default
-: profile.addresses.length === 0;
-if (existingAddress && existingAddress.id) {
-address.id = existingAddress.id;
+const form=document.querySelector("#decoreva-profile-address-form");
+const editIndex=form&&form.dataset.editIndex!== ""?Number(form.dataset.editIndex):-1;
+const existingAddress=editIndex>=0&&profile.addresses[editIndex]
+?profile.addresses[editIndex]
+:null;
+address.default=existingAddress
+?!!existingAddress.default
+:profile.addresses.length===0;
+if(existingAddress&&existingAddress.id){
+address.id=existingAddress.id;
 }
-const currentUser = await getDecorevaAuthUser();
-if (currentUser && decorevaAddressSupabase) {
-try {
-const saved = await saveSupabaseAddress(address, editIndex);
-if (!saved) throw new Error("Supabase address save unavailable.");
+const currentUser=await getDecorevaAuthUser();
+if(currentUser&&decorevaAddressSupabase){
+try{
+const saved=await saveSupabaseAddress(address,editIndex);
+if(!saved)throw new Error("Supabase address save unavailable.");
 hideProfileAddressForm();
 renderProfile();
 return;
-} catch (error) {
-console.error("DECOREVA saved address save error:", error);
-if (message) {
-message.textContent = "Could not save address to your account. Please try again.";
-message.className = "decoreva-profile-message error";
+}catch(error){
+console.error("DECOREVA saved address save error:",error);
+if(message){
+message.textContent= "Could not save address to your account. Please try again.";
+message.className= "decoreva-profile-message error";
 }
 return;
 }
 }
-if (editIndex >= 0 && profile.addresses[editIndex]) {
-profile.addresses[editIndex] = address;
-} else {
+if(editIndex>=0&&profile.addresses[editIndex]){
+profile.addresses[editIndex]=address;
+}else{
 profile.addresses.push(address);
 }
 saveProfile();
@@ -8705,192 +8765,192 @@ hideProfileAddressForm();
 renderProfile();
 return;
 }
-if (event.target.closest("#decoreva-profile-panel") && event.target.closest(".decoreva-profile-card") === null) {
+if(event.target.closest("#decoreva-profile-panel")&&event.target.closest(".decoreva-profile-card")===null){
 return;
 }
-}, true);
-const originalAddressMessage = document.querySelector("#decoreva-address-message");
-window.setTimeout(function () {
-const addressButton = document.querySelector("#decoreva-save-address");
-if (addressButton && !addressButton.dataset.profileSync) {
-addressButton.dataset.profileSync = "true";
-addressButton.addEventListener("click", function () {
-window.setTimeout(function () {
-if (!deliveryAddress) return;
-const exists = profile.addresses.some(function (a) {
-return a.line === deliveryAddress.line && a.pincode === deliveryAddress.pincode;
+},true);
+const originalAddressMessage=document.querySelector("#decoreva-address-message");
+window.setTimeout(function(){
+const addressButton=document.querySelector("#decoreva-save-address");
+if(addressButton&&!addressButton.dataset.profileSync){
+addressButton.dataset.profileSync= "true";
+addressButton.addEventListener("click",function(){
+window.setTimeout(function(){
+if(!deliveryAddress)return;
+const exists=profile.addresses.some(function(a){
+return a.line===deliveryAddress.line&&a.pincode===deliveryAddress.pincode;
 });
-if (!exists) {
-profile.name = deliveryAddress.name || profile.name;
-profile.mobile = deliveryAddress.mobile || profile.mobile;
-if (!profile.addresses.length) {
+if(!exists){
+profile.name=deliveryAddress.name||profile.name;
+profile.mobile=deliveryAddress.mobile||profile.mobile;
+if(!profile.addresses.length){
 profile.addresses.push({
-label: "HOME", name: deliveryAddress.name, mobile: deliveryAddress.mobile,
-line: deliveryAddress.line, city: deliveryAddress.city, state: deliveryAddress.state,
-pincode: deliveryAddress.pincode, default: true
-}, true);
+label: "HOME",name:deliveryAddress.name,mobile:deliveryAddress.mobile,
+line:deliveryAddress.line,city:deliveryAddress.city,state:deliveryAddress.state,
+pincode:deliveryAddress.pincode,default:true
+},true);
 saveProfile();
 }
 }
-}, 0);
-}, false);
+},0);
+},false);
 }
-}, 0);
-window.addEventListener("storage", function (event) {
-if (event.key === CART_KEY) {
-try {
-const savedCart = JSON.parse(event.newValue || "[]");
-cart = Array.isArray(savedCart) ? savedCart : [];
-} catch (error) { cart = []; }
+},0);
+window.addEventListener("storage",function(event){
+if(event.key===CART_KEY){
+try{
+const savedCart=JSON.parse(event.newValue|| "[]");
+cart=Array.isArray(savedCart)?savedCart:[];
+}catch(error){cart=[];}
 updateCartCount();
 renderCart();
 }
-if (event.key === WISHLIST_KEY) {
-try {
-const savedWishlist = JSON.parse(event.newValue || "[]");
-wishlist = Array.isArray(savedWishlist) ? savedWishlist : [];
-} catch (error) { wishlist = []; }
+if(event.key===WISHLIST_KEY){
+try{
+const savedWishlist=JSON.parse(event.newValue|| "[]");
+wishlist=Array.isArray(savedWishlist)?savedWishlist:[];
+}catch(error){wishlist=[];}
 updateWishlistCount();
 renderWishlist();
 updateWishlistButtons();
 }
 });
 })();
-(function () {
+(function(){
 "use strict";
-const supabaseClient = window.decorevaSupabase || null;
-let ratings = {};
-let likes = {};
-let reviewerNames = {};
-let reviewsLoaded = false;
-let reviewsLoadingPromise = null;
-let supabaseLikesLoaded = false;
-let supabaseLikedKeys = {};
-function getCardKey(card) {
-if (!card) return "";
-if (card.dataset.variationProduct) {
-return "variation:" + card.dataset.variationProduct;
+const supabaseClient=window.decorevaSupabase||null;
+let ratings={};
+let likes={};
+let reviewerNames={};
+let reviewsLoaded=false;
+let reviewsLoadingPromise=null;
+let supabaseLikesLoaded=false;
+let supabaseLikedKeys={};
+function getCardKey(card){
+if(!card)return "";
+if(card.dataset.variationProduct){
+return "variation:"+card.dataset.variationProduct;
 }
-const title = card.querySelector("h3");
-if (title) {
-return "product:" + title.textContent.trim().toLowerCase();
+const title=card.querySelector("h3");
+if(title){
+return "product:"+title.textContent.trim().toLowerCase();
 }
 return "";
 }
-function getRecord(key) {
-if (!ratings[key] || typeof ratings[key] !== "object") {
-ratings[key] = { reviews: [] };
+function getRecord(key){
+if(!ratings[key]||typeof ratings[key]!== "object"){
+ratings[key]={reviews:[]};
 }
-if (!Array.isArray(ratings[key].reviews)) {
-ratings[key].reviews = [];
+if(!Array.isArray(ratings[key].reviews)){
+ratings[key].reviews=[];
 }
 return ratings[key];
 }
-function getAverage(record) {
-if (!record.reviews.length) return 0;
-return record.reviews.reduce(function (total, review) {
-return total + Number(review.rating || 0);
-}, 0) / record.reviews.length;
+function getAverage(record){
+if(!record.reviews.length)return 0;
+return record.reviews.reduce(function(total,review){
+return total+Number(review.rating||0);
+},0)/record.reviews.length;
 }
-function starText(value) {
-const rounded = Math.round(Number(value) || 0);
-let output = "";
-for (let i = 1; i <= 5; i++) {
-output += i <= rounded ? "★" : "☆";
+function starText(value){
+const rounded=Math.round(Number(value)||0);
+let output= "";
+for(let i=1;i<=5;i++){
+output+=i<=rounded? "★": "☆";
 }
 return output;
 }
-async function loadSupabaseReviews() {
-if (!supabaseClient) {
+async function loadSupabaseReviews(){
+if(!supabaseClient){
 console.warn("DECOREVA: Supabase client not available for reviews.");
 return;
 }
-if (reviewsLoaded) return;
-if (reviewsLoadingPromise) return reviewsLoadingPromise;
-reviewsLoadingPromise = (async function () {
-try {
-const result = await supabaseClient
+if(reviewsLoaded)return;
+if(reviewsLoadingPromise)return reviewsLoadingPromise;
+reviewsLoadingPromise=(async function(){
+try{
+const result=await supabaseClient
 .from("product_reviews")
 .select("id, product_key, user_id, rating, review_text, created_at")
-.order("created_at", { ascending: true });
-if (result.error) {
-console.error("DECOREVA reviews load error:", result.error);
+.order("created_at",{ascending:true});
+if(result.error){
+console.error("DECOREVA reviews load error:",result.error);
 return;
 }
-ratings = {};
-reviewerNames = {};
-const reviewRows = result.data || [];
-const reviewerIds = Array.from(new Set(
+ratings={};
+reviewerNames={};
+const reviewRows=result.data||[];
+const reviewerIds=Array.from(new Set(
 reviewRows
-.map(function (review) { return review && review.user_id; })
+.map(function(review){return review&&review.user_id;})
 .filter(Boolean)
 ));
-if (reviewerIds.length) {
-try {
-const profilesResult = await supabaseClient
+if(reviewerIds.length){
+try{
+const profilesResult=await supabaseClient
 .from("decoreva_reviewer_names")
 .select("id, full_name")
-.in("id", reviewerIds);
-if (profilesResult.error) {
-console.warn("DECOREVA reviewer names load warning:", profilesResult.error);
-} else {
-(profilesResult.data || []).forEach(function (profile) {
-if (profile && profile.id && profile.full_name) {
-reviewerNames[profile.id] = String(profile.full_name).trim();
+.in("id",reviewerIds);
+if(profilesResult.error){
+console.warn("DECOREVA reviewer names load warning:",profilesResult.error);
+}else{
+(profilesResult.data||[]).forEach(function(profile){
+if(profile&&profile.id&&profile.full_name){
+reviewerNames[profile.id]=String(profile.full_name).trim();
 }
 });
 }
-} catch (profileError) {
-console.warn("DECOREVA reviewer names load exception:", profileError);
+}catch(profileError){
+console.warn("DECOREVA reviewer names load exception:",profileError);
 }
 }
-reviewRows.forEach(function (review) {
-if (!review || !review.product_key) return;
+reviewRows.forEach(function(review){
+if(!review||!review.product_key)return;
 getRecord(review.product_key).reviews.push({
-id: review.id,
-user_id: review.user_id,
-name: reviewerNames[review.user_id] || "",
-rating: Number(review.rating || 0),
-text: review.review_text || "",
-date: review.created_at || ""
+id:review.id,
+user_id:review.user_id,
+name:reviewerNames[review.user_id]|| "",
+rating:Number(review.rating||0),
+text:review.review_text|| "",
+date:review.created_at|| ""
 });
 });
-reviewsLoaded = true;
+reviewsLoaded=true;
 updateAllRatingRows();
-if (typeof mountDecorevaMobileRatingRows === "function") {
+if(typeof mountDecorevaMobileRatingRows=== "function"){
 mountDecorevaMobileRatingRows();
 }
 renderAllProductReviewHistory();
-} catch (error) {
-console.error("DECOREVA reviews load exception:", error);
-} finally {
-reviewsLoadingPromise = null;
+}catch(error){
+console.error("DECOREVA reviews load exception:",error);
+}finally{
+reviewsLoadingPromise=null;
 }
 })();
 return reviewsLoadingPromise;
 }
-function createRatingRow(card) {
-if (!card || card.querySelector(".decoreva-rating-row")) return;
-const key = getCardKey(card);
-if (!key) return;
-const row = document.createElement("div");
-row.className = "decoreva-rating-row";
-row.dataset.ratingKey = key;
-const ratingButton = document.createElement("button");
-ratingButton.type = "button";
-ratingButton.className = "decoreva-rating-button";
-ratingButton.dataset.ratingAction = "review";
+function createRatingRow(card){
+if(!card||card.querySelector(".decoreva-rating-row"))return;
+const key=getCardKey(card);
+if(!key)return;
+const row=document.createElement("div");
+row.className= "decoreva-rating-row";
+row.dataset.ratingKey=key;
+const ratingButton=document.createElement("button");
+ratingButton.type= "button";
+ratingButton.className= "decoreva-rating-button";
+ratingButton.dataset.ratingAction= "review";
 ratingButton.setAttribute("aria-label", "Open ratings and reviews");
 ratingButton.removeAttribute("title");
 ratingButton.setAttribute("data-tooltip", "View ratings and reviews");
-const ratingValue = document.createElement("span");
-ratingValue.className = "decoreva-rating-value";
-const ratingStar = document.createElement("span");
-ratingStar.className = "decoreva-rating-small-star";
+const ratingValue=document.createElement("span");
+ratingValue.className= "decoreva-rating-value";
+const ratingStar=document.createElement("span");
+ratingStar.className= "decoreva-rating-small-star";
 ratingStar.setAttribute("aria-hidden", "true");
-ratingStar.textContent = "★";
-const ratingCount = document.createElement("span");
-ratingCount.className = "decoreva-rating-count";
+ratingStar.textContent= "★";
+const ratingCount=document.createElement("span");
+ratingCount.className= "decoreva-rating-count";
 ratingButton.appendChild(ratingValue);
 ratingButton.appendChild(ratingStar);
 ratingButton.appendChild(ratingCount);
@@ -8898,125 +8958,125 @@ row.appendChild(ratingButton);
 card.appendChild(row);
 updateRatingRow(card);
 }
-function updateRatingRow(card) {
-if (!card) return;
-const row = card.querySelector(".decoreva-rating-row");
-if (!row) return;
-const key = getCardKey(card);
-if (!key) return;
-const record = getRecord(key);
-const average = getAverage(record);
-const reviewCount = record.reviews.length;
-const ratingButton = row.querySelector(".decoreva-rating-button");
-const ratingValue = row.querySelector(".decoreva-rating-value");
-const ratingStar = row.querySelector(".decoreva-rating-small-star");
-const ratingCount = row.querySelector(".decoreva-rating-count");
-function formatCustomerCount(value) {
-const number = Number(value || 0);
-if (number >= 1000000) {
-return (number / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+function updateRatingRow(card){
+if(!card)return;
+const row=card.querySelector(".decoreva-rating-row");
+if(!row)return;
+const key=getCardKey(card);
+if(!key)return;
+const record=getRecord(key);
+const average=getAverage(record);
+const reviewCount=record.reviews.length;
+const ratingButton=row.querySelector(".decoreva-rating-button");
+const ratingValue=row.querySelector(".decoreva-rating-value");
+const ratingStar=row.querySelector(".decoreva-rating-small-star");
+const ratingCount=row.querySelector(".decoreva-rating-count");
+function formatCustomerCount(value){
+const number=Number(value||0);
+if(number>=1000000){
+return(number/1000000).toFixed(1).replace(/\.0$/, "")+ "M";
 }
-if (number >= 1000) {
-return (number / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+if(number>=1000){
+return(number/1000).toFixed(1).replace(/\.0$/, "")+ "k";
 }
 return String(number);
 }
-if (ratingValue) {
-ratingValue.textContent = average > 0 ? average.toFixed(1) : "0.0";
+if(ratingValue){
+ratingValue.textContent=average>0?average.toFixed(1): "0.0";
 }
-if (ratingStar) {
-ratingStar.textContent = "★";
+if(ratingStar){
+ratingStar.textContent= "★";
 }
-if (ratingCount) {
-ratingCount.textContent = " | " + formatCustomerCount(reviewCount);
+if(ratingCount){
+ratingCount.textContent= " | "+formatCustomerCount(reviewCount);
 }
-if (ratingButton) {
+if(ratingButton){
 ratingButton.setAttribute(
 "aria-label",
 reviewCount
-? "View " + reviewCount + " ratings and reviews"
+? "View "+reviewCount+ " ratings and reviews"
 : "Write the first review"
 );
 }
 }
-function updateAllRatingRows() {
+function updateAllRatingRows(){
 document.querySelectorAll(
 "#collection-products .card, .featured-slider .featured-slide"
-).forEach(function (card) {
+).forEach(function(card){
 createRatingRow(card);
 updateRatingRow(card);
 });
 }
-function renderAllProductReviewHistory() {
-const contact = document.querySelector("#contact");
-if (!contact) return;
-let section = document.querySelector("#decoreva-all-reviews");
-if (!section) {
-section = document.createElement("section");
-section.id = "decoreva-all-reviews";
-section.className = "decoreva-all-reviews";
+function renderAllProductReviewHistory(){
+const contact=document.querySelector("#contact");
+if(!contact)return;
+let section=document.querySelector("#decoreva-all-reviews");
+if(!section){
+section=document.createElement("section");
+section.id= "decoreva-all-reviews";
+section.className= "decoreva-all-reviews";
 section.setAttribute("aria-label", "Customer Ratings and Reviews");
-contact.parentNode.insertBefore(section, contact);
+contact.parentNode.insertBefore(section,contact);
 }
-const cards = Array.from(document.querySelectorAll(
+const cards=Array.from(document.querySelectorAll(
 "#collection-products .card, .featured-slider .featured-slide"
 ));
-const products = new Map();
-cards.forEach(function (card) {
-const key = getCardKey(card);
-const title = card.querySelector("h3");
-if (key && title && !products.has(key)) {
-products.set(key, {
-name: title.textContent.trim(),
-card: card
+const products=new Map();
+cards.forEach(function(card){
+const key=getCardKey(card);
+const title=card.querySelector("h3");
+if(key&&title&&!products.has(key)){
+products.set(key,{
+name:title.textContent.trim(),
+card:card
 });
 }
 });
-const history = [];
-Object.keys(ratings).forEach(function (key) {
-const record = ratings[key];
-if (!record || !Array.isArray(record.reviews) || !record.reviews.length) return;
-const product = products.get(key);
-if (!product) return;
-const reviews = record.reviews.slice().reverse();
-const average = reviews.reduce(function (sum, item) {
-return sum + Number(item.rating || 0);
-}, 0) / reviews.length;
+const history=[];
+Object.keys(ratings).forEach(function(key){
+const record=ratings[key];
+if(!record||!Array.isArray(record.reviews)||!record.reviews.length)return;
+const product=products.get(key);
+if(!product)return;
+const reviews=record.reviews.slice().reverse();
+const average=reviews.reduce(function(sum,item){
+return sum+Number(item.rating||0);
+},0)/reviews.length;
 history.push({
-key: key,
-name: product.name,
-card: product.card,
-reviews: reviews,
-average: average
+key:key,
+name:product.name,
+card:product.card,
+reviews:reviews,
+average:average
 });
 });
-history.sort(function (a, b) {
-return cards.indexOf(a.card) - cards.indexOf(b.card);
+history.sort(function(a,b){
+return cards.indexOf(a.card)-cards.indexOf(b.card);
 });
-const totalReviews = history.reduce(function (sum, item) {
-return sum + item.reviews.length;
-}, 0);
+const totalReviews=history.reduce(function(sum,item){
+return sum+item.reviews.length;
+},0);
 section.replaceChildren();
-const heading = document.createElement("div");
-heading.className = "decoreva-all-reviews-heading";
-heading.innerHTML =
-'<span class="decoreva-all-reviews-eyebrow">CUSTOMER EXPERIENCE</span>' +
-'<h2>Customer Ratings & Reviews</h2>' +
+const heading=document.createElement("div");
+heading.className= "decoreva-all-reviews-heading";
+heading.innerHTML=
+'<span class="decoreva-all-reviews-eyebrow">CUSTOMER EXPERIENCE</span>'+
+'<h2>Customer Ratings & Reviews</h2>'+
 '<p>Real ratings and review history from DECOREVA customers.</p>';
 section.appendChild(heading);
-if (!history.length) {
-const empty = document.createElement("div");
-empty.className = "decoreva-all-reviews-empty";
-empty.innerHTML =
-'<span class="decoreva-all-reviews-empty-icon">★</span>' +
-'<strong>No customer reviews yet</strong>' +
+if(!history.length){
+const empty=document.createElement("div");
+empty.className= "decoreva-all-reviews-empty";
+empty.innerHTML=
+'<span class="decoreva-all-reviews-empty-icon">★</span>'+
+'<strong>No customer reviews yet</strong>'+
 '<p>Be the first to share your experience with a DECOREVA product.</p>';
 section.appendChild(empty);
 return;
 }
-const summary = document.createElement("div");
-summary.className = "decoreva-all-reviews-summary";
-summary.dataset.allReviewsToggle = "true";
+const summary=document.createElement("div");
+summary.className= "decoreva-all-reviews-summary";
+summary.dataset.allReviewsToggle= "true";
 summary.setAttribute("role", "button");
 summary.setAttribute("tabindex", "0");
 summary.setAttribute("aria-expanded", "false");
@@ -9024,84 +9084,84 @@ summary.setAttribute(
 "aria-label",
 "Open Customer Ratings and Reviews"
 );
-const summaryNumber = document.createElement("strong");
-summaryNumber.textContent = String(totalReviews);
-const summaryLabel = document.createElement("span");
-summaryLabel.textContent = totalReviews === 1
+const summaryNumber=document.createElement("strong");
+summaryNumber.textContent=String(totalReviews);
+const summaryLabel=document.createElement("span");
+summaryLabel.textContent=totalReviews===1
 ? "Customer Review"
 : "Customer Reviews";
-const summaryProducts = document.createElement("em");
-summaryProducts.textContent = history.length === 1
+const summaryProducts=document.createElement("em");
+summaryProducts.textContent=history.length===1
 ? "1 product reviewed"
-: history.length + " products reviewed";
+:history.length+ " products reviewed";
 summary.appendChild(summaryNumber);
 summary.appendChild(summaryLabel);
 summary.appendChild(summaryProducts);
-const summaryToggle = document.createElement("span");
-summaryToggle.className = "decoreva-all-reviews-toggle-icon";
+const summaryToggle=document.createElement("span");
+summaryToggle.className= "decoreva-all-reviews-toggle-icon";
 summaryToggle.setAttribute("aria-hidden", "true");
 summary.appendChild(summaryToggle);
 section.appendChild(summary);
-const list = document.createElement("div");
-list.className = "decoreva-all-reviews-list";
-history.forEach(function (product) {
-const box = document.createElement("article");
-box.className = "decoreva-all-review-product";
-const head = document.createElement("div");
-head.className = "decoreva-all-review-product-head";
-const info = document.createElement("div");
-info.className = "decoreva-all-review-product-info";
-const name = document.createElement("h3");
-name.textContent = product.name;
-const ratingLine = document.createElement("div");
-ratingLine.className = "decoreva-all-review-rating-line";
-const stars = document.createElement("span");
-stars.className = "decoreva-all-review-stars";
-stars.textContent = starText(product.average);
-const average = document.createElement("strong");
-average.textContent = product.average.toFixed(1) + " / 5";
-const count = document.createElement("span");
-count.className = "decoreva-all-review-count";
-count.textContent = product.reviews.length +
-(product.reviews.length === 1 ? " review" : " reviews");
+const list=document.createElement("div");
+list.className= "decoreva-all-reviews-list";
+history.forEach(function(product){
+const box=document.createElement("article");
+box.className= "decoreva-all-review-product";
+const head=document.createElement("div");
+head.className= "decoreva-all-review-product-head";
+const info=document.createElement("div");
+info.className= "decoreva-all-review-product-info";
+const name=document.createElement("h3");
+name.textContent=product.name;
+const ratingLine=document.createElement("div");
+ratingLine.className= "decoreva-all-review-rating-line";
+const stars=document.createElement("span");
+stars.className= "decoreva-all-review-stars";
+stars.textContent=starText(product.average);
+const average=document.createElement("strong");
+average.textContent=product.average.toFixed(1)+ " / 5";
+const count=document.createElement("span");
+count.className= "decoreva-all-review-count";
+count.textContent=product.reviews.length+
+(product.reviews.length===1? " review": " reviews");
 ratingLine.appendChild(stars);
 ratingLine.appendChild(average);
 ratingLine.appendChild(count);
 info.appendChild(name);
 info.appendChild(ratingLine);
-const view = document.createElement("button");
-view.type = "button";
-view.className = "decoreva-all-review-view";
-view.textContent = "VIEW PRODUCT REVIEWS";
-view.dataset.allReviewKey = product.key;
+const view=document.createElement("button");
+view.type= "button";
+view.className= "decoreva-all-review-view";
+view.textContent= "VIEW PRODUCT REVIEWS";
+view.dataset.allReviewKey=product.key;
 head.appendChild(info);
 head.appendChild(view);
 box.appendChild(head);
-const entries = document.createElement("div");
-entries.className = "decoreva-all-review-history";
-product.reviews.forEach(function (review) {
-const item = document.createElement("div");
-item.className = "decoreva-all-review-entry";
-const top = document.createElement("div");
-top.className = "decoreva-all-review-entry-top";
-const customer = document.createElement("strong");
-customer.textContent =
-review.name ||
-reviewerNames[review.user_id] ||
+const entries=document.createElement("div");
+entries.className= "decoreva-all-review-history";
+product.reviews.forEach(function(review){
+const item=document.createElement("div");
+item.className= "decoreva-all-review-entry";
+const top=document.createElement("div");
+top.className= "decoreva-all-review-entry-top";
+const customer=document.createElement("strong");
+customer.textContent=
+review.name||
+reviewerNames[review.user_id]||
 "Customer";
-const reviewStars = document.createElement("span");
-reviewStars.textContent = starText(review.rating);
+const reviewStars=document.createElement("span");
+reviewStars.textContent=starText(review.rating);
 top.appendChild(customer);
 top.appendChild(reviewStars);
-const body = document.createElement("p");
-body.textContent = review.text ||
+const body=document.createElement("p");
+body.textContent=review.text||
 "Customer left a rating without written feedback.";
-const date = document.createElement("time");
-date.className = "decoreva-all-review-date";
-if (review.date) {
-const parsed = new Date(review.date);
-if (!Number.isNaN(parsed.getTime())) {
-date.textContent = parsed.toLocaleDateString("en-IN", {
+const date=document.createElement("time");
+date.className= "decoreva-all-review-date";
+if(review.date){
+const parsed=new Date(review.date);
+if(!Number.isNaN(parsed.getTime())){
+date.textContent=parsed.toLocaleDateString("en-IN",{
 day: "numeric",
 month: "short",
 year: "numeric"
@@ -9110,44 +9170,44 @@ year: "numeric"
 }
 item.appendChild(top);
 item.appendChild(body);
-if (date.textContent) item.appendChild(date);
+if(date.textContent)item.appendChild(date);
 entries.appendChild(item);
 });
 box.appendChild(entries);
 list.appendChild(box);
 });
 section.appendChild(list);
-const bottomCloseWrap = document.createElement("div");
-bottomCloseWrap.className = "decoreva-all-reviews-close-wrap";
-const closeButton = document.createElement("button");
-closeButton.type = "button";
-closeButton.className = "decoreva-all-reviews-close decoreva-all-reviews-close-bottom";
-closeButton.dataset.allReviewsClose = "true";
-closeButton.innerHTML = '<span aria-hidden="true">×</span> CLOSE REVIEWS';
+const bottomCloseWrap=document.createElement("div");
+bottomCloseWrap.className= "decoreva-all-reviews-close-wrap";
+const closeButton=document.createElement("button");
+closeButton.type= "button";
+closeButton.className= "decoreva-all-reviews-close decoreva-all-reviews-close-bottom";
+closeButton.dataset.allReviewsClose= "true";
+closeButton.innerHTML= '<span aria-hidden="true">×</span> CLOSE REVIEWS';
 closeButton.setAttribute("aria-label", "Close Customer Ratings and Reviews");
 bottomCloseWrap.appendChild(closeButton);
 section.appendChild(bottomCloseWrap);
 }
-document.addEventListener("click", function (event) {
-const closeButton = event.target.closest("[data-all-reviews-close]");
-if (closeButton) {
-const section = closeButton.closest("#decoreva-all-reviews");
-if (!section) return;
+document.addEventListener("click",function(event){
+const closeButton=event.target.closest("[data-all-reviews-close]");
+if(closeButton){
+const section=closeButton.closest("#decoreva-all-reviews");
+if(!section)return;
 section.classList.remove("is-open");
-const toggle = section.querySelector("[data-all-reviews-toggle]");
-if (toggle) {
+const toggle=section.querySelector("[data-all-reviews-toggle]");
+if(toggle){
 toggle.setAttribute("aria-expanded", "false");
 toggle.setAttribute("aria-label", "Open Customer Ratings and Reviews");
 }
-section.scrollIntoView({ behavior: "smooth", block: "start" });
+section.scrollIntoView({behavior: "smooth",block: "start"});
 return;
 }
-const toggle = event.target.closest("[data-all-reviews-toggle]");
-if (toggle) {
-const section = toggle.closest("#decoreva-all-reviews");
-if (!section) return;
-const isOpen = section.classList.toggle("is-open");
-toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+const toggle=event.target.closest("[data-all-reviews-toggle]");
+if(toggle){
+const section=toggle.closest("#decoreva-all-reviews");
+if(!section)return;
+const isOpen=section.classList.toggle("is-open");
+toggle.setAttribute("aria-expanded",isOpen? "true": "false");
 toggle.setAttribute(
 "aria-label",
 isOpen
@@ -9156,36 +9216,36 @@ isOpen
 );
 return;
 }
-const button = event.target.closest("[data-all-review-key]");
-if (!button) return;
-const key = button.dataset.allReviewKey;
-let card = null;
+const button=event.target.closest("[data-all-review-key]");
+if(!button)return;
+const key=button.dataset.allReviewKey;
+let card=null;
 document.querySelectorAll(
 "#collection-products .card, .featured-slider .featured-slide"
-).forEach(function (candidate) {
-if (!card && getCardKey(candidate) === key) card = candidate;
+).forEach(function(candidate){
+if(!card&&getCardKey(candidate)===key)card=candidate;
 });
-if (card) openReviewModal(card);
-}, true);
-document.addEventListener("keydown", function (event) {
-const toggle = event.target.closest("[data-all-reviews-toggle]");
-if (!toggle || (event.key !== "Enter" && event.key !== " ")) return;
+if(card)openReviewModal(card);
+},true);
+document.addEventListener("keydown",function(event){
+const toggle=event.target.closest("[data-all-reviews-toggle]");
+if(!toggle||(event.key!== "Enter"&&event.key!== " "))return;
 event.preventDefault();
-const section = toggle.closest("#decoreva-all-reviews");
-if (!section) return;
-const isOpen = section.classList.toggle("is-open");
-toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+const section=toggle.closest("#decoreva-all-reviews");
+if(!section)return;
+const isOpen=section.classList.toggle("is-open");
+toggle.setAttribute("aria-expanded",isOpen? "true": "false");
 toggle.setAttribute(
 "aria-label",
 isOpen
 ? "Close Customer Ratings and Reviews"
 : "Open Customer Ratings and Reviews"
 );
-}, true);
-if (!document.querySelector("#decoreva-all-reviews-styles")) {
-const style = document.createElement("style");
-style.id = "decoreva-all-reviews-styles";
-style.textContent = `
+},true);
+if(!document.querySelector("#decoreva-all-reviews-styles")){
+const style=document.createElement("style");
+style.id= "decoreva-all-reviews-styles";
+style.textContent= `
 #decoreva-all-reviews{
 width:100%;
 box-sizing:border-box;
@@ -9496,10 +9556,10 @@ padding:0 15px;
 document.head.appendChild(style);
 }
 renderAllProductReviewHistory();
-if (!document.getElementById("decoreva-compact-rating-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-compact-rating-style";
-style.textContent = `
+if(!document.getElementById("decoreva-compact-rating-style")){
+const style=document.createElement("style");
+style.id= "decoreva-compact-rating-style";
+style.textContent= `
 .decoreva-rating-row{
 display:flex !important;
 align-items:center !important;
@@ -9552,10 +9612,10 @@ display:none !important;
 `;
 document.head.appendChild(style);
 }
-if (!document.getElementById("decoreva-rating-top-center-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-rating-top-center-style";
-style.textContent = `
+if(!document.getElementById("decoreva-rating-top-center-style")){
+const style=document.createElement("style");
+style.id= "decoreva-rating-top-center-style";
+style.textContent= `
 .decoreva-rating-row{
 top:0 !important;
 left:50% !important;
@@ -9578,10 +9638,10 @@ margin:0 !important;
 `;
 document.head.appendChild(style);
 }
-if (!document.getElementById("decoreva-mobile-rating-fix-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-mobile-rating-fix-style";
-style.textContent = `
+if(!document.getElementById("decoreva-mobile-rating-fix-style")){
+const style=document.createElement("style");
+style.id= "decoreva-mobile-rating-fix-style";
+style.textContent= `
 @media (max-width:760px){
 #collection-products .card{
 position:relative !important;
@@ -9628,224 +9688,224 @@ position:relative !important;
 `;
 document.head.appendChild(style);
 }
-function mountDecorevaMobileRatingRows() {
-if (window.innerWidth > 760) return;
+function mountDecorevaMobileRatingRows(){
+if(window.innerWidth>760)return;
 document.querySelectorAll(
 "#collection-products .card, .featured-slider .featured-slide"
-).forEach(function (card) {
-const row = card.querySelector(":scope > .decoreva-rating-row");
-if (!row) return;
-const imageLayer =
-card.querySelector(".image-slider") ||
+).forEach(function(card){
+const row=card.querySelector(":scope > .decoreva-rating-row");
+if(!row)return;
+const imageLayer=
+card.querySelector(".image-slider")||
 card.querySelector(".featured-image-box");
-if (!imageLayer) return;
-if (row.parentElement !== imageLayer) {
+if(!imageLayer)return;
+if(row.parentElement!==imageLayer){
 imageLayer.appendChild(row);
 }
 });
 }
-let decorevaMobileRatingTouchTimer = 0;
-function handleDecorevaMobileRatingTouch(button) {
-if (!button) return;
+let decorevaMobileRatingTouchTimer=0;
+function handleDecorevaMobileRatingTouch(button){
+if(!button)return;
 window.clearTimeout(decorevaMobileRatingTouchTimer);
 showDecorevaRatingTooltip(button);
-decorevaMobileRatingTouchTimer = window.setTimeout(function () {
+decorevaMobileRatingTouchTimer=window.setTimeout(function(){
 hideDecorevaRatingTooltip(button);
-}, 900);
+},900);
 }
-document.addEventListener("pointerdown", function (event) {
-if (window.innerWidth > 760 || event.pointerType !== "touch") return;
-const button = event.target.closest(
+document.addEventListener("pointerdown",function(event){
+if(window.innerWidth>760||event.pointerType!== "touch")return;
+const button=event.target.closest(
 ".card .decoreva-rating-button, .featured-slide .decoreva-rating-button"
 );
-if (!button) return;
+if(!button)return;
 handleDecorevaMobileRatingTouch(button);
-}, { passive:true, capture:true });
-document.addEventListener("touchstart", function (event) {
-if (window.innerWidth > 760) return;
-const button = event.target.closest(
+},{passive:true,capture:true});
+document.addEventListener("touchstart",function(event){
+if(window.innerWidth>760)return;
+const button=event.target.closest(
 ".card .decoreva-rating-button, .featured-slide .decoreva-rating-button"
 );
-if (!button) return;
+if(!button)return;
 handleDecorevaMobileRatingTouch(button);
-}, { passive:true, capture:true });
-function initializeRatingRows() {
+},{passive:true,capture:true});
+function initializeRatingRows(){
 updateAllRatingRows();
 mountDecorevaMobileRatingRows();
 loadSupabaseReviews();
 loadSupabaseLikes(false);
-requestAnimationFrame(function () {
+requestAnimationFrame(function(){
 mountDecorevaMobileRatingRows();
 });
 }
-async function getCurrentUser() {
-if (!supabaseClient || !supabaseClient.auth) return null;
-try {
-const result = await supabaseClient.auth.getUser();
-return result && result.data ? result.data.user : null;
-} catch (error) {
-console.error("DECOREVA auth check error:", error);
+async function getCurrentUser(){
+if(!supabaseClient||!supabaseClient.auth)return null;
+try{
+const result=await supabaseClient.auth.getUser();
+return result&&result.data?result.data.user:null;
+}catch(error){
+console.error("DECOREVA auth check error:",error);
 return null;
 }
 }
-async function loadSupabaseLikes(force) {
-if (!supabaseClient) return false;
-if (supabaseLikesLoaded && !force) return true;
-try {
-const result = await supabaseClient
+async function loadSupabaseLikes(force){
+if(!supabaseClient)return false;
+if(supabaseLikesLoaded&&!force)return true;
+try{
+const result=await supabaseClient
 .from("product_likes")
 .select("product_key, user_id");
-if (result.error) {
-console.error("DECOREVA likes load error:", result.error);
+if(result.error){
+console.error("DECOREVA likes load error:",result.error);
 return false;
 }
-const counts = {};
-const likedKeys = {};
-const user = await getCurrentUser();
-(result.data || []).forEach(function (like) {
-if (!like || !like.product_key) return;
-counts[like.product_key] = Number(counts[like.product_key] || 0) + 1;
-if (user && like.user_id === user.id) {
-likedKeys[like.product_key] = true;
+const counts={};
+const likedKeys={};
+const user=await getCurrentUser();
+(result.data||[]).forEach(function(like){
+if(!like||!like.product_key)return;
+counts[like.product_key]=Number(counts[like.product_key]||0)+1;
+if(user&&like.user_id===user.id){
+likedKeys[like.product_key]=true;
 }
 });
-likes = counts;
-supabaseLikedKeys = likedKeys;
-supabaseLikesLoaded = !!user;
+likes=counts;
+supabaseLikedKeys=likedKeys;
+supabaseLikesLoaded=!!user;
 updateAllRatingRows();
 return true;
-} catch (error) {
-console.error("DECOREVA likes load exception:", error);
+}catch(error){
+console.error("DECOREVA likes load exception:",error);
 return false;
 }
 }
-async function openReviewModal(card) {
-const key = getCardKey(card);
-if (!key) return;
+async function openReviewModal(card){
+const key=getCardKey(card);
+if(!key)return;
 await loadSupabaseReviews();
-const title = card.querySelector("h3");
-const productName = title
-? title.textContent.trim()
+const title=card.querySelector("h3");
+const productName=title
+?title.textContent.trim()
 : "DECOREVA Product";
-const record = getRecord(key);
-let modal = document.querySelector("#decoreva-review-modal");
-if (!modal) {
-modal = document.createElement("div");
-modal.id = "decoreva-review-modal";
-modal.className = "decoreva-review-modal";
+const record=getRecord(key);
+let modal=document.querySelector("#decoreva-review-modal");
+if(!modal){
+modal=document.createElement("div");
+modal.id= "decoreva-review-modal";
+modal.className= "decoreva-review-modal";
 modal.setAttribute("aria-hidden", "true");
-modal.innerHTML =
-'<div class="decoreva-review-overlay" data-review-close></div>' +
-'<div class="decoreva-review-card" role="dialog" aria-modal="true" aria-label="Ratings and Reviews">' +
-'<div class="decoreva-review-head">' +
-'<div>' +
-'<strong>Ratings & Reviews</strong>' +
-'<span class="decoreva-review-product"></span>' +
-'</div>' +
-'<button type="button" class="decoreva-review-close" data-review-close aria-label="Close">×</button>' +
-'</div>' +
-'<div class="decoreva-review-summary"></div>' +
-'<div class="decoreva-review-list"></div>' +
-'<form class="decoreva-review-form">' +
-'<strong>Write a Review</strong>' +
-'<div class="decoreva-review-stars-input" aria-label="Choose rating"></div>' +
-'<input class="decoreva-review-name" type="text" maxlength="40" placeholder="Your name" required>' +
-'<textarea class="decoreva-review-text" maxlength="500" placeholder="Write your review" required></textarea>' +
-'<button type="submit" class="decoreva-review-submit">Submit Review</button>' +
-'</form>' +
+modal.innerHTML=
+'<div class="decoreva-review-overlay" data-review-close></div>'+
+'<div class="decoreva-review-card" role="dialog" aria-modal="true" aria-label="Ratings and Reviews">'+
+'<div class="decoreva-review-head">'+
+'<div>'+
+'<strong>Ratings & Reviews</strong>'+
+'<span class="decoreva-review-product"></span>'+
+'</div>'+
+'<button type="button" class="decoreva-review-close" data-review-close aria-label="Close">×</button>'+
+'</div>'+
+'<div class="decoreva-review-summary"></div>'+
+'<div class="decoreva-review-list"></div>'+
+'<form class="decoreva-review-form">'+
+'<strong>Write a Review</strong>'+
+'<div class="decoreva-review-stars-input" aria-label="Choose rating"></div>'+
+'<input class="decoreva-review-name" type="text" maxlength="40" placeholder="Your name" required>'+
+'<textarea class="decoreva-review-text" maxlength="500" placeholder="Write your review" required></textarea>'+
+'<button type="submit" class="decoreva-review-submit">Submit Review</button>'+
+'</form>'+
 '</div>';
 document.body.appendChild(modal);
 }
-modal.dataset.ratingKey = key;
-modal.dataset.ratingCardKey = key;
-modal.querySelector(".decoreva-review-product").textContent = productName;
-const average = getAverage(record);
-const count = record.reviews.length;
-modal.querySelector(".decoreva-review-summary").textContent =
+modal.dataset.ratingKey=key;
+modal.dataset.ratingCardKey=key;
+modal.querySelector(".decoreva-review-product").textContent=productName;
+const average=getAverage(record);
+const count=record.reviews.length;
+modal.querySelector(".decoreva-review-summary").textContent=
 count
-? starText(average) + "  " + average.toFixed(1) + " · " +
-count + " review" + (count === 1 ? "" : "s")
+?starText(average)+ "  "+average.toFixed(1)+ " · "+
+count+ " review"+(count===1? "": "s")
 : "No reviews yet — be the first to review this product.";
-const user = await getCurrentUser();
-const list = modal.querySelector(".decoreva-review-list");
+const user=await getCurrentUser();
+const list=modal.querySelector(".decoreva-review-list");
 list.replaceChildren();
-if (!count) {
-const empty = document.createElement("div");
-empty.className = "decoreva-review-empty";
-empty.textContent = "No reviews yet.";
+if(!count){
+const empty=document.createElement("div");
+empty.className= "decoreva-review-empty";
+empty.textContent= "No reviews yet.";
 list.appendChild(empty);
-} else {
-record.reviews.slice().reverse().forEach(function (review) {
-const item = document.createElement("div");
-item.className = "decoreva-review-item";
-const top = document.createElement("div");
-top.className = "decoreva-review-item-top";
-const name = document.createElement("strong");
-name.textContent = "Customer";
-const stars = document.createElement("span");
-stars.textContent = starText(review.rating);
-const text = document.createElement("p");
-text.textContent = review.text || "";
+}else{
+record.reviews.slice().reverse().forEach(function(review){
+const item=document.createElement("div");
+item.className= "decoreva-review-item";
+const top=document.createElement("div");
+top.className= "decoreva-review-item-top";
+const name=document.createElement("strong");
+name.textContent= "Customer";
+const stars=document.createElement("span");
+stars.textContent=starText(review.rating);
+const text=document.createElement("p");
+text.textContent=review.text|| "";
 top.appendChild(name);
 top.appendChild(stars);
-if (user && review.user_id === user.id) {
-const actions = document.createElement("div");
-actions.className = "decoreva-review-actions";
-const editButton = document.createElement("button");
-editButton.type = "button";
-editButton.className = "decoreva-review-edit";
-editButton.textContent = "Edit";
+if(user&&review.user_id===user.id){
+const actions=document.createElement("div");
+actions.className= "decoreva-review-actions";
+const editButton=document.createElement("button");
+editButton.type= "button";
+editButton.className= "decoreva-review-edit";
+editButton.textContent= "Edit";
 editButton.setAttribute("aria-label", "Edit your review");
-const deleteButton = document.createElement("button");
-deleteButton.type = "button";
-deleteButton.className = "decoreva-review-delete";
-deleteButton.textContent = "×";
+const deleteButton=document.createElement("button");
+deleteButton.type= "button";
+deleteButton.className= "decoreva-review-delete";
+deleteButton.textContent= "×";
 deleteButton.setAttribute("aria-label", "Delete your review");
-deleteButton.title = "Delete review";
+deleteButton.title= "Delete review";
 actions.appendChild(editButton);
 actions.appendChild(deleteButton);
 top.appendChild(actions);
-editButton.addEventListener("click", function () {
-nameInput.value = String(user.user_metadata?.full_name || user.email || nameInput.value || "");
-textInput.value = review.text || "";
-editingReviewId = review.id;
-selectedRating = Number(review.rating || 0);
-starsInput.querySelectorAll("button").forEach(function (button, index) {
-button.classList.toggle("active", index < selectedRating);
+editButton.addEventListener("click",function(){
+nameInput.value=String(user.user_metadata?.full_name||user.email||nameInput.value|| "");
+textInput.value=review.text|| "";
+editingReviewId=review.id;
+selectedRating=Number(review.rating||0);
+starsInput.querySelectorAll("button").forEach(function(button,index){
+button.classList.toggle("active",index<selectedRating);
 });
-submitButton.textContent = "Update Review";
+submitButton.textContent= "Update Review";
 textInput.focus();
 });
-deleteButton.addEventListener("click", async function () {
-if (!window.confirm("Delete your review? This cannot be undone.")) {
+deleteButton.addEventListener("click",async function(){
+if(!window.confirm("Delete your review? This cannot be undone.")){
 return;
 }
-deleteButton.disabled = true;
-editButton.disabled = true;
-try {
-const result = await supabaseClient
+deleteButton.disabled=true;
+editButton.disabled=true;
+try{
+const result=await supabaseClient
 .from("product_reviews")
 .delete()
-.eq("id", review.id)
-.eq("user_id", user.id);
-if (result.error) {
-console.error("DECOREVA review delete error:", result.error);
+.eq("id",review.id)
+.eq("user_id",user.id);
+if(result.error){
+console.error("DECOREVA review delete error:",result.error);
 window.decorevaShowReviewToast("Could not delete your review. Please try again");
 return;
 }
-record.reviews = record.reviews.filter(function (itemReview) {
-return itemReview.id !== review.id;
+record.reviews=record.reviews.filter(function(itemReview){
+return itemReview.id!==review.id;
 });
-reviewsLoaded = true;
+reviewsLoaded=true;
 updateAllRatingRows();
 await openReviewModal(card);
 window.decorevaShowReviewToast("Your review was deleted successfully");
-} catch (error) {
-console.error("DECOREVA review delete exception:", error);
+}catch(error){
+console.error("DECOREVA review delete exception:",error);
 window.decorevaShowReviewToast("Could not delete your review. Please try again");
-} finally {
-deleteButton.disabled = false;
-editButton.disabled = false;
+}finally{
+deleteButton.disabled=false;
+editButton.disabled=false;
 }
 });
 }
@@ -9854,159 +9914,159 @@ item.appendChild(text);
 list.appendChild(item);
 });
 }
-const form = modal.querySelector(".decoreva-review-form");
-const nameInput = form.querySelector(".decoreva-review-name");
-const textInput = form.querySelector(".decoreva-review-text");
-const submitButton = form.querySelector(".decoreva-review-submit");
-if (!user) {
-nameInput.value = "";
-nameInput.disabled = true;
-textInput.value = "";
-textInput.disabled = true;
-submitButton.disabled = false;
-submitButton.textContent = "Login to Review";
-submitButton.type = "button";
-submitButton.onclick = function (event) {
+const form=modal.querySelector(".decoreva-review-form");
+const nameInput=form.querySelector(".decoreva-review-name");
+const textInput=form.querySelector(".decoreva-review-text");
+const submitButton=form.querySelector(".decoreva-review-submit");
+if(!user){
+nameInput.value= "";
+nameInput.disabled=true;
+textInput.value= "";
+textInput.disabled=true;
+submitButton.disabled=false;
+submitButton.textContent= "Login to Review";
+submitButton.type= "button";
+submitButton.onclick=function(event){
 event.preventDefault();
 event.stopPropagation();
-if (window.decorevaSupabaseAuth &&
-typeof window.decorevaSupabaseAuth.open === "function") {
+if(window.decorevaSupabaseAuth&&
+typeof window.decorevaSupabaseAuth.open=== "function"){
 window.decorevaSupabaseAuth.open();
-} else {
+}else{
 console.error("DECOREVA Auth: login modal is not available.");
 }
 };
-} else {
-nameInput.disabled = false;
-textInput.disabled = false;
-submitButton.disabled = false;
-submitButton.type = "submit";
-submitButton.onclick = null;
-submitButton.textContent = "Submit Review";
-try {
-const metadata = user.user_metadata || {};
-nameInput.value = String(metadata.full_name || "");
-} catch (error) {
-nameInput.value = "";
+}else{
+nameInput.disabled=false;
+textInput.disabled=false;
+submitButton.disabled=false;
+submitButton.type= "submit";
+submitButton.onclick=null;
+submitButton.textContent= "Submit Review";
+try{
+const metadata=user.user_metadata||{};
+nameInput.value=String(metadata.full_name|| "");
+}catch(error){
+nameInput.value= "";
 }
 }
-const starsInput = modal.querySelector(".decoreva-review-stars-input");
+const starsInput=modal.querySelector(".decoreva-review-stars-input");
 starsInput.replaceChildren();
-let selectedRating = 0;
-let editingReviewId = null;
-for (let i = 1; i <= 5; i++) {
-const button = document.createElement("button");
-button.type = "button";
-button.className = "decoreva-review-star-choice";
-button.textContent = "★";
-button.dataset.value = String(i);
-button.setAttribute("aria-label", i + " star");
-button.disabled = !user;
-button.addEventListener("click", function () {
-selectedRating = i;
-starsInput.querySelectorAll("button").forEach(function (item, index) {
-item.classList.toggle("active", index < selectedRating);
+let selectedRating=0;
+let editingReviewId=null;
+for(let i=1;i<=5;i++){
+const button=document.createElement("button");
+button.type= "button";
+button.className= "decoreva-review-star-choice";
+button.textContent= "★";
+button.dataset.value=String(i);
+button.setAttribute("aria-label",i+ " star");
+button.disabled=!user;
+button.addEventListener("click",function(){
+selectedRating=i;
+starsInput.querySelectorAll("button").forEach(function(item,index){
+item.classList.toggle("active",index<selectedRating);
 });
 });
 starsInput.appendChild(button);
 }
-form.onsubmit = async function (event) {
+form.onsubmit=async function(event){
 event.preventDefault();
-const currentUser = await getCurrentUser();
-if (!currentUser) {
-const modalCardKey = modal.dataset.ratingCardKey;
-let modalRow = null;
-document.querySelectorAll(".decoreva-rating-row").forEach(function (item) {
-if (!modalRow && item.dataset.ratingKey === modalCardKey) modalRow = item;
+const currentUser=await getCurrentUser();
+if(!currentUser){
+const modalCardKey=modal.dataset.ratingCardKey;
+let modalRow=null;
+document.querySelectorAll(".decoreva-rating-row").forEach(function(item){
+if(!modalRow&&item.dataset.ratingKey===modalCardKey)modalRow=item;
 });
-if (window.decorevaSupabaseAuth &&
-typeof window.decorevaSupabaseAuth.open === "function") {
+if(window.decorevaSupabaseAuth&&
+typeof window.decorevaSupabaseAuth.open=== "function"){
 window.decorevaSupabaseAuth.open();
 }
 showRatingToast(modalRow, "Please login first to rate or review this product");
 return;
 }
-const name = nameInput.value.trim();
-const text = textInput.value.trim();
-if (!selectedRating) {
+const name=nameInput.value.trim();
+const text=textInput.value.trim();
+if(!selectedRating){
 window.decorevaShowReviewToast("Please select a star rating");
 return;
 }
-if (!name || !text) {
+if(!name||!text){
 window.decorevaShowReviewToast("Please enter your name and review");
 return;
 }
-if (!supabaseClient) {
+if(!supabaseClient){
 window.decorevaShowReviewToast("Review service is temporarily unavailable");
 return;
 }
-submitButton.disabled = true;
-submitButton.textContent = editingReviewId ? "Updating..." : "Submitting...";
-const wasEditingReview = !!editingReviewId;
-try {
+submitButton.disabled=true;
+submitButton.textContent=editingReviewId? "Updating...": "Submitting...";
+const wasEditingReview=!!editingReviewId;
+try{
 let result;
-if (editingReviewId) {
-result = await supabaseClient
+if(editingReviewId){
+result=await supabaseClient
 .from("product_reviews")
 .update({
-rating: selectedRating,
-review_text: text
+rating:selectedRating,
+review_text:text
 })
-.eq("id", editingReviewId)
-.eq("user_id", currentUser.id)
+.eq("id",editingReviewId)
+.eq("user_id",currentUser.id)
 .select("id, product_key, user_id, rating, review_text, created_at")
 .single();
-if (result.error) {
-console.error("DECOREVA review update error:", result.error);
+if(result.error){
+console.error("DECOREVA review update error:",result.error);
 window.decorevaShowReviewToast("Could not update your review. Please try again");
 return;
 }
-const updatedReview = result.data;
-const localReviews = getRecord(key).reviews;
-const localIndex = localReviews.findIndex(function (itemReview) {
-return itemReview.id === editingReviewId;
+const updatedReview=result.data;
+const localReviews=getRecord(key).reviews;
+const localIndex=localReviews.findIndex(function(itemReview){
+return itemReview.id===editingReviewId;
 });
-if (localIndex >= 0) {
-localReviews[localIndex] = {
-id: updatedReview.id,
-user_id: updatedReview.user_id,
-rating: Number(updatedReview.rating || 0),
-text: updatedReview.review_text || "",
-date: updatedReview.created_at || ""
+if(localIndex>=0){
+localReviews[localIndex]={
+id:updatedReview.id,
+user_id:updatedReview.user_id,
+rating:Number(updatedReview.rating||0),
+text:updatedReview.review_text|| "",
+date:updatedReview.created_at|| ""
 };
 }
-editingReviewId = null;
-} else {
-result = await supabaseClient
+editingReviewId=null;
+}else{
+result=await supabaseClient
 .from("product_reviews")
 .insert({
-product_key: key,
-user_id: currentUser.id,
-rating: selectedRating,
-review_text: text
+product_key:key,
+user_id:currentUser.id,
+rating:selectedRating,
+review_text:text
 })
 .select("id, product_key, user_id, rating, review_text, created_at")
 .single();
-if (result.error) {
-console.error("DECOREVA review insert error:", result.error);
+if(result.error){
+console.error("DECOREVA review insert error:",result.error);
 window.decorevaShowReviewToast("Could not submit your review. Please try again");
 return;
 }
-const newReview = result.data;
+const newReview=result.data;
 getRecord(key).reviews.push({
-id: newReview.id,
-user_id: newReview.user_id,
-rating: Number(newReview.rating || 0),
-text: newReview.review_text || "",
-date: newReview.created_at || ""
+id:newReview.id,
+user_id:newReview.user_id,
+rating:Number(newReview.rating||0),
+text:newReview.review_text|| "",
+date:newReview.created_at|| ""
 });
 }
-reviewsLoaded = true;
+reviewsLoaded=true;
 updateAllRatingRows();
-nameInput.value = String(currentUser.user_metadata?.full_name || name);
-textInput.value = "";
-selectedRating = 0;
-starsInput.querySelectorAll("button").forEach(function (item) {
+nameInput.value=String(currentUser.user_metadata?.full_name||name);
+textInput.value= "";
+selectedRating=0;
+starsInput.querySelectorAll("button").forEach(function(item){
 item.classList.remove("active");
 });
 await openReviewModal(card);
@@ -10015,80 +10075,80 @@ wasEditingReview
 ? "Your review was updated successfully"
 : "Review submitted successfully"
 );
-} catch (error) {
-console.error("DECOREVA review save exception:", error);
+}catch(error){
+console.error("DECOREVA review save exception:",error);
 window.decorevaShowReviewToast(editingReviewId
 ? "Could not update your review. Please try again"
 : "Could not submit your review. Please try again");
-} finally {
-submitButton.disabled = false;
-submitButton.textContent = "Submit Review";
+}finally{
+submitButton.disabled=false;
+submitButton.textContent= "Submit Review";
 }
 };
 modal.classList.add("open");
 modal.setAttribute("aria-hidden", "false");
-document.documentElement.style.overflow = "hidden";
-document.body.style.overflow = "hidden";
+document.documentElement.style.overflow= "hidden";
+document.body.style.overflow= "hidden";
 }
-let decorevaReviewAuthChangeRunning = false;
-window.decorevaReviewAuthChanged = async function () {
-if (decorevaReviewAuthChangeRunning) return;
-decorevaReviewAuthChangeRunning = true;
-try {
-supabaseLikesLoaded = false;
-supabaseLikedKeys = {};
-if (supabaseClient) {
+let decorevaReviewAuthChangeRunning=false;
+window.decorevaReviewAuthChanged=async function(){
+if(decorevaReviewAuthChangeRunning)return;
+decorevaReviewAuthChangeRunning=true;
+try{
+supabaseLikesLoaded=false;
+supabaseLikedKeys={};
+if(supabaseClient){
 await loadSupabaseLikes(true);
-} else {
+}else{
 updateAllRatingRows();
 }
-if (!supabaseLikesLoaded) {
+if(!supabaseLikesLoaded){
 updateAllRatingRows();
 }
-const modal = document.querySelector("#decoreva-review-modal");
-if (!modal || !modal.classList.contains("open")) {
-updateAllRatingRows();
-return;
-}
-const key = modal.dataset.ratingKey;
-if (!key) {
+const modal=document.querySelector("#decoreva-review-modal");
+if(!modal||!modal.classList.contains("open")){
 updateAllRatingRows();
 return;
 }
-let targetCard = null;
+const key=modal.dataset.ratingKey;
+if(!key){
+updateAllRatingRows();
+return;
+}
+let targetCard=null;
 document.querySelectorAll(
 "#collection-products .card, .featured-slider .featured-slide"
-).forEach(function (candidate) {
-if (!targetCard && getCardKey(candidate) === key) {
-targetCard = candidate;
+).forEach(function(candidate){
+if(!targetCard&&getCardKey(candidate)===key){
+targetCard=candidate;
 }
 });
-if (targetCard) {
+if(targetCard){
 await openReviewModal(targetCard);
-} else {
+}else{
 updateAllRatingRows();
 }
-} catch (error) {
-console.error("DECOREVA review auth refresh error:", error);
+}catch(error){
+console.error("DECOREVA review auth refresh error:",error);
 updateAllRatingRows();
-} finally {
-decorevaReviewAuthChangeRunning = false;
+}finally{
+decorevaReviewAuthChangeRunning=false;
 }
 };
-function closeReviewModal() {
-const modal = document.querySelector("#decoreva-review-modal");
-if (!modal) return;
+function closeReviewModal(){
+const modal=document.querySelector("#decoreva-review-modal");
+if(!modal)return;
 modal.classList.remove("open");
 modal.setAttribute("aria-hidden", "true");
-if (!document.body.classList.contains("decoreva-cart-open")) {
-document.documentElement.style.overflow = "";
-document.body.style.overflow = "";
+if(!document.body.classList.contains("decoreva-cart-open")){
+document.documentElement.style.overflow= "";
+document.body.style.overflow= "";
 }
 }
-if (!document.getElementById("decoreva-rating-tooltip-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-rating-tooltip-style";
-style.textContent = `
+if(!document.getElementById("decoreva-rating-tooltip-style")){
+const style=document.createElement("style");
+style.id= "decoreva-rating-tooltip-style";
+style.textContent= `
 .decoreva-rating-floating-tooltip{
 position:fixed !important;
 left:0; top:0;
@@ -10119,154 +10179,154 @@ transform:translate(-50%,var(--tooltip-y,-100%)) scale(1) !important;
 `;
 document.head.appendChild(style);
 }
-let decorevaRatingTooltip = null;
-let decorevaRatingTooltipButton = null;
-function ensureDecorevaRatingTooltip() {
-if (decorevaRatingTooltip && document.body.contains(decorevaRatingTooltip)) {
+let decorevaRatingTooltip=null;
+let decorevaRatingTooltipButton=null;
+function ensureDecorevaRatingTooltip(){
+if(decorevaRatingTooltip&&document.body.contains(decorevaRatingTooltip)){
 return decorevaRatingTooltip;
 }
-decorevaRatingTooltip = document.createElement("div");
-decorevaRatingTooltip.className = "decoreva-rating-floating-tooltip";
-decorevaRatingTooltip.textContent = "View ratings and reviews";
+decorevaRatingTooltip=document.createElement("div");
+decorevaRatingTooltip.className= "decoreva-rating-floating-tooltip";
+decorevaRatingTooltip.textContent= "View ratings and reviews";
 decorevaRatingTooltip.setAttribute("role", "tooltip");
 decorevaRatingTooltip.setAttribute("aria-hidden", "true");
 document.body.appendChild(decorevaRatingTooltip);
 return decorevaRatingTooltip;
 }
-function positionDecorevaRatingTooltip() {
-if (!decorevaRatingTooltip || !decorevaRatingTooltip.classList.contains("show") || !decorevaRatingTooltipButton) return;
-const rect = decorevaRatingTooltipButton.getBoundingClientRect();
-const tooltipRect = decorevaRatingTooltip.getBoundingClientRect();
-const gap = 9;
-const viewportPadding = 8;
-let left = rect.left + (rect.width / 2);
-let top = rect.top - gap;
-let transformY = "-100%";
-if (top - tooltipRect.height < viewportPadding) {
-top = rect.bottom + gap;
-transformY = "0";
+function positionDecorevaRatingTooltip(){
+if(!decorevaRatingTooltip||!decorevaRatingTooltip.classList.contains("show")||!decorevaRatingTooltipButton)return;
+const rect=decorevaRatingTooltipButton.getBoundingClientRect();
+const tooltipRect=decorevaRatingTooltip.getBoundingClientRect();
+const gap=9;
+const viewportPadding=8;
+let left=rect.left+(rect.width/2);
+let top=rect.top-gap;
+let transformY= "-100%";
+if(top-tooltipRect.height<viewportPadding){
+top=rect.bottom+gap;
+transformY= "0";
 }
-const halfWidth = tooltipRect.width / 2;
-left = Math.max(halfWidth + viewportPadding, Math.min(
-window.innerWidth - halfWidth - viewportPadding,
+const halfWidth=tooltipRect.width/2;
+left=Math.max(halfWidth+viewportPadding,Math.min(
+window.innerWidth-halfWidth-viewportPadding,
 left
 ));
-decorevaRatingTooltip.style.left = left + "px";
-decorevaRatingTooltip.style.top = top + "px";
-decorevaRatingTooltip.style.setProperty("--tooltip-y", transformY);
+decorevaRatingTooltip.style.left=left+ "px";
+decorevaRatingTooltip.style.top=top+ "px";
+decorevaRatingTooltip.style.setProperty("--tooltip-y",transformY);
 }
-function showDecorevaRatingTooltip(button) {
-if (!button) return;
-decorevaRatingTooltipButton = button;
-const tooltip = ensureDecorevaRatingTooltip();
+function showDecorevaRatingTooltip(button){
+if(!button)return;
+decorevaRatingTooltipButton=button;
+const tooltip=ensureDecorevaRatingTooltip();
 tooltip.classList.add("show");
 tooltip.setAttribute("aria-hidden", "false");
 positionDecorevaRatingTooltip();
 }
-function hideDecorevaRatingTooltip(button) {
-if (button && decorevaRatingTooltipButton && button !== decorevaRatingTooltipButton) return;
-if (!decorevaRatingTooltip) return;
+function hideDecorevaRatingTooltip(button){
+if(button&&decorevaRatingTooltipButton&&button!==decorevaRatingTooltipButton)return;
+if(!decorevaRatingTooltip)return;
 decorevaRatingTooltip.classList.remove("show");
 decorevaRatingTooltip.setAttribute("aria-hidden", "true");
-decorevaRatingTooltipButton = null;
+decorevaRatingTooltipButton=null;
 }
-document.addEventListener("pointerover", function (event) {
-if (window.innerWidth <= 760 && event.pointerType === "touch") return;
-const button = event.target.closest(".decoreva-rating-button");
-if (!button) return;
-if (event.relatedTarget && button.contains(event.relatedTarget)) return;
+document.addEventListener("pointerover",function(event){
+if(window.innerWidth<=760&&event.pointerType=== "touch")return;
+const button=event.target.closest(".decoreva-rating-button");
+if(!button)return;
+if(event.relatedTarget&&button.contains(event.relatedTarget))return;
 showDecorevaRatingTooltip(button);
-}, true);
-document.addEventListener("pointerout", function (event) {
-if (window.innerWidth <= 760 && event.pointerType === "touch") return;
-const button = event.target.closest(".decoreva-rating-button");
-if (!button) return;
-if (event.relatedTarget && button.contains(event.relatedTarget)) return;
+},true);
+document.addEventListener("pointerout",function(event){
+if(window.innerWidth<=760&&event.pointerType=== "touch")return;
+const button=event.target.closest(".decoreva-rating-button");
+if(!button)return;
+if(event.relatedTarget&&button.contains(event.relatedTarget))return;
 hideDecorevaRatingTooltip(button);
-}, true);
-document.addEventListener("focusin", function (event) {
-if (window.innerWidth <= 760) return;
-const button = event.target.closest(".decoreva-rating-button");
-if (button) showDecorevaRatingTooltip(button);
-}, true);
-document.addEventListener("focusout", function (event) {
-if (window.innerWidth <= 760) return;
-const button = event.target.closest(".decoreva-rating-button");
-if (button) hideDecorevaRatingTooltip(button);
-}, true);
-window.addEventListener("scroll", positionDecorevaRatingTooltip, true);
-window.addEventListener("resize", positionDecorevaRatingTooltip);
-document.addEventListener("click", async function (event) {
-const ratingButton = event.target.closest(
+},true);
+document.addEventListener("focusin",function(event){
+if(window.innerWidth<=760)return;
+const button=event.target.closest(".decoreva-rating-button");
+if(button)showDecorevaRatingTooltip(button);
+},true);
+document.addEventListener("focusout",function(event){
+if(window.innerWidth<=760)return;
+const button=event.target.closest(".decoreva-rating-button");
+if(button)hideDecorevaRatingTooltip(button);
+},true);
+window.addEventListener("scroll",positionDecorevaRatingTooltip,true);
+window.addEventListener("resize",positionDecorevaRatingTooltip);
+document.addEventListener("click",async function(event){
+const ratingButton=event.target.closest(
 ".card .decoreva-rating-button, .featured-slide .decoreva-rating-button"
 );
-if (ratingButton) {
+if(ratingButton){
 event.preventDefault();
 event.stopPropagation();
-const card = ratingButton.closest(".card, .featured-slide");
-if (!card) return;
-const row = ratingButton.closest(".decoreva-rating-row");
-const isMobile = window.innerWidth <= 760;
-if (isMobile) {
+const card=ratingButton.closest(".card, .featured-slide");
+if(!card)return;
+const row=ratingButton.closest(".decoreva-rating-row");
+const isMobile=window.innerWidth<=760;
+if(isMobile){
 showDecorevaRatingTooltip(ratingButton);
 window.clearTimeout(decorevaMobileRatingTouchTimer);
-} else {
+}else{
 hideDecorevaRatingTooltip(ratingButton);
 }
-const openRatingAction = async function () {
-const currentUser = await getCurrentUser();
-if (!currentUser) {
-if (window.decorevaSupabaseAuth &&
-typeof window.decorevaSupabaseAuth.open === "function") {
+const openRatingAction=async function(){
+const currentUser=await getCurrentUser();
+if(!currentUser){
+if(window.decorevaSupabaseAuth&&
+typeof window.decorevaSupabaseAuth.open=== "function"){
 window.decorevaSupabaseAuth.open();
 }
 showRatingToast(row, "Please login first to rate or review this product");
-if (isMobile) {
-window.setTimeout(function () {
+if(isMobile){
+window.setTimeout(function(){
 hideDecorevaRatingTooltip(ratingButton);
-}, 250);
+},250);
 }
 return;
 }
 openReviewModal(card);
-if (isMobile) {
-window.setTimeout(function () {
+if(isMobile){
+window.setTimeout(function(){
 hideDecorevaRatingTooltip(ratingButton);
-}, 250);
+},250);
 }
 };
-if (isMobile) {
-window.setTimeout(openRatingAction, 300);
-} else {
+if(isMobile){
+window.setTimeout(openRatingAction,300);
+}else{
 openRatingAction();
 }
 return;
 }
-if (event.target.closest("[data-review-close]")) {
+if(event.target.closest("[data-review-close]")){
 event.preventDefault();
 event.stopPropagation();
 closeReviewModal();
 }
-}, true);
-document.addEventListener("keydown", function (event) {
-if (event.key === "Escape") {
+},true);
+document.addEventListener("keydown",function(event){
+if(event.key=== "Escape"){
 closeReviewModal();
 }
 });
 initializeRatingRows();
-let resizeTimer = 0;
-window.addEventListener("resize", function () {
+let resizeTimer=0;
+window.addEventListener("resize",function(){
 window.clearTimeout(resizeTimer);
-resizeTimer = window.setTimeout(function () {
+resizeTimer=window.setTimeout(function(){
 initializeRatingRows();
-}, 180);
+},180);
 });
 })();
-(function () {
-if (document.getElementById("decoreva-mobile-contact-polish")) return;
-const style = document.createElement("style");
-style.id = "decoreva-mobile-contact-polish";
-style.textContent = `
+(function(){
+if(document.getElementById("decoreva-mobile-contact-polish"))return;
+const style=document.createElement("style");
+style.id= "decoreva-mobile-contact-polish";
+style.textContent= `
 @media (max-width: 760px) {
 #contact {
 padding: 42px 18px 46px !important;
@@ -10316,51 +10376,51 @@ flex: 0 0 auto !important;
 document.head.appendChild(style);
 })();
 document.documentElement.removeAttribute("data-decoreva-restoring-panel");
-document.documentElement.style.visibility = "";
-document.documentElement.style.display = "";
+document.documentElement.style.visibility= "";
+document.documentElement.style.display= "";
 });
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded",function(){
 "use strict";
-const nav = document.querySelector("#main-nav");
-const collectionProducts = document.querySelector("#collection-products");
-if (!nav || !collectionProducts) return;
-const collectionLink = Array.from(nav.querySelectorAll("a")).find(function (link) {
-const text = (link.textContent || "").trim().toLowerCase();
-const href = (link.getAttribute("href") || "").toLowerCase();
-return text === "collection" || href === "#collection-title";
+const nav=document.querySelector("#main-nav");
+const collectionProducts=document.querySelector("#collection-products");
+if(!nav||!collectionProducts)return;
+const collectionLink=Array.from(nav.querySelectorAll("a")).find(function(link){
+const text=(link.textContent|| "").trim().toLowerCase();
+const href=(link.getAttribute("href")|| "").toLowerCase();
+return text=== "collection"||href=== "#collection-title";
 });
-if (!collectionLink) return;
-let wrapper = nav.querySelector(".decoreva-collection-nav");
-let dropdown = document.querySelector("#decoreva-collection-dropdown");
-if (!wrapper) {
-wrapper = document.createElement("div");
-wrapper.className = "decoreva-collection-nav";
-collectionLink.parentNode.insertBefore(wrapper, collectionLink);
+if(!collectionLink)return;
+let wrapper=nav.querySelector(".decoreva-collection-nav");
+let dropdown=document.querySelector("#decoreva-collection-dropdown");
+if(!wrapper){
+wrapper=document.createElement("div");
+wrapper.className= "decoreva-collection-nav";
+collectionLink.parentNode.insertBefore(wrapper,collectionLink);
 wrapper.appendChild(collectionLink);
 }
-wrapper.style.position = "relative";
+wrapper.style.position= "relative";
 collectionLink.classList.add("decoreva-collection-trigger");
 collectionLink.setAttribute("aria-haspopup", "true");
 collectionLink.setAttribute("aria-expanded", "false");
-if (!dropdown) {
-dropdown = document.createElement("div");
-dropdown.id = "decoreva-collection-dropdown";
+if(!dropdown){
+dropdown=document.createElement("div");
+dropdown.id= "decoreva-collection-dropdown";
 dropdown.setAttribute("role", "menu");
 dropdown.setAttribute("aria-hidden", "true");
-dropdown.innerHTML = `
+dropdown.innerHTML= `
 <button type="button" role="menuitem" data-decoreva-category="all">All Products</button>
 <button type="button" role="menuitem" data-decoreva-category="temples">Temples</button>
 <button type="button" role="menuitem" data-decoreva-category="keyholders">Key Holders</button>
 <button type="button" role="menuitem" data-decoreva-category="wallart">Wall Art</button>
 `;
 wrapper.appendChild(dropdown);
-} else if (dropdown.parentElement !== wrapper) {
+}else if(dropdown.parentElement!==wrapper){
 wrapper.appendChild(dropdown);
 }
-if (!document.getElementById("decoreva-collection-category-style")) {
-const style = document.createElement("style");
-style.id = "decoreva-collection-category-style";
-style.textContent = `
+if(!document.getElementById("decoreva-collection-category-style")){
+const style=document.createElement("style");
+style.id= "decoreva-collection-category-style";
+style.textContent= `
 /* =====================================================
 DESKTOP — dropdown is attached to COLLECTION itself
 ===================================================== */
@@ -10543,195 +10603,204 @@ margin: 0 auto 2px !important;
 `;
 document.head.appendChild(style);
 }
-const collectionTitle =
+const collectionTitle=
 document.querySelector("#collection-title, .collection-title");
-const productSearch =
+const productSearch=
 document.querySelector("#productSearch");
-let activeCategory = "all";
-function getCardText(card) {
-const title = card.querySelector("h3");
-const image = card.querySelector("img");
-return (
-(title ? title.textContent : "") +
-" " +
-(image ? image.getAttribute("alt") || "" : "") +
-" " +
-(card.getAttribute("data-product-key") || "") +
-" " +
-(card.getAttribute("data-product-id") || "") +
-" " +
-(card.getAttribute("data-variation-product") || "")
+let activeCategory= "all";
+function getCardText(card){
+const title=card.querySelector("h3");
+const image=card.querySelector("img");
+return(
+(title?title.textContent: "")+
+" "+
+(image?image.getAttribute("alt")|| "": "")+
+" "+
+(card.getAttribute("data-product-key")|| "")+
+" "+
+(card.getAttribute("data-product-id")|| "")+
+" "+
+(card.getAttribute("data-variation-product")|| "")
 ).toLowerCase();
 }
-function cardMatchesCategory(card, category) {
-if (category === "all") return true;
-const text = getCardText(card);
-if (category === "temples") {
-return /\btemple\b|\btemples\b|\bmandir\b/.test(text);
+function cardMatchesCategory(card,category){
+if(category=== "all")return true;
+const text=getCardText(card);
+if(category=== "temples"){
+return/\btemple\b|\btemples\b|\bmandir\b/.test(text);
 }
-if (category === "keyholders") {
-return /\bkey[\s-]?holder\b|\bkeyholders\b|\bkeyholder\b/.test(text);
+if(category=== "keyholders"){
+return/\bkey[\s-]?holder\b|\bkeyholders\b|\bkeyholder\b/.test(text);
 }
-if (category === "wallart") {
-return /\bwall[\s-]?art\b|\bwallart\b|\bmdf wall\b|\bacrylic wall\b/.test(text);
+if(category=== "wallart"){
+return/\bwall[\s-]?art\b|\bwallart\b|\bmdf wall\b|\bacrylic wall\b/.test(text);
 }
 return false;
 }
-function closeDropdown() {
+function closeDropdown(){
 dropdown.classList.remove("decoreva-open");
 dropdown.setAttribute("aria-hidden", "true");
 collectionLink.setAttribute("aria-expanded", "false");
 }
-function openDropdown() {
+function openDropdown(){
 dropdown.classList.add("decoreva-open");
 dropdown.setAttribute("aria-hidden", "false");
 collectionLink.setAttribute("aria-expanded", "true");
 }
-function scrollToCollection() {
-if (!collectionTitle) return;
-requestAnimationFrame(function () {
-requestAnimationFrame(function () {
-const navHeight = nav ? nav.getBoundingClientRect().height : 0;
-const top =
-collectionTitle.getBoundingClientRect().top +
-window.pageYOffset -
-navHeight -
-6;
+function scrollToCollection(){
+if(!collectionTitle)return;
+if(window.innerWidth<=760){
+setTimeout(function(){
+const top=
+collectionTitle.getBoundingClientRect().top+
+window.pageYOffset;
 window.scrollTo({
-top: Math.max(0, top),
-left: 0,
+top:Math.max(0,top),
+left:0,
 behavior: "smooth"
 });
-});
+},80);
+return;
+}
+const navHeight=nav?nav.getBoundingClientRect().height:0;
+const top=
+collectionTitle.getBoundingClientRect().top+
+window.pageYOffset-
+navHeight-
+6;
+window.scrollTo({
+top:Math.max(0,top),
+left:0,
+behavior: "smooth"
 });
 }
-function showAllProducts() {
-activeCategory = "all";
-if (productSearch) {
-productSearch.value = "";
+function showAllProducts(){
+activeCategory= "all";
+if(productSearch){
+productSearch.value= "";
 }
-if (typeof clearAllCollectionFilters === "function") {
+if(typeof clearAllCollectionFilters=== "function"){
 clearAllCollectionFilters(false);
-} else {
-const cards = Array.from(collectionProducts.querySelectorAll(".card"));
-cards.forEach(function (card) {
+}else{
+const cards=Array.from(collectionProducts.querySelectorAll(".card"));
+cards.forEach(function(card){
 card.style.setProperty("display", "flex", "important");
 });
-document.querySelectorAll(".decoreva-pagination").forEach(function (navItem) {
-navItem.style.display = "flex";
+document.querySelectorAll(".decoreva-pagination").forEach(function(navItem){
+navItem.style.display= "flex";
 });
-if (typeof decorevaShowPage === "function") {
+if(typeof decorevaShowPage=== "function"){
 decorevaShowPage(1);
 }
 }
-if (typeof window.decorevaLoadVisibleSliders === "function") {
+if(typeof window.decorevaLoadVisibleSliders=== "function"){
 window.decorevaLoadVisibleSliders();
 }
 }
-function applyCategory(category) {
-activeCategory = category;
-if (productSearch) {
-productSearch.value = "";
+function applyCategory(category){
+activeCategory=category;
+if(productSearch){
+productSearch.value= "";
 }
-if (category === "all") {
+if(category=== "all"){
 showAllProducts();
 return;
 }
-document.querySelectorAll(".decoreva-pagination").forEach(function (navItem) {
-navItem.style.display = "none";
+document.querySelectorAll(".decoreva-pagination").forEach(function(navItem){
+navItem.style.display= "none";
 });
-const cards = Array.from(
+const cards=Array.from(
 collectionProducts.querySelectorAll(".card")
 );
-cards.forEach(function (card) {
-const visible = cardMatchesCategory(card, category);
+cards.forEach(function(card){
+const visible=cardMatchesCategory(card,category);
 card.style.setProperty(
 "display",
-visible ? "flex" : "none",
+visible? "flex": "none",
 "important"
 );
 });
-if (typeof window.decorevaLoadVisibleSliders === "function") {
+if(typeof window.decorevaLoadVisibleSliders=== "function"){
 window.decorevaLoadVisibleSliders();
 }
 }
-collectionLink.addEventListener("click", function (event) {
+collectionLink.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
-const isOpening =
+const isOpening=
 !dropdown.classList.contains("decoreva-open");
-if (window.innerWidth <= 760) {
-if (isOpening) {
+if(window.innerWidth<=760){
+if(isOpening){
 nav.classList.add("mobile-open");
 document.body.classList.add("menu-open");
-const menuButton =
+const menuButton=
 document.querySelector(".mobile-menu-toggle");
-if (menuButton) {
+if(menuButton){
 menuButton.setAttribute("aria-expanded", "true");
 }
 }
 }
-if (isOpening) {
+if(isOpening){
 openDropdown();
-} else {
+}else{
 closeDropdown();
 }
-}, true);
-dropdown.querySelectorAll("[data-decoreva-category]").forEach(function (button) {
-button.addEventListener("click", function (event) {
+},true);
+dropdown.querySelectorAll("[data-decoreva-category]").forEach(function(button){
+button.addEventListener("click",function(event){
 event.preventDefault();
 event.stopPropagation();
-const category =
-button.getAttribute("data-decoreva-category") || "all";
+const category=
+button.getAttribute("data-decoreva-category")|| "all";
 applyCategory(category);
 closeDropdown();
-if (window.innerWidth <= 760) {
+if(window.innerWidth<=760){
 nav.classList.remove("mobile-open");
 document.body.classList.remove("menu-open");
-const menuButton =
+const menuButton=
 document.querySelector(".mobile-menu-toggle");
-if (menuButton) {
+if(menuButton){
 menuButton.setAttribute("aria-expanded", "false");
 }
 }
 scrollToCollection();
 });
 });
-document.addEventListener("click", function (event) {
-if (
-!dropdown.contains(event.target) &&
+document.addEventListener("click",function(event){
+if(
+!dropdown.contains(event.target)&&
 !collectionLink.contains(event.target)
-) {
+){
 closeDropdown();
 }
-}, true);
-if (productSearch) {
-productSearch.addEventListener("input", function () {
-if (activeCategory === "all") return;
-const searchText =
+},true);
+if(productSearch){
+productSearch.addEventListener("input",function(){
+if(activeCategory=== "all")return;
+const searchText=
 productSearch.value.toLowerCase().trim();
-document.querySelectorAll(".decoreva-pagination").forEach(function (navItem) {
-navItem.style.display = "none";
+document.querySelectorAll(".decoreva-pagination").forEach(function(navItem){
+navItem.style.display= "none";
 });
-const cards = Array.from(
+const cards=Array.from(
 collectionProducts.querySelectorAll(".card")
 );
-cards.forEach(function (card) {
-const title = card.querySelector("h3");
-const name = title
-? title.textContent.toLowerCase()
+cards.forEach(function(card){
+const title=card.querySelector("h3");
+const name=title
+?title.textContent.toLowerCase()
 : "";
-const categoryMatch =
-cardMatchesCategory(card, activeCategory);
-const searchMatch =
-!searchText || name.includes(searchText);
+const categoryMatch=
+cardMatchesCategory(card,activeCategory);
+const searchMatch=
+!searchText||name.includes(searchText);
 card.style.setProperty(
 "display",
-categoryMatch && searchMatch ? "flex" : "none",
+categoryMatch&&searchMatch? "flex": "none",
 "important"
 );
 });
-if (typeof window.decorevaLoadVisibleSliders === "function") {
+if(typeof window.decorevaLoadVisibleSliders=== "function"){
 window.decorevaLoadVisibleSliders();
 }
 });
