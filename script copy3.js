@@ -1497,6 +1497,14 @@ behavior: "smooth"
 }
 );
 });
+const searchContainer=
+document.querySelector(
+".search-container"
+);
+const searchBox=
+document.querySelector(
+".search-box"
+);
 if(voiceSearchBtn){
 voiceSearchBtn.style.position= "absolute";
 voiceSearchBtn.style.right= "13px";
@@ -1533,6 +1541,19 @@ image.setAttribute(
 "false"
 );
 });
+if(!sliderObserver){
+document
+.querySelectorAll("#collection-products .image-slider")
+.forEach(function(slider){
+const images=getSliderImages(slider);
+if(images.length){
+showSliderImage(
+slider,
+getSliderIndex(slider)
+);
+}
+});
+}
 document.addEventListener(
 "keydown",
 function(event){
