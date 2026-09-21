@@ -910,6 +910,30 @@ let featuredCloneCount=0;
 let featuredAnimating=false;
 let featuredTimer=null;
 let featuredResizeTimer=null;
+function loadVisibleFeaturedImages(){
+if(!featuredTrack)return;
+const visible=getFeaturedVisibleCount();
+const children=Array.from(featuredTrack.children);
+const start=Math.max(0,featuredPosition);
+for(let offset=0;offset<visible;offset++){
+const slide=children[start+offset];
+if(!slide)continue;
+const image=slide.querySelector(".featured-image-box img");
+if(!image)continue;
+const realSrc=
+image.getAttribute("data-featured-src")||
+image.getAttribute("data-decoreva-featured-src")||
+image.getAttribute("data-src");
+if(!realSrc)continue;
+image.loading="eager";
+image.decoding="async";
+image.fetchPriority="high";
+if(image.getAttribute("src")!==realSrc){
+image.setAttribute("src",realSrc);
+}
+image.dataset.loaded="true";
+}
+}
 function getFeaturedVisibleCount(){
 if(window.innerWidth<=760)return 2;
 if(window.innerWidth<=1100)return 3;
@@ -1074,6 +1098,7 @@ featuredAnimating=false;
 requestAnimationFrame(function(){
 setFeaturedPosition(false);
 updateFeaturedDots();
+loadVisibleFeaturedImages();
 });
 }
 function setFeaturedPosition(animate){
@@ -1099,6 +1124,7 @@ return;
 featuredAnimating=true;
 featuredPosition++;
 setFeaturedPosition(true);
+loadVisibleFeaturedImages();
 }
 function previousFeaturedSlide(){
 if(
@@ -1110,6 +1136,7 @@ return;
 featuredAnimating=true;
 featuredPosition--;
 setFeaturedPosition(true);
+loadVisibleFeaturedImages();
 }
 function goToFeatured(index){
 if(
@@ -1130,6 +1157,7 @@ featuredRealIndex=index;
 featuredPosition=
 featuredCloneCount+index;
 setFeaturedPosition(true);
+loadVisibleFeaturedImages();
 updateFeaturedDots();
 restartFeaturedAutoPlay();
 }
@@ -1303,6 +1331,7 @@ clearFeaturedClones();
 }
 featuredAnimating=false;
 buildFeaturedLoop();
+loadVisibleFeaturedImages();
 startFeaturedAutoPlay();
 },
 180
@@ -1446,11 +1475,19 @@ null,
 "",
 window.location.pathname
 );
+const homeSection=document.getElementById("home");
+if(homeSection){
+homeSection.scrollIntoView({
+behavior: "smooth",
+block: "start"
+});
+}else{
 window.scrollTo({
 top:0,
 left:0,
 behavior: "smooth"
 });
+}
 }else{
 document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
 nav.style.display= "flex";
@@ -3996,9 +4033,26 @@ if(!variation||!slider)return;
 slider.dataset.images=JSON.stringify(variation.images);
 slider.dataset.index= "0";
 if(image){
+const featuredCard=card.closest(".featured-slider");
+const placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+if(featuredCard){
+const alreadyLoaded=
+image.dataset.loaded==="true" &&
+image.getAttribute("src")===variation.images[0];
+image.setAttribute("data-decoreva-featured-src",variation.images[0]);
+image.dataset.src=variation.images[0];
+if(!alreadyLoaded){
+image.setAttribute("src",placeholder);
+image.dataset.loaded="false";
+}
+image.loading="lazy";
+image.decoding="async";
+image.fetchPriority="low";
+}else{
 image.src=variation.images[0];
 image.dataset.src=variation.images[0];
-image.dataset.loaded= "true";
+image.dataset.loaded="true";
+}
 const title=card.querySelector("h3");
 image.alt=(title?title.textContent.trim(): "DECOREVA Product")+ " - "+key.replace(/-/g, " ");
 }
@@ -4017,6 +4071,11 @@ updateDots(slider,variation.images,0);
 card._decorevaApplyVariation=applyVariation;
 applyVariation(product.defaultVariation);
 });
+if(typeof loadVisibleFeaturedImages==="function"){
+requestAnimationFrame(function(){
+loadVisibleFeaturedImages();
+});
+}
 document.addEventListener("click",function(event){
 const button=event.target.closest(".variation-button, .sherawali-variation");
 if(!button)return;

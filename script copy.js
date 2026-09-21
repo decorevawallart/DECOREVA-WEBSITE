@@ -180,7 +180,11 @@ return false;
 }
 }
 window.decorevaTrackVisit=trackDecorevaVisit;
-trackDecorevaVisit();
+if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => trackDecorevaVisit(), { timeout: 2500 });
+} else {
+    setTimeout(trackDecorevaVisit, 1500);
+}
 document.addEventListener("click",function(event){
 const card=event.target.closest("#collection-products .card, .featured-slider .featured-slide");
 if(!card)return;
