@@ -1,60 +1,5 @@
 document.addEventListener("DOMContentLoaded",function(){
 "use strict";
-if(!document.getElementById("decoreva-mobile-burger-polish")){
-const mobileBurgerStyle=document.createElement("style");
-mobileBurgerStyle.id="decoreva-mobile-burger-polish";
-mobileBurgerStyle.textContent=`
-@media (max-width:760px){
-.mobile-menu-toggle{
-width:42px !important;
-height:42px !important;
-min-width:42px !important;
-min-height:42px !important;
-padding:0 !important;
-margin:0 !important;
-display:flex !important;
-align-items:center !important;
-justify-content:center !important;
-box-sizing:border-box !important;
-border:1px solid rgba(229,187,82,.95) !important;
-border-radius:11px !important;
-background:linear-gradient(145deg,#241309 0%,#120a06 100%) !important;
-color:#f3cf73 !important;
-box-shadow:
-0 5px 14px rgba(0,0,0,.28),
-inset 0 1px 0 rgba(255,236,175,.12) !important;
-cursor:pointer !important;
-transition:
-transform .18s ease,
-background .18s ease,
-border-color .18s ease,
-box-shadow .18s ease !important;
--webkit-tap-highlight-color:transparent !important;
-}
-.mobile-menu-toggle:hover{
-border-color:#f1cf78 !important;
-background:linear-gradient(145deg,#321b0d 0%,#160b06 100%) !important;
-box-shadow:
-0 7px 18px rgba(0,0,0,.32),
-0 0 0 3px rgba(214,164,62,.10),
-inset 0 1px 0 rgba(255,236,175,.16) !important;
-}
-.mobile-menu-toggle:active{
-transform:scale(.94) !important;
-}
-.mobile-menu-toggle[aria-expanded="true"]{
-background:linear-gradient(145deg,#8f5d12 0%,#c8952f 52%,#8f5d12 100%) !important;
-color:#fff8e6 !important;
-border-color:#f0ce78 !important;
-box-shadow:
-0 7px 18px rgba(73,43,7,.34),
-0 0 0 3px rgba(214,164,62,.14),
-inset 0 1px 0 rgba(255,255,255,.24) !important;
-}
-}
-`;
-document.head.appendChild(mobileBurgerStyle);
-}
 if(!document.getElementById("decoreva-desktop-profile-polish")){
 const desktopProfileStyle=document.createElement("style");
 desktopProfileStyle.id= "decoreva-desktop-profile-polish";
@@ -4875,7 +4820,7 @@ const result=await decorevaAddressSupabase
 .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
 .eq("user_id",user.id)
 .order("is_default",{ascending:false})
-.order("created_at",{ascending:false});
+.order("created_at",{ascending:true});
 if(result.error){
 console.error("DECOREVA saved addresses load error:",result.error);
 return false;
@@ -9135,7 +9080,7 @@ const record=ratings[key];
 if(!record||!Array.isArray(record.reviews)||!record.reviews.length)return;
 const product=products.get(key);
 if(!product)return;
-const reviews=record.reviews.slice();
+const reviews=record.reviews.slice().reverse();
 const average=reviews.reduce(function(sum,item){
 return sum+Number(item.rating||0);
 },0)/reviews.length;
@@ -9144,17 +9089,10 @@ key:key,
 name:product.name,
 card:product.card,
 reviews:reviews,
-average:average,
-latestDate:reviews.reduce(function(latest,item){
-const value=Date.parse(item.date||"");
-return value>latest?value:latest;
-},0)
+average:average
 });
 });
 history.sort(function(a,b){
-if(b.latestDate!==a.latestDate){
-return b.latestDate-a.latestDate;
-}
 return cards.indexOf(a.card)-cards.indexOf(b.card);
 });
 const totalReviews=history.reduce(function(sum,item){
@@ -9939,13 +9877,13 @@ empty.className= "decoreva-review-empty";
 empty.textContent= "No reviews yet.";
 list.appendChild(empty);
 }else{
-record.reviews.slice().forEach(function(review){
+record.reviews.slice().reverse().forEach(function(review){
 const item=document.createElement("div");
 item.className= "decoreva-review-item";
 const top=document.createElement("div");
 top.className= "decoreva-review-item-top";
 const name=document.createElement("strong");
-name.textContent = review.name || reviewerNames[review.user_id] || "Customer";
+name.textContent= "Customer";
 const stars=document.createElement("span");
 stars.textContent=starText(review.rating);
 const text=document.createElement("p");
@@ -10157,10 +10095,9 @@ window.decorevaShowReviewToast("Could not submit your review. Please try again")
 return;
 }
 const newReview=result.data;
-getRecord(key).reviews.unshift({
+getRecord(key).reviews.push({
 id:newReview.id,
 user_id:newReview.user_id,
-name:String(currentUser.user_metadata?.full_name||name||"Customer"),
 rating:Number(newReview.rating||0),
 text:newReview.review_text|| "",
 date:newReview.created_at|| ""
@@ -10168,7 +10105,6 @@ date:newReview.created_at|| ""
 }
 reviewsLoaded=true;
 updateAllRatingRows();
-renderAllProductReviewHistory();
 nameInput.value=String(currentUser.user_metadata?.full_name||name);
 textInput.value= "";
 selectedRating=0;
