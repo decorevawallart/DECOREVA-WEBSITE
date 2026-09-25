@@ -967,6 +967,7 @@ let featuredTimer=null;
 let featuredResizeTimer=null;
 function loadVisibleFeaturedImages(){
 if(!featuredTrack)return;
+preloadFeaturedVariationImages();
 const visible=getFeaturedVisibleCount();
 const children=Array.from(featuredTrack.children);
 const start=Math.max(0,featuredPosition);
@@ -4058,6 +4059,27 @@ const productName=title?title.textContent.trim():variation.whatsapp;
 const variationName=button?button.textContent.trim():key.replace(/-/g, " ");
 return productName+ " - "+variationName;
 }
+const decorevaFeaturedVariationPreloadCache=new Set();
+function preloadDecorevaFeaturedVariationImage(src){
+if(!src||decorevaFeaturedVariationPreloadCache.has(src))return;
+decorevaFeaturedVariationPreloadCache.add(src);
+const preloadImage=new Image();
+preloadImage.decoding="async";
+preloadImage.fetchPriority="high";
+preloadImage.src=src;
+}
+function preloadFeaturedVariationImages(){
+document.querySelectorAll(".featured-variation-card").forEach(function(card){
+const product=decorevaVariationProducts[card.dataset.variationProduct];
+if(!product||!product.variations)return;
+Object.keys(product.variations).forEach(function(key){
+const variation=product.variations[key];
+if(variation&&variation.images&&variation.images[0]){
+preloadDecorevaFeaturedVariationImage(variation.images[0]);
+}
+});
+});
+}
 document.querySelectorAll(".decoreva-variation-card, .featured-variation-card").forEach(function(card){
 card.classList.add("sherawali-variation-card");
 const options=card.querySelector(".variation-options");
@@ -4089,20 +4111,18 @@ slider.dataset.images=JSON.stringify(variation.images);
 slider.dataset.index= "0";
 if(image){
 const featuredCard=card.closest(".featured-slider");
-const placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 if(featuredCard){
-const alreadyLoaded=
-image.dataset.loaded==="true" &&
-image.getAttribute("src")===variation.images[0];
-image.setAttribute("data-decoreva-featured-src",variation.images[0]);
-image.dataset.src=variation.images[0];
-if(!alreadyLoaded){
-image.setAttribute("src",placeholder);
-image.dataset.loaded="false";
-}
-image.loading="lazy";
+const targetSrc=variation.images[0];
+image.setAttribute("data-decoreva-featured-src",targetSrc);
+image.dataset.src=targetSrc;
+image.loading="eager";
 image.decoding="async";
-image.fetchPriority="low";
+image.fetchPriority="high";
+if(image.getAttribute("src")!==targetSrc){
+image.setAttribute("src",targetSrc);
+}
+image.dataset.loaded="true";
+preloadFeaturedVariationImages();
 }else{
 image.src=variation.images[0];
 image.dataset.src=variation.images[0];
@@ -4129,6 +4149,7 @@ applyVariation(product.defaultVariation);
 if(typeof loadVisibleFeaturedImages==="function"){
 requestAnimationFrame(function(){
 loadVisibleFeaturedImages();
+preloadFeaturedVariationImages();
 });
 }
 document.addEventListener("click",function(event){

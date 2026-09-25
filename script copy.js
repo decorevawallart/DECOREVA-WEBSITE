@@ -1,5 +1,60 @@
 document.addEventListener("DOMContentLoaded",function(){
 "use strict";
+if(!document.getElementById("decoreva-mobile-burger-polish")){
+const mobileBurgerStyle=document.createElement("style");
+mobileBurgerStyle.id="decoreva-mobile-burger-polish";
+mobileBurgerStyle.textContent=`
+@media (max-width:760px){
+.mobile-menu-toggle{
+width:42px !important;
+height:42px !important;
+min-width:42px !important;
+min-height:42px !important;
+padding:0 !important;
+margin:0 !important;
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+box-sizing:border-box !important;
+border:1px solid rgba(229,187,82,.95) !important;
+border-radius:11px !important;
+background:linear-gradient(145deg,#241309 0%,#120a06 100%) !important;
+color:#f3cf73 !important;
+box-shadow:
+0 5px 14px rgba(0,0,0,.28),
+inset 0 1px 0 rgba(255,236,175,.12) !important;
+cursor:pointer !important;
+transition:
+transform .18s ease,
+background .18s ease,
+border-color .18s ease,
+box-shadow .18s ease !important;
+-webkit-tap-highlight-color:transparent !important;
+}
+.mobile-menu-toggle:hover{
+border-color:#f1cf78 !important;
+background:linear-gradient(145deg,#321b0d 0%,#160b06 100%) !important;
+box-shadow:
+0 7px 18px rgba(0,0,0,.32),
+0 0 0 3px rgba(214,164,62,.10),
+inset 0 1px 0 rgba(255,236,175,.16) !important;
+}
+.mobile-menu-toggle:active{
+transform:scale(.94) !important;
+}
+.mobile-menu-toggle[aria-expanded="true"]{
+background:linear-gradient(145deg,#8f5d12 0%,#c8952f 52%,#8f5d12 100%) !important;
+color:#fff8e6 !important;
+border-color:#f0ce78 !important;
+box-shadow:
+0 7px 18px rgba(73,43,7,.34),
+0 0 0 3px rgba(214,164,62,.14),
+inset 0 1px 0 rgba(255,255,255,.24) !important;
+}
+}
+`;
+document.head.appendChild(mobileBurgerStyle);
+}
 if(!document.getElementById("decoreva-desktop-profile-polish")){
 const desktopProfileStyle=document.createElement("style");
 desktopProfileStyle.id= "decoreva-desktop-profile-polish";
@@ -910,6 +965,30 @@ let featuredCloneCount=0;
 let featuredAnimating=false;
 let featuredTimer=null;
 let featuredResizeTimer=null;
+function loadVisibleFeaturedImages(){
+if(!featuredTrack)return;
+const visible=getFeaturedVisibleCount();
+const children=Array.from(featuredTrack.children);
+const start=Math.max(0,featuredPosition);
+for(let offset=0;offset<visible;offset++){
+const slide=children[start+offset];
+if(!slide)continue;
+const image=slide.querySelector(".featured-image-box img");
+if(!image)continue;
+const realSrc=
+image.getAttribute("data-featured-src")||
+image.getAttribute("data-decoreva-featured-src")||
+image.getAttribute("data-src");
+if(!realSrc)continue;
+image.loading="eager";
+image.decoding="async";
+image.fetchPriority="high";
+if(image.getAttribute("src")!==realSrc){
+image.setAttribute("src",realSrc);
+}
+image.dataset.loaded="true";
+}
+}
 function getFeaturedVisibleCount(){
 if(window.innerWidth<=760)return 2;
 if(window.innerWidth<=1100)return 3;
@@ -1074,6 +1153,7 @@ featuredAnimating=false;
 requestAnimationFrame(function(){
 setFeaturedPosition(false);
 updateFeaturedDots();
+loadVisibleFeaturedImages();
 });
 }
 function setFeaturedPosition(animate){
@@ -1099,6 +1179,7 @@ return;
 featuredAnimating=true;
 featuredPosition++;
 setFeaturedPosition(true);
+loadVisibleFeaturedImages();
 }
 function previousFeaturedSlide(){
 if(
@@ -1110,6 +1191,7 @@ return;
 featuredAnimating=true;
 featuredPosition--;
 setFeaturedPosition(true);
+loadVisibleFeaturedImages();
 }
 function goToFeatured(index){
 if(
@@ -1130,6 +1212,7 @@ featuredRealIndex=index;
 featuredPosition=
 featuredCloneCount+index;
 setFeaturedPosition(true);
+loadVisibleFeaturedImages();
 updateFeaturedDots();
 restartFeaturedAutoPlay();
 }
@@ -1303,6 +1386,7 @@ clearFeaturedClones();
 }
 featuredAnimating=false;
 buildFeaturedLoop();
+loadVisibleFeaturedImages();
 startFeaturedAutoPlay();
 },
 180
@@ -1446,11 +1530,19 @@ null,
 "",
 window.location.pathname
 );
+const homeSection=document.getElementById("home");
+if(homeSection){
+homeSection.scrollIntoView({
+behavior: "smooth",
+block: "start"
+});
+}else{
 window.scrollTo({
 top:0,
 left:0,
 behavior: "smooth"
 });
+}
 }else{
 document.querySelectorAll(".decoreva-pagination").forEach(function(nav){
 nav.style.display= "flex";
@@ -3996,9 +4088,26 @@ if(!variation||!slider)return;
 slider.dataset.images=JSON.stringify(variation.images);
 slider.dataset.index= "0";
 if(image){
+const featuredCard=card.closest(".featured-slider");
+const placeholder="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+if(featuredCard){
+const alreadyLoaded=
+image.dataset.loaded==="true" &&
+image.getAttribute("src")===variation.images[0];
+image.setAttribute("data-decoreva-featured-src",variation.images[0]);
+image.dataset.src=variation.images[0];
+if(!alreadyLoaded){
+image.setAttribute("src",placeholder);
+image.dataset.loaded="false";
+}
+image.loading="lazy";
+image.decoding="async";
+image.fetchPriority="low";
+}else{
 image.src=variation.images[0];
 image.dataset.src=variation.images[0];
-image.dataset.loaded= "true";
+image.dataset.loaded="true";
+}
 const title=card.querySelector("h3");
 image.alt=(title?title.textContent.trim(): "DECOREVA Product")+ " - "+key.replace(/-/g, " ");
 }
@@ -4017,6 +4126,11 @@ updateDots(slider,variation.images,0);
 card._decorevaApplyVariation=applyVariation;
 applyVariation(product.defaultVariation);
 });
+if(typeof loadVisibleFeaturedImages==="function"){
+requestAnimationFrame(function(){
+loadVisibleFeaturedImages();
+});
+}
 document.addEventListener("click",function(event){
 const button=event.target.closest(".variation-button, .sherawali-variation");
 if(!button)return;
@@ -4761,7 +4875,7 @@ const result=await decorevaAddressSupabase
 .select("id, user_id, label, recipient_name, phone, address_line, city, state, pincode, is_default, created_at, updated_at")
 .eq("user_id",user.id)
 .order("is_default",{ascending:false})
-.order("created_at",{ascending:true});
+.order("created_at",{ascending:false});
 if(result.error){
 console.error("DECOREVA saved addresses load error:",result.error);
 return false;
@@ -9021,7 +9135,7 @@ const record=ratings[key];
 if(!record||!Array.isArray(record.reviews)||!record.reviews.length)return;
 const product=products.get(key);
 if(!product)return;
-const reviews=record.reviews.slice().reverse();
+const reviews=record.reviews.slice();
 const average=reviews.reduce(function(sum,item){
 return sum+Number(item.rating||0);
 },0)/reviews.length;
@@ -9030,10 +9144,17 @@ key:key,
 name:product.name,
 card:product.card,
 reviews:reviews,
-average:average
+average:average,
+latestDate:reviews.reduce(function(latest,item){
+const value=Date.parse(item.date||"");
+return value>latest?value:latest;
+},0)
 });
 });
 history.sort(function(a,b){
+if(b.latestDate!==a.latestDate){
+return b.latestDate-a.latestDate;
+}
 return cards.indexOf(a.card)-cards.indexOf(b.card);
 });
 const totalReviews=history.reduce(function(sum,item){
@@ -9818,13 +9939,13 @@ empty.className= "decoreva-review-empty";
 empty.textContent= "No reviews yet.";
 list.appendChild(empty);
 }else{
-record.reviews.slice().reverse().forEach(function(review){
+record.reviews.slice().forEach(function(review){
 const item=document.createElement("div");
 item.className= "decoreva-review-item";
 const top=document.createElement("div");
 top.className= "decoreva-review-item-top";
 const name=document.createElement("strong");
-name.textContent= "Customer";
+name.textContent = review.name || reviewerNames[review.user_id] || "Customer";
 const stars=document.createElement("span");
 stars.textContent=starText(review.rating);
 const text=document.createElement("p");
@@ -10036,9 +10157,10 @@ window.decorevaShowReviewToast("Could not submit your review. Please try again")
 return;
 }
 const newReview=result.data;
-getRecord(key).reviews.push({
+getRecord(key).reviews.unshift({
 id:newReview.id,
 user_id:newReview.user_id,
+name:String(currentUser.user_metadata?.full_name||name||"Customer"),
 rating:Number(newReview.rating||0),
 text:newReview.review_text|| "",
 date:newReview.created_at|| ""
@@ -10046,6 +10168,7 @@ date:newReview.created_at|| ""
 }
 reviewsLoaded=true;
 updateAllRatingRows();
+renderAllProductReviewHistory();
 nameInput.value=String(currentUser.user_metadata?.full_name||name);
 textInput.value= "";
 selectedRating=0;
